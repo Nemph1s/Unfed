@@ -17,6 +17,10 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Visual Studio image file caches
+proj.win32/Unfed.VC.db
+proj.win32/*.opendb
+
 # =========================
 # Operating System Files
 # =========================
