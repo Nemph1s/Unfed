@@ -12,20 +12,23 @@
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
-
+using std::string;
+using cocos2d::Node;
+using cocos2d::Sprite;
+using namespace CommonTypes;
 
 //--------------------------------------------------------------------
 CookieObj::CookieObj()
    : mColumn(0)
    , mRow(0)
-   , mCookieType(CommonTypes::CookieType::Unknown)
+   , mCookieType(CookieType::Unknown)
    , mSpriteNode(nullptr)
 //--------------------------------------------------------------------
 {
 }
 
 //--------------------------------------------------------------------
-CookieObj * CookieObj::create(const CommonTypes::CookieInfo & cookieInfo)
+CookieObj * CookieObj::create(const CookieInfo & cookieInfo)
 //--------------------------------------------------------------------
 {
    CookieObj * ret = new (std::nothrow) CookieObj();
@@ -46,7 +49,7 @@ CookieObj::~CookieObj()
 }
 
 //--------------------------------------------------------------------
-bool CookieObj::init(const CommonTypes::CookieInfo & cookieInfo)
+bool CookieObj::init(const CookieInfo & cookieInfo)
 //--------------------------------------------------------------------
 {
    if (!Node::init()) {
