@@ -14,14 +14,9 @@
 #include <string.h>
 #include "Common/CommonTypes.h"
 
-using std::string;
-using cocos2d::Node;
-using cocos2d::Sprite;
-
-class CookieObj : public Node
+class CookieObj : public cocos2d::Node
 {
 public:
-
    /**
    * Allocates and initializes a node.
    * @return A initialized node which is marked as "autorelease".
@@ -35,14 +30,14 @@ CC_CONSTRUCTOR_ACCESS:
 
    virtual bool init(const CommonTypes::CookieInfo & cookieInfo);
 
-   string spriteName();
-   string highlightedSpriteName();
-   string description();
+   std::string spriteName();
+   std::string highlightedSpriteName();
+   std::string description();
 
 protected:   
    CC_SYNTHESIZE_READONLY(int8_t, mColumn, Column);
    CC_SYNTHESIZE_READONLY(int8_t, mRow, Row);
    CC_SYNTHESIZE_READONLY(CommonTypes::CookieType, mCookieType, CookieType);
-   CC_SYNTHESIZE(Sprite*, mSpriteNode, SpriteNode);
+   CC_SYNTHESIZE(cocos2d::Sprite*, mSpriteNode, SpriteNode);
 };
 

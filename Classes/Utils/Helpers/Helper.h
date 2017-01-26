@@ -11,14 +11,13 @@
 #pragma once
 
 #include <stdint.h>
-
-using std::int8_t;
+#include <random>
 
 namespace Helper {
 
    template <typename E>
-   constexpr int8_t to_underlying(E e) noexcept
-   {
+   constexpr int8_t to_underlying(E e) noexcept {
+
       return static_cast<std::underlying_type_t<E>>(e);
    }
 }

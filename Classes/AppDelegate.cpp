@@ -1,5 +1,5 @@
 #include "AppDelegate.h"
-#include "Scenes/GameplayScene.h"
+#include "Controller/ViewController.h"
 
 USING_NS_CC;
 
@@ -76,10 +76,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    auto scene = GameplayScene::createScene();
-
-    // run
-    director->runWithScene(scene);
+    ViewController::create();
 
     return true;
 }

@@ -10,33 +10,104 @@
 
 #include "Scenes/GameplayScene.h"
 
-#include "Utils/VisibleRect.h"
+#include "GameObjects/LevelObj.h"
+#include "GameObjects/CookieObj.h"
+
+#include "Utils/Helpers/VisibleRect.h"
+#include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
 
-USING_NS_CC;
+using cocos2d::Set;
+using cocos2d::Size;
+using cocos2d::Vec2;
+using cocos2d::Sprite;
+using cocos2d::Layer;
 
 //--------------------------------------------------------------------
-Scene* GameplayScene::createScene()
-//--------------------------------------------------------------------
+GameplayScene::GameplayScene()
+   : mLevel(nullptr)
+   , mGameLayer(nullptr)
+   , mCookiesLayer(nullptr)
+   //--------------------------------------------------------------------
 {
-    auto scene = Scene::create();
-    auto layer = GameplayScene::create();
-    scene->addChild(layer);
-    return scene;
 }
 
 //--------------------------------------------------------------------
-bool GameplayScene::init()
+GameplayScene * GameplayScene::createWithSize(const cocos2d::Size & size)
 //--------------------------------------------------------------------
 {
-    if (!Layer::init()) {
+   GameplayScene *ret = new (std::nothrow) GameplayScene();
+   if (ret && ret->initWithSize(size))
+   {
+      ret->autorelease();
+      return ret;
+   }
+   else
+   {
+      CC_SAFE_DELETE(ret);
+      return nullptr;
+   }
+}
+
+//--------------------------------------------------------------------
+GameplayScene::~GameplayScene()
+//--------------------------------------------------------------------
+{
+   CCLOGINFO("GameplayScene::~GameplayScene: deallocing CookieObj: %p - tag: %i", this, _tag);
+}
+
+//--------------------------------------------------------------------
+bool GameplayScene::initWithSize(const Size& size)
+//--------------------------------------------------------------------
+{
+    if (!Scene::initWithSize(size)) {
+        CCLOGERROR("GameplayScene::initWithSize: can't init Scene inctance");
         return false;
     }
+
+    this->setAnchorPoint(Vec2(0.5, 0.5));
+    this->setPosition(VisibleRect::center());
+
+    auto bg = Sprite::create(GameResources::s_backgroundImg);
+    auto scaleFactor = ((bg->getContentSize().width / size.width) + (bg->getContentSize().height / size.height)) / 2;
+    bg->setScale(1.0f/scaleFactor);
+    this->addChild(bg, 0);
+
+    mGameLayer = Layer::create();
+    this->addChild(mGameLayer);
     
-    auto sprite = Sprite::create(GameResources::s_backgroundImg);
-    sprite->setPosition(VisibleRect::center());
-    this->addChild(sprite, 0);
-    
+    Vec2 layerPos = Vec2(-TileWidth * NumColumns / 2, -TileHeight * NumRows / 2);
+
+    mCookiesLayer = Layer::create();
+    mCookiesLayer->setPosition(layerPos);
+    mGameLayer->addChild(mCookiesLayer);
+
     return true;
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::addSpritesForCookies(Set* cookies)
+//--------------------------------------------------------------------
+{
+   auto it = cookies->begin();
+   for (it; it != cookies->end(); it++) {
+      auto cookie = dynamic_cast<CookieObj*>(*it);
+      if (!cookie) {
+         CCLOGERROR("GameplayScene::addSpritesForCookies: can't cast Ref* to CookieObj*");
+         continue;
+      }
+      auto* sprite = Sprite::create(cookie->spriteName());
+      sprite->setPosition(pointForColumnAndRow(cookie->getColumn(), cookie->getRow()));
+      mCookiesLayer->addChild(sprite);
+
+      cookie->setSpriteNode(sprite);
+   }
+}
+
+//--------------------------------------------------------------------
+Vec2 GameplayScene::pointForColumnAndRow(int8_t column, int8_t row)
+//--------------------------------------------------------------------
+{
+   return Vec2(column * TileWidth + TileWidth / 2, row * TileHeight + TileHeight / 2);
 }
 
