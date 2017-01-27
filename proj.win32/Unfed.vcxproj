@@ -148,9 +148,11 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Controller\ViewController.cpp" />
     <ClCompile Include="..\Classes\GameObjects\CookieObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\LevelObj.cpp" />
+    <ClCompile Include="..\Classes\GameObjects\TileObj.cpp" />
     <ClCompile Include="..\Classes\Scenes\GameplayScene.cpp" />
     <ClCompile Include="..\Classes\Utils\GlobalInfo.cpp" />
     <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp" />
+    <ClCompile Include="..\Classes\Utils\JsonParser.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -159,11 +161,13 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Controller\ViewController.h" />
     <ClInclude Include="..\Classes\GameObjects\CookieObj.h" />
     <ClInclude Include="..\Classes\GameObjects\LevelObj.h" />
+    <ClInclude Include="..\Classes\GameObjects\TileObj.h" />
     <ClInclude Include="..\Classes\Scenes\GameplayScene.h" />
     <ClInclude Include="..\Classes\Utils\GlobalInfo.h" />
     <ClInclude Include="..\Classes\Utils\GameResources.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\Helper.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\VisibleRect.h" />
+    <ClInclude Include="..\Classes\Utils\JsonParser.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>

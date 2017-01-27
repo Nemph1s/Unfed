@@ -54,6 +54,12 @@
     <ClCompile Include="..\Classes\Controller\ViewController.cpp">
       <Filter>src\Controller</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\TileObj.cpp">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Utils\JsonParser.cpp">
+      <Filter>src\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -88,6 +94,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Controller\ViewController.h">
       <Filter>src\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\TileObj.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Utils\JsonParser.h">
+      <Filter>src\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

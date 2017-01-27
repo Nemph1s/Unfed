@@ -12,8 +12,6 @@
 
 #include <stdint.h>
 
-using std::int8_t;
-
 namespace CommonTypes {
 
    /**
@@ -39,6 +37,22 @@ namespace CommonTypes {
       int8_t column; /**< vertical series of cells in a table */
       int8_t row; /**< horizontal series of cells in a table */
       CookieType cookieType; /**< type of Cookie object */
+   };
+
+   //temporary variables
+   //TODO: move to globalInfo or to json file
+   static const int8_t NumColumns = 9;
+   static const int8_t NumRows = 9;
+
+   /**
+   * @brief LevelInfo struct.
+   */
+   struct LevelInfo
+   {
+      int16_t id; /**< current level ID */
+      int16_t targetScore; /**< Goal score */
+      int8_t moves; /**< available moves */
+      int8_t tiles[NumColumns][NumRows]; /**< array of tiles */
    };
 
 }

@@ -10,16 +10,15 @@
 
 #pragma once
 
+#include "stdint.h"
 #include <string.h>
-
-using std::string;
-using std::vector;
+#include <vector>
 
 namespace GameResources {
 
-   static string s_backgroundImg = "Images/Background2@2x.jpg";
+   static std::string s_backgroundImg = "Images/Background2@2x.jpg";
 
-   static vector<string> s_cookieSpriteNames {
+   static std::vector<std::string> s_cookieSpriteNames {
       "Sprites.atlas/Croissant@2x.png"
       , "Sprites.atlas/Cupcake@2x.png"
       , "Sprites.atlas/Danish@2x.png" 
@@ -28,7 +27,7 @@ namespace GameResources {
       , "Sprites.atlas/SugarCookie@2x.png" 
    };
 
-   static vector<string> s_cookieHighlightedSpriteNames {
+   static std::vector<std::string> s_cookieHighlightedSpriteNames {
       "Sprites.atlas/Croissant-Highlighted@2x.png"
       , "Sprites.atlas/Cupcake-Highlighted@2x.png"
       , "Sprites.atlas/Danish-Highlighted@2x.png"
@@ -36,4 +35,9 @@ namespace GameResources {
       , "Sprites.atlas/Macaroon-Highlighted@2x.png"
       , "Sprites.atlas/SugarCookie-Highlighted@2x.png"
    };
+
+   static std::string s_templateLevelName = "Levels/Level_%d.json";
+   //TODO: move to config file
+   static int16_t s_levelsCount = 4;
+
 }
