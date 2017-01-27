@@ -32,4 +32,4 @@ public:
 protected:
    JsonParser() {};
    ~JsonParser() {};
-}
+};

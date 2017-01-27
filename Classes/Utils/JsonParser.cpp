@@ -11,7 +11,7 @@
 
 #include "JsonParser.h"
 #include "Utils/GameResources.h"
-#include "Helpers/Helper.h"
+
 #include "cocos2d/external/json/document.h"
 #include "cocos2d/external/json/rapidjson.h"
 
