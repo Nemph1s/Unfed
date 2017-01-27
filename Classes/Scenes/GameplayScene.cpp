@@ -17,6 +17,9 @@
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
 
+#include <algorithm>
+
+
 using cocos2d::Set;
 using cocos2d::Size;
 using cocos2d::Vec2;
@@ -69,7 +72,7 @@ bool GameplayScene::initWithSize(const Size& size)
     this->setPosition(VisibleRect::center());
 
     auto bg = Sprite::create(GameResources::s_backgroundImg);
-    auto scaleFactor = ((bg->getContentSize().width / size.width) + (bg->getContentSize().height / size.height)) / 2;
+    auto scaleFactor = std::min(bg->getContentSize().width / size.width, bg->getContentSize().height / size.height);
     bg->setScale(1.0f/scaleFactor);
     this->addChild(bg, 0);
 

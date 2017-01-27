@@ -17,7 +17,7 @@ using std::vector;
 
 namespace GameResources {
 
-   static string s_backgroundImg = "Images/Background0@2x.png";
+   static string s_backgroundImg = "Images/Background2@2x.jpg";
 
    static vector<string> s_cookieSpriteNames {
       "Sprites.atlas/Croissant@2x.png"
