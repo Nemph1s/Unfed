@@ -54,8 +54,13 @@ bool LevelObj::initWithId(const int16_t& levelId)
       return false;
    }
 
-   mLevelInfo = JsonParser::Instance().getLevelInfo(levelId);
-   mLevelInfo.id = levelId;
+   JsonParser::Instance().parseLevelInfo(levelId);
+   if (!JsonParser::Instance().checkStatus()) {
+	   CCLOGERROR("LevelObj::initWithId: can't parse json file");
+	   return false;
+   }
+   
+   mLevelInfo = JsonParser::Instance().getLevelInfo();
 
    for (int8_t i = 0; i < NumColumns; i++) {
       for (int8_t j = 0; j < NumRows; j++) {

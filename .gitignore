@@ -21,6 +21,7 @@ $RECYCLE.BIN/
 proj.win32/Unfed.VC.db
 proj.win32/*.opendb
 proj.win32/Debug.win32/*
+Debug
 
 # =========================
 # Operating System Files
@@ -52,4 +53,4 @@ Temporary Items
 # Library Files
 # =========================
 
-#/cocos2d
+/cocos2d

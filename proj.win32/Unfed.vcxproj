@@ -163,8 +163,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\GameObjects\LevelObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObj.h" />
     <ClInclude Include="..\Classes\Scenes\GameplayScene.h" />
-    <ClInclude Include="..\Classes\Utils\GlobalInfo.h" />
     <ClInclude Include="..\Classes\Utils\GameResources.h" />
+    <ClInclude Include="..\Classes\Utils\GlobalInfo.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\Helper.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\VisibleRect.h" />
     <ClInclude Include="..\Classes\Utils\JsonParser.h" />

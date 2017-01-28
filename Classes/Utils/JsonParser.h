@@ -12,6 +12,7 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
+#include "cocos2d/external/json/document.h"
 
 class JsonParser
 {
@@ -27,9 +28,19 @@ public:
    JsonParser& operator=(JsonParser const&) = delete;  // Copy assign
    JsonParser& operator=(JsonParser &&) = delete;      // Move assign
 
-   CommonTypes::LevelInfo getLevelInfo(const int16_t& level);
+   void parseLevelInfo(const int16_t& level);
+
+   bool checkStatus();
+   CommonTypes::LevelInfo getLevelInfo();
+
+   const rapidjson::Value& getTiles();
+   int16_t getTargetScore();
+   int16_t getMoves();   
 
 protected:
    JsonParser() {};
    ~JsonParser() {};
+
+   rapidjson::Document mDoc;
+   int16_t mLoadedLevel = -1;
 };
