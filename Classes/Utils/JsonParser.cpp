@@ -12,44 +12,18 @@
 #include "JsonParser.h"
 #include "Utils/GameResources.h"
 
-#include "cocos2d/external/json/document.h"
-#include "cocos2d/external/json/rapidjson.h"
-#include "cocos2d/external/json/filereadstream.h"
-#include <sstream>
-#include <fstream>
-
-using namespace rapidjson;
-
-//--------------------------------------------------------------------
-/*CommonTypes::LevelInfo JsonParser::getLevelInfo(const int16_t& level)*/
-//--------------------------------------------------------------------
-
-//    CCLOGINFO("JsonParser::getLevelInfo: loading level=%d", level);
-//    auto fullPath = cocos2d::StringUtils::format(GameResources::s_templateLevelName.c_str(), level);
-//    auto json = cocos2d::FileUtils::getInstance()->getStringFromFile(fullPath.c_str());
-//    CCLOGINFO("JsonParser::getLevelInfo: loading json=%s", json.c_str());
-
 //--------------------------------------------------------------------
 void JsonParser::parseLevelInfo(const int16_t & level)
 //--------------------------------------------------------------------
 {
 	CCLOGINFO("JsonParser::parseLevelInfo: parsing level=%d", level);
 	auto fullPath = cocos2d::StringUtils::format(GameResources::s_templateLevelName.c_str(), level);
-
+	auto json = cocos2d::FileUtils::getInstance()->getStringFromFile(fullPath.c_str());
 	mLoadedLevel = level;
 
-// 	std::stringstream ss;
-// 	std::ifstream ifs;
-// 	ifs.open(fullPath.c_str(), std::ios::binary);
-// 	ss << ifs.rdbuf();
-// 	ifs.close();
-// 
-
-	FILE* pFile = fopen(fullPath.c_str(), "rb");
-	char buffer[65536];
-	FileReadStream is(pFile, buffer, sizeof(buffer));
-	
-	if (mDoc.ParseStream<0, UTF8<>, FileReadStream>(is).HasParseError()) {
+	Json::Reader jsonReader;
+	jsonReader.parse(json, mRootNode);
+	if (!checkStatus()) {
 		throw std::invalid_argument("json parse error");
 	}
 }
@@ -58,11 +32,11 @@ void JsonParser::parseLevelInfo(const int16_t & level)
 bool JsonParser::checkStatus()
 //--------------------------------------------------------------------
 {
-	rapidjson::Value& status = mDoc["res"];
-	if (!status.IsString())
+	Json::Value& status = mRootNode["res"];
+	if (!status.isString())
 		return false;
 
-	return std::strcmp(mDoc["res"].GetString(), "OK") == 0;
+	return std::strcmp(mRootNode["res"].asCString(), "OK") == 0;
 }
 
 //--------------------------------------------------------------------
@@ -74,25 +48,26 @@ CommonTypes::LevelInfo JsonParser::getLevelInfo()
 	levelInfo.targetScore = getTargetScore();
 	levelInfo.moves = getMoves();
 
-	const rapidjson::Value& tiles = getTiles();
+	const Json::Value& node = getTiles();
 
-	for (SizeType i = 0; i < tiles.Size(); i++) {
-		CC_ASSERT(tiles[i].IsArray());
+	for (uint16_t i = 0; i < node.size(); ++i) {
+		const Json::Value& subnode = node[i];
+		CC_ASSERT(subnode.isArray());
 
-		for (SizeType j = 0; j < tiles[i].Size(); j++) {
-			const Value& tile = tiles[i][j];
-			levelInfo.tiles[i][j] = tile.GetInt();
+		for (uint16_t j = 0; j < subnode.size(); ++j) {
+			CC_ASSERT(subnode[j].isInt());
+			levelInfo.tiles[i][j] = node[node.size() - j - 1][i].asInt();
 		}
 	}
 	return levelInfo;
 }
 
 //--------------------------------------------------------------------
-const rapidjson::Value& JsonParser::getTiles()
+const Json::Value& JsonParser::getTiles()
 //--------------------------------------------------------------------
 {
-	rapidjson::Value& value = mDoc["tiles"];
-	if (!value.IsArray())
+	Json::Value& value = mRootNode["tiles"];
+	if (!value.isArray())
 		throw std::logic_error("bad tiles array");
 
 	return value;
@@ -103,8 +78,8 @@ int16_t JsonParser::getTargetScore()
 //--------------------------------------------------------------------
 {
 	int16_t res = 0;
-	if (mDoc.HasMember("targetScore")) {
-		res = mDoc["targetScore"].GetInt();
+	if (mRootNode["targetScore"].isInt()) {
+		res = mRootNode["targetScore"].asInt();
 	}
 	return res;
 }
@@ -114,8 +89,8 @@ int16_t JsonParser::getMoves()
 //--------------------------------------------------------------------
 {
 	int16_t res = 0;
-	if (mDoc.HasMember("moves")) {
-		res = mDoc["moves"].GetInt();
+	if (mRootNode["moves"].isInt()) {
+		res = mRootNode["moves"].asInt();
 	}
 	return res;
 }

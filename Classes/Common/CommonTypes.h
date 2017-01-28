@@ -44,6 +44,8 @@ namespace CommonTypes {
    static const int8_t NumColumns = 9;
    static const int8_t NumRows = 9;
 
+   typedef int8_t TilesArray[CommonTypes::NumColumns][CommonTypes::NumRows];
+
    /**
    * @brief LevelInfo struct.
    */
@@ -52,7 +54,7 @@ namespace CommonTypes {
       int16_t id; /**< current level ID */
       int16_t targetScore; /**< Goal score */
       int8_t moves; /**< available moves */
-      int8_t tiles[NumColumns][NumRows]; /**< array of tiles */
+	  TilesArray tiles; /**< array of tiles */
    };
 
 }

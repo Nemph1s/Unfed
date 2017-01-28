@@ -12,7 +12,8 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
-#include "cocos2d/external/json/document.h"
+
+#include "libs/jsoncpp/include/json/json.h"
 
 class JsonParser
 {
@@ -33,7 +34,7 @@ public:
    bool checkStatus();
    CommonTypes::LevelInfo getLevelInfo();
 
-   const rapidjson::Value& getTiles();
+   const Json::Value& getTiles();
    int16_t getTargetScore();
    int16_t getMoves();   
 
@@ -41,6 +42,6 @@ protected:
    JsonParser() {};
    ~JsonParser() {};
 
-   rapidjson::Document mDoc;
+   Json::Value mRootNode;
    int16_t mLoadedLevel = -1;
 };
