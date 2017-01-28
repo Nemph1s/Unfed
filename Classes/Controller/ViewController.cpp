@@ -1,5 +1,5 @@
 /**
-* @file Scenes/GameplayScene.cpp
+* @file Scenes/ViewController.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -45,7 +45,7 @@ bool ViewController::init()
    //self.scene.scaleMode = SKSceneScaleModeAspectFill;
 
    // Load the level.
-   mLevel = LevelObj::create();
+   mLevel = LevelObj::createWithId(1);
    mGameplayScene->setLevel(mLevel);
 
    // Present the scene.

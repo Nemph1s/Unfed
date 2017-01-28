@@ -9,28 +9,27 @@
 */
 
 #include "GameObjects/LevelObj.h"
+#include "GameObjects/TileObj.h"
 #include "GameObjects/CookieObj.h"
+
 #include "Utils/Helpers/Helper.h"
+#include "Utils/JsonParser.h"
 
 #include <random>
 
-using namespace CommonTypes;
-
 //--------------------------------------------------------------------
 LevelObj::LevelObj()
-   : mNumColumns(0)
-   , mNumRows(0)
 //--------------------------------------------------------------------
 {
    CCLOGINFO("LevelObj::LevelObj");
 }
 
 //--------------------------------------------------------------------
-LevelObj* LevelObj::create()
+LevelObj* LevelObj::createWithId(const int16_t& levelId)
 //--------------------------------------------------------------------
 {
    LevelObj* ret = new (std::nothrow) LevelObj();
-   if (ret && ret->init()) {
+   if (ret && ret->initWithId(levelId)) {
       ret->autorelease();
    }
    else {
@@ -47,19 +46,33 @@ LevelObj::~LevelObj()
 }
 
 //--------------------------------------------------------------------
-bool LevelObj::init()
+bool LevelObj::initWithId(const int16_t& levelId)
 //--------------------------------------------------------------------
 {
    if (!Node::init()) {
-      CCLOGERROR("LevelObj::init: can't init Node inctance");
+      CCLOGERROR("LevelObj::initWithId: can't init Node inctance");
       return false;
    }
 
-   mNumRows = NumRows;
-   mNumColumns = NumColumns;
+   JsonParser::Instance().parseLevelInfo(levelId);
+   if (!JsonParser::Instance().checkStatus()) {
+	   CCLOGERROR("LevelObj::initWithId: can't parse json file");
+	   return false;
+   }
+   
+   mLevelInfo = JsonParser::Instance().getLevelInfo();
 
-   CCLOGINFO("LevelObj::init: mNumColumns=%d mNumRows=%d", mNumColumns, mNumRows);
+   for (int8_t i = 0; i < NumColumns; i++) {
+      for (int8_t j = 0; j < NumRows; j++) {
 
+         int8_t tileRow = NumColumns - i - 1;
+
+         if (mLevelInfo.tiles[i][j] == 1) {
+            mTiles[i][j] = new TileObj();
+         }
+      }
+   }
+   
    return true;
 }
 
@@ -72,11 +85,28 @@ cocos2d::Set* LevelObj::shuffle()
 }
 
 //--------------------------------------------------------------------
+TileObj* LevelObj::tileAt(int8_t column, int8_t row)
+//--------------------------------------------------------------------
+{
+   bool invalidColumn = column >= 0 && column < NumColumns;
+   bool invalidRow = row >= 0 && row < NumColumns;
+   if (invalidColumn) {
+      CCLOGERROR("LevelObj::tileAt: Invalid column : %d", column);
+      CC_ASSERT(invalidColumn);
+   }
+   if (invalidRow) {
+      CCLOGERROR("LevelObj::tileAt: Invalid row: %d", row);
+      CC_ASSERT(invalidRow);
+   }
+   return mTiles[column][row];
+}
+
+//--------------------------------------------------------------------
 CookieObj* LevelObj::cookieAt(int8_t column, int8_t row)
 //--------------------------------------------------------------------
 {
-   bool invalidColumn = column >= 0 && column < mNumColumns;
-   bool invalidRow = row >= 0 && row < mNumRows;
+   bool invalidColumn = column >= 0 && column < NumColumns;
+   bool invalidRow = row >= 0 && row < NumColumns;
    if (invalidColumn) {
       CCLOGERROR("LevelObj::cookieAt: Invalid column : %d", column);
       CC_ASSERT(invalidColumn);
@@ -95,11 +125,12 @@ cocos2d::Set* LevelObj::createInitialCookies()
    CCLOGINFO("LevelObj::createInitialCookies:");
    cocos2d::Set* set = new cocos2d::Set();
 
-   for (int8_t row = 0; row < mNumRows; row++) {
-      for (int8_t column = 0; column < mNumColumns; column++) {
-
-         CookieObj* cookie = createCookie(column, row, getRandomCookieType());
-         set->addObject(cookie);
+   for (int8_t row = 0; row < NumColumns; row++) {
+      for (int8_t column = 0; column < NumColumns; column++) {
+         if (mTiles[column][row] != nullptr) {
+            CookieObj* cookie = createCookie(column, row, getRandomCookieType());
+            set->addObject(cookie);
+         }
       }
    }
    CCLOGINFO("LevelObj::createInitialCookies: set.size=", set->count);
@@ -126,6 +157,5 @@ int8_t LevelObj::getRandomCookieType()
    std::random_device rd;
    std::mt19937 gen(rd());
    std::uniform_int_distribution<> cookieType(0, cookieMax - 1);
-
    return cookieType(gen);
 }

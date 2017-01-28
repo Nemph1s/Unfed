@@ -71,7 +71,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(EngineRoot)external;$(EngineRoot)cocos\audio\include;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;..\Classes;..;%(AdditionalIncludeDirectories);$(_COCOS_HEADER_WIN32_BEGIN);$(_COCOS_HEADER_WIN32_END)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(EngineRoot)external;$(EngineRoot)cocos\audio\include;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;..\Classes;..\libs\jsoncpp\include\json;..;%(AdditionalIncludeDirectories);$(_COCOS_HEADER_WIN32_BEGIN);$(_COCOS_HEADER_WIN32_END)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USE_MATH_DEFINES;GL_GLEXT_PROTOTYPES;CC_ENABLE_CHIPMUNK_INTEGRATION=1;COCOS2D_DEBUG=1;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -148,9 +148,11 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Controller\ViewController.cpp" />
     <ClCompile Include="..\Classes\GameObjects\CookieObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\LevelObj.cpp" />
+    <ClCompile Include="..\Classes\GameObjects\TileObj.cpp" />
     <ClCompile Include="..\Classes\Scenes\GameplayScene.cpp" />
     <ClCompile Include="..\Classes\Utils\GlobalInfo.cpp" />
     <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp" />
+    <ClCompile Include="..\Classes\Utils\JsonParser.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -159,11 +161,13 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Controller\ViewController.h" />
     <ClInclude Include="..\Classes\GameObjects\CookieObj.h" />
     <ClInclude Include="..\Classes\GameObjects\LevelObj.h" />
+    <ClInclude Include="..\Classes\GameObjects\TileObj.h" />
     <ClInclude Include="..\Classes\Scenes\GameplayScene.h" />
-    <ClInclude Include="..\Classes\Utils\GlobalInfo.h" />
     <ClInclude Include="..\Classes\Utils\GameResources.h" />
+    <ClInclude Include="..\Classes\Utils\GlobalInfo.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\Helper.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\VisibleRect.h" />
+    <ClInclude Include="..\Classes\Utils\JsonParser.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
@@ -171,11 +175,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
       <Project>{98a51ba8-fc3a-415b-ac8f-8c7bd464e93e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\cocos2d\cocos\editor-support\spine\proj.win32\libSpine.vcxproj">
-      <Project>{b7c2a162-dec9-4418-972e-240ab3cbfcae}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\cocos2d\external\Box2D\proj.win32\libbox2d.vcxproj">
-      <Project>{929480e7-23c0-4df6-8456-096d71547116}</Project>
+    <ProjectReference Include="..\libs\jsoncpp\jsoncpp.vcxproj">
+      <Project>{6c468030-ab7d-4e72-85ef-a8be119a3797}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
