@@ -15,7 +15,7 @@
 namespace Helper {
 
    template <typename E>
-   constexpr int8_t to_underlying(E e) noexcept {
+   constexpr int to_underlying(E e) noexcept {
 
       return static_cast<std::underlying_type_t<E>>(e);
    }

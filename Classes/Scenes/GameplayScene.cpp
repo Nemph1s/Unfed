@@ -17,20 +17,16 @@
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
 
-#include <algorithm>
-
-
-using cocos2d::Set;
-using cocos2d::Size;
-using cocos2d::Vec2;
-using cocos2d::Sprite;
-using cocos2d::Layer;
+USING_NS_CC;
 
 //--------------------------------------------------------------------
 GameplayScene::GameplayScene()
-   : mLevel(nullptr)
-   , mGameLayer(nullptr)
-   , mCookiesLayer(nullptr)
+    : mLevel(nullptr)
+    , mGameLayer(nullptr)
+    , mCookiesLayer(nullptr)
+    , mListener(nullptr)
+    , mSwipeFromColumn(-1)
+    , mSwipeFromRow(-1)
    //--------------------------------------------------------------------
 {
 }
@@ -39,24 +35,24 @@ GameplayScene::GameplayScene()
 GameplayScene * GameplayScene::createWithSize(const cocos2d::Size & size)
 //--------------------------------------------------------------------
 {
-   GameplayScene *ret = new (std::nothrow) GameplayScene();
-   if (ret && ret->initWithSize(size))
-   {
-      ret->autorelease();
-      return ret;
-   }
-   else
-   {
-      CC_SAFE_DELETE(ret);
-      return nullptr;
-   }
+    GameplayScene *ret = new (std::nothrow) GameplayScene();
+    if (ret && ret->initWithSize(size))
+    {
+        ret->autorelease();
+        return ret;
+    }
+    else
+    {
+        CC_SAFE_DELETE(ret);
+        return nullptr;
+    }
 }
 
 //--------------------------------------------------------------------
 GameplayScene::~GameplayScene()
 //--------------------------------------------------------------------
 {
-   CCLOGINFO("GameplayScene::~GameplayScene: deallocing CookieObj: %p - tag: %i", this, _tag);
+    CCLOGINFO("GameplayScene::~GameplayScene: deallocing CookieObj: %p - tag: %i", this, _tag);
 }
 
 //--------------------------------------------------------------------
@@ -67,23 +63,22 @@ bool GameplayScene::initWithSize(const Size& size)
         CCLOGERROR("GameplayScene::initWithSize: can't init Scene inctance");
         return false;
     }
-
     this->setAnchorPoint(Vec2(0.5, 0.5));
     this->setPosition(VisibleRect::center());
 
     auto bg = Sprite::create(GameResources::s_backgroundImg);
     auto scaleFactor = std::min(bg->getContentSize().width / size.width, bg->getContentSize().height / size.height);
-    bg->setScale(1.0f/scaleFactor);
+    bg->setScale(1.0f / scaleFactor);
     this->addChild(bg, 0);
 
     mGameLayer = Layer::create();
     this->addChild(mGameLayer);
-    
+
     Vec2 layerPos = Vec2(-TileWidth * NumColumns / 2, -TileHeight * NumRows / 2);
 
-	mTilesLayer = Layer::create();
-	mTilesLayer->setPosition(layerPos);
-	mGameLayer->addChild(mTilesLayer);
+    mTilesLayer = Layer::create();
+    mTilesLayer->setPosition(layerPos);
+    mGameLayer->addChild(mTilesLayer);
 
     mCookiesLayer = Layer::create();
     mCookiesLayer->setPosition(layerPos);
@@ -93,19 +88,71 @@ bool GameplayScene::initWithSize(const Size& size)
 }
 
 //--------------------------------------------------------------------
+void GameplayScene::onEnter()
+//--------------------------------------------------------------------
+{
+	Scene::onEnter();
+	CCLOGINFO("GameplayScene::onEnter:");
+
+	auto listener = EventListenerTouchOneByOne::create();
+	listener->setSwallowTouches(true);
+
+	listener->onTouchBegan = [=](Touch* touch, Event* event) {
+		int column, row = -1;
+		Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
+		
+		if (convertPointToTilePos(locationInNode, column, row)) {
+			CookieObj* cookie = mLevel->cookieAt(column, row);
+			if (cookie) {
+				cookie->getSpriteNode()->setColor(Color3B::RED);
+				mSwipeFromColumn = column;
+                mSwipeFromRow = row;
+				return true;
+			}
+		}
+		return false;
+	};
+
+	listener->onTouchEnded = [this](Touch* touch, Event* event) {
+		CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
+		if (cookie) {
+			cookie->getSpriteNode()->setColor(Color3B::WHITE);
+		}
+        mSwipeFromColumn = -1;
+        mSwipeFromRow = -1;
+	};
+
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, mCookiesLayer);
+
+	mListener = listener;
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::onExit()
+//--------------------------------------------------------------------
+{
+	Scene::onExit();
+	CCLOGINFO("GameplayScene::onExit:");
+
+	_eventDispatcher->removeEventListener(mListener);
+	mListener = nullptr;
+}
+
+//--------------------------------------------------------------------
 void GameplayScene::addTiles()
 //--------------------------------------------------------------------
 {
 	CCLOGINFO("GameplayScene::addTiles:");
-	for (int8_t row = 0; row < CommonTypes::NumRows; row++) {
-		for (int8_t column = 0; column < CommonTypes::NumColumns; column++) {
-			if (mLevel->tileAt(column, row) == nullptr) {
+	for (int row = 0; row < CommonTypes::NumRows; row++) {
+		for (int column = 0; column < CommonTypes::NumColumns; column++) {
+            TileObj* tile = mLevel->tileAt(column, row);
+			if (!tile) {
 				continue;
 			}
-			auto tile = Sprite::create(GameResources::s_TileImg);
-			tile->setPosition(pointForColumnAndRow(column, row));
-			tile->setOpacity(127);
-			mTilesLayer->addChild(tile);
+			auto tileSprite = Sprite::create(GameResources::s_TileImg);
+            tileSprite->setPosition(pointForColumnAndRow(column, row));
+            tileSprite->setOpacity(127);
+			mTilesLayer->addChild(tileSprite);
 		}
 	}
 }
@@ -115,26 +162,61 @@ void GameplayScene::addSpritesForCookies(Set* cookies)
 //--------------------------------------------------------------------
 {
 	CCLOGINFO("GameplayScene::addSpritesForCookies:");
-   auto it = cookies->begin();
-   for (it; it != cookies->end(); it++) {
-      auto cookie = dynamic_cast<CookieObj*>(*it);
-      if (!cookie) {
-         CCLOGERROR("GameplayScene::addSpritesForCookies: can't cast Ref* to CookieObj*");
-		 CC_ASSERT(cookie);
-         continue;
-      }
-      auto* sprite = Sprite::create(cookie->spriteName());
-      sprite->setPosition(pointForColumnAndRow(cookie->getColumn(), cookie->getRow()));
-      mCookiesLayer->addChild(sprite);
+	auto it = cookies->begin();
+	for (it; it != cookies->end(); it++) {
+		auto cookie = dynamic_cast<CookieObj*>(*it);
+		if (!cookie) {
+			CCLOGERROR("GameplayScene::addSpritesForCookies: can't cast Ref* to CookieObj*");
+			CC_ASSERT(cookie);
+			continue;
+		}
+		auto* sprite = Sprite::create(cookie->spriteName());
+		sprite->setPosition(pointForColumnAndRow(cookie->getColumn(), cookie->getRow()));
+		mCookiesLayer->addChild(sprite);
 
-      cookie->setSpriteNode(sprite);
-   }
+		cookie->setSpriteNode(sprite);
+        cookie->updateTilePosLabel();
+        mCookiesLayer->addChild(cookie);
+	}
 }
 
 //--------------------------------------------------------------------
-Vec2 GameplayScene::pointForColumnAndRow(int8_t column, int8_t row)
+Vec2 GameplayScene::pointForColumnAndRow(int column, int row)
 //--------------------------------------------------------------------
 {
    return Vec2(column * TileWidth + TileWidth / 2, row * TileHeight + TileHeight / 2);
 }
 
+//--------------------------------------------------------------------
+bool GameplayScene::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
+//--------------------------------------------------------------------
+{
+	CCLOGINFO("GameplayScene::convertPointToTilePos: point: x=%.2f y=%.2f", point.x, point.y);
+	if (point.x >= 0 && point.x < NumColumns*TileWidth && point.y >= 0 && point.y < NumRows*TileHeight) {
+        column = point.x / TileWidth;
+        row = point.y / TileHeight;
+		CCLOGINFO("GameplayScene::addSpritesForCookies: touch founed! column=%d row=%d", column, row);
+		return true;
+	} 
+	return false;
+}
+
+//--------------------------------------------------------------------
+LevelObj* GameplayScene::getLevel() const
+//--------------------------------------------------------------------
+{
+    return mLevel;
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::setLevel(LevelObj* var) 
+//--------------------------------------------------------------------
+{
+    if (!mLevel) {
+        this->addChild(var);
+    } else {
+        this->removeChildByName("Level");
+        this->addChild(var);
+    }
+   mLevel = var;
+}

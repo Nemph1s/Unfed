@@ -18,7 +18,7 @@ namespace CommonTypes {
    * @brief CookieType enum.
    * Type of the cookie object
    */
-   enum class CookieType : int8_t {
+   enum class CookieType : int {
       Croissant = 0 /**< enum value Croissant. */
       , Cupcake = 1 /**< enum value Cupcake. */
       , Danish = 2 /**< enum value Danish. */
@@ -34,17 +34,17 @@ namespace CommonTypes {
    */
    struct CookieInfo
    {
-      int8_t column; /**< vertical series of cells in a table */
-      int8_t row; /**< horizontal series of cells in a table */
+      int column; /**< vertical series of cells in a table */
+      int row; /**< horizontal series of cells in a table */
       CookieType cookieType; /**< type of Cookie object */
    };
 
    //temporary variables
    //TODO: move to globalInfo or to json file
-   static const int8_t NumColumns = 9;
-   static const int8_t NumRows = 9;
+   static const int NumColumns = 9;
+   static const int NumRows = 9;
 
-   typedef int8_t TilesArray[CommonTypes::NumColumns][CommonTypes::NumRows];
+   typedef int TilesArray[CommonTypes::NumColumns][CommonTypes::NumRows];
 
    /**
    * @brief LevelInfo struct.
@@ -53,7 +53,7 @@ namespace CommonTypes {
    {
       int16_t id; /**< current level ID */
       int16_t targetScore; /**< Goal score */
-      int8_t moves; /**< available moves */
+      int moves; /**< available moves */
 	  TilesArray tiles; /**< array of tiles */
    };
 

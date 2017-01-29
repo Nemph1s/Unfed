@@ -18,7 +18,6 @@ class GameplayScene;
 class ViewController : public cocos2d::Ref
 {
 public:
-   CREATE_FUNC(ViewController);
 
 CC_CONSTRUCTOR_ACCESS:
    // Nodes should be created using create();

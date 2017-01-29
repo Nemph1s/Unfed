@@ -89,3 +89,17 @@ string CookieObj::description()
    CCLOGINFO("CookieObj::description: type:%d square:(%d,%d)", mCookieType, mColumn, mRow);
    return cocos2d::StringUtils::format("type:%d square:(%d,%d)", mCookieType, mColumn, mRow);
 }
+
+void CookieObj::updateTilePosLabel()
+{
+    if (mSpriteNode) {
+        auto text = cocos2d::StringUtils::format("[%d,%d]", mColumn, mRow);
+        auto ttf1 = cocos2d::LabelTTF::create(text, "fonts/Arial", 16,
+            cocos2d::Size(245, 32), cocos2d::TextHAlignment::CENTER);
+        auto size = mSpriteNode->getContentSize();
+        ttf1->setPosition(cocos2d::Vec2(size.width / 2, (size.height / 2)));
+        ttf1->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
+        ttf1->setColor(cocos2d::ccc3(0, 0, 0));
+        mSpriteNode->addChild(ttf1);
+    }
+}
