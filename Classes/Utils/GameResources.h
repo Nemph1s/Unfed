@@ -18,6 +18,8 @@ namespace GameResources {
 
    static std::string s_backgroundImg = "Images/Background2@2x.jpg";
 
+   static std::string s_TileImg = "Sprites.atlas/Tile@2x.png";
+
    static std::vector<std::string> s_cookieSpriteNames {
       "Sprites.atlas/Croissant@2x.png"
       , "Sprites.atlas/Cupcake@2x.png"

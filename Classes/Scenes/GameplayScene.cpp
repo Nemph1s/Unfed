@@ -81,6 +81,10 @@ bool GameplayScene::initWithSize(const Size& size)
     
     Vec2 layerPos = Vec2(-TileWidth * NumColumns / 2, -TileHeight * NumRows / 2);
 
+	mTilesLayer = Layer::create();
+	mTilesLayer->setPosition(layerPos);
+	mGameLayer->addChild(mTilesLayer);
+
     mCookiesLayer = Layer::create();
     mCookiesLayer->setPosition(layerPos);
     mGameLayer->addChild(mCookiesLayer);
@@ -89,14 +93,34 @@ bool GameplayScene::initWithSize(const Size& size)
 }
 
 //--------------------------------------------------------------------
+void GameplayScene::addTiles()
+//--------------------------------------------------------------------
+{
+	CCLOGINFO("GameplayScene::addTiles:");
+	for (int8_t row = 0; row < CommonTypes::NumRows; row++) {
+		for (int8_t column = 0; column < CommonTypes::NumColumns; column++) {
+			if (mLevel->tileAt(column, row) == nullptr) {
+				continue;
+			}
+			auto tile = Sprite::create(GameResources::s_TileImg);
+			tile->setPosition(pointForColumnAndRow(column, row));
+			tile->setOpacity(127);
+			mTilesLayer->addChild(tile);
+		}
+	}
+}
+
+//--------------------------------------------------------------------
 void GameplayScene::addSpritesForCookies(Set* cookies)
 //--------------------------------------------------------------------
 {
+	CCLOGINFO("GameplayScene::addSpritesForCookies:");
    auto it = cookies->begin();
    for (it; it != cookies->end(); it++) {
       auto cookie = dynamic_cast<CookieObj*>(*it);
       if (!cookie) {
          CCLOGERROR("GameplayScene::addSpritesForCookies: can't cast Ref* to CookieObj*");
+		 CC_ASSERT(cookie);
          continue;
       }
       auto* sprite = Sprite::create(cookie->spriteName());

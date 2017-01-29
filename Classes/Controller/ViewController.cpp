@@ -47,6 +47,7 @@ bool ViewController::init()
    // Load the level.
    mLevel = LevelObj::createWithId(1);
    mGameplayScene->setLevel(mLevel);
+   mGameplayScene->addTiles();
 
    // Present the scene.
    director->runWithScene(mGameplayScene);

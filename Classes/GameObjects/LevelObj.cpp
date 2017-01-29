@@ -65,7 +65,7 @@ bool LevelObj::initWithId(const int16_t& levelId)
    for (int8_t i = 0; i < NumColumns; i++) {
       for (int8_t j = 0; j < NumRows; j++) {
 
-         int8_t tileRow = NumColumns - i - 1;
+//         int8_t tileRow = NumColumns - i - 1;
 
          if (mLevelInfo.tiles[i][j] == 1) {
             mTiles[i][j] = new TileObj();
@@ -90,11 +90,11 @@ TileObj* LevelObj::tileAt(int8_t column, int8_t row)
 {
    bool invalidColumn = column >= 0 && column < NumColumns;
    bool invalidRow = row >= 0 && row < NumColumns;
-   if (invalidColumn) {
+   if (!invalidColumn) {
       CCLOGERROR("LevelObj::tileAt: Invalid column : %d", column);
       CC_ASSERT(invalidColumn);
    }
-   if (invalidRow) {
+   if (!invalidRow) {
       CCLOGERROR("LevelObj::tileAt: Invalid row: %d", row);
       CC_ASSERT(invalidRow);
    }
@@ -107,11 +107,11 @@ CookieObj* LevelObj::cookieAt(int8_t column, int8_t row)
 {
    bool invalidColumn = column >= 0 && column < NumColumns;
    bool invalidRow = row >= 0 && row < NumColumns;
-   if (invalidColumn) {
+   if (!invalidColumn) {
       CCLOGERROR("LevelObj::cookieAt: Invalid column : %d", column);
       CC_ASSERT(invalidColumn);
    }
-   if (invalidRow) {
+   if (!invalidRow) {
       CCLOGERROR("LevelObj::cookieAt: Invalid row: %d", row);
       CC_ASSERT(invalidRow);
    }

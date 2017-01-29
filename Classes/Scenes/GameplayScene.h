@@ -31,6 +31,7 @@ public:
 
     virtual bool initWithSize(const cocos2d::Size& size);
 
+	void addTiles();
     void addSpritesForCookies(cocos2d::Set* cookies);
     cocos2d::Vec2 pointForColumnAndRow(int8_t column, int8_t row);
 
@@ -38,6 +39,7 @@ protected:
 
    CC_SYNTHESIZE(LevelObj*, mLevel, Level);
    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mGameLayer, GameLayer);
+   CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mTilesLayer, TilesLayer);
    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mCookiesLayer, CookiesLayer);
 };
 
