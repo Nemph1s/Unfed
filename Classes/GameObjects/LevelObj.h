@@ -35,13 +35,13 @@ CC_CONSTRUCTOR_ACCESS:
    virtual bool initWithId(const int16_t& levelId);
 
    cocos2d::Set* shuffle();
-   TileObj* tileAt(int8_t column, int8_t row);
-   CookieObj* cookieAt(int8_t column, int8_t row);
+   TileObj* tileAt(int column, int row);
+   CookieObj* cookieAt(int column, int row);
 protected:
 
    cocos2d::Set* createInitialCookies();
-   CookieObj* createCookie(int8_t column, int8_t row, int8_t type);
-   int8_t getRandomCookieType();
+   CookieObj* createCookie(int column, int row, int type);
+   int getRandomCookieType();
 
    CC_SYNTHESIZE_READONLY(LevelInfo, mLevelInfo, LevelInfo);
 

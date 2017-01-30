@@ -34,9 +34,11 @@ CC_CONSTRUCTOR_ACCESS:
    std::string highlightedSpriteName();
    std::string description();
 
+   void updateTilePosLabel();
+
 protected:   
-   CC_SYNTHESIZE_READONLY(int8_t, mColumn, Column);
-   CC_SYNTHESIZE_READONLY(int8_t, mRow, Row);
+   CC_SYNTHESIZE_READONLY(int, mColumn, Column);
+   CC_SYNTHESIZE_READONLY(int, mRow, Row);
    CC_SYNTHESIZE_READONLY(CommonTypes::CookieType, mCookieType, CookieType);
    CC_SYNTHESIZE(cocos2d::Sprite*, mSpriteNode, SpriteNode);
 };

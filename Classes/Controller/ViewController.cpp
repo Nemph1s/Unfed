@@ -29,6 +29,7 @@ ViewController::~ViewController()
 //--------------------------------------------------------------------
 {
    CCLOGINFO("ViewController::~ViewController");
+   mLevel->release();
 }
 
 //--------------------------------------------------------------------
@@ -45,8 +46,13 @@ bool ViewController::init()
    //self.scene.scaleMode = SKSceneScaleModeAspectFill;
 
    // Load the level.
-   mLevel = LevelObj::createWithId(1);
+   mLevel = LevelObj::createWithId(3);
+
+   //TODO: create tags instead of name
+   mLevel->setName("Level");
+
    mGameplayScene->setLevel(mLevel);
+   mGameplayScene->addTiles();
 
    // Present the scene.
    director->runWithScene(mGameplayScene);

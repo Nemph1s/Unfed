@@ -31,13 +31,25 @@ public:
 
     virtual bool initWithSize(const cocos2d::Size& size);
 
+	virtual void onEnter() override;
+	virtual void onExit() override;
+
+	void addTiles();
     void addSpritesForCookies(cocos2d::Set* cookies);
-    cocos2d::Vec2 pointForColumnAndRow(int8_t column, int8_t row);
+    cocos2d::Vec2 pointForColumnAndRow(int column, int row);
+
+	bool convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row);
 
 protected:
 
-   CC_SYNTHESIZE(LevelObj*, mLevel, Level);
-   CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mGameLayer, GameLayer);
-   CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mCookiesLayer, CookiesLayer);
+	cocos2d::EventListener* mListener;
+    CC_PROPERTY(LevelObj*, mLevel, Level);
+
+	CC_SYNTHESIZE_READONLY(int, mSwipeFromColumn, SwipeFromColumn);
+    CC_SYNTHESIZE_READONLY(int, mSwipeFromRow, SwipeFromRow);
+	
+	CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mGameLayer, GameLayer);
+	CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mTilesLayer, TilesLayer);
+	CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mCookiesLayer, CookiesLayer);
 };
 

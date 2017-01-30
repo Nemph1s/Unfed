@@ -56,7 +56,8 @@ CommonTypes::LevelInfo JsonParser::getLevelInfo()
 
 		for (uint16_t j = 0; j < subnode.size(); ++j) {
 			CC_ASSERT(subnode[j].isInt());
-			levelInfo.tiles[i][j] = node[node.size() - j - 1][i].asInt();
+            levelInfo.tiles[i][j] = node[i][j].asInt();
+			/*levelInfo.tiles[i][j] = node[node.size() - j - 1][i].asInt();*/
 		}
 	}
 	return levelInfo;

@@ -30,7 +30,7 @@ LevelObj* LevelObj::createWithId(const int16_t& levelId)
 {
    LevelObj* ret = new (std::nothrow) LevelObj();
    if (ret && ret->initWithId(levelId)) {
-      ret->autorelease();
+      ret->retain();
    }
    else {
       CC_SAFE_DELETE(ret);
@@ -62,10 +62,10 @@ bool LevelObj::initWithId(const int16_t& levelId)
    
    mLevelInfo = JsonParser::Instance().getLevelInfo();
 
-   for (int8_t i = 0; i < NumColumns; i++) {
-      for (int8_t j = 0; j < NumRows; j++) {
+   for (int i = 0; i < NumColumns; i++) {
+      for (int j = 0; j < NumRows; j++) {
 
-         int8_t tileRow = NumColumns - i - 1;
+//         int tileRow = NumColumns - i - 1;
 
          if (mLevelInfo.tiles[i][j] == 1) {
             mTiles[i][j] = new TileObj();
@@ -85,16 +85,16 @@ cocos2d::Set* LevelObj::shuffle()
 }
 
 //--------------------------------------------------------------------
-TileObj* LevelObj::tileAt(int8_t column, int8_t row)
+TileObj* LevelObj::tileAt(int column, int row)
 //--------------------------------------------------------------------
 {
    bool invalidColumn = column >= 0 && column < NumColumns;
    bool invalidRow = row >= 0 && row < NumColumns;
-   if (invalidColumn) {
+   if (!invalidColumn) {
       CCLOGERROR("LevelObj::tileAt: Invalid column : %d", column);
       CC_ASSERT(invalidColumn);
    }
-   if (invalidRow) {
+   if (!invalidRow) {
       CCLOGERROR("LevelObj::tileAt: Invalid row: %d", row);
       CC_ASSERT(invalidRow);
    }
@@ -102,16 +102,16 @@ TileObj* LevelObj::tileAt(int8_t column, int8_t row)
 }
 
 //--------------------------------------------------------------------
-CookieObj* LevelObj::cookieAt(int8_t column, int8_t row)
+CookieObj* LevelObj::cookieAt(int column, int row)
 //--------------------------------------------------------------------
 {
    bool invalidColumn = column >= 0 && column < NumColumns;
    bool invalidRow = row >= 0 && row < NumColumns;
-   if (invalidColumn) {
+   if (!invalidColumn) {
       CCLOGERROR("LevelObj::cookieAt: Invalid column : %d", column);
       CC_ASSERT(invalidColumn);
    }
-   if (invalidRow) {
+   if (!invalidRow) {
       CCLOGERROR("LevelObj::cookieAt: Invalid row: %d", row);
       CC_ASSERT(invalidRow);
    }
@@ -125,8 +125,8 @@ cocos2d::Set* LevelObj::createInitialCookies()
    CCLOGINFO("LevelObj::createInitialCookies:");
    cocos2d::Set* set = new cocos2d::Set();
 
-   for (int8_t row = 0; row < NumColumns; row++) {
-      for (int8_t column = 0; column < NumColumns; column++) {
+   for (int column = 0; column < NumColumns; column++) {
+      for (int row = 0; row < NumRows; row++) {
          if (mTiles[column][row] != nullptr) {
             CookieObj* cookie = createCookie(column, row, getRandomCookieType());
             set->addObject(cookie);
@@ -138,7 +138,7 @@ cocos2d::Set* LevelObj::createInitialCookies()
 }
 
 //--------------------------------------------------------------------
-CookieObj * LevelObj::createCookie(int8_t column, int8_t row, int8_t type)
+CookieObj * LevelObj::createCookie(int column, int row, int type)
 //--------------------------------------------------------------------
 {
    CookieInfo info = { column, row, static_cast<CookieType>(type) };
@@ -148,7 +148,7 @@ CookieObj * LevelObj::createCookie(int8_t column, int8_t row, int8_t type)
 }
 
 //--------------------------------------------------------------------
-int8_t LevelObj::getRandomCookieType()
+int LevelObj::getRandomCookieType()
 //--------------------------------------------------------------------
 {
    //TODO: move to helper
