@@ -56,12 +56,13 @@ bool ViewController::init()
    mGameplayScene->addTiles();
 
    auto callback = [&](SwapObj* swap) {
-       mGameplayScene->userInteractionDisabled();
        auto funcCallAction = cocos2d::CallFunc::create([=]() {
            mGameplayScene->userInteractionEnabled();
        });
+
        mLevel->performSwap(swap);
        mGameplayScene->animateSwap(swap, funcCallAction);
+       mGameplayScene->userInteractionDisabled();
    };
 
    mGameplayScene->setSwapCallback(callback);

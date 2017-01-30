@@ -26,6 +26,7 @@ GameplayScene::GameplayScene()
     , mGameLayer(nullptr)
     , mCookiesLayer(nullptr)
     , mListener(nullptr)
+    , mSelectionSprite(nullptr)
    //--------------------------------------------------------------------
 {
 }
@@ -52,6 +53,7 @@ GameplayScene::~GameplayScene()
 //--------------------------------------------------------------------
 {
     CCLOGINFO("GameplayScene::~GameplayScene: deallocing CookieObj: %p - tag: %i", this, _tag);
+    mSelectionSprite->release();
 }
 
 //--------------------------------------------------------------------
@@ -84,6 +86,9 @@ bool GameplayScene::initWithSize(const Size& size)
     mCookiesLayer = Layer::create();
     mCookiesLayer->setPosition(layerPos);
     mGameLayer->addChild(mCookiesLayer);
+
+    mSelectionSprite = new Sprite();
+    mSelectionSprite->retain();
 
     return true;
 }
@@ -198,8 +203,6 @@ bool GameplayScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
     if (convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {
         CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
         if (cookie) {
-//             cookie->getSpriteNode()->setVisible(false);
-//             cookie->getHighLightedSpriteNode()->setVisible(true);
             return true;
         }
     }
@@ -235,13 +238,6 @@ void GameplayScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 {
     if (!isCookieTouched())
         return;
-
-    CCLOGINFO("GameplayScene::onTouchEnded:");
-    CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
-    if (cookie) {
-//         cookie->getSpriteNode()->setVisible(true);
-//         cookie->getHighLightedSpriteNode()->setVisible(false);
-    }
     clearTouchedCookie();
 }
 
@@ -253,12 +249,16 @@ void GameplayScene::onTouchCancelled(cocos2d::Touch * touch, cocos2d::Event * ev
     onTouchEnded(touch, event);
 }
 
+//--------------------------------------------------------------------
 void GameplayScene::userInteractionEnabled()
+//--------------------------------------------------------------------
 {
     Director::getInstance()->getEventDispatcher()->resumeEventListenersForTarget(mCookiesLayer);
 }
 
+//--------------------------------------------------------------------
 void GameplayScene::userInteractionDisabled()
+//--------------------------------------------------------------------
 {
     Director::getInstance()->getEventDispatcher()->pauseEventListenersForTarget(mCookiesLayer);
 }
@@ -289,6 +289,17 @@ void GameplayScene::animateSwap(SwapObj * swap, cocos2d::CallFunc* func)
 
     swap->getCookieA()->updateDebugTileLabel();
     swap->getCookieB()->updateDebugTileLabel();
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::showSelectionIndicatorForCookie(CookieObj * cookie)
+//--------------------------------------------------------------------
+{
+    if (mSelectionSprite->getParent() != nullptr) {
+        mSelectionSprite->removeFromParent();
+    }
+
+// todo: add highlighted sprite init
 }
 
 //--------------------------------------------------------------------

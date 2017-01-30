@@ -52,6 +52,8 @@ public:
 
     void animateSwap(SwapObj* swap, cocos2d::CallFunc* func);
 
+    void showSelectionIndicatorForCookie(CookieObj* cookie);
+
 protected:
 
     bool isCookieTouched();
@@ -60,13 +62,16 @@ protected:
     bool trySwapCookieTo(int horzDelta, int vertDelta);  
 
 	cocos2d::EventListener* mListener;
+
     CC_PROPERTY(LevelObj*, mLevel, Level);
 
     CC_SYNTHESIZE(std::function<void(SwapObj* swap)>, mSwapCallback, SwapCallback);
 
 	CC_SYNTHESIZE_READONLY(int, mSwipeFromColumn, SwipeFromColumn);
     CC_SYNTHESIZE_READONLY(int, mSwipeFromRow, SwipeFromRow);
-	
+
+    CC_SYNTHESIZE_READONLY(cocos2d::Sprite*, mSelectionSprite, SelectionSprite);
+
 	CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mGameLayer, GameLayer);
 	CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mTilesLayer, TilesLayer);
 	CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mCookiesLayer, CookiesLayer);
