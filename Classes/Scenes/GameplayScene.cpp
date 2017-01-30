@@ -152,16 +152,17 @@ void GameplayScene::addSpritesForCookies(Set* cookies)
 		auto* sprite = Sprite::create(cookie->spriteName());
 		sprite->setPosition(pointForColumnAndRow(cookie->getColumn(), cookie->getRow()));
 		mCookiesLayer->addChild(sprite);
+        cookie->setSpriteNode(sprite);
 
-        auto* highlightedSprite = Sprite::create(cookie->highlightedSpriteName());
-        highlightedSprite->setPosition(pointForColumnAndRow(cookie->getColumn(), cookie->getRow()));
-        highlightedSprite->setVisible(false);
-        mCookiesLayer->addChild(highlightedSprite);
-
-        cookie->setNormalSpriteNode(sprite);
-		cookie->setHighLightedSpriteNode(highlightedSprite);
-
-        cookie->updateTilePosLabel();
+        auto label = cocos2d::Label::create("", "fonts/Arial", 16,
+            cocos2d::Size(32, 32), cocos2d::TextHAlignment::LEFT, cocos2d::TextVAlignment::TOP);
+        auto size = sprite->getContentSize();
+        label->setPosition(cocos2d::Vec2(size.width / 4, (size.height / 1.25f)));
+        label->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
+        sprite->addChild(label);
+        cookie->setDebugLabel(label);
+        
+        cookie->updateDebugTileLabel();
         mCookiesLayer->addChild(cookie);
 	}
 }
@@ -197,8 +198,8 @@ bool GameplayScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
     if (convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {
         CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
         if (cookie) {
-            cookie->getNormalSpriteNode()->setVisible(false);
-            cookie->getHighLightedSpriteNode()->setVisible(true);
+//             cookie->getSpriteNode()->setVisible(false);
+//             cookie->getHighLightedSpriteNode()->setVisible(true);
             return true;
         }
     }
@@ -214,10 +215,10 @@ void GameplayScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
 
     Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
 
-    int column, row = -1;
+    int column = -1, row = -1;
     if (convertPointToTilePos(locationInNode, column, row)) {
-        // 3 
-        int horzDelta, vertDelta = 0;
+
+        int horzDelta = 0, vertDelta = 0;
         updateSwipeDelta(column, row, horzDelta, vertDelta);
 
         if (horzDelta != 0 || vertDelta != 0) {
@@ -232,11 +233,14 @@ void GameplayScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
 void GameplayScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
+    if (!isCookieTouched())
+        return;
+
     CCLOGINFO("GameplayScene::onTouchEnded:");
     CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
     if (cookie) {
-        cookie->getNormalSpriteNode()->setVisible(true);
-        cookie->getHighLightedSpriteNode()->setVisible(false);
+//         cookie->getSpriteNode()->setVisible(true);
+//         cookie->getHighLightedSpriteNode()->setVisible(false);
     }
     clearTouchedCookie();
 }
@@ -249,6 +253,16 @@ void GameplayScene::onTouchCancelled(cocos2d::Touch * touch, cocos2d::Event * ev
     onTouchEnded(touch, event);
 }
 
+void GameplayScene::userInteractionEnabled()
+{
+    Director::getInstance()->getEventDispatcher()->resumeEventListenersForTarget(mCookiesLayer);
+}
+
+void GameplayScene::userInteractionDisabled()
+{
+    Director::getInstance()->getEventDispatcher()->pauseEventListenersForTarget(mCookiesLayer);
+}
+
 //--------------------------------------------------------------------
 void GameplayScene::animateSwap(SwapObj * swap, cocos2d::CallFunc* func)
 //--------------------------------------------------------------------
@@ -257,34 +271,24 @@ void GameplayScene::animateSwap(SwapObj * swap, cocos2d::CallFunc* func)
     CC_ASSERT(func);
     // Put the cookie you started with on top.
 
-    auto cookieAN = swap->getCookieA()->getNormalSpriteNode();
-    auto cookieAH = swap->getCookieA()->getHighLightedSpriteNode();
-
-    auto cookieBN = swap->getCookieB()->getNormalSpriteNode();
-    auto cookieBH = swap->getCookieB()->getHighLightedSpriteNode();
+    auto cookieA = swap->getCookieA()->getSpriteNode();
+    auto cookieB = swap->getCookieB()->getSpriteNode();
     
-    cookieAN->setZOrder(100);
-    cookieAH->setZOrder(99);
-    cookieBN->setZOrder(90);
-    cookieBH->setZOrder(89);
+    cookieA->setZOrder(100);
+    cookieB->setZOrder(90);
     
     const float duration = 0.3;
 
-    auto moveA1 = MoveTo::create(duration, cookieBN->getPosition());
-    auto easeA1 = EaseOut::create(moveA1, duration); // maybe change rate?
-    cookieAN->runAction(Sequence::create(easeA1, func, nullptr));
+    auto moveA = MoveTo::create(duration, cookieB->getPosition());
+    auto easeA = EaseOut::create(moveA, duration); // maybe change rate?
+    cookieA->runAction(Sequence::create(easeA, func, nullptr));
 
-    auto moveA2 = MoveTo::create(duration, cookieBH->getPosition());
-    auto easeA2 = EaseOut::create(moveA2, duration); 
-    cookieAH->runAction(easeA2);
+    auto moveB = MoveTo::create(duration, cookieA->getPosition());
+    auto easeB = EaseOut::create(moveB, duration);
+    cookieB->runAction(easeB);
 
-    auto moveB1 = MoveTo::create(duration, cookieAN->getPosition());
-    auto easeB1 = EaseOut::create(moveA1, duration);
-    cookieBN->runAction(easeB1);
-
-    auto moveB2 = MoveTo::create(duration, cookieAH->getPosition());
-    auto easeB2 = EaseOut::create(moveA2, duration);
-    cookieBH->runAction(easeB2);
+    swap->getCookieA()->updateDebugTileLabel();
+    swap->getCookieB()->updateDebugTileLabel();
 }
 
 //--------------------------------------------------------------------

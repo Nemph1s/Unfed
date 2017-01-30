@@ -46,7 +46,8 @@ bool ViewController::init()
    //self.scene.scaleMode = SKSceneScaleModeAspectFill;
 
    // Load the level.
-   mLevel = LevelObj::createWithId(0);
+   int levelId = 1;
+   mLevel = LevelObj::createWithId(levelId);
 
    //TODO: create tags instead of name
    mLevel->setName("Level");
@@ -55,9 +56,9 @@ bool ViewController::init()
    mGameplayScene->addTiles();
 
    auto callback = [&](SwapObj* swap) {
-       //TODO: disable userInteractionEnabled
+       mGameplayScene->userInteractionDisabled();
        auto funcCallAction = cocos2d::CallFunc::create([=]() {
-           // TODO: enable userInteractionEnabled
+           mGameplayScene->userInteractionEnabled();
        });
        mLevel->performSwap(swap);
        mGameplayScene->animateSwap(swap, funcCallAction);

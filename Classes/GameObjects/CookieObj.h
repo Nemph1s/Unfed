@@ -34,13 +34,14 @@ CC_CONSTRUCTOR_ACCESS:
    std::string highlightedSpriteName();
    std::string description();
 
-   void updateTilePosLabel();
+   void updateDebugTileLabel();
 
 protected:   
+
    CC_SYNTHESIZE(int, mColumn, Column);
    CC_SYNTHESIZE(int, mRow, Row);
    CC_SYNTHESIZE_READONLY(CommonTypes::CookieType, mCookieType, CookieType);
-   CC_SYNTHESIZE(cocos2d::Sprite*, mNormalSpriteNode, NormalSpriteNode);
-   CC_SYNTHESIZE(cocos2d::Sprite*, mHighLightedSpriteNode, HighLightedSpriteNode);
+   CC_SYNTHESIZE(cocos2d::Sprite*, mSpriteNode, SpriteNode);
+   CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);
 };
 

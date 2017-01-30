@@ -47,6 +47,9 @@ public:
     void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchCancelled(cocos2d::Touch* touch, cocos2d::Event* event);
 
+    void userInteractionEnabled();
+    void userInteractionDisabled();
+
     void animateSwap(SwapObj* swap, cocos2d::CallFunc* func);
 
 protected:

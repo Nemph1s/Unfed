@@ -22,8 +22,8 @@ CookieObj::CookieObj()
     : mColumn(0)
     , mRow(0)
     , mCookieType(CookieType::Unknown)
-    , mNormalSpriteNode(nullptr)
-    , mHighLightedSpriteNode(nullptr)
+    , mSpriteNode(nullptr)
+    , mDebugLabel(nullptr)
 //--------------------------------------------------------------------
 {
 }
@@ -92,24 +92,11 @@ string CookieObj::description()
 }
 
 //--------------------------------------------------------------------
-void CookieObj::updateTilePosLabel()
+void CookieObj::updateDebugTileLabel()
 //--------------------------------------------------------------------
 {
-    auto text = cocos2d::StringUtils::format("[%d,%d]", mColumn, mRow);
-    if (mNormalSpriteNode) {
-        auto ttf1 = cocos2d::LabelTTF::create(text, "fonts/Arial", 16,
-            cocos2d::Size(32, 32), cocos2d::TextHAlignment::LEFT, cocos2d::TextVAlignment::TOP);
-        auto size = mNormalSpriteNode->getContentSize();
-        ttf1->setPosition(cocos2d::Vec2(size.width / 4, (size.height / 1.25f)));
-        ttf1->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
-        mNormalSpriteNode->addChild(ttf1);
-    }
-    if (mHighLightedSpriteNode) {
-        auto ttf2 = cocos2d::LabelTTF::create(text, "fonts/Arial", 16,
-            cocos2d::Size(32, 32), cocos2d::TextHAlignment::LEFT, cocos2d::TextVAlignment::TOP);
-        auto size = mHighLightedSpriteNode->getContentSize();
-        ttf2->setPosition(cocos2d::Vec2(size.width / 4, (size.height / 1.25f)));
-        ttf2->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
-        mHighLightedSpriteNode->addChild(ttf2);
+    if (mDebugLabel) {
+        auto text = cocos2d::StringUtils::format("[%d,%d]", mColumn, mRow);
+        mDebugLabel->setString(text);
     }
 }
