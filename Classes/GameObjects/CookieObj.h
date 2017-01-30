@@ -37,8 +37,8 @@ CC_CONSTRUCTOR_ACCESS:
    void updateTilePosLabel();
 
 protected:   
-   CC_SYNTHESIZE_READONLY(int, mColumn, Column);
-   CC_SYNTHESIZE_READONLY(int, mRow, Row);
+   CC_SYNTHESIZE(int, mColumn, Column);
+   CC_SYNTHESIZE(int, mRow, Row);
    CC_SYNTHESIZE_READONLY(CommonTypes::CookieType, mCookieType, CookieType);
    CC_SYNTHESIZE(cocos2d::Sprite*, mNormalSpriteNode, NormalSpriteNode);
    CC_SYNTHESIZE(cocos2d::Sprite*, mHighLightedSpriteNode, HighLightedSpriteNode);

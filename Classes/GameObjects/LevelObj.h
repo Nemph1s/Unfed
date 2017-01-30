@@ -15,6 +15,7 @@
 
 using namespace CommonTypes;
 
+class SwapObj;
 class TileObj;
 class CookieObj;
 
@@ -35,8 +36,12 @@ CC_CONSTRUCTOR_ACCESS:
    virtual bool initWithId(const int16_t& levelId);
 
    cocos2d::Set* shuffle();
+
    TileObj* tileAt(int column, int row);
    CookieObj* cookieAt(int column, int row);
+
+   void performSwap(SwapObj* swap);
+
 protected:
 
    cocos2d::Set* createInitialCookies();

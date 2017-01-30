@@ -54,8 +54,20 @@ bool ViewController::init()
    mGameplayScene->setLevel(mLevel);
    mGameplayScene->addTiles();
 
+   auto callback = [&](SwapObj* swap) {
+       //TODO: disable userInteractionEnabled
+       auto funcCallAction = cocos2d::CallFunc::create([=]() {
+           // TODO: enable userInteractionEnabled
+       });
+       mLevel->performSwap(swap);
+       mGameplayScene->animateSwap(swap, funcCallAction);
+   };
+
+   mGameplayScene->setSwapCallback(callback);
+
    // Present the scene.
    director->runWithScene(mGameplayScene);
+
    startGame();
 
    return true;

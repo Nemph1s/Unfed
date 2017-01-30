@@ -11,6 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
+#include <functional>
 
 //temporary variables
 //TODO: move to globalInfo or to json file
@@ -18,6 +19,7 @@ static const float TileWidth = 32.0 * 2;
 static const float TileHeight = 36.0 * 2;
 
 class LevelObj;
+class SwapObj;
 class GameplayScene : public cocos2d::Scene
 {
 public:
@@ -43,11 +45,21 @@ public:
     bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
+    void onTouchCancelled(cocos2d::Touch* touch, cocos2d::Event* event);
+
+    void animateSwap(SwapObj* swap, cocos2d::CallFunc* func);
 
 protected:
 
+    bool isCookieTouched();
+    void clearTouchedCookie();
+    void updateSwipeDelta(int column, int row, int& horzDelta, int& vertDelta);
+    bool trySwapCookieTo(int horzDelta, int vertDelta);  
+
 	cocos2d::EventListener* mListener;
     CC_PROPERTY(LevelObj*, mLevel, Level);
+
+    CC_SYNTHESIZE(std::function<void(SwapObj* swap)>, mSwapCallback, SwapCallback);
 
 	CC_SYNTHESIZE_READONLY(int, mSwipeFromColumn, SwipeFromColumn);
     CC_SYNTHESIZE_READONLY(int, mSwipeFromRow, SwipeFromRow);

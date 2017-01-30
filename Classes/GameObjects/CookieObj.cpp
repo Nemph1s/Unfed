@@ -91,7 +91,9 @@ string CookieObj::description()
     return cocos2d::StringUtils::format("type:%d square:(%d,%d)", mCookieType, mColumn, mRow);
 }
 
+//--------------------------------------------------------------------
 void CookieObj::updateTilePosLabel()
+//--------------------------------------------------------------------
 {
     auto text = cocos2d::StringUtils::format("[%d,%d]", mColumn, mRow);
     if (mNormalSpriteNode) {

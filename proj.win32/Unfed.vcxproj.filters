@@ -60,6 +60,9 @@
     <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp">
       <Filter>src\Utils\Helper</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\SwapObj.cpp">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -100,6 +103,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Utils\Helpers\VisibleRect.h">
       <Filter>src\Utils\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\SwapObj.h">
+      <Filter>src\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

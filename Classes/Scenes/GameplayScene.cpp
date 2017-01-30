@@ -12,6 +12,7 @@
 
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/CookieObj.h"
+#include "GameObjects/SwapObj.h"
 
 #include "Utils/Helpers/VisibleRect.h"
 #include "Utils/Helpers/Helper.h"
@@ -25,8 +26,6 @@ GameplayScene::GameplayScene()
     , mGameLayer(nullptr)
     , mCookiesLayer(nullptr)
     , mListener(nullptr)
-    , mSwipeFromColumn(-1)
-    , mSwipeFromRow(-1)
    //--------------------------------------------------------------------
 {
 }
@@ -63,6 +62,8 @@ bool GameplayScene::initWithSize(const Size& size)
         CCLOGERROR("GameplayScene::initWithSize: can't init Scene inctance");
         return false;
     }
+    clearTouchedCookie();
+
     this->setAnchorPoint(Vec2(0.5, 0.5));
     this->setPosition(VisibleRect::center());
 
@@ -100,6 +101,7 @@ void GameplayScene::onEnter()
     listener->onTouchBegan = CC_CALLBACK_2(GameplayScene::onTouchBegan, this);
     listener->onTouchMoved = CC_CALLBACK_2(GameplayScene::onTouchMoved, this);
     listener->onTouchEnded = CC_CALLBACK_2(GameplayScene::onTouchEnded, this);
+    listener->onTouchCancelled = CC_CALLBACK_2(GameplayScene::onTouchCancelled, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, mCookiesLayer);
 	mListener = listener;
 }
@@ -189,6 +191,7 @@ bool GameplayScene::convertPointToTilePos(cocos2d::Vec2& point, int& column, int
 bool GameplayScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
+    CCLOGINFO("GameplayScene::onTouchBegan:");
     Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
 
     if (convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {
@@ -206,19 +209,146 @@ bool GameplayScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 void GameplayScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
+    if (!isCookieTouched())
+        return;
+
+    Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
+
+    int column, row = -1;
+    if (convertPointToTilePos(locationInNode, column, row)) {
+        // 3 
+        int horzDelta, vertDelta = 0;
+        updateSwipeDelta(column, row, horzDelta, vertDelta);
+
+        if (horzDelta != 0 || vertDelta != 0) {
+            if (trySwapCookieTo(horzDelta, vertDelta)) {
+                clearTouchedCookie();
+            }
+        }
+    }
 }
 
 //--------------------------------------------------------------------
 void GameplayScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
+    CCLOGINFO("GameplayScene::onTouchEnded:");
     CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
     if (cookie) {
         cookie->getNormalSpriteNode()->setVisible(true);
         cookie->getHighLightedSpriteNode()->setVisible(false);
     }
+    clearTouchedCookie();
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::onTouchCancelled(cocos2d::Touch * touch, cocos2d::Event * event)
+//--------------------------------------------------------------------
+{
+    CCLOGINFO("GameplayScene::onTouchCancelled:");
+    onTouchEnded(touch, event);
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::animateSwap(SwapObj * swap, cocos2d::CallFunc* func)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(swap);
+    CC_ASSERT(func);
+    // Put the cookie you started with on top.
+
+    auto cookieAN = swap->getCookieA()->getNormalSpriteNode();
+    auto cookieAH = swap->getCookieA()->getHighLightedSpriteNode();
+
+    auto cookieBN = swap->getCookieB()->getNormalSpriteNode();
+    auto cookieBH = swap->getCookieB()->getHighLightedSpriteNode();
+    
+    cookieAN->setZOrder(100);
+    cookieAH->setZOrder(99);
+    cookieBN->setZOrder(90);
+    cookieBH->setZOrder(89);
+    
+    const float duration = 0.3;
+
+    auto moveA1 = MoveTo::create(duration, cookieBN->getPosition());
+    auto easeA1 = EaseOut::create(moveA1, duration); // maybe change rate?
+    cookieAN->runAction(Sequence::create(easeA1, func, nullptr));
+
+    auto moveA2 = MoveTo::create(duration, cookieBH->getPosition());
+    auto easeA2 = EaseOut::create(moveA2, duration); 
+    cookieAH->runAction(easeA2);
+
+    auto moveB1 = MoveTo::create(duration, cookieAN->getPosition());
+    auto easeB1 = EaseOut::create(moveA1, duration);
+    cookieBN->runAction(easeB1);
+
+    auto moveB2 = MoveTo::create(duration, cookieAH->getPosition());
+    auto easeB2 = EaseOut::create(moveA2, duration);
+    cookieBH->runAction(easeB2);
+}
+
+//--------------------------------------------------------------------
+bool GameplayScene::isCookieTouched()
+//--------------------------------------------------------------------
+{
+    if (mSwipeFromColumn == -1 || mSwipeFromRow == -1) 
+        return false;
+    return true;
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::clearTouchedCookie()
+//--------------------------------------------------------------------
+{
     mSwipeFromColumn = -1;
     mSwipeFromRow = -1;
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::updateSwipeDelta(int column, int row, int& horzDelta, int& vertDelta)
+//--------------------------------------------------------------------
+{
+    if (column < mSwipeFromColumn) { // swipe left
+        horzDelta = -1;
+    }
+    else if (column > mSwipeFromColumn) { // swipe right
+        horzDelta = 1;
+    }
+    else if (row < mSwipeFromRow) { // swipe down
+        vertDelta = -1;
+    }
+    else if (row > mSwipeFromRow) { // swipe up
+        vertDelta = 1;
+    }
+}
+
+//--------------------------------------------------------------------
+bool GameplayScene::trySwapCookieTo(int horzDelta, int vertDelta)
+//--------------------------------------------------------------------
+{
+    CCLOGINFO("GameplayScene::trySwapCookieTo: horzDelta=%d; vertDelta=%d;", horzDelta, vertDelta);
+    int toColumn = mSwipeFromColumn + horzDelta;
+    int toRow = mSwipeFromRow + vertDelta;
+
+    if (toColumn < 0 || toColumn >= NumColumns) 
+        return false;
+    if (toRow < 0 || toRow >= NumRows) 
+        return false;
+
+    CookieObj* toCookie = mLevel->cookieAt(toColumn, toRow);
+    if (!toCookie)
+        return false;
+
+    CookieObj* fromCookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
+   
+    CCLOGINFO("GameplayScene::trySwapCookieTo: fromCookie=[%d,%d]; toCookie=[%d][%d];"
+        , fromCookie->getColumn(), fromCookie->getRow(), toCookie->getColumn(), toCookie->getRow());
+
+    if (mSwapCallback != nullptr) {
+        SwapObj* swap = SwapObj::createWithCookies(fromCookie, toCookie);
+        mSwapCallback(swap);
+    }
+    return true;
 }
 
 //--------------------------------------------------------------------

@@ -10,6 +10,7 @@
 
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/TileObj.h"
+#include "GameObjects/SwapObj.h"
 #include "GameObjects/CookieObj.h"
 
 #include "Utils/Helpers/Helper.h"
@@ -25,6 +26,13 @@ LevelObj::LevelObj()
 }
 
 //--------------------------------------------------------------------
+LevelObj::~LevelObj()
+//--------------------------------------------------------------------
+{
+    CCLOGINFO("LevelObj::~LevelObj: deallocing CookieObj: %p - tag: %i", this, _tag);
+}
+
+//--------------------------------------------------------------------
 LevelObj* LevelObj::createWithId(const int16_t& levelId)
 //--------------------------------------------------------------------
 {
@@ -36,13 +44,6 @@ LevelObj* LevelObj::createWithId(const int16_t& levelId)
       CC_SAFE_DELETE(ret);
    }
    return ret;
-}
-
-//--------------------------------------------------------------------
-LevelObj::~LevelObj()
-//--------------------------------------------------------------------
-{
-   CCLOGINFO("LevelObj::~LevelObj: deallocing CookieObj: %p - tag: %i", this, _tag);
 }
 
 //--------------------------------------------------------------------
@@ -64,8 +65,6 @@ bool LevelObj::initWithId(const int16_t& levelId)
 
    for (int i = 0; i < NumColumns; i++) {
       for (int j = 0; j < NumRows; j++) {
-
-//         int tileRow = NumColumns - i - 1;
 
          if (mLevelInfo.tiles[i][j] == 1) {
             mTiles[i][j] = new TileObj();
@@ -116,6 +115,25 @@ CookieObj* LevelObj::cookieAt(int column, int row)
       CC_ASSERT(invalidRow);
    }
     return mCookies[column][row];
+}
+
+//--------------------------------------------------------------------
+void LevelObj::performSwap(SwapObj * swap)
+//--------------------------------------------------------------------
+{
+    CCLOGINFO("LevelObj::performSwap: %s", swap->description().c_str());
+    int columnA = swap->getCookieA()->getColumn();
+    int rowA = swap->getCookieA()->getRow();
+    int columnB = swap->getCookieB()->getColumn();
+    int rowB = swap->getCookieB()->getRow();
+
+    mCookies[columnA][rowA] = swap->getCookieB();
+    swap->getCookieB()->setColumn(columnA);
+    swap->getCookieB()->setRow(rowA);
+
+    mCookies[columnB][rowB] = swap->getCookieA();
+    swap->getCookieA()->setColumn(columnB);
+    swap->getCookieA()->setRow(rowB);
 }
 
 //--------------------------------------------------------------------
