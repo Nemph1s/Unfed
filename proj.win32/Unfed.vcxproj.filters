@@ -57,9 +57,6 @@
     <ClCompile Include="..\Classes\Utils\JsonParser.cpp">
       <Filter>src\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Utils\Helpers\Helper.cpp">
-      <Filter>src\Utils\Helper</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp">
       <Filter>src\Utils\Helper</Filter>
     </ClCompile>
