@@ -46,7 +46,7 @@ bool ViewController::init()
    //self.scene.scaleMode = SKSceneScaleModeAspectFill;
 
    // Load the level.
-   mLevel = LevelObj::createWithId(3);
+   mLevel = LevelObj::createWithId(0);
 
    //TODO: create tags instead of name
    mLevel->setName("Level");

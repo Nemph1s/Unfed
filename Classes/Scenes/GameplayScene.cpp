@@ -97,33 +97,10 @@ void GameplayScene::onEnter()
 	auto listener = EventListenerTouchOneByOne::create();
 	listener->setSwallowTouches(true);
 
-	listener->onTouchBegan = [=](Touch* touch, Event* event) {
-		int column, row = -1;
-		Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
-		
-		if (convertPointToTilePos(locationInNode, column, row)) {
-			CookieObj* cookie = mLevel->cookieAt(column, row);
-			if (cookie) {
-				cookie->getSpriteNode()->setColor(Color3B::RED);
-				mSwipeFromColumn = column;
-                mSwipeFromRow = row;
-				return true;
-			}
-		}
-		return false;
-	};
-
-	listener->onTouchEnded = [this](Touch* touch, Event* event) {
-		CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
-		if (cookie) {
-			cookie->getSpriteNode()->setColor(Color3B::WHITE);
-		}
-        mSwipeFromColumn = -1;
-        mSwipeFromRow = -1;
-	};
-
+    listener->onTouchBegan = CC_CALLBACK_2(GameplayScene::onTouchBegan, this);
+    listener->onTouchMoved = CC_CALLBACK_2(GameplayScene::onTouchMoved, this);
+    listener->onTouchEnded = CC_CALLBACK_2(GameplayScene::onTouchEnded, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, mCookiesLayer);
-
 	mListener = listener;
 }
 
@@ -174,7 +151,14 @@ void GameplayScene::addSpritesForCookies(Set* cookies)
 		sprite->setPosition(pointForColumnAndRow(cookie->getColumn(), cookie->getRow()));
 		mCookiesLayer->addChild(sprite);
 
-		cookie->setSpriteNode(sprite);
+        auto* highlightedSprite = Sprite::create(cookie->highlightedSpriteName());
+        highlightedSprite->setPosition(pointForColumnAndRow(cookie->getColumn(), cookie->getRow()));
+        highlightedSprite->setVisible(false);
+        mCookiesLayer->addChild(highlightedSprite);
+
+        cookie->setNormalSpriteNode(sprite);
+		cookie->setHighLightedSpriteNode(highlightedSprite);
+
         cookie->updateTilePosLabel();
         mCookiesLayer->addChild(cookie);
 	}
@@ -184,7 +168,7 @@ void GameplayScene::addSpritesForCookies(Set* cookies)
 Vec2 GameplayScene::pointForColumnAndRow(int column, int row)
 //--------------------------------------------------------------------
 {
-   return Vec2(column * TileWidth + TileWidth / 2, row * TileHeight + TileHeight / 2);
+   return Vec2(column * TileWidth + TileWidth / 2, (NumRows - row - 1) * TileHeight + TileHeight / 2);
 }
 
 //--------------------------------------------------------------------
@@ -194,11 +178,47 @@ bool GameplayScene::convertPointToTilePos(cocos2d::Vec2& point, int& column, int
 	CCLOGINFO("GameplayScene::convertPointToTilePos: point: x=%.2f y=%.2f", point.x, point.y);
 	if (point.x >= 0 && point.x < NumColumns*TileWidth && point.y >= 0 && point.y < NumRows*TileHeight) {
         column = point.x / TileWidth;
-        row = point.y / TileHeight;
+        row = NumRows - (point.y / TileHeight);
 		CCLOGINFO("GameplayScene::addSpritesForCookies: touch founed! column=%d row=%d", column, row);
 		return true;
 	} 
 	return false;
+}
+
+//--------------------------------------------------------------------
+bool GameplayScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
+//--------------------------------------------------------------------
+{
+    Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
+
+    if (convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {
+        CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
+        if (cookie) {
+            cookie->getNormalSpriteNode()->setVisible(false);
+            cookie->getHighLightedSpriteNode()->setVisible(true);
+            return true;
+        }
+    }
+    return false;
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
+//--------------------------------------------------------------------
+{
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
+//--------------------------------------------------------------------
+{
+    CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
+    if (cookie) {
+        cookie->getNormalSpriteNode()->setVisible(true);
+        cookie->getHighLightedSpriteNode()->setVisible(false);
+    }
+    mSwipeFromColumn = -1;
+    mSwipeFromRow = -1;
 }
 
 //--------------------------------------------------------------------

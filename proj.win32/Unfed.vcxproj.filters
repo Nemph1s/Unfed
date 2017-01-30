@@ -10,6 +10,24 @@
     <Filter Include="src">
       <UniqueIdentifier>{bb6c862e-70e9-49d9-81b7-3829a6f50471}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Controller">
+      <UniqueIdentifier>{b5035d09-77ee-4add-8e03-cadc1a5666dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Common">
+      <UniqueIdentifier>{0b21f717-db54-4bab-a6e3-2a4310b3261b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\GameObjects">
+      <UniqueIdentifier>{08bd8e49-744f-465d-b998-e1803b152ac9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Scenes">
+      <UniqueIdentifier>{6692c476-3b08-47bf-ab0a-3c3d769ae236}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Utils">
+      <UniqueIdentifier>{6af63ff1-a8ff-4eb4-9415-1564c715b7e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Utils\Helper">
+      <UniqueIdentifier>{1dca8088-59a5-4316-91eb-3faa2bf42552}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -19,28 +37,28 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\Controller\ViewController.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Controller</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\GameObjects\CookieObj.cpp">
-      <Filter>src</Filter>
+      <Filter>src\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\GameObjects\LevelObj.cpp">
-      <Filter>src</Filter>
+      <Filter>src\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\GameObjects\TileObj.cpp">
-      <Filter>src</Filter>
+      <Filter>src\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\Scenes\GameplayScene.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\Utils\GlobalInfo.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\Utils\JsonParser.cpp">
-      <Filter>src</Filter>
+      <Filter>src\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp">
+      <Filter>src\Utils\Helper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,38 +68,38 @@
     <ClInclude Include="..\Classes\AppDelegate.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Common\CommonTypes.h">
+      <Filter>src\Common</Filter>
+    </ClInclude>
     <ClInclude Include="..\Classes\Controller\ViewController.h">
-      <Filter>src</Filter>
+      <Filter>src\Controller</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\CookieObj.h">
-      <Filter>src</Filter>
+      <Filter>src\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\LevelObj.h">
-      <Filter>src</Filter>
+      <Filter>src\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\TileObj.h">
-      <Filter>src</Filter>
+      <Filter>src\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Scenes\GameplayScene.h">
-      <Filter>src</Filter>
+      <Filter>src\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Utils\GameResources.h">
-      <Filter>src</Filter>
+      <Filter>src\Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Utils\GlobalInfo.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Utils\Helpers\Helper.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Utils\Helpers\VisibleRect.h">
-      <Filter>src</Filter>
+      <Filter>src\Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Utils\JsonParser.h">
-      <Filter>src</Filter>
+      <Filter>src\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Common\CommonTypes.h">
-      <Filter>src</Filter>
+    <ClInclude Include="..\Classes\Utils\Helpers\Helper.h">
+      <Filter>src\Utils\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Utils\Helpers\VisibleRect.h">
+      <Filter>src\Utils\Helper</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
