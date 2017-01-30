@@ -122,19 +122,19 @@ CookieObj* LevelObj::cookieAt(int column, int row)
 cocos2d::Set* LevelObj::createInitialCookies()
 //--------------------------------------------------------------------
 {
-   CCLOGINFO("LevelObj::createInitialCookies:");
-   cocos2d::Set* set = new cocos2d::Set();
+    CCLOGINFO("LevelObj::createInitialCookies:");
+    cocos2d::Set* set = new cocos2d::Set();
 
-   for (int column = 0; column < NumColumns; column++) {
-      for (int row = 0; row < NumRows; row++) {
-         if (mTiles[column][row] != nullptr) {
-            CookieObj* cookie = createCookie(column, row, getRandomCookieType());
-            set->addObject(cookie);
-         }
-      }
-   }
-   CCLOGINFO("LevelObj::createInitialCookies: set.size=", set->count);
-   return set;
+    for (int i = 0; i < NumRows; i++) {
+        for (int j = 0; j < NumColumns; j++) {
+            if (mTiles[i][j] != nullptr) {
+                CookieObj* cookie = createCookie(i, j, getRandomCookieType());
+                set->addObject(cookie);
+            }
+        }
+    }
+    CCLOGINFO("LevelObj::createInitialCookies: set.size=", set->count);
+    return set;
 }
 
 //--------------------------------------------------------------------

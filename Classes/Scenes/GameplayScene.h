@@ -40,6 +40,10 @@ public:
 
 	bool convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row);
 
+    bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
+    void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
+    void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
+
 protected:
 
 	cocos2d::EventListener* mListener;
