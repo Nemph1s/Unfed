@@ -21,7 +21,7 @@ using namespace CommonTypes;
 CookieObj::CookieObj()
     : mColumn(0)
     , mRow(0)
-    , mCookieType(CookieType::Unknown)
+    , mType(CookieType::Unknown)
     , mSpriteNode(nullptr)
     , mDebugLabel(nullptr)
 //--------------------------------------------------------------------
@@ -58,11 +58,11 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
         return false;
     }
 
-    CCLOGINFO("CookieObj::init: column=%d row=%d cookieType=%d", mColumn, mRow, mCookieType);
+    CCLOGINFO("CookieObj::init: column=%d row=%d cookieType=%d", mColumn, mRow, mType);
 
     mColumn = cookieInfo.column;
     mRow = cookieInfo.row;
-    mCookieType = cookieInfo.cookieType;
+    mType = cookieInfo.cookieType;
 
     return true;
 }
@@ -85,15 +85,15 @@ string CookieObj::highlightedSpriteName()
 string CookieObj::description()
 //--------------------------------------------------------------------
 {
-    CCLOGINFO("CookieObj::description: type:%d square:(%d,%d)", mCookieType, mColumn, mRow);
-    return cocos2d::StringUtils::format("type:%d square:(%d,%d)", mCookieType, mColumn, mRow);
+    CCLOGINFO("CookieObj::description: type:%d square:(%d,%d)", mType, mColumn, mRow);
+    return cocos2d::StringUtils::format("type:%d square:(%d,%d)", mType, mColumn, mRow);
 }
 
 //--------------------------------------------------------------------
 int CookieObj::getTypeAsInt()
 //--------------------------------------------------------------------
 {
-    return Helper::Instance().to_underlying(mCookieType);
+    return Helper::Instance().to_underlying(mType);
 }
 
 //--------------------------------------------------------------------

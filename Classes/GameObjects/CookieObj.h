@@ -41,7 +41,7 @@ protected:
 
    CC_SYNTHESIZE(int, mColumn, Column);
    CC_SYNTHESIZE(int, mRow, Row);
-   CC_SYNTHESIZE_READONLY(CommonTypes::CookieType, mCookieType, CookieType);
+   CC_SYNTHESIZE_READONLY(CommonTypes::CookieType, mType, Type);
    CC_SYNTHESIZE(cocos2d::Sprite*, mSpriteNode, SpriteNode);
    CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);
 };

@@ -18,6 +18,7 @@
 
 //--------------------------------------------------------------------
 LevelObj::LevelObj()
+    : mPossibleSwaps(nullptr)
 //--------------------------------------------------------------------
 {
    CCLOGINFO("LevelObj::LevelObj");
@@ -78,7 +79,14 @@ cocos2d::Set* LevelObj::shuffle()
 //--------------------------------------------------------------------
 {
    CCLOGINFO("LevelObj::shuffle:");
-   return createInitialCookies();
+   cocos2d::Set* set = nullptr;
+   do {
+       set = createInitialCookies();
+       detectPossibleSwaps();
+
+       CCLOGINFO("LevelObj::shuffle: possible swaps - %d", mPossibleSwaps->count());
+   } while (mPossibleSwaps->count() == 0);
+   return set;
 }
 
 //--------------------------------------------------------------------
@@ -173,26 +181,130 @@ int LevelObj::getRandomCookieType(int column, int row)
 {
     int cookieMax = Helper::Instance().to_underlying(CommonTypes::CookieType::CookieMax);
 
-    // set pointers of Cookie object
-    auto objLeft1 = (column >= 2) ? cookieAt(column - 1, row) : nullptr;
-    auto objLeft2 = (column >= 2) ? cookieAt(column - 2, row) : nullptr;
-    auto objBelow1 = (row >= 2) ? cookieAt(column, row - 1) : nullptr;
-    auto objBelow2 = (row >= 2) ? cookieAt(column, row - 2) : nullptr;
-
-    int typeObjLeft1 = ((column >= 2) && objLeft1) ? objLeft1->getTypeAsInt() : -1;
-    int typeObjLeft2 = ((column >= 2) && objLeft2) ? objLeft2->getTypeAsInt() : -1;
-    int typeObjBelow1 = ((row >= 2) && objBelow1) ? objBelow1->getTypeAsInt() : -1;
-    int typeObjBelow2 = ((row >= 2) && objBelow2) ? objBelow2->getTypeAsInt() : -1;
-
-    int cookieType = 0;
+    int type = 0;
     bool findNextType = false;
     do {
-        cookieType = Helper::Instance().random(0, cookieMax - 1);
-        //there are already two cookies of this type to the left
-        findNextType = ((typeObjLeft1 == cookieType && typeObjLeft2 == cookieType)
-        //or there are already two cookies of this type below
-            || (typeObjBelow1 == cookieType && typeObjBelow2 == cookieType));
+        type = Helper::Instance().random(0, cookieMax - 1);
+
+        findNextType = ((column >= 2 && // there are already two cookies of this type to the left
+            isSameTypeOfCookieAt(column - 1, row, type) &&
+            isSameTypeOfCookieAt(column - 2, row, type)) ||
+            (row >= 2 && // or there are already two cookies of this type below
+                isSameTypeOfCookieAt(column, row - 1 , type) &&
+                isSameTypeOfCookieAt(column, row - 2, type)));
     } while (findNextType);
     
-   return cookieType;
+   return type;
+}
+
+//--------------------------------------------------------------------
+bool LevelObj::isSameTypeOfCookieAt(int column, int row, int type)
+//--------------------------------------------------------------------
+{
+    auto cookie = cookieAt(column, row);
+    if (!cookie)
+        return false;
+
+    if (cookie->getTypeAsInt() != type)
+        return false;
+
+    return true;    
+}
+
+//--------------------------------------------------------------------
+void LevelObj::detectPossibleSwaps()
+//--------------------------------------------------------------------
+{
+    CCLOGINFO("LevelObj::detectPossibleSwaps:");
+    cocos2d::Set* set = new cocos2d::Set();
+
+    for (int column = 0; column < NumColumns; column++) {
+        for (int row = 0; row < NumRows; row++) {
+            auto cookie = cookieAt(row, column);
+            if (cookie != nullptr) {
+                // Is it possible to swap this cookie with the one on the right?
+                if (column < NumColumns - 1) {
+                    // Have a cookie in this spot? If there is no tile, there is no cookie.
+                    auto other = cookieAt(column + 1, row);
+                    if (other != nullptr) {
+                        // Swap them
+                        mCookies[column][row] = other;
+                        mCookies[column + 1][row] = cookie;
+
+                        // Is either cookie now part of a chain?
+                        if (hasChainAt(column + 1, row) || hasChainAt(column, row)) {
+
+                            SwapObj *swap = SwapObj::createWithCookies(cookie, other);
+                            set->addObject(swap);
+                        }
+                        // Swap them back
+                        mCookies[column][row] = cookie;
+                        mCookies[column + 1][row] = other;
+                    }
+                }
+                // This does exactly the same thing, but for the cookie above instead of on the right.
+                if (row < NumRows - 1) {
+
+                    auto other = cookieAt(column, row + 1);
+                    if (other != nullptr) {
+                        // Swap them
+                        mCookies[column][row] = other;
+                        mCookies[column][row + 1] = cookie;
+
+                        if (hasChainAt(column, row + 1) || hasChainAt(column, row)) {
+
+                            SwapObj *swap = SwapObj::createWithCookies(cookie, other);
+                            set->addObject(swap);
+                        }
+
+                        mCookies[column][row] = cookie;
+                        mCookies[column][row + 1] = other;
+                    }
+                }
+            }
+        }
+    }
+    CCLOGINFO("LevelObj::createInitialCookies: set.size=", set->count);
+    mPossibleSwaps = set;
+}
+
+//--------------------------------------------------------------------
+bool LevelObj::isPossibleSwap(SwapObj* swap)
+//--------------------------------------------------------------------
+{
+    auto it = mPossibleSwaps->begin();
+    for (; it != mPossibleSwaps->end(); ++it) {
+        auto other = static_cast<SwapObj*>(*it);
+        if (!other)
+            continue;
+        if ((other->getCookieA() == swap->getCookieA() && other->getCookieB() == swap->getCookieB()) ||
+            (other->getCookieB() == swap->getCookieA() && other->getCookieA() == swap->getCookieB()))
+            return true;
+    }
+    return false;
+}
+
+//--------------------------------------------------------------------
+bool LevelObj::hasChainAt(int column, int row)
+//--------------------------------------------------------------------
+{
+    if (cookieAt(column, row))
+        return false;
+
+    int type = cookieAt(column, row)->getTypeAsInt();
+    int fieldSize = CommonTypes::NumColumns;
+
+    int horzLength = 1;
+
+    for (int i = column - 1; i >= 0 && isSameTypeOfCookieAt(i, row, type); i--, horzLength++);
+    for (int i = column + 1; i < fieldSize && isSameTypeOfCookieAt(i, row, type); i++, horzLength++);
+    if (horzLength >= 3) 
+        return true;
+
+    int vertLength = 1;
+
+    for (int i = row - 1; i >= 0 && isSameTypeOfCookieAt(column, i, type); i--, vertLength++);
+    for (int i = row + 1; i < fieldSize && isSameTypeOfCookieAt(column, i, type); i++, vertLength++);
+
+    return (vertLength >= 3);
 }

@@ -14,6 +14,7 @@
 #include "Scenes/GameplayScene.h"
 
 using cocos2d::Director;
+using cocos2d::CallFunc;
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
@@ -56,13 +57,17 @@ bool ViewController::init()
    mGameplayScene->addTiles();
 
    auto callback = [&](SwapObj* swap) {
-       auto funcCallAction = cocos2d::CallFunc::create([=]() {
+       auto funcCallAction = CallFunc::create([=]() {
            mGameplayScene->userInteractionEnabled();
        });
-
-       mLevel->performSwap(swap);
-       mGameplayScene->animateSwap(swap, funcCallAction);
        mGameplayScene->userInteractionDisabled();
+
+       if (mLevel->isPossibleSwap(swap)) {
+           mLevel->performSwap(swap);
+           mGameplayScene->animateSwap(swap, funcCallAction);
+       } else {
+           mGameplayScene->userInteractionEnabled();
+       }
    };
 
    mGameplayScene->setSwapCallback(callback);
