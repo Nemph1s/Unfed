@@ -159,12 +159,11 @@ void GameplayScene::addSpritesForCookies(Set* cookies)
 		mCookiesLayer->addChild(sprite);
         cookie->setSpriteNode(sprite);
 
-        auto label = cocos2d::Label::create("", "fonts/Arial", 16,
-            cocos2d::Size(32, 32), cocos2d::TextHAlignment::LEFT, cocos2d::TextVAlignment::TOP);
+        auto label = Label::create("", "fonts/Arial", 16, Size(32, 32), TextHAlignment::LEFT, TextVAlignment::TOP);
         auto size = sprite->getContentSize();
-        label->setPosition(cocos2d::Vec2(size.width / 4, (size.height / 1.25f)));
-        label->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
-        sprite->addChild(label);
+        label->setPosition(Vec2(size.width / 4, (size.height / 1.25f)));
+        label->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+        sprite->addChild(label, 10);
         cookie->setDebugLabel(label);
         
         cookie->updateDebugTileLabel();
@@ -203,6 +202,7 @@ bool GameplayScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
     if (convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {
         CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
         if (cookie) {
+            showSelectionIndicatorForCookie(cookie);
             return true;
         }
     }
@@ -226,6 +226,7 @@ void GameplayScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
 
         if (horzDelta != 0 || vertDelta != 0) {
             if (trySwapCookieTo(horzDelta, vertDelta)) {
+                hideSelectionIndicator();
                 clearTouchedCookie();
             }
         }
@@ -236,8 +237,12 @@ void GameplayScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
 void GameplayScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
+    if (mSelectionSprite->getParent() != nullptr && isCookieTouched()) {
+        hideSelectionIndicator();
+    }
     if (!isCookieTouched())
         return;
+
     clearTouchedCookie();
 }
 
@@ -299,7 +304,35 @@ void GameplayScene::showSelectionIndicatorForCookie(CookieObj * cookie)
         mSelectionSprite->removeFromParent();
     }
 
-// todo: add highlighted sprite init
+    auto img = new Image();
+    img->initWithImageFile(cookie->highlightedSpriteName());
+
+    auto texture = new Texture2D();
+    texture->initWithImage(img);
+    mSelectionSprite->initWithTexture(texture);
+
+    auto size = cookie->getSpriteNode()->getContentSize();
+    mSelectionSprite->setPosition(Vec2(size.width / 2, size.height / 2));
+    mSelectionSprite->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+    mSelectionSprite->setContentSize(size);
+   
+    cookie->getSpriteNode()->addChild(mSelectionSprite);
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::hideSelectionIndicator()
+//--------------------------------------------------------------------
+{
+    auto sprite = mSelectionSprite;
+    auto callbackFunc = CallFunc::create([sprite]() {
+        if (sprite->getParent() != nullptr) {
+            sprite->removeFromParent();
+        }
+    });
+    const float duration = 0.3f;
+    auto seq = Sequence::create(FadeOut::create(duration), DelayTime::create(0.5f), callbackFunc, nullptr);
+    //TODO: fix fade animation
+    mSelectionSprite->runAction(seq);
 }
 
 //--------------------------------------------------------------------
@@ -359,10 +392,15 @@ bool GameplayScene::trySwapCookieTo(int horzDelta, int vertDelta)
     CCLOGINFO("GameplayScene::trySwapCookieTo: fromCookie=[%d,%d]; toCookie=[%d][%d];"
         , fromCookie->getColumn(), fromCookie->getRow(), toCookie->getColumn(), toCookie->getRow());
 
-    if (mSwapCallback != nullptr) {
-        SwapObj* swap = SwapObj::createWithCookies(fromCookie, toCookie);
-        mSwapCallback(swap);
-    }
+    if (!mSwapCallback)
+        return false;
+    
+    SwapObj* swap = SwapObj::createWithCookies(fromCookie, toCookie);
+    if (!swap)
+        return false;
+
+    mSwapCallback(swap);
+    
     return true;
 }
 

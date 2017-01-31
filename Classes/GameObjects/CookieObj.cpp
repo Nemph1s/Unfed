@@ -71,16 +71,14 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
 string CookieObj::spriteName()
 //--------------------------------------------------------------------
 {
-    auto type = Helper::to_underlying(mCookieType);
-    return GameResources::s_cookieSpriteNames.at(type);
+    return GameResources::s_cookieSpriteNames.at(getTypeAsInt());
 }
 
 //--------------------------------------------------------------------
 string CookieObj::highlightedSpriteName()
 //--------------------------------------------------------------------
 {
-    auto type = Helper::to_underlying(mCookieType);
-    return GameResources::s_cookieHighlightedSpriteNames.at(type);
+    return GameResources::s_cookieHighlightedSpriteNames.at(getTypeAsInt());
 }
 
 //--------------------------------------------------------------------
@@ -89,6 +87,13 @@ string CookieObj::description()
 {
     CCLOGINFO("CookieObj::description: type:%d square:(%d,%d)", mCookieType, mColumn, mRow);
     return cocos2d::StringUtils::format("type:%d square:(%d,%d)", mCookieType, mColumn, mRow);
+}
+
+//--------------------------------------------------------------------
+int CookieObj::getTypeAsInt()
+//--------------------------------------------------------------------
+{
+    return Helper::Instance().to_underlying(mCookieType);
 }
 
 //--------------------------------------------------------------------

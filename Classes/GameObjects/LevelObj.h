@@ -46,7 +46,7 @@ protected:
 
    cocos2d::Set* createInitialCookies();
    CookieObj* createCookie(int column, int row, int type);
-   int getRandomCookieType();
+   int getRandomCookieType(int column, int row);
 
    CC_SYNTHESIZE_READONLY(LevelInfo, mLevelInfo, LevelInfo);
 

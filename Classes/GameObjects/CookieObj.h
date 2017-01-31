@@ -35,6 +35,7 @@ CC_CONSTRUCTOR_ACCESS:
    std::string description();
 
    void updateDebugTileLabel();
+   int getTypeAsInt();
 
 protected:   
 

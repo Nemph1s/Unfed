@@ -20,6 +20,7 @@ static const float TileHeight = 36.0 * 2;
 
 class LevelObj;
 class SwapObj;
+class CookieObj;
 class GameplayScene : public cocos2d::Scene
 {
 public:
@@ -53,6 +54,7 @@ public:
     void animateSwap(SwapObj* swap, cocos2d::CallFunc* func);
 
     void showSelectionIndicatorForCookie(CookieObj* cookie);
+    void hideSelectionIndicator();
 
 protected:
 
