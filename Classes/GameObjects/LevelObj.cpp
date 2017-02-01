@@ -183,12 +183,12 @@ CookieObj * LevelObj::createCookie(int column, int row, int type)
 int LevelObj::getRandomCookieType(int column, int row)
 //--------------------------------------------------------------------
 {
-    int cookieMax = Helper::Instance().to_underlying(CommonTypes::CookieType::CookieMax);
+    int cookieMax = Helper::getInstance()->to_underlying(CommonTypes::CookieType::CookieMax);
 
     int type = 0;
     bool findNextType = false;
     do {
-        type = Helper::Instance().random(0, cookieMax - 1);
+        type = Helper::getInstance()->random(0, cookieMax - 1);
         auto isCookiesToTheLeft = (column >= 2 && // there are already two cookies of this type to the left
             isSameTypeOfCookieAt(column - 1, row, type) &&
             isSameTypeOfCookieAt(column - 2, row, type));

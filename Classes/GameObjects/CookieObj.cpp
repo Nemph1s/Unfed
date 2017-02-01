@@ -93,7 +93,7 @@ string CookieObj::description()
 int CookieObj::getTypeAsInt()
 //--------------------------------------------------------------------
 {
-    return Helper::Instance().to_underlying(mType);
+    return Helper::getInstance()->to_underlying(mType);
 }
 
 //--------------------------------------------------------------------

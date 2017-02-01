@@ -41,7 +41,7 @@ void AudioManager::playBGMusic()
 void AudioManager::playSound(CommonTypes::SoundType type)
 //--------------------------------------------------------------------
 {
-    auto soundType = Helper::Instance().to_underlying(type);
+    auto soundType = Helper::getInstance()->to_underlying(type);
     cocos2d::log("AudioManager::playSound: type=%d", soundType);
 
     if (type < SoundType::SwapSound || type >= SoundType::SoundsMax) {
@@ -57,7 +57,7 @@ bool AudioManager::preloadSounds()
 {
     cocos2d::log("AudioManager::preloadSounds:");
     AudioEngine->preloadBackgroundMusic(GameResources::s_gameplaySoundBG.c_str());
-    auto soundMax = Helper::Instance().to_underlying(SoundType::SoundsMax);
+    auto soundMax = Helper::getInstance()->to_underlying(SoundType::SoundsMax);
 
     for (int i = 0; i < soundMax; i++) {
         AudioEngine->preloadEffect(GameResources::s_gameplaySounds.at(i).c_str());

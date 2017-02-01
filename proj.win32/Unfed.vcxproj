@@ -154,6 +154,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Managers\ResourceManager.cpp" />
     <ClCompile Include="..\Classes\Scenes\GameplayScene.cpp" />
     <ClCompile Include="..\Classes\Utils\GlobalInfo.cpp" />
+    <ClCompile Include="..\Classes\Utils\Helpers\Helper.cpp" />
     <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp" />
     <ClCompile Include="..\Classes\Utils\JsonParser.cpp" />
     <ClCompile Include="main.cpp" />

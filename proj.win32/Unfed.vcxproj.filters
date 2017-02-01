@@ -72,6 +72,9 @@
     <ClCompile Include="..\Classes\Managers\AudioManager.cpp">
       <Filter>src\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Utils\Helpers\Helper.cpp">
+      <Filter>src\Utils\Helper</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
