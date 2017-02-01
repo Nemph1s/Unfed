@@ -150,6 +150,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\GameObjects\LevelObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\SwapObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\TileObj.cpp" />
+    <ClCompile Include="..\Classes\Managers\ResourceManager.cpp" />
     <ClCompile Include="..\Classes\Scenes\GameplayScene.cpp" />
     <ClCompile Include="..\Classes\Utils\GlobalInfo.cpp" />
     <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp" />
@@ -164,12 +165,14 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\GameObjects\LevelObj.h" />
     <ClInclude Include="..\Classes\GameObjects\SwapObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObj.h" />
+    <ClInclude Include="..\Classes\Managers\ResourceManager.h" />
     <ClInclude Include="..\Classes\Scenes\GameplayScene.h" />
     <ClInclude Include="..\Classes\Utils\GameResources.h" />
     <ClInclude Include="..\Classes\Utils\GlobalInfo.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\Helper.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\VisibleRect.h" />
     <ClInclude Include="..\Classes\Utils\JsonParser.h" />
+    <ClInclude Include="..\Classes\Utils\PlatformMacros.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
