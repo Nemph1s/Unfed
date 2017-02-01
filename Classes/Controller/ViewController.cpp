@@ -14,6 +14,9 @@
 #include "Scenes/GameplayScene.h"
 
 using cocos2d::Director;
+using cocos2d::CallFunc;
+
+#define COCOS2D_DEBUG 1
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
@@ -21,21 +24,22 @@ ViewController::ViewController()
    , mGameplayScene(nullptr)
    //--------------------------------------------------------------------
 {
-   CCLOGINFO("ViewController::ViewController");
+   cocos2d::log("ViewController::ViewController");
 }
 
 //--------------------------------------------------------------------
 ViewController::~ViewController()
 //--------------------------------------------------------------------
 {
-   CCLOGINFO("ViewController::~ViewController");
+   cocos2d::log("ViewController::~ViewController");
+   mLevel->release();
 }
 
 //--------------------------------------------------------------------
 bool ViewController::init()
 //--------------------------------------------------------------------
 {
-   CCLOGINFO("ViewController::init");
+   cocos2d::log("ViewController::init");
 
    auto director = Director::getInstance();
    auto glview = director->getOpenGLView();
@@ -45,11 +49,34 @@ bool ViewController::init()
    //self.scene.scaleMode = SKSceneScaleModeAspectFill;
 
    // Load the level.
-   mLevel = LevelObj::createWithId(1);
+   int levelId = 1;
+   mLevel = LevelObj::createWithId(levelId);
+
+   //TODO: create tags instead of name
+   mLevel->setName("Level");
+
    mGameplayScene->setLevel(mLevel);
+   mGameplayScene->addTiles();
+
+   auto callback = [&](SwapObj* swap) {
+       auto funcCallAction = CallFunc::create([=]() {
+           mGameplayScene->userInteractionEnabled();
+       });
+       mGameplayScene->userInteractionDisabled();
+
+       if (mLevel->isPossibleSwap(swap)) {
+           mLevel->performSwap(swap);
+           mGameplayScene->animateSwap(swap, funcCallAction);
+       } else {
+           mGameplayScene->userInteractionEnabled();
+       }
+   };
+
+   mGameplayScene->setSwapCallback(callback);
 
    // Present the scene.
    director->runWithScene(mGameplayScene);
+
    startGame();
 
    return true;
@@ -59,7 +86,7 @@ bool ViewController::init()
 void ViewController::startGame()
 //--------------------------------------------------------------------
 {
-   CCLOGINFO("ViewController::startGame");
+   cocos2d::log("ViewController::startGame");
    shuffle();
 }
 
@@ -67,7 +94,7 @@ void ViewController::startGame()
 void ViewController::shuffle()
 //--------------------------------------------------------------------
 {
-   CCLOGINFO("ViewController::shuffle");
+   cocos2d::log("ViewController::shuffle");
    auto newCookies = mLevel->shuffle();
    mGameplayScene->addSpritesForCookies(newCookies);
 }

@@ -15,6 +15,7 @@
 
 using namespace CommonTypes;
 
+class SwapObj;
 class TileObj;
 class CookieObj;
 
@@ -35,14 +36,46 @@ CC_CONSTRUCTOR_ACCESS:
    virtual bool initWithId(const int16_t& levelId);
 
    cocos2d::Set* shuffle();
-   TileObj* tileAt(int8_t column, int8_t row);
-   CookieObj* cookieAt(int8_t column, int8_t row);
+
+   TileObj* tileAt(int column, int row);
+   CookieObj* cookieAt(int column, int row);
+
+   /**
+   * @brief To Swap or Not to Swap…
+   */
+   bool isPossibleSwap(SwapObj* swap);
+
+   void performSwap(SwapObj* swap);
+
 protected:
 
    cocos2d::Set* createInitialCookies();
-   CookieObj* createCookie(int8_t column, int8_t row, int8_t type);
-   int8_t getRandomCookieType();
+   CookieObj* createCookie(int column, int row, int type);
+   int getRandomCookieType(int column, int row);
 
+   /**
+   * @brief A method that checks is the cookie[column][row] type equal to forwarded type  
+   * @param column Current cookie column
+   * @param row Current cookie row
+   * @param type A type of cookie with which must be checked current cookie
+   */
+   bool isSameTypeOfCookieAt(int column, int row, int type);
+
+   /**
+   * @brief A method that checks is the cookie[column][row] type equal to forwarded type 
+   * It will step through the rows and columns of the 2 - D grid and simply swap each cookie with the one next to it, one at a time.
+   * If swapping these two cookies creates a chain, it will add a new RWTSwap object to the list of possibleSwaps.
+   * Then, it will swap these cookies back to restore the original state and continue with the next cookie until it has swapped them all.
+   * It will go through the above steps twice : once to check all horizontal swaps and once to check all vertical swaps.
+   */
+   void detectPossibleSwaps();
+
+   /**
+   * @brief A helper method to see if a cookie is part of a chain
+   */
+   bool hasChainAt(int column, int row);
+
+   CC_SYNTHESIZE_READONLY(cocos2d::Set*, mPossibleSwaps, PossibleSwaps);
    CC_SYNTHESIZE_READONLY(LevelInfo, mLevelInfo, LevelInfo);
 
    TileObj* mTiles[NumColumns][NumRows] = { nullptr };

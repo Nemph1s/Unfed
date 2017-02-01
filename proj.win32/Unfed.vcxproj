@@ -71,7 +71,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(EngineRoot)external;$(EngineRoot)cocos\audio\include;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;..\Classes;..\libs\jsoncpp\include\json;..;%(AdditionalIncludeDirectories);$(_COCOS_HEADER_WIN32_BEGIN);$(_COCOS_HEADER_WIN32_END)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(EngineRoot)external;$(EngineRoot)cocos\audio\include;$(EngineRoot)external\chipmunk\include\chipmunk;$(EngineRoot)extensions;..\Classes;..;%(AdditionalIncludeDirectories);$(_COCOS_HEADER_WIN32_BEGIN);$(_COCOS_HEADER_WIN32_END)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USE_MATH_DEFINES;GL_GLEXT_PROTOTYPES;CC_ENABLE_CHIPMUNK_INTEGRATION=1;COCOS2D_DEBUG=1;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -148,6 +148,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Controller\ViewController.cpp" />
     <ClCompile Include="..\Classes\GameObjects\CookieObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\LevelObj.cpp" />
+    <ClCompile Include="..\Classes\GameObjects\SwapObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\TileObj.cpp" />
     <ClCompile Include="..\Classes\Scenes\GameplayScene.cpp" />
     <ClCompile Include="..\Classes\Utils\GlobalInfo.cpp" />
@@ -161,6 +162,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Controller\ViewController.h" />
     <ClInclude Include="..\Classes\GameObjects\CookieObj.h" />
     <ClInclude Include="..\Classes\GameObjects\LevelObj.h" />
+    <ClInclude Include="..\Classes\GameObjects\SwapObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObj.h" />
     <ClInclude Include="..\Classes\Scenes\GameplayScene.h" />
     <ClInclude Include="..\Classes\Utils\GameResources.h" />
