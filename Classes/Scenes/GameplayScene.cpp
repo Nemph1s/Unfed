@@ -18,6 +18,8 @@
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
 
+#include "Managers/AudioManager.h"
+
 USING_NS_CC;
 
 //--------------------------------------------------------------------
@@ -66,6 +68,8 @@ bool GameplayScene::initWithSize(const Size& size)
     }
     clearTouchedCookie();
 
+    AudioManager::getInstance()->init();
+
     this->setAnchorPoint(Vec2(0.5, 0.5));
     this->setPosition(VisibleRect::center());
 
@@ -89,6 +93,8 @@ bool GameplayScene::initWithSize(const Size& size)
 
     mSelectionSprite = new Sprite();
     mSelectionSprite->retain();
+
+    AudioManager::getInstance()->playBGMusic();
 
     return true;
 }
@@ -298,6 +304,8 @@ void GameplayScene::animateSwap(SwapObj * swap, cocos2d::CallFunc* func)
     auto easeB = EaseOut::create(moveB, duration);
     cookieB->runAction(easeB);
 
+    AudioManager::getInstance()->playSound(SoundType::SwapSound);
+
     swap->getCookieA()->updateDebugTileLabel();
     swap->getCookieB()->updateDebugTileLabel();
 }
@@ -330,6 +338,8 @@ void GameplayScene::animateInvalidSwap(SwapObj * swap, cocos2d::CallFunc * func)
 
     cookieB->runAction(Sequence::create(easeB, easeB->reverse(), nullptr));
     cookieA->runAction(Sequence::create(easeA, easeA->reverse(), seq, func, nullptr));
+
+    AudioManager::getInstance()->playSound(SoundType::InvalidSwapSound);
 }
 
 //--------------------------------------------------------------------
