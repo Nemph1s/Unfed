@@ -49,7 +49,7 @@ bool ViewController::init()
    //self.scene.scaleMode = SKSceneScaleModeAspectFill;
 
    // Load the level.
-   int levelId = 4;
+   int levelId = 1;
    mLevel = LevelObj::createWithId(levelId);
 
    //TODO: create tags instead of name
@@ -64,12 +64,12 @@ bool ViewController::init()
        });
        mGameplayScene->userInteractionDisabled();
 
-       //if (mLevel->isPossibleSwap(swap)) {
+       if (mLevel->isPossibleSwap(swap)) {
            mLevel->performSwap(swap);
            mGameplayScene->animateSwap(swap, funcCallAction);
-       //} else {
+       } else {
            mGameplayScene->userInteractionEnabled();
-       //}
+       }
    };
 
    mGameplayScene->setSwapCallback(callback);

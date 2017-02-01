@@ -159,7 +159,11 @@ void GameplayScene::addSpritesForCookies(Set* cookies)
 		mCookiesLayer->addChild(sprite);
         cookie->setSpriteNode(sprite);
 
-        auto label = Label::create("", "fonts/Arial", 16, Size(32, 32), TextHAlignment::LEFT, TextVAlignment::TOP);
+        auto label = Label::create();
+        label->setBMFontSize(16);
+        label->setDimensions(32, 32);
+        label->setHorizontalAlignment(TextHAlignment::LEFT);
+        label->setVerticalAlignment(TextVAlignment::TOP);
         auto size = sprite->getContentSize();
         label->setPosition(Vec2(size.width / 4, (size.height / 1.25f)));
         label->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
@@ -175,18 +179,23 @@ void GameplayScene::addSpritesForCookies(Set* cookies)
 Vec2 GameplayScene::pointForColumnAndRow(int column, int row)
 //--------------------------------------------------------------------
 {
-   return Vec2(column * TileWidth + TileWidth / 2, (NumRows - row - 1) * TileHeight + TileHeight / 2);
+    //temporary solution to set correct pos for [col, row]
+    auto temp = column;
+    column = row;
+    row = temp;
+    return Vec2(column * TileWidth + TileWidth / 2, (NumRows - row - 1) * TileHeight + TileHeight / 2);
 }
 
 //--------------------------------------------------------------------
 bool GameplayScene::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
 //--------------------------------------------------------------------
 {
-	cocos2d::log("GameplayScene::convertPointToTilePos: point: x=%.2f y=%.2f", point.x, point.y);
+//	cocos2d::log("GameplayScene::convertPointToTilePos: point: x=%.2f y=%.2f", point.x, point.y);
 	if (point.x >= 0 && point.x < NumColumns*TileWidth && point.y >= 0 && point.y < NumRows*TileHeight) {
-        column = point.x / TileWidth;
-        row = NumRows - (point.y / TileHeight);
-		cocos2d::log("GameplayScene::addSpritesForCookies: touch founed! column=%d row=%d", column, row);
+        //temporary solution to set correct pos for [col, row]
+        row = point.x / TileWidth;
+        column = NumRows - (point.y / TileHeight);
+//		cocos2d::log("GameplayScene::convertPointToTilePos: touch founed! column=%d row=%d", column, row);
 		return true;
 	} 
 	return false;
@@ -196,7 +205,6 @@ bool GameplayScene::convertPointToTilePos(cocos2d::Vec2& point, int& column, int
 bool GameplayScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("GameplayScene::onTouchBegan:");
     Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
 
     if (convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {

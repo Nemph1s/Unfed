@@ -62,8 +62,9 @@ bool SwapObj::initWithCookies(CookieObj * cookieA, CookieObj * cookieB)
 std::string SwapObj::description()
 //--------------------------------------------------------------------
 {
-    auto str = cocos2d::StringUtils::format("swap [%d,%d] with [%d][%d]"
-        , mCookieA->getColumn(), mCookieA->getRow(), mCookieB->getColumn(), mCookieB->getRow());
-    cocos2d::log("GameplayScene::trySwapCookieTo: %s;", str.c_str());
+    auto str = cocos2d::StringUtils::format("swap type:%d square:(%d,%d) with type:%d square:(%d,%d),"
+        , mCookieA->getTypeAsInt(), mCookieA->getColumn(), mCookieA->getRow(), mCookieB->getTypeAsInt()
+        , mCookieB->getColumn(), mCookieB->getRow());
+    //cocos2d::log("GameplayScene::trySwapCookieTo: %s;", str.c_str());
     return str;
 }

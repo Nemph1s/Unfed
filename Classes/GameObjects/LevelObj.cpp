@@ -80,12 +80,12 @@ cocos2d::Set* LevelObj::shuffle()
 {
    cocos2d::log("LevelObj::shuffle:");
    cocos2d::Set* set = createInitialCookies();
-   //detectPossibleSwaps();
+   detectPossibleSwaps();
 
-//    while (mPossibleSwaps->count() == 0) {
-//        set = createInitialCookies();
-//        detectPossibleSwaps();
-//    }
+   while (mPossibleSwaps->count() == 0) {
+       set = createInitialCookies();
+       detectPossibleSwaps();
+   }
 
    return set;
 }
@@ -209,12 +209,11 @@ bool LevelObj::isSameTypeOfCookieAt(int column, int row, int type)
     if (!cookie)
         return false;
     
-    if (cookie->getTypeAsInt() != type) {
-        cocos2d::log("LevelObj::isSameTypeOfCookieAt: current=%s; randomType=%d"
-            , cookie->description().c_str(), type);
+    if (cookie->getTypeAsInt() != type)
         return false;
-    }
-
+    
+    cocos2d::log("LevelObj::isSameTypeOfCookieAt: current = %s; randomType = %d;"
+        , cookie->description().c_str(), type);
     return true;    
 }
 
@@ -225,8 +224,8 @@ void LevelObj::detectPossibleSwaps()
     cocos2d::log("LevelObj::detectPossibleSwaps:");
     cocos2d::Set* set = new cocos2d::Set();
 
-    for (int column = 0; column < NumColumns; column++) {
-        for (int row = 0; row < NumRows; row++) {
+    for (int row = 0; row < NumRows; row++) {
+        for (int column = 0; column < NumColumns; column++) {
             auto cookie = cookieAt(column, row);
             if (cookie != nullptr) {
                 // Is it possible to swap this cookie with the one on the right?
@@ -271,8 +270,15 @@ void LevelObj::detectPossibleSwaps()
             }
         }
     }
-    cocos2d::log("LevelObj::createInitialCookies: set.size=", set->count());
     mPossibleSwaps = set;
+    int count = 0;
+    auto strSwaps = cocos2d::String::create("possible swaps: {\n");
+    for (auto it = mPossibleSwaps->begin(); it != mPossibleSwaps->end(); ++it, count++) {
+        auto swap = static_cast<SwapObj*>(*it);
+        strSwaps->appendWithFormat("\t%s\n", swap->description().c_str());
+    }
+    strSwaps->append("}");
+    cocos2d::log("LevelObj::detectPossibleSwaps: count = %d\n%s", count, strSwaps->getCString());
 }
 
 //--------------------------------------------------------------------
@@ -295,7 +301,7 @@ bool LevelObj::isPossibleSwap(SwapObj* swap)
 bool LevelObj::hasChainAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    if (cookieAt(column, row))
+    if (!cookieAt(column, row))
         return false;
 
     int type = cookieAt(column, row)->getTypeAsInt();
