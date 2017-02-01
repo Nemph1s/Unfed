@@ -50,6 +50,6 @@ namespace GameResources {
        , "Sounds/Scrape.wav"
    };
 
-   static std::string s_gameplaySoundBG= "Sounds/MiningbyMoonlight.mp3";
+   static std::string s_gameplaySoundBG= "Sounds/erokia_elementary-wave.mp3";
 
 }
