@@ -37,9 +37,19 @@ namespace GameResources {
       , "Sprites.atlas/Macaroon-Highlighted@2x.png"
       , "Sprites.atlas/SugarCookie-Highlighted@2x.png"
    };
-
+   
    static std::string s_templateLevelName = "Levels/Level_%d.json";
    //TODO: move to config file
    static int16_t s_levelsCount = 4;
+
+   static std::vector<std::string> s_gameplaySounds{
+       "Sounds/Chomp.wav"
+       , "Sounds/Drip.wav"
+       , "Sounds/Error.wav"
+       , "Sounds/Ka-Ching.wav"
+       , "Sounds/Scrape.wav"
+   };
+
+   static std::string s_gameplaySoundBG= "Sounds/MiningbyMoonlight.mp3";
 
 }

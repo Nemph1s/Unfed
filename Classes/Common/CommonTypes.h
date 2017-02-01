@@ -57,4 +57,18 @@ namespace CommonTypes {
 	  TilesArray tiles; /**< array of tiles */
    };
 
+   /**
+   * @brief SoundType enum.
+   * Type of the sound object
+   */
+   enum class SoundType : int {
+       SwapSound  = 0 /**< enum value Chomp. */
+       , AddCookieSound = 1 /**< enum value Drip. */
+       , InvalidSwapSound = 2 /**< enum value Error. */
+       , MatchSound = 3 /**< enum value KaChing. */
+       , FallingCookieSound = 4 /**< enum value Scrape. */
+       , SoundsMax = 5 /**< enum value of sounds number. */
+       , Unknown /**< enum value unknown. */
+   };
+
 }
