@@ -16,7 +16,7 @@
 void JsonParser::parseLevelInfo(const int16_t & level)
 //--------------------------------------------------------------------
 {
-	CCLOGINFO("JsonParser::parseLevelInfo: parsing level=%d", level);
+	cocos2d::log("JsonParser::parseLevelInfo: parsing level=%d", level);
 	auto fullPath = cocos2d::StringUtils::format(GameResources::s_templateLevelName.c_str(), level);
 	auto json = cocos2d::FileUtils::getInstance()->getStringFromFile(fullPath.c_str());
 	mLoadedLevel = level;

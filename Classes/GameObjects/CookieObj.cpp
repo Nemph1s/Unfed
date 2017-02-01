@@ -21,7 +21,7 @@ using namespace CommonTypes;
 CookieObj::CookieObj()
     : mColumn(0)
     , mRow(0)
-    , mCookieType(CookieType::Unknown)
+    , mType(CookieType::Unknown)
     , mSpriteNode(nullptr)
     , mDebugLabel(nullptr)
 //--------------------------------------------------------------------
@@ -46,7 +46,7 @@ CookieObj * CookieObj::create(const CookieInfo & cookieInfo)
 CookieObj::~CookieObj()
 //--------------------------------------------------------------------
 {
-    CCLOGINFO("CookieObj::~CookieObj: deallocing CookieObj: %p - tag: %i", this, _tag);
+    cocos2d::log("CookieObj::~CookieObj: deallocing CookieObj: %p - tag: %i", this, _tag);
 }
 
 //--------------------------------------------------------------------
@@ -54,15 +54,15 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
 //--------------------------------------------------------------------
 {
     if (!Node::init()) {
-        CCLOGERROR("CookieObj::init: can't init Node inctance");
+        cocos2d::log("CookieObj::init: can't init Node inctance");
         return false;
     }
 
-    CCLOGINFO("CookieObj::init: column=%d row=%d cookieType=%d", mColumn, mRow, mCookieType);
+    //cocos2d::log("CookieObj::init: column=%d row=%d cookieType=%d", mColumn, mRow, mType);
 
     mColumn = cookieInfo.column;
     mRow = cookieInfo.row;
-    mCookieType = cookieInfo.cookieType;
+    mType = cookieInfo.cookieType;
 
     return true;
 }
@@ -71,24 +71,29 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
 string CookieObj::spriteName()
 //--------------------------------------------------------------------
 {
-    auto type = Helper::to_underlying(mCookieType);
-    return GameResources::s_cookieSpriteNames.at(type);
+    return GameResources::s_cookieSpriteNames.at(getTypeAsInt());
 }
 
 //--------------------------------------------------------------------
 string CookieObj::highlightedSpriteName()
 //--------------------------------------------------------------------
 {
-    auto type = Helper::to_underlying(mCookieType);
-    return GameResources::s_cookieHighlightedSpriteNames.at(type);
+    return GameResources::s_cookieHighlightedSpriteNames.at(getTypeAsInt());
 }
 
 //--------------------------------------------------------------------
 string CookieObj::description()
 //--------------------------------------------------------------------
 {
-    CCLOGINFO("CookieObj::description: type:%d square:(%d,%d)", mCookieType, mColumn, mRow);
-    return cocos2d::StringUtils::format("type:%d square:(%d,%d)", mCookieType, mColumn, mRow);
+    //cocos2d::log("CookieObj::description: type:%d square:(%d,%d)", mType, mColumn, mRow);
+    return cocos2d::StringUtils::format("type:%d square:(%d,%d)", mType, mColumn, mRow);
+}
+
+//--------------------------------------------------------------------
+int CookieObj::getTypeAsInt()
+//--------------------------------------------------------------------
+{
+    return Helper::Instance().to_underlying(mType);
 }
 
 //--------------------------------------------------------------------

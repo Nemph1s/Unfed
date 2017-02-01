@@ -26,6 +26,7 @@ GameplayScene::GameplayScene()
     , mGameLayer(nullptr)
     , mCookiesLayer(nullptr)
     , mListener(nullptr)
+    , mSelectionSprite(nullptr)
    //--------------------------------------------------------------------
 {
 }
@@ -51,7 +52,8 @@ GameplayScene * GameplayScene::createWithSize(const cocos2d::Size & size)
 GameplayScene::~GameplayScene()
 //--------------------------------------------------------------------
 {
-    CCLOGINFO("GameplayScene::~GameplayScene: deallocing CookieObj: %p - tag: %i", this, _tag);
+    cocos2d::log("GameplayScene::~GameplayScene: deallocing CookieObj: %p - tag: %i", this, _tag);
+    mSelectionSprite->release();
 }
 
 //--------------------------------------------------------------------
@@ -59,7 +61,7 @@ bool GameplayScene::initWithSize(const Size& size)
 //--------------------------------------------------------------------
 {
     if (!Scene::initWithSize(size)) {
-        CCLOGERROR("GameplayScene::initWithSize: can't init Scene inctance");
+        cocos2d::log("GameplayScene::initWithSize: can't init Scene inctance");
         return false;
     }
     clearTouchedCookie();
@@ -85,6 +87,9 @@ bool GameplayScene::initWithSize(const Size& size)
     mCookiesLayer->setPosition(layerPos);
     mGameLayer->addChild(mCookiesLayer);
 
+    mSelectionSprite = new Sprite();
+    mSelectionSprite->retain();
+
     return true;
 }
 
@@ -93,7 +98,7 @@ void GameplayScene::onEnter()
 //--------------------------------------------------------------------
 {
 	Scene::onEnter();
-	CCLOGINFO("GameplayScene::onEnter:");
+	cocos2d::log("GameplayScene::onEnter:");
 
 	auto listener = EventListenerTouchOneByOne::create();
 	listener->setSwallowTouches(true);
@@ -111,7 +116,7 @@ void GameplayScene::onExit()
 //--------------------------------------------------------------------
 {
 	Scene::onExit();
-	CCLOGINFO("GameplayScene::onExit:");
+	cocos2d::log("GameplayScene::onExit:");
 
 	_eventDispatcher->removeEventListener(mListener);
 	mListener = nullptr;
@@ -121,7 +126,7 @@ void GameplayScene::onExit()
 void GameplayScene::addTiles()
 //--------------------------------------------------------------------
 {
-	CCLOGINFO("GameplayScene::addTiles:");
+	cocos2d::log("GameplayScene::addTiles:");
 	for (int row = 0; row < CommonTypes::NumRows; row++) {
 		for (int column = 0; column < CommonTypes::NumColumns; column++) {
             TileObj* tile = mLevel->tileAt(column, row);
@@ -140,12 +145,12 @@ void GameplayScene::addTiles()
 void GameplayScene::addSpritesForCookies(Set* cookies)
 //--------------------------------------------------------------------
 {
-	CCLOGINFO("GameplayScene::addSpritesForCookies:");
+	cocos2d::log("GameplayScene::addSpritesForCookies:");
 	auto it = cookies->begin();
 	for (it; it != cookies->end(); it++) {
 		auto cookie = dynamic_cast<CookieObj*>(*it);
 		if (!cookie) {
-			CCLOGERROR("GameplayScene::addSpritesForCookies: can't cast Ref* to CookieObj*");
+			cocos2d::log("GameplayScene::addSpritesForCookies: can't cast Ref* to CookieObj*");
 			CC_ASSERT(cookie);
 			continue;
 		}
@@ -154,12 +159,15 @@ void GameplayScene::addSpritesForCookies(Set* cookies)
 		mCookiesLayer->addChild(sprite);
         cookie->setSpriteNode(sprite);
 
-        auto label = cocos2d::Label::create("", "fonts/Arial", 16,
-            cocos2d::Size(32, 32), cocos2d::TextHAlignment::LEFT, cocos2d::TextVAlignment::TOP);
+        auto label = Label::create();
+        label->setBMFontSize(16);
+        label->setDimensions(32, 32);
+        label->setHorizontalAlignment(TextHAlignment::LEFT);
+        label->setVerticalAlignment(TextVAlignment::TOP);
         auto size = sprite->getContentSize();
-        label->setPosition(cocos2d::Vec2(size.width / 4, (size.height / 1.25f)));
-        label->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
-        sprite->addChild(label);
+        label->setPosition(Vec2(size.width / 4, (size.height / 1.25f)));
+        label->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+        sprite->addChild(label, 10);
         cookie->setDebugLabel(label);
         
         cookie->updateDebugTileLabel();
@@ -171,18 +179,23 @@ void GameplayScene::addSpritesForCookies(Set* cookies)
 Vec2 GameplayScene::pointForColumnAndRow(int column, int row)
 //--------------------------------------------------------------------
 {
-   return Vec2(column * TileWidth + TileWidth / 2, (NumRows - row - 1) * TileHeight + TileHeight / 2);
+    //temporary solution to set correct pos for [col, row]
+    auto temp = column;
+    column = row;
+    row = temp;
+    return Vec2(column * TileWidth + TileWidth / 2, (NumRows - row - 1) * TileHeight + TileHeight / 2);
 }
 
 //--------------------------------------------------------------------
 bool GameplayScene::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
 //--------------------------------------------------------------------
 {
-	CCLOGINFO("GameplayScene::convertPointToTilePos: point: x=%.2f y=%.2f", point.x, point.y);
+//	cocos2d::log("GameplayScene::convertPointToTilePos: point: x=%.2f y=%.2f", point.x, point.y);
 	if (point.x >= 0 && point.x < NumColumns*TileWidth && point.y >= 0 && point.y < NumRows*TileHeight) {
-        column = point.x / TileWidth;
-        row = NumRows - (point.y / TileHeight);
-		CCLOGINFO("GameplayScene::addSpritesForCookies: touch founed! column=%d row=%d", column, row);
+        //temporary solution to set correct pos for [col, row]
+        row = point.x / TileWidth;
+        column = NumRows - (point.y / TileHeight);
+//		cocos2d::log("GameplayScene::convertPointToTilePos: touch founed! column=%d row=%d", column, row);
 		return true;
 	} 
 	return false;
@@ -192,14 +205,12 @@ bool GameplayScene::convertPointToTilePos(cocos2d::Vec2& point, int& column, int
 bool GameplayScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
-    CCLOGINFO("GameplayScene::onTouchBegan:");
     Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
 
     if (convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {
         CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
         if (cookie) {
-//             cookie->getSpriteNode()->setVisible(false);
-//             cookie->getHighLightedSpriteNode()->setVisible(true);
+            showSelectionIndicatorForCookie(cookie);
             return true;
         }
     }
@@ -223,6 +234,7 @@ void GameplayScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
 
         if (horzDelta != 0 || vertDelta != 0) {
             if (trySwapCookieTo(horzDelta, vertDelta)) {
+                hideSelectionIndicator();
                 clearTouchedCookie();
             }
         }
@@ -233,15 +245,12 @@ void GameplayScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
 void GameplayScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
+    if (mSelectionSprite->getParent() != nullptr && isCookieTouched()) {
+        hideSelectionIndicator();
+    }
     if (!isCookieTouched())
         return;
 
-    CCLOGINFO("GameplayScene::onTouchEnded:");
-    CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
-    if (cookie) {
-//         cookie->getSpriteNode()->setVisible(true);
-//         cookie->getHighLightedSpriteNode()->setVisible(false);
-    }
     clearTouchedCookie();
 }
 
@@ -249,16 +258,20 @@ void GameplayScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 void GameplayScene::onTouchCancelled(cocos2d::Touch * touch, cocos2d::Event * event)
 //--------------------------------------------------------------------
 {
-    CCLOGINFO("GameplayScene::onTouchCancelled:");
+    cocos2d::log("GameplayScene::onTouchCancelled:");
     onTouchEnded(touch, event);
 }
 
+//--------------------------------------------------------------------
 void GameplayScene::userInteractionEnabled()
+//--------------------------------------------------------------------
 {
     Director::getInstance()->getEventDispatcher()->resumeEventListenersForTarget(mCookiesLayer);
 }
 
+//--------------------------------------------------------------------
 void GameplayScene::userInteractionDisabled()
+//--------------------------------------------------------------------
 {
     Director::getInstance()->getEventDispatcher()->pauseEventListenersForTarget(mCookiesLayer);
 }
@@ -289,6 +302,45 @@ void GameplayScene::animateSwap(SwapObj * swap, cocos2d::CallFunc* func)
 
     swap->getCookieA()->updateDebugTileLabel();
     swap->getCookieB()->updateDebugTileLabel();
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::showSelectionIndicatorForCookie(CookieObj * cookie)
+//--------------------------------------------------------------------
+{
+    if (mSelectionSprite->getParent() != nullptr) {
+        mSelectionSprite->removeFromParent();
+    }
+
+    auto img = new Image();
+    img->initWithImageFile(cookie->highlightedSpriteName());
+
+    auto texture = new Texture2D();
+    texture->initWithImage(img);
+    mSelectionSprite->initWithTexture(texture);
+
+    auto size = cookie->getSpriteNode()->getContentSize();
+    mSelectionSprite->setPosition(Vec2(size.width / 2, size.height / 2));
+    mSelectionSprite->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+    mSelectionSprite->setContentSize(size);
+   
+    cookie->getSpriteNode()->addChild(mSelectionSprite);
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::hideSelectionIndicator()
+//--------------------------------------------------------------------
+{
+    auto sprite = mSelectionSprite;
+    auto callbackFunc = CallFunc::create([sprite]() {
+        if (sprite->getParent() != nullptr) {
+            sprite->removeFromParent();
+        }
+    });
+    const float duration = 0.3f;
+    auto seq = Sequence::create(FadeOut::create(duration), DelayTime::create(0.5f), callbackFunc, nullptr);
+    //TODO: fix fade animation
+    mSelectionSprite->runAction(seq);
 }
 
 //--------------------------------------------------------------------
@@ -330,7 +382,7 @@ void GameplayScene::updateSwipeDelta(int column, int row, int& horzDelta, int& v
 bool GameplayScene::trySwapCookieTo(int horzDelta, int vertDelta)
 //--------------------------------------------------------------------
 {
-    CCLOGINFO("GameplayScene::trySwapCookieTo: horzDelta=%d; vertDelta=%d;", horzDelta, vertDelta);
+    cocos2d::log("GameplayScene::trySwapCookieTo: horzDelta=%d; vertDelta=%d;", horzDelta, vertDelta);
     int toColumn = mSwipeFromColumn + horzDelta;
     int toRow = mSwipeFromRow + vertDelta;
 
@@ -345,13 +397,18 @@ bool GameplayScene::trySwapCookieTo(int horzDelta, int vertDelta)
 
     CookieObj* fromCookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
    
-    CCLOGINFO("GameplayScene::trySwapCookieTo: fromCookie=[%d,%d]; toCookie=[%d][%d];"
+    cocos2d::log("GameplayScene::trySwapCookieTo: fromCookie=[%d,%d]; toCookie=[%d][%d];"
         , fromCookie->getColumn(), fromCookie->getRow(), toCookie->getColumn(), toCookie->getRow());
 
-    if (mSwapCallback != nullptr) {
-        SwapObj* swap = SwapObj::createWithCookies(fromCookie, toCookie);
-        mSwapCallback(swap);
-    }
+    if (!mSwapCallback)
+        return false;
+    
+    SwapObj* swap = SwapObj::createWithCookies(fromCookie, toCookie);
+    if (!swap)
+        return false;
+
+    mSwapCallback(swap);
+    
     return true;
 }
 
