@@ -21,14 +21,14 @@ LevelObj::LevelObj()
     : mPossibleSwaps(nullptr)
 //--------------------------------------------------------------------
 {
-   CCLOGINFO("LevelObj::LevelObj");
+   cocos2d::log("LevelObj::LevelObj");
 }
 
 //--------------------------------------------------------------------
 LevelObj::~LevelObj()
 //--------------------------------------------------------------------
 {
-    CCLOGINFO("LevelObj::~LevelObj: deallocing CookieObj: %p - tag: %i", this, _tag);
+    cocos2d::log("LevelObj::~LevelObj: deallocing CookieObj: %p - tag: %i", this, _tag);
 }
 
 //--------------------------------------------------------------------
@@ -50,13 +50,13 @@ bool LevelObj::initWithId(const int16_t& levelId)
 //--------------------------------------------------------------------
 {
    if (!Node::init()) {
-      CCLOGERROR("LevelObj::initWithId: can't init Node inctance");
+      cocos2d::log("LevelObj::initWithId: can't init Node inctance");
       return false;
    }
 
    JsonParser::Instance().parseLevelInfo(levelId);
    if (!JsonParser::Instance().checkStatus()) {
-	   CCLOGERROR("LevelObj::initWithId: can't parse json file");
+	   cocos2d::log("LevelObj::initWithId: can't parse json file");
 	   return false;
    }
    
@@ -78,14 +78,15 @@ bool LevelObj::initWithId(const int16_t& levelId)
 cocos2d::Set* LevelObj::shuffle()
 //--------------------------------------------------------------------
 {
-   CCLOGINFO("LevelObj::shuffle:");
-   cocos2d::Set* set = nullptr;
-   do {
-       set = createInitialCookies();
-       detectPossibleSwaps();
+   cocos2d::log("LevelObj::shuffle:");
+   cocos2d::Set* set = createInitialCookies();
+   //detectPossibleSwaps();
 
-       CCLOGINFO("LevelObj::shuffle: possible swaps - %d", mPossibleSwaps->count());
-   } while (mPossibleSwaps->count() == 0);
+//    while (mPossibleSwaps->count() == 0) {
+//        set = createInitialCookies();
+//        detectPossibleSwaps();
+//    }
+
    return set;
 }
 
@@ -96,11 +97,11 @@ TileObj* LevelObj::tileAt(int column, int row)
    bool invalidColumn = column >= 0 && column < NumColumns;
    bool invalidRow = row >= 0 && row < NumColumns;
    if (!invalidColumn) {
-      CCLOGERROR("LevelObj::tileAt: Invalid column : %d", column);
+      cocos2d::log("LevelObj::tileAt: Invalid column : %d", column);
       CC_ASSERT(invalidColumn);
    }
    if (!invalidRow) {
-      CCLOGERROR("LevelObj::tileAt: Invalid row: %d", row);
+      cocos2d::log("LevelObj::tileAt: Invalid row: %d", row);
       CC_ASSERT(invalidRow);
    }
    return mTiles[column][row];
@@ -113,11 +114,11 @@ CookieObj* LevelObj::cookieAt(int column, int row)
    bool invalidColumn = column >= 0 && column < NumColumns;
    bool invalidRow = row >= 0 && row < NumColumns;
    if (!invalidColumn) {
-      CCLOGERROR("LevelObj::cookieAt: Invalid column : %d", column);
+      cocos2d::log("LevelObj::cookieAt: Invalid column : %d", column);
       CC_ASSERT(invalidColumn);
    }
    if (!invalidRow) {
-      CCLOGERROR("LevelObj::cookieAt: Invalid row: %d", row);
+      cocos2d::log("LevelObj::cookieAt: Invalid row: %d", row);
       CC_ASSERT(invalidRow);
    }
     return mCookies[column][row];
@@ -130,7 +131,7 @@ void LevelObj::performSwap(SwapObj * swap)
     if (!swap) {
         return;
     }
-    CCLOGINFO("LevelObj::performSwap: %s", swap->description().c_str());
+    cocos2d::log("LevelObj::performSwap: %s", swap->description().c_str());
     int columnA = swap->getCookieA()->getColumn();
     int rowA = swap->getCookieA()->getRow();
     int columnB = swap->getCookieB()->getColumn();
@@ -149,19 +150,22 @@ void LevelObj::performSwap(SwapObj * swap)
 cocos2d::Set* LevelObj::createInitialCookies()
 //--------------------------------------------------------------------
 {
-    CCLOGINFO("LevelObj::createInitialCookies:");
+    cocos2d::log("LevelObj::createInitialCookies:");
     cocos2d::Set* set = new cocos2d::Set();
-
+    auto createdString = cocos2d::String("");
+    
     for (int column = 0; column < NumColumns; column++) {
         for (int row = 0; row < NumRows; row++) {
             if (mTiles[column][row] != nullptr) {
                 int cookieType = getRandomCookieType(column, row);
                 CookieObj* cookie = createCookie(column, row, cookieType);
                 set->addObject(cookie);
+                createdString.appendWithFormat("%d ", cookieType);
             }
         }
+        createdString.append("\n");
     }
-    CCLOGINFO("LevelObj::createInitialCookies: set.size=", set->count);
+    cocos2d::log("LevelObj::createInitialCookies: created array=%s", createdString.getCString());
     return set;
 }
 
@@ -179,19 +183,19 @@ CookieObj * LevelObj::createCookie(int column, int row, int type)
 int LevelObj::getRandomCookieType(int column, int row)
 //--------------------------------------------------------------------
 {
-    int cookieMax = Helper::Instance().to_underlying(CommonTypes::CookieType::CookieMax);
+    int cookieMax = Helper::Instance().to_underlying(CommonTypes::CookieType::Macaron);
 
     int type = 0;
     bool findNextType = false;
     do {
         type = Helper::Instance().random(0, cookieMax - 1);
-
-        findNextType = ((column >= 2 && // there are already two cookies of this type to the left
+        auto isCookiesToTheLeft = (column >= 2 && // there are already two cookies of this type to the left
             isSameTypeOfCookieAt(column - 1, row, type) &&
-            isSameTypeOfCookieAt(column - 2, row, type)) ||
-            (row >= 2 && // or there are already two cookies of this type below
-                isSameTypeOfCookieAt(column, row - 1 , type) &&
-                isSameTypeOfCookieAt(column, row - 2, type)));
+            isSameTypeOfCookieAt(column - 2, row, type));
+        auto isCookiesBelow = (row >= 2 && // or there are already two cookies of this type below
+            isSameTypeOfCookieAt(column, row - 1, type) &&
+            isSameTypeOfCookieAt(column, row - 2, type));
+        findNextType = (isCookiesToTheLeft || isCookiesBelow);
     } while (findNextType);
     
    return type;
@@ -204,9 +208,12 @@ bool LevelObj::isSameTypeOfCookieAt(int column, int row, int type)
     auto cookie = cookieAt(column, row);
     if (!cookie)
         return false;
-
-    if (cookie->getTypeAsInt() != type)
+    
+    if (cookie->getTypeAsInt() != type) {
+        cocos2d::log("LevelObj::isSameTypeOfCookieAt: current=%s; randomType=%d"
+            , cookie->description().c_str(), type);
         return false;
+    }
 
     return true;    
 }
@@ -215,12 +222,12 @@ bool LevelObj::isSameTypeOfCookieAt(int column, int row, int type)
 void LevelObj::detectPossibleSwaps()
 //--------------------------------------------------------------------
 {
-    CCLOGINFO("LevelObj::detectPossibleSwaps:");
+    cocos2d::log("LevelObj::detectPossibleSwaps:");
     cocos2d::Set* set = new cocos2d::Set();
 
     for (int column = 0; column < NumColumns; column++) {
         for (int row = 0; row < NumRows; row++) {
-            auto cookie = cookieAt(row, column);
+            auto cookie = cookieAt(column, row);
             if (cookie != nullptr) {
                 // Is it possible to swap this cookie with the one on the right?
                 if (column < NumColumns - 1) {
@@ -264,7 +271,7 @@ void LevelObj::detectPossibleSwaps()
             }
         }
     }
-    CCLOGINFO("LevelObj::createInitialCookies: set.size=", set->count);
+    cocos2d::log("LevelObj::createInitialCookies: set.size=", set->count());
     mPossibleSwaps = set;
 }
 

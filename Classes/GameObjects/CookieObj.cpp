@@ -46,7 +46,7 @@ CookieObj * CookieObj::create(const CookieInfo & cookieInfo)
 CookieObj::~CookieObj()
 //--------------------------------------------------------------------
 {
-    CCLOGINFO("CookieObj::~CookieObj: deallocing CookieObj: %p - tag: %i", this, _tag);
+    cocos2d::log("CookieObj::~CookieObj: deallocing CookieObj: %p - tag: %i", this, _tag);
 }
 
 //--------------------------------------------------------------------
@@ -54,11 +54,11 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
 //--------------------------------------------------------------------
 {
     if (!Node::init()) {
-        CCLOGERROR("CookieObj::init: can't init Node inctance");
+        cocos2d::log("CookieObj::init: can't init Node inctance");
         return false;
     }
 
-    CCLOGINFO("CookieObj::init: column=%d row=%d cookieType=%d", mColumn, mRow, mType);
+    //cocos2d::log("CookieObj::init: column=%d row=%d cookieType=%d", mColumn, mRow, mType);
 
     mColumn = cookieInfo.column;
     mRow = cookieInfo.row;
@@ -85,7 +85,7 @@ string CookieObj::highlightedSpriteName()
 string CookieObj::description()
 //--------------------------------------------------------------------
 {
-    CCLOGINFO("CookieObj::description: type:%d square:(%d,%d)", mType, mColumn, mRow);
+    //cocos2d::log("CookieObj::description: type:%d square:(%d,%d)", mType, mColumn, mRow);
     return cocos2d::StringUtils::format("type:%d square:(%d,%d)", mType, mColumn, mRow);
 }
 

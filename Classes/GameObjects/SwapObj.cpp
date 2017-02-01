@@ -44,12 +44,12 @@ bool SwapObj::initWithCookies(CookieObj * cookieA, CookieObj * cookieB)
 //--------------------------------------------------------------------
 {
     if (!Node::init()) {
-        CCLOGERROR("SwapObj::initWithCookies: can't init Node inctance");
+        cocos2d::log("SwapObj::initWithCookies: can't init Node inctance");
         return false;
     }
 
     if (!cookieA || !cookieB) {
-        CCLOGERROR("SwapObj::initWithCookies: broken cookie pointers: A=%p; B=%p", cookieA, cookieB);
+        cocos2d::log("SwapObj::initWithCookies: broken cookie pointers: A=%p; B=%p", cookieA, cookieB);
         return false;
     }
     mCookieA = cookieA;
@@ -64,6 +64,6 @@ std::string SwapObj::description()
 {
     auto str = cocos2d::StringUtils::format("swap [%d,%d] with [%d][%d]"
         , mCookieA->getColumn(), mCookieA->getRow(), mCookieB->getColumn(), mCookieB->getRow());
-    CCLOGINFO("GameplayScene::trySwapCookieTo: %s;", str.c_str);
+    cocos2d::log("GameplayScene::trySwapCookieTo: %s;", str.c_str());
     return str;
 }
