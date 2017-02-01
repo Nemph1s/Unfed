@@ -190,12 +190,10 @@ Vec2 GameplayScene::pointForColumnAndRow(int column, int row)
 bool GameplayScene::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
 //--------------------------------------------------------------------
 {
-//	cocos2d::log("GameplayScene::convertPointToTilePos: point: x=%.2f y=%.2f", point.x, point.y);
 	if (point.x >= 0 && point.x < NumColumns*TileWidth && point.y >= 0 && point.y < NumRows*TileHeight) {
         //temporary solution to set correct pos for [col, row]
         row = point.x / TileWidth;
         column = NumRows - (point.y / TileHeight);
-//		cocos2d::log("GameplayScene::convertPointToTilePos: touch founed! column=%d row=%d", column, row);
 		return true;
 	} 
 	return false;
@@ -302,6 +300,36 @@ void GameplayScene::animateSwap(SwapObj * swap, cocos2d::CallFunc* func)
 
     swap->getCookieA()->updateDebugTileLabel();
     swap->getCookieB()->updateDebugTileLabel();
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::animateInvalidSwap(SwapObj * swap, cocos2d::CallFunc * func)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(swap);
+    CC_ASSERT(func);
+    // Put the cookie you started with on top.
+
+    auto cookieA = swap->getCookieA()->getSpriteNode();
+    auto cookieB = swap->getCookieB()->getSpriteNode();
+
+    cookieA->setZOrder(100);
+    cookieB->setZOrder(90);
+
+    const float duration = 0.3;
+    auto deltaA = cookieB->getPosition() - cookieA->getPosition();
+    auto deltaB = cookieA->getPosition()- cookieB->getPosition();
+
+    auto moveA = MoveBy::create(duration, deltaA);
+    auto easeA = EaseOut::create(moveA, duration);
+    auto moveB = MoveBy::create(duration, deltaB);
+    auto easeB = EaseOut::create(moveB, duration);
+
+    auto rotate = RotateBy::create(0.05f, 10);
+    auto seq = Sequence::create(rotate, rotate->reverse(), rotate, rotate->reverse(), nullptr);
+
+    cookieB->runAction(Sequence::create(easeB, easeB->reverse(), nullptr));
+    cookieA->runAction(Sequence::create(easeA, easeA->reverse(), seq, func, nullptr));
 }
 
 //--------------------------------------------------------------------

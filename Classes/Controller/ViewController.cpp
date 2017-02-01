@@ -60,15 +60,17 @@ bool ViewController::init()
 
    auto callback = [&](SwapObj* swap) {
        auto funcCallAction = CallFunc::create([=]() {
+           // enable touches on layer.
            mGameplayScene->userInteractionEnabled();
        });
+       // disable touches on layer.
        mGameplayScene->userInteractionDisabled();
 
        if (mLevel->isPossibleSwap(swap)) {
            mLevel->performSwap(swap);
            mGameplayScene->animateSwap(swap, funcCallAction);
        } else {
-           mGameplayScene->userInteractionEnabled();
+           mGameplayScene->animateInvalidSwap(swap, funcCallAction);
        }
    };
 

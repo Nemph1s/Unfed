@@ -24,7 +24,6 @@ class CookieObj;
 class GameplayScene : public cocos2d::Scene
 {
 public:
-
     static GameplayScene* createWithSize(const cocos2d::Size& size);
 
  CC_CONSTRUCTOR_ACCESS:
@@ -52,6 +51,7 @@ public:
     void userInteractionDisabled();
 
     void animateSwap(SwapObj* swap, cocos2d::CallFunc* func);
+    void animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* func);
 
     void showSelectionIndicatorForCookie(CookieObj* cookie);
     void hideSelectionIndicator();

@@ -183,7 +183,7 @@ CookieObj * LevelObj::createCookie(int column, int row, int type)
 int LevelObj::getRandomCookieType(int column, int row)
 //--------------------------------------------------------------------
 {
-    int cookieMax = Helper::Instance().to_underlying(CommonTypes::CookieType::Macaron);
+    int cookieMax = Helper::Instance().to_underlying(CommonTypes::CookieType::CookieMax);
 
     int type = 0;
     bool findNextType = false;
