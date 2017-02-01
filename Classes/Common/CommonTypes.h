@@ -58,6 +58,17 @@ namespace CommonTypes {
    };
 
    /**
+   * @brief ChainType enum.
+   * Type of the sound object
+   */
+   enum class ChainType : int {
+       ChainTypeHorizontal = 0 /**< enum value ChainTypeHorizontal. */
+       , ChainTypeVertical = 1 /**< enum value ChainTypeVertical. */
+       , Unknown /**< enum value unknown. */
+   };
+
+
+   /**
    * @brief SoundType enum.
    * Type of the sound object
    */

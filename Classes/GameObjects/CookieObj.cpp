@@ -85,7 +85,6 @@ string CookieObj::highlightedSpriteName()
 string CookieObj::description()
 //--------------------------------------------------------------------
 {
-    //cocos2d::log("CookieObj::description: type:%d square:(%d,%d)", mType, mColumn, mRow);
     return cocos2d::StringUtils::format("type:%d square:(%d,%d)", mType, mColumn, mRow);
 }
 

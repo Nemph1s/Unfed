@@ -1,0 +1,111 @@
+/**
+* @file GameObjects/ChainObj.cpp
+* Copyright (C) 2017
+* Company       Octohead LTD
+*               All Rights Reserved
+*               Secrecy Level STRICTLY CONFIDENTIAL
+*
+* @author VMartyniuk
+*/
+
+
+#include "GameObjects/ChainObj.h"
+#include "GameObjects/CookieObj.h"
+#include "Utils/Helpers/Helper.h"
+
+//--------------------------------------------------------------------
+ChainObj::ChainObj()
+//--------------------------------------------------------------------
+{
+}
+
+//--------------------------------------------------------------------
+ChainObj * ChainObj::createWithType(const CommonTypes::ChainType &type)
+//--------------------------------------------------------------------
+{
+    ChainObj * ret = new (std::nothrow) ChainObj();
+    if (ret && ret->initWithType(type)) {
+        ret->autorelease();
+    }
+    else {
+        CC_SAFE_DELETE(ret);
+    }
+    return ret;
+}
+
+//--------------------------------------------------------------------
+ChainObj::~ChainObj()
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ChainObj::~ChainObj: deallocing ChainObj: %p - tag: %i", this, _tag);
+}
+
+//--------------------------------------------------------------------
+bool ChainObj::initWithType(const CommonTypes::ChainType &type)
+//--------------------------------------------------------------------
+{
+    if (!Node::init()) {
+        cocos2d::log("ChainObj::init: can't init Node inctance");
+        return false;
+    }
+
+    mType = type;
+
+    return true;
+}
+
+//--------------------------------------------------------------------
+std::string ChainObj::description()
+//--------------------------------------------------------------------
+{
+    int count = 0;
+    auto strChains = cocos2d::String::createWithFormat("%s matches: {\n", typeAsString().c_str());
+    strChains->appendWithFormat("\ttype:%d cookies:{\n", getTypeAsInt());
+    for (auto it = mCookies->begin(); it != mCookies->end(); ++it, count++) {
+        
+        auto cookie = static_cast<CookieObj*>(*it);
+        strChains->appendWithFormat("\t\t%s\n", cookie->description().c_str());
+    }
+    strChains->append("\t}\n}");
+
+    return std::string(strChains->getCString());
+}
+
+//--------------------------------------------------------------------
+std::string ChainObj::typeAsString()
+//--------------------------------------------------------------------
+{
+    std::string type;
+    switch (mType)
+    {
+    case CommonTypes::ChainType::ChainTypeHorizontal:
+        type = "Horizontal";
+        break;
+    case CommonTypes::ChainType::ChainTypeVertical:
+        type = "Vertical";
+        break;
+    case CommonTypes::ChainType::Unknown:
+    default:
+        type = "Unknown";
+        break;
+    }
+    return type;
+}
+
+//--------------------------------------------------------------------
+int ChainObj::getTypeAsInt()
+//--------------------------------------------------------------------
+{
+    return Helper::getInstance->to_underlying(mType);
+}
+
+//--------------------------------------------------------------------
+void ChainObj::addCookie(CookieObj * cookie)
+//--------------------------------------------------------------------
+{
+    if (mCookies == nullptr) {
+        mCookies = cocos2d::Array::create();
+        this->addChild(mCookies);
+    }
+    mCookies->addObject(cookie);
+}

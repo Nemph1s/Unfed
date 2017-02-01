@@ -146,6 +146,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\Controller\ViewController.cpp" />
+    <ClCompile Include="..\Classes\GameObjects\ChainObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\CookieObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\LevelObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\SwapObj.cpp" />
@@ -163,6 +164,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\Common\CommonTypes.h" />
     <ClInclude Include="..\Classes\Controller\ViewController.h" />
+    <ClInclude Include="..\Classes\GameObjects\ChainObj.h" />
     <ClInclude Include="..\Classes\GameObjects\CookieObj.h" />
     <ClInclude Include="..\Classes\GameObjects\LevelObj.h" />
     <ClInclude Include="..\Classes\GameObjects\SwapObj.h" />

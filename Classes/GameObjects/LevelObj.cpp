@@ -12,6 +12,7 @@
 #include "GameObjects/TileObj.h"
 #include "GameObjects/SwapObj.h"
 #include "GameObjects/CookieObj.h"
+#include "GameObjects/ChainObj.h"
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/JsonParser.h"
@@ -144,6 +145,106 @@ void LevelObj::performSwap(SwapObj * swap)
     mCookies[columnB][rowB] = swap->getCookieA();
     swap->getCookieA()->setColumn(columnB);
     swap->getCookieA()->setRow(rowB);
+}
+
+//--------------------------------------------------------------------
+cocos2d::Set * LevelObj::detectHorizontalMatches()
+//--------------------------------------------------------------------
+{
+    cocos2d::Set* set = new cocos2d::Set();
+
+    for (int row = 0; row < NumRows; row++) {
+        for (int column = 0; column < NumColumns - 2; ) {
+
+            auto cookie = cookieAt(column, row);
+            // skip over any gaps in the level design.
+            if (cookie != nullptr) {
+                int matchType = cookie->getTypeAsInt();
+
+                auto other1 = cookieAt(column + 1, row);
+                auto other2 = cookieAt(column + 2, row);
+                // check whether the next two columns have the same cookie type.
+                if (other1 != nullptr && other2 != nullptr) {
+
+                    if (other1->getTypeAsInt() == matchType 
+                        && other2->getTypeAsInt() == matchType) {
+                        //  There is a chain of at least three cookies but potentially there are more. This steps through all the matching cookies 
+                        // until it finds a cookie that breaks the chain or it reaches the end of the grid.
+                        ChainObj* chain = ChainObj::createWithType(CommonTypes::ChainType::ChainTypeHorizontal);
+                        do {
+                            cookie = cookieAt(column, row);
+                            chain->addCookie(cookie);
+                            column += 1;
+                        } while (column < NumColumns && cookie->getTypeAsInt() == matchType);
+
+                        set->addObject(chain);
+                        continue;
+                    }       
+                }
+            }
+            //  If the next two cookies don’t match the current one or if there is an empty tile, 
+            // then there is no chain, so you skip over the cookie.
+            column += 1;
+        }
+    }
+    return set;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Set * LevelObj::detectVerticalMatches()
+//--------------------------------------------------------------------
+{
+    cocos2d::Set* set = new cocos2d::Set();
+
+    for (int column = 0; column < NumColumns; column++) {
+        for (int row = 0; row < NumRows - 2;) {
+ 
+            auto cookie = cookieAt(column, row);
+            // skip over any gaps in the level design.
+            if (cookie != nullptr) {
+                int matchType = cookie->getTypeAsInt();
+
+                auto other1 = cookieAt(column, row + 1);
+                auto other2 = cookieAt(column, row + 2);
+                // check whether the next two columns have the same cookie type.
+                if (other1 != nullptr && other2 != nullptr) {
+
+                    if (other1->getTypeAsInt() == matchType 
+                        && other2->getTypeAsInt() == matchType) {
+                        //  There is a chain of at least three cookies but potentially there are more. This steps through all the matching cookies 
+                        // until it finds a cookie that breaks the chain or it reaches the end of the grid.
+                        ChainObj* chain = ChainObj::createWithType(CommonTypes::ChainType::ChainTypeVertical);
+                        do {
+                            cookie = cookieAt(column, row);
+                            chain->addCookie(cookie);
+                            row += 1;
+                        } while (row < NumRows && cookie->getTypeAsInt() == matchType);
+
+                        set->addObject(chain);
+                        continue;
+                    }
+                }
+            }
+            //  If the next two cookies don’t match the current one or if there is an empty tile, 
+            // then there is no chain, so you skip over the cookie.
+            row += 1;
+        }
+    }
+    return set;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Set * LevelObj::removeMatches()
+//--------------------------------------------------------------------
+{
+    auto horizontalChains = detectHorizontalMatches();
+    auto verticalChains = detectVerticalMatches();
+
+    
+//     NSLog(@"Horizontal matches: %@", horizontalChains);
+//     NSLog(@"Vertical matches: %@", verticalChains);
+
+   // ??? return[horizontalChains setByAddingObjectsFromSet : verticalChains]
 }
 
 //--------------------------------------------------------------------

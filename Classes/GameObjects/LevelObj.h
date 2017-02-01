@@ -44,8 +44,12 @@ CC_CONSTRUCTOR_ACCESS:
    * @brief To Swap or Not to Swap…
    */
    bool isPossibleSwap(SwapObj* swap);
-
    void performSwap(SwapObj* swap);
+
+   cocos2d::Set* detectHorizontalMatches();
+   cocos2d::Set* detectVerticalMatches();
+
+   cocos2d::Set* removeMatches();
 
 protected:
 
