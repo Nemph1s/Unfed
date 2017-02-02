@@ -279,9 +279,37 @@ cocos2d::Set * LevelObj::removeMatches()
     strVerticalChains->append("}");
 
     cocos2d::log("LevelObj::removeMatches: %s", strHorizontalChains->getCString());
+    removeCookies(horizontalChains);
+
     cocos2d::log("LevelObj::removeMatches: %s", strVerticalChains->getCString());
+    removeCookies(verticalChains);
 
     return set;
+}
+
+//--------------------------------------------------------------------
+void LevelObj::removeCookies(cocos2d::Set * chains)
+//--------------------------------------------------------------------
+{
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        if (!chain) {
+            cocos2d::log("LevelObj::removeCookies: can't cast Ref* to ChainObj*");
+            CC_ASSERT(chain);
+            continue;
+        }
+        auto cookies = chain->getCookies();
+        for (auto it = cookies->begin(); it != cookies->end(); it++) {
+            auto cookie = dynamic_cast<CookieObj*>(*it);
+            if (!cookie) {
+                cocos2d::log("LevelObj::removeCookies: can't cast Ref* to CookieObj*");
+                CC_ASSERT(cookie);
+                continue;
+            }
+            cocos2d::log("LevelObj::removeCookies: remove %s", cookie->description().c_str());
+            mCookies[cookie->getColumn()][cookie->getRow()] = nullptr;
+        }
+    }
 }
 
 //--------------------------------------------------------------------

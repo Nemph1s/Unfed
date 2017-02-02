@@ -13,6 +13,7 @@
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/CookieObj.h"
 #include "GameObjects/SwapObj.h"
+#include "GameObjects/ChainObj.h"
 
 #include "Utils/Helpers/VisibleRect.h"
 #include "Utils/Helpers/Helper.h"
@@ -281,11 +282,11 @@ void GameplayScene::userInteractionDisabled()
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::animateSwap(SwapObj * swap, cocos2d::CallFunc* func)
+void GameplayScene::animateSwap(SwapObj * swap, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(swap);
-    CC_ASSERT(func);
+    CC_ASSERT(completion);
     // Put the cookie you started with on top.
 
     auto cookieA = swap->getCookieA()->getSpriteNode();
@@ -298,7 +299,7 @@ void GameplayScene::animateSwap(SwapObj * swap, cocos2d::CallFunc* func)
 
     auto moveA = MoveTo::create(duration, cookieB->getPosition());
     auto easeA = EaseOut::create(moveA, duration); // maybe change rate?
-    cookieA->runAction(Sequence::create(easeA, func, nullptr));
+    cookieA->runAction(Sequence::create(easeA, completion, nullptr));
 
     auto moveB = MoveTo::create(duration, cookieA->getPosition());
     auto easeB = EaseOut::create(moveB, duration);
@@ -311,11 +312,11 @@ void GameplayScene::animateSwap(SwapObj * swap, cocos2d::CallFunc* func)
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::animateInvalidSwap(SwapObj * swap, cocos2d::CallFunc * func)
+void GameplayScene::animateInvalidSwap(SwapObj * swap, cocos2d::CallFunc * completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(swap);
-    CC_ASSERT(func);
+    CC_ASSERT(completion);
     // Put the cookie you started with on top.
 
     auto cookieA = swap->getCookieA()->getSpriteNode();
@@ -337,9 +338,52 @@ void GameplayScene::animateInvalidSwap(SwapObj * swap, cocos2d::CallFunc * func)
     auto seq = Sequence::create(rotate, rotate->reverse(), rotate, rotate->reverse(), nullptr);
 
     cookieB->runAction(Sequence::create(easeB, easeB->reverse(), nullptr));
-    cookieA->runAction(Sequence::create(easeA, easeA->reverse(), seq, func, nullptr));
+    cookieA->runAction(Sequence::create(easeA, easeA->reverse(), seq, completion, nullptr));
 
     AudioManager::getInstance()->playSound(SoundType::InvalidSwapSound);
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* completion)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(chains);
+    CC_ASSERT(completion);
+
+    const float duration = 0.3;
+
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        if (!chain)
+            continue;
+        auto cookies = chain->getCookies();
+        for (auto it = cookies->begin(); it != cookies->end(); it++) {
+
+            auto cookie = dynamic_cast<CookieObj*>(*it);
+            if (cookie != nullptr) {
+
+                const float scaleFactor = 0.1;
+
+                auto scaleAction = ScaleTo::create(duration, scaleFactor);
+                auto easeOut = EaseOut::create(scaleAction, duration);
+
+                auto sprite = cookie->getSpriteNode();
+                auto callback = CallFunc::create([sprite, cookie]() {
+                    if (sprite) {
+                        sprite->removeFromParent();
+                        cookie->setSpriteNode(nullptr);
+                    }
+                });
+
+                cookie->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
+            }
+        }
+    }
+
+    AudioManager::getInstance()->playSound(SoundType::MatchSound);
+
+    this->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
 }
 
 //--------------------------------------------------------------------

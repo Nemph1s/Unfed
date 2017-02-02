@@ -50,6 +50,7 @@ CC_CONSTRUCTOR_ACCESS:
    cocos2d::Set* detectVerticalMatches();
 
    cocos2d::Set* removeMatches();
+   void removeCookies(cocos2d::Set* chains);
 
 protected:
 

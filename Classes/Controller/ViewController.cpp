@@ -111,5 +111,10 @@ void ViewController::handleMatches()
 {
     cocos2d::log("ViewController::handleMatches");
     auto chains = mLevel->removeMatches();
-    // TODO: do something with the set
+
+    auto completionCallback = CallFunc::create([=]() {
+        mGameplayScene->userInteractionEnabled();
+    });
+    
+    mGameplayScene->animateMatching(chains, completionCallback);
 }
