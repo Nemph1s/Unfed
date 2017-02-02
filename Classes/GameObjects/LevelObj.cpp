@@ -36,92 +36,92 @@ LevelObj::~LevelObj()
 LevelObj* LevelObj::createWithId(const int16_t& levelId)
 //--------------------------------------------------------------------
 {
-   LevelObj* ret = new (std::nothrow) LevelObj();
-   if (ret && ret->initWithId(levelId)) {
-      ret->retain();
-   }
-   else {
-      CC_SAFE_DELETE(ret);
-   }
-   return ret;
+    LevelObj* ret = new (std::nothrow) LevelObj();
+    if (ret && ret->initWithId(levelId)) {
+        CC_SAFE_RETAIN(ret);
+    }
+    else {
+        CC_SAFE_DELETE(ret);
+    }
+    return ret;
 }
 
 //--------------------------------------------------------------------
 bool LevelObj::initWithId(const int16_t& levelId)
 //--------------------------------------------------------------------
 {
-   if (!Node::init()) {
-      cocos2d::log("LevelObj::initWithId: can't init Node inctance");
-      return false;
-   }
+    if (!Node::init()) {
+        cocos2d::log("LevelObj::initWithId: can't init Node inctance");
+        return false;
+    }
 
-   JsonParser::Instance().parseLevelInfo(levelId);
-   if (!JsonParser::Instance().checkStatus()) {
-	   cocos2d::log("LevelObj::initWithId: can't parse json file");
-	   return false;
-   }
-   
-   mLevelInfo = JsonParser::Instance().getLevelInfo();
+    JsonParser::Instance().parseLevelInfo(levelId);
+    if (!JsonParser::Instance().checkStatus()) {
+        cocos2d::log("LevelObj::initWithId: can't parse json file");
+        return false;
+    }
 
-   for (int i = 0; i < NumColumns; i++) {
-      for (int j = 0; j < NumRows; j++) {
+    mLevelInfo = JsonParser::Instance().getLevelInfo();
 
-         if (mLevelInfo.tiles[i][j] == 1) {
-            mTiles[i][j] = new TileObj();
-         }
-      }
-   }
-   
-   return true;
+    for (int i = 0; i < NumColumns; i++) {
+        for (int j = 0; j < NumRows; j++) {
+
+            if (mLevelInfo.tiles[i][j] == 1) {
+                mTiles[i][j] = new TileObj();
+            }
+        }
+    }
+
+    return true;
 }
 
 //--------------------------------------------------------------------
 cocos2d::Set* LevelObj::shuffle()
 //--------------------------------------------------------------------
 {
-   cocos2d::log("LevelObj::shuffle:");
-   cocos2d::Set* set = createInitialCookies();
-   detectPossibleSwaps();
+    cocos2d::log("LevelObj::shuffle:");
+    cocos2d::Set* set = createInitialCookies();
+    detectPossibleSwaps();
 
-   while (mPossibleSwaps->count() == 0) {
-       set = createInitialCookies();
-       detectPossibleSwaps();
-   }
+    while (mPossibleSwaps->count() == 0) {
+        set = createInitialCookies();
+        detectPossibleSwaps();
+    }
 
-   return set;
+    return set;
 }
 
 //--------------------------------------------------------------------
 TileObj* LevelObj::tileAt(int column, int row)
 //--------------------------------------------------------------------
 {
-   bool invalidColumn = column >= 0 && column < NumColumns;
-   bool invalidRow = row >= 0 && row < NumColumns;
-   if (!invalidColumn) {
-      cocos2d::log("LevelObj::tileAt: Invalid column : %d", column);
-      CC_ASSERT(invalidColumn);
-   }
-   if (!invalidRow) {
-      cocos2d::log("LevelObj::tileAt: Invalid row: %d", row);
-      CC_ASSERT(invalidRow);
-   }
-   return mTiles[column][row];
+    bool invalidColumn = column >= 0 && column < NumColumns;
+    bool invalidRow = row >= 0 && row < NumColumns;
+    if (!invalidColumn) {
+        cocos2d::log("LevelObj::tileAt: Invalid column : %d", column);
+        CC_ASSERT(invalidColumn);
+    }
+    if (!invalidRow) {
+        cocos2d::log("LevelObj::tileAt: Invalid row: %d", row);
+        CC_ASSERT(invalidRow);
+    }
+    return mTiles[column][row];
 }
 
 //--------------------------------------------------------------------
 CookieObj* LevelObj::cookieAt(int column, int row)
 //--------------------------------------------------------------------
 {
-   bool invalidColumn = column >= 0 && column < NumColumns;
-   bool invalidRow = row >= 0 && row < NumColumns;
-   if (!invalidColumn) {
-      cocos2d::log("LevelObj::cookieAt: Invalid column : %d", column);
-      CC_ASSERT(invalidColumn);
-   }
-   if (!invalidRow) {
-      cocos2d::log("LevelObj::cookieAt: Invalid row: %d", row);
-      CC_ASSERT(invalidRow);
-   }
+    bool invalidColumn = column >= 0 && column < NumColumns;
+    bool invalidRow = row >= 0 && row < NumColumns;
+    if (!invalidColumn) {
+        cocos2d::log("LevelObj::cookieAt: Invalid column : %d", column);
+        CC_ASSERT(invalidColumn);
+    }
+    if (!invalidRow) {
+        cocos2d::log("LevelObj::cookieAt: Invalid row: %d", row);
+        CC_ASSERT(invalidRow);
+    }
     return mCookies[column][row];
 }
 
@@ -148,7 +148,7 @@ void LevelObj::performSwap(SwapObj * swap)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * LevelObj::detectHorizontalMatches()
+cocos2d::Set * LevelObj::detectVerticalMatches()
 //--------------------------------------------------------------------
 {
     cocos2d::Set* set = new cocos2d::Set();
@@ -170,12 +170,16 @@ cocos2d::Set * LevelObj::detectHorizontalMatches()
                         && other2->getTypeAsInt() == matchType) {
                         //  There is a chain of at least three cookies but potentially there are more. This steps through all the matching cookies 
                         // until it finds a cookie that breaks the chain or it reaches the end of the grid.
-                        ChainObj* chain = ChainObj::createWithType(CommonTypes::ChainType::ChainTypeHorizontal);
+                        ChainObj* chain = ChainObj::createWithType(CommonTypes::ChainType::ChainTypeVertical);
+                        int newMatchType = -1;
                         do {
                             cookie = cookieAt(column, row);
-                            chain->addCookie(cookie);
-                            column += 1;
-                        } while (column < NumColumns && cookie->getTypeAsInt() == matchType);
+                            newMatchType = cookie ? cookie->getTypeAsInt() : -1;
+                            if (cookie != nullptr && newMatchType == matchType) {
+                                chain->addCookie(cookie);
+                                column += 1;
+                            }                            
+                        } while (column < NumColumns && newMatchType == matchType);
 
                         set->addObject(chain);
                         continue;
@@ -191,7 +195,7 @@ cocos2d::Set * LevelObj::detectHorizontalMatches()
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * LevelObj::detectVerticalMatches()
+cocos2d::Set * LevelObj::detectHorizontalMatches()
 //--------------------------------------------------------------------
 {
     cocos2d::Set* set = new cocos2d::Set();
@@ -213,12 +217,16 @@ cocos2d::Set * LevelObj::detectVerticalMatches()
                         && other2->getTypeAsInt() == matchType) {
                         //  There is a chain of at least three cookies but potentially there are more. This steps through all the matching cookies 
                         // until it finds a cookie that breaks the chain or it reaches the end of the grid.
-                        ChainObj* chain = ChainObj::createWithType(CommonTypes::ChainType::ChainTypeVertical);
+                        ChainObj* chain = ChainObj::createWithType(CommonTypes::ChainType::ChainTypeHorizontal);
+                        int newMatchType = -1;
                         do {
                             cookie = cookieAt(column, row);
-                            chain->addCookie(cookie);
-                            row += 1;
-                        } while (row < NumRows && cookie->getTypeAsInt() == matchType);
+                            newMatchType = cookie ? cookie->getTypeAsInt() : -1;
+                            if (cookie != nullptr && newMatchType == matchType) {
+                                chain->addCookie(cookie);
+                                row += 1;
+                            }
+                        } while (row < NumColumns && newMatchType == matchType);
 
                         set->addObject(chain);
                         continue;
@@ -237,14 +245,43 @@ cocos2d::Set * LevelObj::detectVerticalMatches()
 cocos2d::Set * LevelObj::removeMatches()
 //--------------------------------------------------------------------
 {
+    cocos2d::log("LevelObj::removeMatches:");
     auto horizontalChains = detectHorizontalMatches();
     auto verticalChains = detectVerticalMatches();
+    auto set = cocos2d::Set::create();
 
-    
-//     NSLog(@"Horizontal matches: %@", horizontalChains);
-//     NSLog(@"Vertical matches: %@", verticalChains);
+    auto strHorizontalChains = cocos2d::String::createWithFormat("Horizontal matches: {\n");
+    auto horzIt = horizontalChains->begin();
+    for (horzIt; horzIt != horizontalChains->end(); horzIt++) {
+        auto chain = dynamic_cast<ChainObj*>(*horzIt);
+        if (!chain) {
+            cocos2d::log("LevelObj::removeMatches: can't cast Ref* to ChainObj*");
+            CC_ASSERT(chain);
+            continue;
+        }
+        strHorizontalChains->appendWithFormat("%s\n", chain->description().c_str());
+        set->addObject(chain);
+    }
+    strHorizontalChains->append("}");
 
-   // ??? return[horizontalChains setByAddingObjectsFromSet : verticalChains]
+    auto strVerticalChains = cocos2d::String::createWithFormat("Vertical matches: {\n");
+    auto vertIt = verticalChains->begin();
+    for (vertIt; vertIt != verticalChains->end(); vertIt++) {
+        auto chain = dynamic_cast<ChainObj*>(*vertIt);
+        if (!chain) {
+            cocos2d::log("LevelObj::removeMatches: can't cast Ref* to ChainObj*");
+            CC_ASSERT(chain);
+            continue;
+        }
+        strVerticalChains->appendWithFormat("%s\n", chain->description().c_str());
+        set->addObject(chain);
+    }
+    strVerticalChains->append("}");
+
+    cocos2d::log("LevelObj::removeMatches: %s", strHorizontalChains->getCString());
+    cocos2d::log("LevelObj::removeMatches: %s", strVerticalChains->getCString());
+
+    return set;
 }
 
 //--------------------------------------------------------------------

@@ -32,7 +32,7 @@ ViewController::~ViewController()
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::~ViewController");
-   mLevel->release();
+   CC_SAFE_RELEASE_NULL(mLevel);
 }
 
 //--------------------------------------------------------------------
@@ -59,18 +59,22 @@ bool ViewController::init()
    mGameplayScene->addTiles();
 
    auto callback = [&](SwapObj* swap) {
-       auto funcCallAction = CallFunc::create([=]() {
-           // enable touches on layer.
-           mGameplayScene->userInteractionEnabled();
-       });
        // disable touches on layer.
        mGameplayScene->userInteractionDisabled();
 
+       auto swapCallback = CallFunc::create([=]() {
+           handleMatches();
+       });
+       auto invalidSwapCallback = CallFunc::create([=]() {
+           // enable touches on layer.
+           mGameplayScene->userInteractionEnabled();
+       });
+
        if (mLevel->isPossibleSwap(swap)) {
            mLevel->performSwap(swap);
-           mGameplayScene->animateSwap(swap, funcCallAction);
+           mGameplayScene->animateSwap(swap, swapCallback);
        } else {
-           mGameplayScene->animateInvalidSwap(swap, funcCallAction);
+           mGameplayScene->animateInvalidSwap(swap, invalidSwapCallback);
        }
    };
 
@@ -99,4 +103,13 @@ void ViewController::shuffle()
    cocos2d::log("ViewController::shuffle");
    auto newCookies = mLevel->shuffle();
    mGameplayScene->addSpritesForCookies(newCookies);
+}
+
+//--------------------------------------------------------------------
+void ViewController::handleMatches()
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ViewController::handleMatches");
+    auto chains = mLevel->removeMatches();
+    // TODO: do something with the set
 }

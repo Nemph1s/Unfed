@@ -10,11 +10,13 @@ static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
 static cocos2d::Size designResolutionSize = mediumResolutionSize;
 
 AppDelegate::AppDelegate()
+    : mController(nullptr)
 {
 }
 
 AppDelegate::~AppDelegate() 
 {
+    CC_SAFE_RELEASE_NULL(mController);
 }
 
 // if you want a different context, modify the value of glContextAttrs
@@ -76,12 +78,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    auto controller = new ViewController();
-    if (controller->init()) {
-        controller->retain();
+    mController = new ViewController();
+    if (mController->init()) {
+        CC_SAFE_RETAIN(mController);
     }
     
-
     return true;
 }
 

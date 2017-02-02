@@ -15,6 +15,7 @@
 
 //--------------------------------------------------------------------
 ChainObj::ChainObj()
+    : mCookies(nullptr)
 //--------------------------------------------------------------------
 {
 }
@@ -38,6 +39,7 @@ ChainObj::~ChainObj()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ChainObj::~ChainObj: deallocing ChainObj: %p - tag: %i", this, _tag);
+    CC_SAFE_RELEASE_NULL(mCookies);
 }
 
 //--------------------------------------------------------------------
@@ -59,14 +61,13 @@ std::string ChainObj::description()
 //--------------------------------------------------------------------
 {
     int count = 0;
-    auto strChains = cocos2d::String::createWithFormat("%s matches: {\n", typeAsString().c_str());
-    strChains->appendWithFormat("\ttype:%d cookies:{\n", getTypeAsInt());
+    auto strChains = cocos2d::String::createWithFormat("\ttype:%d cookies:{\n", getTypeAsInt());
     for (auto it = mCookies->begin(); it != mCookies->end(); ++it, count++) {
         
         auto cookie = static_cast<CookieObj*>(*it);
         strChains->appendWithFormat("\t\t%s\n", cookie->description().c_str());
     }
-    strChains->append("\t}\n}");
+    strChains->append("\t}");
 
     return std::string(strChains->getCString());
 }
@@ -96,7 +97,7 @@ std::string ChainObj::typeAsString()
 int ChainObj::getTypeAsInt()
 //--------------------------------------------------------------------
 {
-    return Helper::getInstance->to_underlying(mType);
+    return Helper::getInstance()->to_underlying(mType);
 }
 
 //--------------------------------------------------------------------
@@ -104,8 +105,9 @@ void ChainObj::addCookie(CookieObj * cookie)
 //--------------------------------------------------------------------
 {
     if (mCookies == nullptr) {
-        mCookies = cocos2d::Array::create();
-        this->addChild(mCookies);
+        mCookies = new cocos2d::Array();
+        mCookies->init();
+        CC_SAFE_RETAIN(mCookies);
     }
     mCookies->addObject(cookie);
 }

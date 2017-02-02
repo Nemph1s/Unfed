@@ -31,6 +31,7 @@ CC_CONSTRUCTOR_ACCESS:
 protected:
 
    void shuffle();
+   void handleMatches();
 
    CC_SYNTHESIZE_READONLY(LevelObj*, mLevel, Level);
    CC_SYNTHESIZE_READONLY(GameplayScene*, mGameplayScene, GameplayScene);

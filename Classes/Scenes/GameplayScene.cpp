@@ -55,7 +55,7 @@ GameplayScene::~GameplayScene()
 //--------------------------------------------------------------------
 {
     cocos2d::log("GameplayScene::~GameplayScene: deallocing CookieObj: %p - tag: %i", this, _tag);
-    mSelectionSprite->release();
+    CC_SAFE_RELEASE_NULL(mSelectionSprite);
 }
 
 //--------------------------------------------------------------------
