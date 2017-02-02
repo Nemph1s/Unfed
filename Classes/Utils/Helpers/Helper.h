@@ -15,7 +15,6 @@
 
 class Helper 
 {
-
     CREATE_SINGLETON(Helper);
 
 public:

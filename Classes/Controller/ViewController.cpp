@@ -49,7 +49,7 @@ bool ViewController::init()
    //self.scene.scaleMode = SKSceneScaleModeAspectFill;
 
    // Load the level.
-   int levelId = 1;
+   int levelId = 4;
    mLevel = LevelObj::createWithId(levelId);
 
    //TODO: create tags instead of name
@@ -113,7 +113,13 @@ void ViewController::handleMatches()
     auto chains = mLevel->removeMatches();
 
     auto completionCallback = CallFunc::create([=]() {
-        mGameplayScene->userInteractionEnabled();
+
+        auto columns = mLevel->fillHoles();
+        auto enableTouchesCallback = CallFunc::create([=]() {
+            mGameplayScene->userInteractionEnabled();
+        });
+
+        mGameplayScene->animateFallingCookies(columns, enableTouchesCallback);
     });
     
     mGameplayScene->animateMatching(chains, completionCallback);

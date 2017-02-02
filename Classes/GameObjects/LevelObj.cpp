@@ -313,6 +313,47 @@ void LevelObj::removeCookies(cocos2d::Set * chains)
 }
 
 //--------------------------------------------------------------------
+cocos2d::Array* LevelObj::fillHoles()
+//--------------------------------------------------------------------
+{
+    cocos2d::log("LevelObj::fillHoles:");
+    auto columns = cocos2d::Array::create();
+    // loop through the rows, from bottom to top
+    for (int column = 0; column < NumColumns; column++) {
+
+        cocos2d::Array* array = nullptr;
+        for (int row = NumRows - 1; row >= 0; row--) {
+
+            // If there’s a tile at a position but no cookie, then there’s a hole.
+            if (tileAt(column, row) != nullptr && cookieAt(column, row) == nullptr) {
+            
+                // Scan upward to find the cookie that sits directly above the hole
+                for (int lookup = row - 1; lookup >= 0; lookup--) {
+                    auto cookie = cookieAt(column, lookup);
+                    if (cookie != nullptr) {
+                        // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
+                        mCookies[column][lookup] = nullptr;
+                        mCookies[column][row] = cookie;
+                        cookie->setRow(row);
+
+                        // 5
+                        if (array == nullptr) {
+                            array = cocos2d::Array::createWithCapacity(NumColumns);
+                            columns->addObject(array);
+                        }
+                        array->addObject(cookie);
+
+                        // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return columns;
+}
+
+//--------------------------------------------------------------------
 cocos2d::Set* LevelObj::createInitialCookies()
 //--------------------------------------------------------------------
 {
@@ -320,8 +361,8 @@ cocos2d::Set* LevelObj::createInitialCookies()
     cocos2d::Set* set = new cocos2d::Set();
     auto createdString = cocos2d::String("");
     
-    for (int column = 0; column < NumColumns; column++) {
-        for (int row = 0; row < NumRows; row++) {
+    for (int row = 0; row < NumRows; row++) {
+        for (int column = 0; column < NumColumns; column++) {
             if (mTiles[column][row] != nullptr) {
                 int cookieType = getRandomCookieType(column, row);
                 CookieObj* cookie = createCookie(column, row, cookieType);

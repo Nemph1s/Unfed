@@ -52,6 +52,8 @@ CC_CONSTRUCTOR_ACCESS:
    cocos2d::Set* removeMatches();
    void removeCookies(cocos2d::Set* chains);
 
+   cocos2d::Array* fillHoles();
+
 protected:
 
    cocos2d::Set* createInitialCookies();
