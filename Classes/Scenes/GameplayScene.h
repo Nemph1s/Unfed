@@ -54,6 +54,7 @@ public:
     void animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* func);
     void animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* func);
     void animateFallingCookies(cocos2d::Array* colums, cocos2d::CallFunc* func);
+    void animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc* func);
 
     void showSelectionIndicatorForCookie(CookieObj* cookie);
     void hideSelectionIndicator();

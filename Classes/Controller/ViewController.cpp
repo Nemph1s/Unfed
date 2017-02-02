@@ -49,7 +49,7 @@ bool ViewController::init()
    //self.scene.scaleMode = SKSceneScaleModeAspectFill;
 
    // Load the level.
-   int levelId = 4;
+   int levelId = 0;
    mLevel = LevelObj::createWithId(levelId);
 
    //TODO: create tags instead of name
@@ -112,15 +112,34 @@ void ViewController::handleMatches()
     cocos2d::log("ViewController::handleMatches");
     auto chains = mLevel->removeMatches();
 
-    auto completionCallback = CallFunc::create([=]() {
+    if (chains->count() == 0) {
+        beginNextTurn();
+        return;
+    }
 
-        auto columns = mLevel->fillHoles();
-        auto enableTouchesCallback = CallFunc::create([=]() {
-            mGameplayScene->userInteractionEnabled();
+    auto completion = CallFunc::create([=]() {
+
+        auto columns = mLevel->useGravityToFillHoles();
+        auto addNewCookies = CallFunc::create([=]() {
+
+            auto newColumns = mLevel->fillTopUpHoles();
+            auto enableTouches = CallFunc::create([=]() {
+                handleMatches();                
+            });
+
+            mGameplayScene->animateNewCookies(newColumns, enableTouches);
         });
 
-        mGameplayScene->animateFallingCookies(columns, enableTouchesCallback);
+        mGameplayScene->animateFallingCookies(columns, addNewCookies);
     });
     
-    mGameplayScene->animateMatching(chains, completionCallback);
+    mGameplayScene->animateMatching(chains, completion);
+}
+
+//--------------------------------------------------------------------
+void ViewController::beginNextTurn()
+//--------------------------------------------------------------------
+{
+    mLevel->detectPossibleSwaps();
+    mGameplayScene->userInteractionEnabled();
 }

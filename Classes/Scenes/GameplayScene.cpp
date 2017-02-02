@@ -20,6 +20,7 @@
 #include "Utils/GameResources.h"
 
 #include "Managers/AudioManager.h"
+#include <math.h>
 
 USING_NS_CC;
 
@@ -35,7 +36,7 @@ GameplayScene::GameplayScene()
 }
 
 //--------------------------------------------------------------------
-GameplayScene * GameplayScene::createWithSize(const cocos2d::Size & size)
+GameplayScene * GameplayScene::createWithSize(const cocos2d::Size& size)
 //--------------------------------------------------------------------
 {
     GameplayScene *ret = new (std::nothrow) GameplayScene();
@@ -263,7 +264,7 @@ void GameplayScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::onTouchCancelled(cocos2d::Touch * touch, cocos2d::Event * event)
+void GameplayScene::onTouchCancelled(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
     cocos2d::log("GameplayScene::onTouchCancelled:");
@@ -285,7 +286,7 @@ void GameplayScene::userInteractionDisabled()
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::animateSwap(SwapObj * swap, cocos2d::CallFunc* completion)
+void GameplayScene::animateSwap(SwapObj* swap, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(swap);
@@ -315,7 +316,7 @@ void GameplayScene::animateSwap(SwapObj * swap, cocos2d::CallFunc* completion)
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::animateInvalidSwap(SwapObj * swap, cocos2d::CallFunc * completion)
+void GameplayScene::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(swap);
@@ -390,7 +391,7 @@ void GameplayScene::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* com
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::animateFallingCookies(cocos2d::Array * colums, cocos2d::CallFunc * func)
+void GameplayScene::animateFallingCookies(cocos2d::Array* colums, cocos2d::CallFunc* func)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(colums);
@@ -443,7 +444,90 @@ void GameplayScene::animateFallingCookies(cocos2d::Array * colums, cocos2d::Call
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::showSelectionIndicatorForCookie(CookieObj * cookie)
+void GameplayScene::animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc* func)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(colums);
+    CC_ASSERT(func);
+    // As with the other animation methods, you should only call the completion block after all the animations are finished. 
+    // Because the number of falling cookies may vary, you can’t hardcode this total duration but instead have to compute it.
+    float longestDuration = 0;
+
+    for (auto it = colums->begin(); it != colums->end(); it++) {
+
+        auto array = dynamic_cast<cocos2d::Array*>(*it);
+        CC_ASSERT(array);
+
+        int startRow = -1;
+        auto startCookie = dynamic_cast<CookieObj*>(array->objectAtIndex(0));
+        if (startCookie) {
+            startRow = startCookie->getRow() - 1;
+        }
+
+        int index = 1;
+        for (auto itArr = array->begin(); itArr != array->end(); itArr++, index++) {
+
+            auto cookie = dynamic_cast<CookieObj*>(*itArr);
+            CC_ASSERT(cookie);
+
+            //TODO: optimize in future
+            auto* sprite = Sprite::create(cookie->spriteName());
+            sprite->setPosition(pointForColumnAndRow(cookie->getColumn(), startRow));
+            mCookiesLayer->addChild(sprite);
+            cookie->setSpriteNode(sprite);
+
+            auto label = Label::create();
+            label->setBMFontSize(16);
+            label->setDimensions(32, 32);
+            label->setHorizontalAlignment(TextHAlignment::LEFT);
+            label->setVerticalAlignment(TextVAlignment::TOP);
+            auto size = sprite->getContentSize();
+            label->setPosition(Vec2(size.width / 4, (size.height / 1.25f)));
+            label->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
+            sprite->addChild(label, 10);
+            cookie->setDebugLabel(label);
+
+            cookie->updateDebugTileLabel();
+            mCookiesLayer->addChild(cookie);
+            //
+
+
+            // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
+            // This calculation works because fillHoles guarantees that lower cookies are first in the array.
+            float delay = 0.1f + 0.2f * (array->count() - index - 1);
+
+            // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
+            // You can tweak these numbers to change the feel of the animation.
+            float duration = fabs((startRow - cookie->getRow()) * 0.1f);
+
+            // You calculate which animation is the longest. This is the time the game has to wait before it may continue.
+            longestDuration = MAX(longestDuration, duration + delay);
+
+            auto newPos = pointForColumnAndRow(cookie->getColumn(), cookie->getRow());
+
+            // You perform the animation, which consists of a delay, a movement and a sound effect.
+            auto callback = CallFunc::create([=]() {
+
+                cookie->updateDebugTileLabel();
+
+                auto moveAction = MoveTo::create(duration, newPos);
+                auto easeAction = EaseOut::create(moveAction, duration);
+                auto fadeIn = FadeIn::create(0.05f);
+                auto sprite = cookie->getSpriteNode();
+                sprite->runAction(Sequence::create(fadeIn, easeAction, nullptr));
+                AudioManager::getInstance()->playSound(SoundType::AddCookieSound);
+            });
+
+            sprite->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
+        }
+    }
+
+    // You wait until all the cookies have fallen down before allowing the gameplay to continue.
+    this->runAction(Sequence::create(DelayTime::create(longestDuration), func, nullptr));
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::showSelectionIndicatorForCookie(CookieObj* cookie)
 //--------------------------------------------------------------------
 {
     if (mSelectionSprite->getParent() != nullptr) {

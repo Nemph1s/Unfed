@@ -313,11 +313,11 @@ void LevelObj::removeCookies(cocos2d::Set * chains)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Array* LevelObj::fillHoles()
+cocos2d::Array* LevelObj::useGravityToFillHoles()
 //--------------------------------------------------------------------
 {
-    cocos2d::log("LevelObj::fillHoles:");
-    auto columns = cocos2d::Array::create();
+    cocos2d::log("LevelObj::useGravityToFillHoles:");
+    auto columns = cocos2d::Array::createWithCapacity(NumColumns);
     // loop through the rows, from bottom to top
     for (int column = 0; column < NumColumns; column++) {
 
@@ -338,7 +338,7 @@ cocos2d::Array* LevelObj::fillHoles()
 
                         // 5
                         if (array == nullptr) {
-                            array = cocos2d::Array::createWithCapacity(NumColumns);
+                            array = cocos2d::Array::createWithCapacity(NumRows);
                             columns->addObject(array);
                         }
                         array->addObject(cookie);
@@ -351,6 +351,40 @@ cocos2d::Array* LevelObj::fillHoles()
         }
     }
     return columns;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Array * LevelObj::fillTopUpHoles()
+//--------------------------------------------------------------------
+{
+    cocos2d::log("LevelObj::fillTopUpHoles:");
+    auto columns = cocos2d::Array::createWithCapacity(NumColumns);
+    auto createdString = cocos2d::String("");
+    int cookieType = -1;
+    // loop through the rows, from top to bottom
+    for (int row = 0; row < NumRows; row++) {
+
+        cocos2d::Array* array = nullptr;
+        for (int column = 0; column < NumColumns; column++) {
+
+            // If there’s a tile at a position but no cookie, then there’s a hole.
+            if (tileAt(column, row) != nullptr && (cookieAt(column, row) == nullptr)) {
+
+                int cookieType = getRandomCookieType(column, row);
+                CookieObj* cookie = createCookie(column, row, cookieType);
+
+                if (array == nullptr) {
+                    array = cocos2d::Array::createWithCapacity(NumRows);
+                    columns->addObject(array);
+                }
+                array->addObject(cookie);
+                createdString.appendWithFormat("\t%s\n", cookie->description().c_str());
+            }
+        }
+        createdString.append("}\n");
+    }
+    cocos2d::log("LevelObj::fillTopUpHoles:  new created cookies: {\n%s", createdString.getCString());
+    return columns;    
 }
 
 //--------------------------------------------------------------------
@@ -419,8 +453,8 @@ bool LevelObj::isSameTypeOfCookieAt(int column, int row, int type)
     if (cookie->getTypeAsInt() != type)
         return false;
     
-    cocos2d::log("LevelObj::isSameTypeOfCookieAt: current = %s; randomType = %d;"
-        , cookie->description().c_str(), type);
+//    cocos2d::log("LevelObj::isSameTypeOfCookieAt: current = %s; randomType = %d;"
+//        , cookie->description().c_str(), type);
     return true;    
 }
 

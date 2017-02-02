@@ -33,6 +33,8 @@ protected:
    void shuffle();
    void handleMatches();
 
+   void beginNextTurn();
+
    CC_SYNTHESIZE_READONLY(LevelObj*, mLevel, Level);
    CC_SYNTHESIZE_READONLY(GameplayScene*, mGameplayScene, GameplayScene);
 };
