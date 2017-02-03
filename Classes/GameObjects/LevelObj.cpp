@@ -336,7 +336,7 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
                         mCookies[column][row] = cookie;
                         cookie->setRow(row);
 
-                        // 5
+                        // Lazy creation of array
                         if (array == nullptr) {
                             array = cocos2d::Array::createWithCapacity(NumRows);
                             columns->addObject(array);
@@ -424,7 +424,7 @@ CookieObj * LevelObj::createCookie(int column, int row, int type)
 int LevelObj::getRandomCookieType(int column, int row)
 //--------------------------------------------------------------------
 {
-    int cookieMax = Helper::getInstance()->to_underlying(CommonTypes::CookieType::CookieMax);
+    int cookieMax = Helper::getInstance()->to_underlying(CommonTypes::CookieType::Macaron);
 
     int type = 0;
     bool findNextType = false;
@@ -452,9 +452,7 @@ bool LevelObj::isSameTypeOfCookieAt(int column, int row, int type)
     
     if (cookie->getTypeAsInt() != type)
         return false;
-    
-//    cocos2d::log("LevelObj::isSameTypeOfCookieAt: current = %s; randomType = %d;"
-//        , cookie->description().c_str(), type);
+
     return true;    
 }
 

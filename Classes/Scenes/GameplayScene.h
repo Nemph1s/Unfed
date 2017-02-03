@@ -34,6 +34,8 @@ public:
 	void addTiles();
     void addSpritesForCookies(cocos2d::Set* cookies);
 
+    void createSpriteWithCookie(CookieObj* cookie, int column, int row);
+
     bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
@@ -41,12 +43,6 @@ public:
 
     void userInteractionEnabled();
     void userInteractionDisabled();
-
-    void animateSwap(SwapObj* swap, cocos2d::CallFunc* func);
-    void animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* func);
-    void animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* func);
-    void animateFallingCookies(cocos2d::Array* colums, cocos2d::CallFunc* func);
-    void animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc* func);
 
     void showSelectionIndicatorForCookie(CookieObj* cookie);
     void hideSelectionIndicator();
@@ -57,8 +53,7 @@ protected:
     void clearTouchedCookie();
     void updateSwipeDelta(int column, int row, int& horzDelta, int& vertDelta);
     bool trySwapCookieTo(int horzDelta, int vertDelta);  
-    
-    void createSpriteWithCookie(CookieObj* cookie, int column, int row);
+
 
 	cocos2d::EventListener* mListener;
 

@@ -9,14 +9,17 @@
 */
 
 #include "Controller/ViewController.h"
+#include "Managers/AnimationsManager.h"
+#include "Managers/AudioManager.h"
 
 #include "GameObjects/LevelObj.h"
 #include "Scenes/GameplayScene.h"
 
 using cocos2d::Director;
 using cocos2d::CallFunc;
+using namespace CommonTypes;
 
-#define COCOS2D_DEBUG 1
+#define COCOS2D_DEBUG 0
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
@@ -43,10 +46,15 @@ bool ViewController::init()
 
    auto director = Director::getInstance();
    auto glview = director->getOpenGLView();
+
+   auto animationMgr = AnimationsManager::getInstance();
+   auto audioMgr = AudioManager::getInstance();
       
    // Create and configure the scene.
    mGameplayScene = GameplayScene::createWithSize(glview->getFrameSize());
    //self.scene.scaleMode = SKSceneScaleModeAspectFill;
+
+   animationMgr->initWithScene(mGameplayScene);
 
    // Load the level.
    int levelId = 0;
@@ -71,10 +79,16 @@ bool ViewController::init()
        });
 
        if (mLevel->isPossibleSwap(swap)) {
+
            mLevel->performSwap(swap);
-           mGameplayScene->animateSwap(swap, swapCallback);
+           animationMgr->animateSwap(swap, swapCallback);
+           audioMgr->playSound(SoundType::SwapSound);
+
        } else {
-           mGameplayScene->animateInvalidSwap(swap, invalidSwapCallback);
+
+           animationMgr->animateInvalidSwap(swap, invalidSwapCallback);
+           audioMgr->playSound(SoundType::InvalidSwapSound);
+
        }
    };
 
@@ -117,6 +131,9 @@ void ViewController::handleMatches()
         return;
     }
 
+    auto animationMgr = AnimationsManager::getInstance();
+    auto audioMgr = AudioManager::getInstance();
+
     auto completion = CallFunc::create([=]() {
 
         auto columns = mLevel->useGravityToFillHoles();
@@ -127,13 +144,14 @@ void ViewController::handleMatches()
                 handleMatches();                
             });
 
-            mGameplayScene->animateNewCookies(newColumns, enableTouches);
+            animationMgr->animateNewCookies(newColumns, enableTouches);
         });
 
-        mGameplayScene->animateFallingCookies(columns, addNewCookies);
+        animationMgr->animateFallingCookies(columns, addNewCookies);
     });
     
-    mGameplayScene->animateMatching(chains, completion);
+    animationMgr->animateMatching(chains, completion);
+    audioMgr->playSound(SoundType::MatchSound);
 }
 
 //--------------------------------------------------------------------
