@@ -16,6 +16,10 @@
 
 namespace GameResources {
 
+    //TODO: move to global info or to json file
+    static const float TileWidth = 32.0 * 2;
+    static const float TileHeight = 36.0 * 2;
+
    static std::string s_backgroundImg = "Images/Background2@2x.jpg";
 
    static std::string s_TileImg = "Sprites.atlas/Tile@2x.png";

@@ -23,6 +23,7 @@
 #include <math.h>
 
 USING_NS_CC;
+using namespace GameResources;
 
 //--------------------------------------------------------------------
 GameplayScene::GameplayScene()
@@ -142,7 +143,7 @@ void GameplayScene::addTiles()
 				continue;
 			}
 			auto tileSprite = Sprite::create(GameResources::s_TileImg);
-            tileSprite->setPosition(pointForColumnAndRow(column, row));
+            tileSprite->setPosition(Helper::pointForColumnAndRow(column, row));
             tileSprite->setOpacity(127);
 			mTilesLayer->addChild(tileSprite);
 		}
@@ -157,57 +158,9 @@ void GameplayScene::addSpritesForCookies(Set* cookies)
 	auto it = cookies->begin();
 	for (it; it != cookies->end(); it++) {
 		auto cookie = dynamic_cast<CookieObj*>(*it);
-		if (!cookie) {
-			cocos2d::log("GameplayScene::addSpritesForCookies: can't cast Ref* to CookieObj*");
-			CC_ASSERT(cookie);
-			continue;
-		}
-		auto* sprite = Sprite::create(cookie->spriteName());
-		sprite->setPosition(pointForColumnAndRow(cookie->getColumn(), cookie->getRow()));
-		mCookiesLayer->addChild(sprite);
-        cookie->setSpriteNode(sprite);
-
-        auto label = Label::create();
-        label->setBMFontSize(16);
-        label->setDimensions(32, 32);
-        label->setHorizontalAlignment(TextHAlignment::LEFT);
-        label->setVerticalAlignment(TextVAlignment::TOP);
-        auto size = sprite->getContentSize();
-        label->setPosition(Vec2(size.width / 4, (size.height / 1.25f)));
-        label->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
-        sprite->addChild(label, 10);
-        cookie->setDebugLabel(label);
-        
-        cookie->updateDebugTileLabel();
-        mCookiesLayer->addChild(cookie);
+        CC_ASSERT(cookie);
+        createSpriteWithCookie(cookie, cookie->getColumn(), cookie->getRow());
 	}
-}
-
-//--------------------------------------------------------------------
-Vec2 GameplayScene::pointForColumnAndRow(int column, int row)
-//--------------------------------------------------------------------
-{
-    //temporary solution to set correct pos for [col, row]
-//     auto temp = column;
-//     column = row;
-//     row = temp;
-//    return Vec2(column * TileWidth + TileWidth / 2, (NumRows - row - 1) * TileHeight + TileHeight / 2);
-    return Vec2(column * TileWidth + TileWidth / 2, (NumRows - row - 1) * TileHeight + TileHeight / 2);
-}
-
-//--------------------------------------------------------------------
-bool GameplayScene::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
-//--------------------------------------------------------------------
-{
-	if (point.x >= 0 && point.x < NumColumns*TileWidth && point.y >= 0 && point.y < NumRows*TileHeight) {
-        //temporary solution to set correct pos for [col, row]
-//         row = point.x / TileWidth;
-//         column = NumRows - (point.y / TileHeight);
-        column = point.x / TileWidth;
-        row = NumColumns - (point.y / TileHeight);
-		return true;
-	} 
-	return false;
 }
 
 //--------------------------------------------------------------------
@@ -216,7 +169,7 @@ bool GameplayScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 {
     Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
 
-    if (convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {
+    if (Helper::convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {
         CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
         if (cookie) {
             showSelectionIndicatorForCookie(cookie);
@@ -236,7 +189,7 @@ void GameplayScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
     Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
 
     int column = -1, row = -1;
-    if (convertPointToTilePos(locationInNode, column, row)) {
+    if (Helper::convertPointToTilePos(locationInNode, column, row)) {
 
         int horzDelta = 0, vertDelta = 0;
         updateSwipeDelta(column, row, horzDelta, vertDelta);
@@ -299,7 +252,7 @@ void GameplayScene::animateSwap(SwapObj* swap, cocos2d::CallFunc* completion)
     cookieA->setZOrder(100);
     cookieB->setZOrder(90);
     
-    const float duration = 0.3;
+    const float duration = 0.3f;
 
     auto moveA = MoveTo::create(duration, cookieB->getPosition());
     auto easeA = EaseOut::create(moveA, duration); // maybe change rate?
@@ -354,7 +307,7 @@ void GameplayScene::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* com
     CC_ASSERT(chains);
     CC_ASSERT(completion);
 
-    const float duration = 0.3;
+    const float duration = 0.3f;
 
     for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
 
@@ -367,7 +320,7 @@ void GameplayScene::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* com
             auto cookie = dynamic_cast<CookieObj*>(*it);
             if (cookie != nullptr) {
 
-                const float scaleFactor = 0.1;
+                const float scaleFactor = 0.1f;
 
                 auto scaleAction = ScaleTo::create(duration, scaleFactor);
                 auto easeOut = EaseOut::create(scaleAction, duration);
@@ -396,46 +349,52 @@ void GameplayScene::animateFallingCookies(cocos2d::Array* colums, cocos2d::CallF
 {
     CC_ASSERT(colums);
     CC_ASSERT(func);
-    // As with the other animation methods, you should only call the completion block after all the animations are finished. 
-    // Because the number of falling cookies may vary, you can’t hardcode this total duration but instead have to compute it.
-    float longestDuration = 0;
-    
+
+    float longestDuration = 0;  
     for (auto it = colums->begin(); it != colums->end(); it++) {
 
         auto array = dynamic_cast<cocos2d::Array*>(*it);
         CC_ASSERT(array);
 
-        int index = 1;
-        for (auto itArr = array->begin(); itArr != array->end(); itArr++, index++) {
+        float colDelay = Helper::randomFloatBetween(0.05f, 0.15f) * 1;
+        for (auto itArr = array->begin(); itArr != array->end(); itArr++) {
 
             auto cookie = dynamic_cast<CookieObj*>(*itArr);
             CC_ASSERT(cookie);
-            auto newPos = pointForColumnAndRow(cookie->getColumn(), cookie->getRow());
+
+            auto newPos = Helper::pointForCookie(cookie);
             // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
             // This calculation works because fillHoles guarantees that lower cookies are first in the array.
-            float delay = 0.05f + 0.15f * index;
+            
+            float delay = (0.05f + 0.15f * colDelay);
 
-            auto sprite = cookie->getSpriteNode();
             // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
             // You can tweak these numbers to change the feel of the animation.
-            float duration = ((sprite->getPositionY() - newPos.y) / TileHeight) * 0.1f;
+            float timeToTile = (cookie->getSpriteNode()->getPositionY() - newPos.y) / TileHeight;
+            float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
+            if (colums->count() == 1) {
+                duration = (timeToTile * 0.125f);
+            }
 
-            // You calculate which animation is the longest. This is the time the game has to wait before it may continue.
+            // Calculate which animation is the longest. This is the time the game has to wait before it may continue.
             longestDuration = MAX(longestDuration, duration + delay);
 
-            // You perform the animation, which consists of a delay, a movement and a sound effect.
+            // Perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
 
                 cookie->updateDebugTileLabel();
 
-                auto moveAction = MoveTo::create(duration, newPos);
-                auto easeAction = EaseOut::create(moveAction, duration);
                 auto sprite = cookie->getSpriteNode();
+                auto delta = newPos - sprite->getPosition();
+
+                auto moveAction = MoveBy::create(duration, delta);
+                auto easeAction = EaseOut::create(moveAction, duration);
                 sprite->runAction(easeAction);
+
                 AudioManager::getInstance()->playSound(SoundType::FallingCookieSound);
             });
 
-            sprite->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
+            cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
         }
     }
 
@@ -449,61 +408,41 @@ void GameplayScene::animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc*
 {
     CC_ASSERT(colums);
     CC_ASSERT(func);
-    // As with the other animation methods, you should only call the completion block after all the animations are finished. 
-    // Because the number of falling cookies may vary, you can’t hardcode this total duration but instead have to compute it.
+    // The duration of falling cookies
     float longestDuration = 0;
 
-    for (auto it = colums->begin(); it != colums->end(); it++) {
+    int columnIdx = 0;
+    for (auto it = colums->begin(); it != colums->end(); it++, columnIdx++) {
 
         auto array = dynamic_cast<cocos2d::Array*>(*it);
         CC_ASSERT(array);
 
-        int startRow = -1;
         auto startCookie = dynamic_cast<CookieObj*>(array->objectAtIndex(0));
-        if (startCookie) {
-            startRow = startCookie->getRow() - 1;
-        }
+        int startRow = startCookie ? startCookie->getRow() - 1 : -1;
 
         int index = 1;
         for (auto itArr = array->begin(); itArr != array->end(); itArr++, index++) {
-
             auto cookie = dynamic_cast<CookieObj*>(*itArr);
             CC_ASSERT(cookie);
+            createSpriteWithCookie(cookie, cookie->getColumn(), startRow);
+            cookie->getSpriteNode()->setOpacity(0);
 
-            //TODO: optimize in future
-            auto* sprite = Sprite::create(cookie->spriteName());
-            sprite->setPosition(pointForColumnAndRow(cookie->getColumn(), startRow));
-            mCookiesLayer->addChild(sprite);
-            cookie->setSpriteNode(sprite);
-
-            auto label = Label::create();
-            label->setBMFontSize(16);
-            label->setDimensions(32, 32);
-            label->setHorizontalAlignment(TextHAlignment::LEFT);
-            label->setVerticalAlignment(TextVAlignment::TOP);
-            auto size = sprite->getContentSize();
-            label->setPosition(Vec2(size.width / 4, (size.height / 1.25f)));
-            label->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
-            sprite->addChild(label, 10);
-            cookie->setDebugLabel(label);
-
-            cookie->updateDebugTileLabel();
-            mCookiesLayer->addChild(cookie);
-            //
-
+            auto newPos = Helper::pointForCookie(cookie);
 
             // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
             // This calculation works because fillHoles guarantees that lower cookies are first in the array.
-            float delay = 0.1f + 0.2f * (array->count() - index - 1);
+            int arrCount = array->count();
+            int colCount = colums->count();
+            float delay = 0.1f + 0.2f * (colCount - index - 1);
 
             // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
             // You can tweak these numbers to change the feel of the animation.
-            float duration = fabs((startRow - cookie->getRow()) * 0.1f);
+            float duration = fabs(((startRow + 1) - (cookie->getRow() + 1)) * 0.1f);
 
             // You calculate which animation is the longest. This is the time the game has to wait before it may continue.
             longestDuration = MAX(longestDuration, duration + delay);
 
-            auto newPos = pointForColumnAndRow(cookie->getColumn(), cookie->getRow());
+            
 
             // You perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
@@ -513,12 +452,13 @@ void GameplayScene::animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc*
                 auto moveAction = MoveTo::create(duration, newPos);
                 auto easeAction = EaseOut::create(moveAction, duration);
                 auto fadeIn = FadeIn::create(0.05f);
-                auto sprite = cookie->getSpriteNode();
-                sprite->runAction(Sequence::create(fadeIn, easeAction, nullptr));
+
+                cookie->getSpriteNode()->runAction(fadeIn);
+                cookie->getSpriteNode()->runAction(easeAction);
                 AudioManager::getInstance()->playSound(SoundType::AddCookieSound);
             });
 
-            sprite->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
+            cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
         }
     }
 
@@ -632,6 +572,19 @@ bool GameplayScene::trySwapCookieTo(int horzDelta, int vertDelta)
     mSwapCallback(swap);
     
     return true;
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int row)
+//--------------------------------------------------------------------
+{
+    auto sprite = Sprite::create(cookie->spriteName());
+    sprite->setPosition(Helper::pointForColumnAndRow(column, row));
+    cookie->setSpriteNode(sprite);
+    cookie->setDebugLabel(Label::create());
+
+    mCookiesLayer->addChild(sprite);
+    mCookiesLayer->addChild(cookie);
 }
 
 //--------------------------------------------------------------------
