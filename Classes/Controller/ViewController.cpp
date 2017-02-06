@@ -60,6 +60,9 @@ bool ViewController::init()
    int levelId = 0;
    mLevel = LevelObj::createWithId(levelId);
 
+   mScore = mLevel->getLevelInfo().targetScore;
+   mMovesLeft = mLevel->getLevelInfo().moves;
+
    //TODO: create tags instead of name
    mLevel->setName("Level");
 

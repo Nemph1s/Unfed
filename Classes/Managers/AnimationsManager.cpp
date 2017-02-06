@@ -210,8 +210,6 @@ void AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::CallF
         auto array = dynamic_cast<cocos2d::Array*>(*it);
         CC_ASSERT(array);
 
-        auto startCookie = dynamic_cast<CookieObj*>(array->objectAtIndex(0));
-//        int startRow = startCookie ? startCookie->getRow() - 1 : -1;
         int startRow = -1;
         float colDelay = Helper::randomFloatBetween(0.05f, 0.15f) * 1;
 
@@ -225,13 +223,12 @@ void AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::CallF
 
             // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
             // This calculation works because fillHoles guarantees that lower cookies are first in the array.
-            int colCount = colums->count();
-            float delay = 0.1f + 0.175f * (colCount - columnIdx - 1);
+            float delay = 0.1f + 0.175f * (colums->count() - columnIdx - 1);
 
             // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
             // You can tweak these numbers to change the feel of the animation.
             float timeToTile = fabs(startRow - cookie->getRow());
-            float duration = (timeToTile * 0.1f) + colDelay;// *0.75f;
+            float duration = (timeToTile * 0.1f) + colDelay;
 
             // You calculate which animation is the longest. This is the time the game has to wait before it may continue.
             longestDuration = MAX(longestDuration, duration + delay);

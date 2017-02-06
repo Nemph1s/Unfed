@@ -153,6 +153,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\GameObjects\TileObj.cpp" />
     <ClCompile Include="..\Classes\Managers\AnimationsManager.cpp" />
     <ClCompile Include="..\Classes\Managers\AudioManager.cpp" />
+    <ClCompile Include="..\Classes\Managers\GuiManager.cpp" />
     <ClCompile Include="..\Classes\Managers\ResourceManager.cpp" />
     <ClCompile Include="..\Classes\Scenes\GameplayScene.cpp" />
     <ClCompile Include="..\Classes\Utils\GlobalInfo.cpp" />
@@ -172,6 +173,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\GameObjects\TileObj.h" />
     <ClInclude Include="..\Classes\Managers\AnimationsManager.h" />
     <ClInclude Include="..\Classes\Managers\AudioManager.h" />
+    <ClInclude Include="..\Classes\Managers\GuiManager.h" />
     <ClInclude Include="..\Classes\Managers\ResourceManager.h" />
     <ClInclude Include="..\Classes\Scenes\GameplayScene.h" />
     <ClInclude Include="..\Classes\Utils\GameResources.h" />

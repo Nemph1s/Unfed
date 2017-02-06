@@ -81,6 +81,9 @@
     <ClCompile Include="..\Classes\Managers\AnimationsManager.cpp">
       <Filter>src\Managers</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Managers\GuiManager.cpp">
+      <Filter>src\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -138,6 +141,9 @@
       <Filter>src\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Managers\AnimationsManager.h">
+      <Filter>src\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Managers\GuiManager.h">
       <Filter>src\Managers</Filter>
     </ClInclude>
   </ItemGroup>
