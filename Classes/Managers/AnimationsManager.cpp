@@ -211,10 +211,11 @@ void AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::CallF
         CC_ASSERT(array);
 
         auto startCookie = dynamic_cast<CookieObj*>(array->objectAtIndex(0));
-        int startRow = startCookie ? startCookie->getRow() - 1 : -1;
+//        int startRow = startCookie ? startCookie->getRow() - 1 : -1;
+        int startRow = -1;
+        float colDelay = Helper::randomFloatBetween(0.05f, 0.15f) * 1;
 
-        int index = 1;
-        for (auto itArr = array->begin(); itArr != array->end(); itArr++, index++) {
+        for (auto itArr = array->begin(); itArr != array->end(); itArr++) {
             auto cookie = dynamic_cast<CookieObj*>(*itArr);
             CC_ASSERT(cookie);
             scene->createSpriteWithCookie(cookie, cookie->getColumn(), startRow);
@@ -224,13 +225,13 @@ void AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::CallF
 
             // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
             // This calculation works because fillHoles guarantees that lower cookies are first in the array.
-            int arrCount = array->count();
             int colCount = colums->count();
-            float delay = 0.1f + 0.2f * (colCount - index - 1);
+            float delay = 0.1f + 0.175f * (colCount - columnIdx - 1);
 
             // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
             // You can tweak these numbers to change the feel of the animation.
-            float duration = fabs(((startRow + 1) - (cookie->getRow() + 1)) * 0.1f);
+            float timeToTile = fabs(startRow - cookie->getRow());
+            float duration = (timeToTile * 0.1f) + colDelay;// *0.75f;
 
             // You calculate which animation is the longest. This is the time the game has to wait before it may continue.
             longestDuration = MAX(longestDuration, duration + delay);
@@ -242,9 +243,9 @@ void AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::CallF
 
                 auto moveAction = MoveTo::create(duration, newPos);
                 auto easeAction = EaseOut::create(moveAction, duration);
-                auto fadeIn = FadeIn::create(0.05f);
+                auto fadeIn = FadeIn::create(0.0125f);
 
-                cookie->getSpriteNode()->runAction(fadeIn);
+                cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(0.175f), fadeIn, nullptr));
                 cookie->getSpriteNode()->runAction(easeAction);
                 
                 AudioManager::getInstance()->playSound(CommonTypes::SoundType::AddCookieSound);
