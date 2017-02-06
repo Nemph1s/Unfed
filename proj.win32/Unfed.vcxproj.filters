@@ -75,6 +75,12 @@
     <ClCompile Include="..\Classes\Utils\Helpers\Helper.cpp">
       <Filter>src\Utils\Helper</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\ChainObj.cpp">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Managers\AnimationsManager.cpp">
+      <Filter>src\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -126,6 +132,12 @@
       <Filter>src\Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Managers\AudioManager.h">
+      <Filter>src\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\ChainObj.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Managers\AnimationsManager.h">
       <Filter>src\Managers</Filter>
     </ClInclude>
   </ItemGroup>
