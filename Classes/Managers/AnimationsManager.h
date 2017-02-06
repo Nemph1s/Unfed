@@ -14,6 +14,7 @@
 #include "Utils/PlatformMacros.h"
 
 class SwapObj;
+class ChainObj;
 class AnimationsManager
 {
     CREATE_SINGLETON(AnimationsManager);
@@ -27,6 +28,8 @@ public:
     void animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* completion);
     void animateFallingCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion);
     void animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion);
+
+    void animateScoreForChain(ChainObj* chain);
 
 protected:
 

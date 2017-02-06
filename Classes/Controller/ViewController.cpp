@@ -118,6 +118,7 @@ void ViewController::startGame()
    mMovesLeft = mLevel->getLevelInfo().moves;
    mScore = 0;
    updateInfoLabels();
+   mLevel->resetComboMultiplier();
 
    shuffle();
 }
@@ -189,4 +190,6 @@ void ViewController::beginNextTurn()
 {
     mLevel->detectPossibleSwaps();
     mGameplayScene->userInteractionEnabled();
+
+    mLevel->resetComboMultiplier();
 }

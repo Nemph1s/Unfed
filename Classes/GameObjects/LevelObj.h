@@ -65,6 +65,7 @@ CC_CONSTRUCTOR_ACCESS:
    cocos2d::Array* fillTopUpHoles();
 
    void calculateScore(cocos2d::Set* chains);
+   void resetComboMultiplier();
 
 protected:
 
@@ -84,6 +85,8 @@ protected:
    * @brief A helper method to see if a cookie is part of a chain
    */
    bool hasChainAt(int column, int row);
+
+   CC_SYNTHESIZE_READONLY(int, mComboMultiplier, ComboMultiplier);
 
    CC_SYNTHESIZE_READONLY(cocos2d::Set*, mPossibleSwaps, PossibleSwaps);
    CC_SYNTHESIZE_READONLY(LevelInfo, mLevelInfo, LevelInfo);

@@ -400,8 +400,16 @@ void LevelObj::calculateScore(cocos2d::Set * chains)
         auto cookies = chain->getCookies();
 
         //TODO: make more intelligent way to get score value
-        chain->setScore(60 * (cookies->count() - 2));
+        chain->setScore(60 * (cookies->count() - 2) * mComboMultiplier);
+        mComboMultiplier++;
     }
+}
+
+//--------------------------------------------------------------------
+void LevelObj::resetComboMultiplier()
+//--------------------------------------------------------------------
+{
+    mComboMultiplier = 1;
 }
 
 //--------------------------------------------------------------------

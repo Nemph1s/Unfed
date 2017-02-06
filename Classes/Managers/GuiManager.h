@@ -31,14 +31,15 @@ public:
     void updateTargetScoreLabel(int value);
     void updateMovesLabel(int value);
 
+    cocos2d::ui::Text* createLabel(const CommonTypes::LabelInfo& info);
+
 protected:
     
     CC_SYNTHESIZE(cocos2d::Scene*, mCurrentScene, CurrentScene);
 
-    cocos2d::ui::Text* createLabel(const CommonTypes::LabelInfo& info);
-
     cocos2d::ui::Layout* mInfoLayout = nullptr;
-    cocos2d::LayerColor* mGuiLayer = nullptr;
+    cocos2d::LayerColor* mLeftGuiLayer = nullptr;
+    cocos2d::LayerColor* mRightGuiLayer = nullptr;
 
     cocos2d::ui::Text* mTargetLabel = nullptr;
     cocos2d::ui::Text* mMovesLabel = nullptr;

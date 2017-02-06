@@ -73,20 +73,25 @@ void GuiManager::crateInfoLayer()
 
     Vec2 viewOrigin = Director::getInstance()->getVisibleOrigin();
     Size viewSize = Director::getInstance()->getVisibleSize();
-
-    mGuiLayer = LayerColor::create(Color4B(53, 53, 53, 155));
-    mGuiLayer->setAnchorPoint(Vec2(0.5f, 0.5f));
-    
     auto width = (viewSize.width - (GameResources::TileWidth * CommonTypes::NumColumns)) / 2.2f;
-    mGuiLayer->setContentSize(Size(width, viewSize.height));
-    mCurrentScene->addChild(mGuiLayer);
+
+    mLeftGuiLayer = LayerColor::create(Color4B(53, 53, 53, 100));
+    mLeftGuiLayer->setAnchorPoint(Vec2(0.5f, 0.5f));
+    mLeftGuiLayer->setContentSize(Size(width, viewSize.height));
+    mCurrentScene->addChild(mLeftGuiLayer);
+
+    mRightGuiLayer = LayerColor::create(Color4B(53, 53, 53, 100));
+    mRightGuiLayer->setAnchorPoint(Vec2(0.5f, 0.5f));
+    mRightGuiLayer->setPosition(Vec2(viewSize.width - width, 0.0f));
+    mRightGuiLayer->setContentSize(Size(width, viewSize.height));
+    mCurrentScene->addChild(mRightGuiLayer);
 
     LabelInfo scoreTitleInfo = { Localization::scoreTitle.c_str(), fontSize, 0.5f, 0.75f };
     LabelInfo targetTitleInfo = { Localization::targetTitle.c_str(), fontSize, 0.5f, 0.55f };
     LabelInfo movesTitleInfo = { Localization::movesTitle.c_str(), fontSize, 0.5f, 0.35f };
-    mGuiLayer->addChild(createLabel(scoreTitleInfo));
-    mGuiLayer->addChild(createLabel(targetTitleInfo));
-    mGuiLayer->addChild(createLabel(movesTitleInfo));
+    mLeftGuiLayer->addChild(createLabel(scoreTitleInfo));
+    mLeftGuiLayer->addChild(createLabel(targetTitleInfo));
+    mLeftGuiLayer->addChild(createLabel(movesTitleInfo));
 
     const char* tmpStr = "999999999";
     LabelInfo scoreInfo = { tmpStr, fontSize + 4, 0.5f, 0.7f };
@@ -97,9 +102,9 @@ void GuiManager::crateInfoLayer()
     mTargetLabel = createLabel(targetInfo);
     mMovesLabel = createLabel(movesInfo);
 
-    mGuiLayer->addChild(mScoreLabel);
-    mGuiLayer->addChild(mTargetLabel);
-    mGuiLayer->addChild(mMovesLabel);
+    mLeftGuiLayer->addChild(mScoreLabel);
+    mLeftGuiLayer->addChild(mTargetLabel);
+    mLeftGuiLayer->addChild(mMovesLabel);
 }
 
 //--------------------------------------------------------------------
