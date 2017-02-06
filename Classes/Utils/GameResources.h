@@ -56,4 +56,10 @@ namespace GameResources {
 
    static std::string s_gameplaySoundBG= "Sounds/erokia_elementary-wave.mp3";
 
+   static std::string s_fontYellow = "fonts/YELLOW.TTF";
+   static std::string s_fontYellowExpanded = "fonts/Yellowe.ttf";
+   static std::string s_fontYellowCondensed = "fonts/Yellowc.ttf";
+   static std::string s_fontYellowItalic = "fonts/Yellowi.ttf";
+   static std::string s_fontYellowShadow = "fonts/Yellows.ttf";
+
 }

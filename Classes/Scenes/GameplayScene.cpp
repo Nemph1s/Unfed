@@ -21,6 +21,7 @@
 
 #include "Managers/AudioManager.h"
 #include "Managers/AnimationsManager.h"
+#include "Managers/GuiManager.h"
 #include <math.h>
 
 USING_NS_CC;
@@ -72,18 +73,17 @@ bool GameplayScene::initWithSize(const Size& size)
     }
     clearTouchedCookie();
 
-    AudioManager::getInstance()->init();
-    AnimationsManager::getInstance()->initWithScene(this);
-
     this->setAnchorPoint(Vec2(0.5, 0.5));
-    this->setPosition(VisibleRect::center());
+    this->setPosition(VisibleRect::leftBottom());
 
     auto bg = Sprite::create(GameResources::s_backgroundImg);
     auto scaleFactor = std::min(bg->getContentSize().width / size.width, bg->getContentSize().height / size.height);
     bg->setScale(1.0f / scaleFactor);
+    bg->setPosition(VisibleRect::center());
     this->addChild(bg, 0);
 
     mGameLayer = Layer::create();
+    mGameLayer->setPosition(VisibleRect::center());
     this->addChild(mGameLayer);
 
     Vec2 layerPos = Vec2(-TileWidth * NumColumns / 2, -TileHeight * NumRows / 2);

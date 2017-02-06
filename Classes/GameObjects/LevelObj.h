@@ -64,6 +64,8 @@ CC_CONSTRUCTOR_ACCESS:
    cocos2d::Array* useGravityToFillHoles();
    cocos2d::Array* fillTopUpHoles();
 
+   void calculateScore(cocos2d::Set* chains);
+
 protected:
 
    cocos2d::Set* createInitialCookies();

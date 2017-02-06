@@ -278,11 +278,14 @@ cocos2d::Set * LevelObj::removeMatches()
     }
     strVerticalChains->append("}");
 
+    calculateScore(horizontalChains);
     cocos2d::log("LevelObj::removeMatches: %s", strHorizontalChains->getCString());
     removeCookies(horizontalChains);
 
+    calculateScore(verticalChains);
     cocos2d::log("LevelObj::removeMatches: %s", strVerticalChains->getCString());
     removeCookies(verticalChains);
+
 
     return set;
 }
@@ -385,6 +388,20 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
     }
     cocos2d::log("LevelObj::fillTopUpHoles:  new created cookies: {\n%s", createdString.getCString());
     return columns;    
+}
+
+//--------------------------------------------------------------------
+void LevelObj::calculateScore(cocos2d::Set * chains)
+//--------------------------------------------------------------------
+{
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+        auto cookies = chain->getCookies();
+
+        //TODO: make more intelligent way to get score value
+        chain->setScore(60 * (cookies->count() - 2));
+    }
 }
 
 //--------------------------------------------------------------------

@@ -10,19 +10,37 @@
 
 #pragma once
 
-#include "cocos2d.h"
+#include "Common/CommonTypes.h"
 #include "Utils/PlatformMacros.h"
 
+#include "cocos2d.h"
+#include "cocos2d/cocos/ui/UIText.h"
+#include "cocos2d/cocos/ui/UILayout.h"
+
+class GameplayScene;
 class GuiManager
 {
     CREATE_SINGLETON(GuiManager);
 
 public:
-    bool init();
+    bool initWithScene(cocos2d::Scene* scene);
+
+    void crateInfoLayer();
+
+    void updateScoreLabel(int value);
+    void updateTargetScoreLabel(int value);
+    void updateMovesLabel(int value);
 
 protected:
     
-    cocos2d::Scene* getCurrentScene() const;
+    CC_SYNTHESIZE(cocos2d::Scene*, mCurrentScene, CurrentScene);
 
+    cocos2d::ui::Text* createLabel(const CommonTypes::LabelInfo& info);
 
+    cocos2d::ui::Layout* mInfoLayout = nullptr;
+    cocos2d::LayerColor* mGuiLayer = nullptr;
+
+    cocos2d::ui::Text* mTargetLabel = nullptr;
+    cocos2d::ui::Text* mMovesLabel = nullptr;
+    cocos2d::ui::Text* mScoreLabel = nullptr;
 };

@@ -44,6 +44,7 @@ protected:
 
     CC_SYNTHESIZE_READONLY(cocos2d::Array*, mCookies, Cookies);
     CC_SYNTHESIZE_READONLY(CommonTypes::ChainType, mType, Type);
+    CC_SYNTHESIZE(int, mScore, Score);
 
 };
 

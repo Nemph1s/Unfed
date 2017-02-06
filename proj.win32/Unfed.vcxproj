@@ -181,6 +181,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Utils\Helpers\Helper.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\VisibleRect.h" />
     <ClInclude Include="..\Classes\Utils\JsonParser.h" />
+    <ClInclude Include="..\Classes\Utils\Localization.h" />
     <ClInclude Include="..\Classes\Utils\PlatformMacros.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
@@ -188,6 +189,9 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ProjectReference Include="..\cocos2d\cocos\2d\libcocos2d.vcxproj">
       <Project>{98a51ba8-fc3a-415b-ac8f-8c7bd464e93e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\cocos2d\cocos\ui\proj.win32\libui.vcxproj">
+      <Project>{7e06e92c-537a-442b-9e4a-4761c84f8a1a}</Project>
     </ProjectReference>
     <ProjectReference Include="..\libs\jsoncpp\jsoncpp.vcxproj">
       <Project>{6c468030-ab7d-4e72-85ef-a8be119a3797}</Project>

@@ -75,7 +75,7 @@ void AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* com
     cookieA->setZOrder(100);
     cookieB->setZOrder(90);
 
-    const float duration = 0.3;
+    const float duration = 0.3f;
     auto deltaA = cookieB->getPosition() - cookieA->getPosition();
     auto deltaB = cookieA->getPosition() - cookieB->getPosition();
 

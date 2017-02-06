@@ -146,6 +146,9 @@
     <ClInclude Include="..\Classes\Managers\GuiManager.h">
       <Filter>src\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Utils\Localization.h">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
