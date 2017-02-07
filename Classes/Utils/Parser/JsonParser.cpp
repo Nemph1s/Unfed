@@ -8,12 +8,11 @@
 * @author VMartyniuk
 */
 
-
-#include "JsonParser.h"
+#include "Utils/Parser/JsonParser.h"
 #include "Utils/GameResources.h"
 
 //--------------------------------------------------------------------
-void JsonParser::parseLevelInfo(const int16_t & level)
+void _JsonParser::parseLevelInfo(const int16_t & level)
 //--------------------------------------------------------------------
 {
 	cocos2d::log("JsonParser::parseLevelInfo: parsing level=%d", level);
@@ -29,7 +28,7 @@ void JsonParser::parseLevelInfo(const int16_t & level)
 }
 
 //--------------------------------------------------------------------
-bool JsonParser::checkStatus()
+bool _JsonParser::checkStatus()
 //--------------------------------------------------------------------
 {
 	Json::Value& status = mRootNode["res"];
@@ -40,7 +39,7 @@ bool JsonParser::checkStatus()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::LevelInfo JsonParser::getLevelInfo()
+CommonTypes::LevelInfo _JsonParser::getLevelInfo()
 //--------------------------------------------------------------------
 {
 	auto levelInfo = CommonTypes::LevelInfo();
@@ -64,7 +63,7 @@ CommonTypes::LevelInfo JsonParser::getLevelInfo()
 }
 
 //--------------------------------------------------------------------
-const Json::Value& JsonParser::getTiles()
+const Json::Value& _JsonParser::getTiles()
 //--------------------------------------------------------------------
 {
 	Json::Value& value = mRootNode["tiles"];
@@ -75,7 +74,7 @@ const Json::Value& JsonParser::getTiles()
 }
 
 //--------------------------------------------------------------------
-int16_t JsonParser::getTargetScore()
+int16_t _JsonParser::getTargetScore()
 //--------------------------------------------------------------------
 {
 	int16_t res = 0;
@@ -86,7 +85,7 @@ int16_t JsonParser::getTargetScore()
 }
 
 //--------------------------------------------------------------------
-int16_t JsonParser::getMoves()
+int16_t _JsonParser::getMoves()
 //--------------------------------------------------------------------
 {
 	int16_t res = 0;

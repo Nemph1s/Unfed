@@ -159,7 +159,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Utils\GlobalInfo.cpp" />
     <ClCompile Include="..\Classes\Utils\Helpers\Helper.cpp" />
     <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp" />
-    <ClCompile Include="..\Classes\Utils\JsonParser.cpp" />
+    <ClCompile Include="..\Classes\Utils\Parser\JsonParser.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -180,8 +180,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Utils\GlobalInfo.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\Helper.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\VisibleRect.h" />
-    <ClInclude Include="..\Classes\Utils\JsonParser.h" />
     <ClInclude Include="..\Classes\Utils\Localization.h" />
+    <ClInclude Include="..\Classes\Utils\Parser\JsonParser.h" />
     <ClInclude Include="..\Classes\Utils\PlatformMacros.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>

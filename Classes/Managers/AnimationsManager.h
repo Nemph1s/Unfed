@@ -36,7 +36,6 @@ public:
 protected:
 
     cocos2d::Scene* mCurrentScene;
-
 };
 
 #define AnimationsManager _AnimationsManager::getInstance()

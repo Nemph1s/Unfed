@@ -15,7 +15,7 @@
 #include "GameObjects/ChainObj.h"
 
 #include "Utils/Helpers/Helper.h"
-#include "Utils/JsonParser.h"
+#include "Utils/Parser/JsonParser.h"
 
 //--------------------------------------------------------------------
 LevelObj::~LevelObj()
@@ -47,13 +47,13 @@ bool LevelObj::initWithId(const int16_t& levelId)
         return false;
     }
 
-    JsonParser::Instance().parseLevelInfo(levelId);
-    if (!JsonParser::Instance().checkStatus()) {
+    JsonParser->parseLevelInfo(levelId);
+    if (!JsonParser->checkStatus()) {
         cocos2d::log("LevelObj::initWithId: can't parse json file");
         return false;
     }
 
-    mLevelInfo = JsonParser::Instance().getLevelInfo();
+    mLevelInfo = JsonParser->getLevelInfo();
 
     for (int i = 0; i < NumColumns; i++) {
         for (int j = 0; j < NumRows; j++) {
