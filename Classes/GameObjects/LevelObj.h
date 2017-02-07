@@ -18,6 +18,7 @@ using namespace CommonTypes;
 class SwapObj;
 class TileObj;
 class CookieObj;
+class ChainObj;
 
 class LevelObj : public cocos2d::Node
 {
@@ -55,16 +56,11 @@ CC_CONSTRUCTOR_ACCESS:
    bool isPossibleSwap(SwapObj* swap);
    void performSwap(SwapObj* swap);
 
-   cocos2d::Set* detectHorizontalMatches();
-   cocos2d::Set* detectVerticalMatches();
-
    cocos2d::Set* removeMatches();
-   void removeCookies(cocos2d::Set* chains);
 
    cocos2d::Array* useGravityToFillHoles();
    cocos2d::Array* fillTopUpHoles();
 
-   void calculateScore(cocos2d::Set* chains);
    void resetComboMultiplier();
 
 protected:
@@ -73,11 +69,10 @@ protected:
    CookieObj* createCookie(int column, int row, int type);
    int getRandomCookieType(int column, int row);
 
+   void addChainsFromSetToSet(cocos2d::Set* from, cocos2d::Set* to);
+
    /**
    * @brief A method that checks is the cookie[column][row] type equal to forwarded type  
-   * @param column Current cookie column
-   * @param row Current cookie row
-   * @param type A type of cookie with which must be checked current cookie
    */
    bool isSameTypeOfCookieAt(int column, int row, int type);
 
@@ -85,6 +80,21 @@ protected:
    * @brief A helper method to see if a cookie is part of a chain
    */
    bool hasChainAt(int column, int row);
+
+   cocos2d::Set* detectHorizontalMatches();
+   cocos2d::Set* detectVerticalMatches();
+   cocos2d::Set* detectDifficultMatches(cocos2d::Set* horizontal, cocos2d::Set* vertical);
+
+   ChainObj* detectLChainMatches(ChainObj* horzChain, ChainObj* vertChain);
+   ChainObj* detectTChainMatches(ChainObj* horzChain, ChainObj* vertChain);
+
+
+   void removeCookies(cocos2d::Set* chains);
+   void calculateScore(cocos2d::Set* chains);
+
+#ifdef COCOS2D_DEBUG
+   void logDebugChains(cocos2d::Set* horizontal, cocos2d::Set* vertical, cocos2d::Set* difficult);
+#endif // COCOS2D_DEBUG 
 
    CC_SYNTHESIZE_READONLY(int, mComboMultiplier, ComboMultiplier);
 

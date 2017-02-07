@@ -39,6 +39,7 @@ CC_CONSTRUCTOR_ACCESS:
     int getTypeAsInt();
 
     void addCookie(CookieObj* cookie);
+    void addCookiesFromChain(ChainObj* chain);
 
 protected:
 

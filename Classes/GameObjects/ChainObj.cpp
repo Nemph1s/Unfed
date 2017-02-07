@@ -85,6 +85,12 @@ std::string ChainObj::typeAsString()
     case CommonTypes::ChainType::ChainTypeVertical:
         type = "Vertical";
         break;
+    case CommonTypes::ChainType::ChainTypeL:
+        type = "Type L";
+        break;
+    case CommonTypes::ChainType::ChainTypeT:
+        type = "Type T";
+        break;
     case CommonTypes::ChainType::Unknown:
     default:
         type = "Unknown";
@@ -110,4 +116,20 @@ void ChainObj::addCookie(CookieObj * cookie)
         CC_SAFE_RETAIN(mCookies);
     }
     mCookies->addObject(cookie);
+}
+
+//--------------------------------------------------------------------
+void ChainObj::addCookiesFromChain(ChainObj * chain)
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ChainObj::addCookiesFromChain:");
+    CC_ASSERT(chain);
+    auto cookies = chain->getCookies();
+    CC_ASSERT(cookies);
+
+    for (auto it = cookies->begin(); it != cookies->end(); it++) {
+        auto cookie = dynamic_cast<CookieObj*>(*it);
+        CC_ASSERT(cookie);
+        addCookie(cookie);
+    }
 }

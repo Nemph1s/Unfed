@@ -22,7 +22,7 @@ using cocos2d::Director;
 using cocos2d::CallFunc;
 using namespace CommonTypes;
 
-#define COCOS2D_DEBUG 0
+#define COCOS2D_DEBUG 1
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
