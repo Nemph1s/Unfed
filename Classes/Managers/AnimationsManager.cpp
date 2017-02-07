@@ -328,9 +328,10 @@ void AnimationsManager::animateScoreForChain(ChainObj * chain)
 
     scene->getCookiesLayer()->addChild(scoreLabel);
 
-    auto duration = 0.5f;
-    auto scaleAction = ScaleTo::create(duration, 2.0f);
-    auto easeOut = EaseOut::create(scaleAction, duration);
+    auto duration = 1.15f;
+    //auto scaleAction = ScaleTo::create(duration, 2.0f);
+    auto moveAction = MoveBy::create(duration, Vec2(0.0f, 10.0f));
+    auto easeOut = EaseOut::create(moveAction, duration);
     auto fadeOut = FadeOut::create(0.5f);
 
     auto callback = CallFunc::create([scoreLabel]() {
