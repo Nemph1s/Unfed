@@ -16,6 +16,7 @@
 
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/ChainObj.h"
+#include "GameObjects/SwapObj.h"
 #include "Scenes/GameplayScene.h"
 
 using cocos2d::Director;
@@ -23,12 +24,11 @@ using cocos2d::CallFunc;
 using namespace CommonTypes;
 
 #define COCOS2D_DEBUG 1
+#define UNFED_ENABLE_DEBUG 1
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
-   : mLevel(nullptr)
-   , mGameplayScene(nullptr)
-   //--------------------------------------------------------------------
+//--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::ViewController");
 }
@@ -61,11 +61,10 @@ bool ViewController::init()
    // Load the level.
    int levelId = 0;
    mLevel = LevelObj::createWithId(levelId);
-
    mScore = mLevel->getLevelInfo().targetScore;
    mMovesLeft = mLevel->getLevelInfo().moves;
 
-   GuiManager::getInstance()->crateInfoLayer();
+
 
    //TODO: create tags instead of name
    mLevel->setName("Level");
@@ -73,33 +72,11 @@ bool ViewController::init()
    mGameplayScene->setLevel(mLevel);
    mGameplayScene->addTiles();
 
-   auto callback = [&](SwapObj* swap) {
-       // disable touches on layer.
-       mGameplayScene->userInteractionDisabled();
+   mShuffleButtonCallback = std::bind(&ViewController::shuffleButtonCallback, this);
+   GuiManager::getInstance()->setShuffleButtonCallback(mShuffleButtonCallback);
 
-       auto swapCallback = CallFunc::create([=]() {
-           handleMatches();
-       });
-       auto invalidSwapCallback = CallFunc::create([=]() {
-           // enable touches on layer.
-           mGameplayScene->userInteractionEnabled();
-       });
-
-       if (mLevel->isPossibleSwap(swap)) {
-
-           mLevel->performSwap(swap);
-           AnimationsManager::getInstance()->animateSwap(swap, swapCallback);
-           AudioManager::getInstance()->playSound(SoundType::SwapSound);
-
-       } else {
-
-           AnimationsManager::getInstance()->animateInvalidSwap(swap, invalidSwapCallback);
-           AudioManager::getInstance()->playSound(SoundType::InvalidSwapSound);
-
-       }
-   };
-
-   mGameplayScene->setSwapCallback(callback);
+   auto swapCallback = std::bind(&ViewController::swapCallback, this, std::placeholders::_1);
+   mGameplayScene->setSwapCallback(swapCallback);
 
    // Present the scene.
    director->runWithScene(mGameplayScene);
@@ -139,8 +116,8 @@ void ViewController::shuffle()
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::shuffle");
-   auto newCookies = mLevel->shuffle();
-   mGameplayScene->addSpritesForCookies(newCookies);
+   mGameplayScene->removeAllCookieSprites();
+   mGameplayScene->addSpritesForCookies(mLevel->shuffle());
 }
 
 //--------------------------------------------------------------------
@@ -188,8 +165,55 @@ void ViewController::handleMatches()
 void ViewController::beginNextTurn()
 //--------------------------------------------------------------------
 {
+    cocos2d::log("ViewController::beginNextTurn");
     mLevel->detectPossibleSwaps();
     mGameplayScene->userInteractionEnabled();
 
     mLevel->resetComboMultiplier();
+    decrementMoves();
+}
+
+//--------------------------------------------------------------------
+void ViewController::decrementMoves()
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ViewController::decrementMoves");
+    mMovesLeft--;
+    updateInfoLabels();
+}
+
+//--------------------------------------------------------------------
+void ViewController::shuffleButtonCallback()
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ViewController::onShuffleButtonPressed");
+    shuffle();
+    decrementMoves();
+}
+
+//--------------------------------------------------------------------
+void ViewController::swapCallback(SwapObj * swap)
+//--------------------------------------------------------------------
+{
+    // disable touches on layer.
+    mGameplayScene->userInteractionDisabled();
+
+    auto swapCallback = CallFunc::create([=]() {
+        handleMatches();
+    });
+    auto invalidSwapCallback = CallFunc::create([=]() {
+        // enable touches on layer.
+        mGameplayScene->userInteractionEnabled();
+    });
+
+    if (mLevel->isPossibleSwap(swap)) {
+
+        mLevel->performSwap(swap);
+        AnimationsManager::getInstance()->animateSwap(swap, swapCallback);
+        AudioManager::getInstance()->playSound(SoundType::SwapSound);
+    }
+    else {
+        AnimationsManager::getInstance()->animateInvalidSwap(swap, invalidSwapCallback);
+        AudioManager::getInstance()->playSound(SoundType::InvalidSwapSound);
+    }
 }

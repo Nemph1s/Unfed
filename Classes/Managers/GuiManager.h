@@ -14,10 +14,18 @@
 #include "Utils/PlatformMacros.h"
 
 #include "cocos2d.h"
-#include "cocos2d/cocos/ui/UIText.h"
-#include "cocos2d/cocos/ui/UILayout.h"
+
+namespace cocos2d {
+    namespace ui {
+        class Text;
+        class Layout;
+        class Button;
+        class Widget;
+    }
+}
 
 class GameplayScene;
+
 class GuiManager
 {
     CREATE_SINGLETON(GuiManager);
@@ -25,17 +33,21 @@ class GuiManager
 public:
     bool initWithScene(cocos2d::Scene* scene);
 
-    void crateInfoLayer();
+    void setShuffleButtonCallback(std::function<void()> touchEndedCallback);
 
     void updateScoreLabel(int value);
     void updateTargetScoreLabel(int value);
     void updateMovesLabel(int value);
 
-    cocos2d::ui::Text* createLabel(const CommonTypes::LabelInfo& info);
-
 protected:
+
+    void crateInfoLayer();
+    void createShuffleButton();
+    cocos2d::ui::Text* createLabel(const CommonTypes::LabelInfo& info);
     
     CC_SYNTHESIZE(cocos2d::Scene*, mCurrentScene, CurrentScene);
+
+    cocos2d::ui::Button* mShuffleButton = nullptr;
 
     cocos2d::ui::Layout* mInfoLayout = nullptr;
     cocos2d::LayerColor* mLeftGuiLayer = nullptr;

@@ -12,32 +12,32 @@
 
 #include "cocos2d.h"
 #include <string.h>
+#include "Utils/PlatformMacros.h"
 
 class CookieObj;
 
 class SwapObj : public cocos2d::Node
 {
-public:
+CC_CONSTRUCTOR_ACCESS:
+    virtual ~SwapObj();
 
+public:
     /**
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
     static SwapObj * createWithCookies(CookieObj* cookieA, CookieObj* cookieB);
 
-CC_CONSTRUCTOR_ACCESS:
-   // Nodes should be created using create();
-   SwapObj();
-   virtual ~SwapObj();
+    virtual bool initWithCookies(CookieObj* cookieA, CookieObj* cookieB);
 
-   bool initWithCookies(CookieObj* cookieA, CookieObj* cookieB);
-
-   std::string description();
+    std::string description();
 
 protected:
+    // Nodes should be created using create();
+    SwapObj() {};
 
-    CC_SYNTHESIZE_READONLY(CookieObj*, mCookieA, CookieA);
-    CC_SYNTHESIZE_READONLY(CookieObj*, mCookieB, CookieB);
+    CC_SYNTHESIZE_READONLY_PTR(CookieObj*, mCookieA, CookieA);
+    CC_SYNTHESIZE_READONLY_PTR(CookieObj*, mCookieB, CookieB);
    
 };
 

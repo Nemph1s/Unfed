@@ -20,7 +20,6 @@ class AnimationsManager
     CREATE_SINGLETON(AnimationsManager);
 
 public:
-
     bool initWithScene(cocos2d::Scene* scene);
     
     void animateSwap(SwapObj* swap, cocos2d::CallFunc* completion);

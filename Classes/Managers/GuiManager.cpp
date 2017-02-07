@@ -15,12 +15,19 @@
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/VisibleRect.h"
 
+#include "cocos2d/cocos/ui/UIText.h"
+#include "cocos2d/cocos/ui/UILayout.h"
+#include "cocos2d/cocos/ui/UIButton.h"
+#include "cocos2d/cocos/ui/UIWidget.h"
+
 //#include "cocos2d/cocos/editor-support/cocostudio/WidgetReader/TextReader/TextReader.h"
 
 USING_NS_CC;
 using namespace CommonTypes;
 using ui::Text;
 using ui::Layout;
+using ui::Button;
+using ui::Widget;
 
 //--------------------------------------------------------------------
 bool GuiManager::initWithScene(cocos2d::Scene* scene)
@@ -29,41 +36,14 @@ bool GuiManager::initWithScene(cocos2d::Scene* scene)
     cocos2d::log("GuiManager::initWithScene:");
     if (scene) {
         mCurrentScene = scene;
+
+        crateInfoLayer();
+        createShuffleButton();
+
         return true;
     }
     return false;
 }
-
-    
-// 
-//     auto winSize = Director::sharedDirector()->getOpenGLView()->getFrameSize();
-// 
-//     mGuiLayer = cocos2d::LayerColor::create(cocos2d::Color4B(53, 53, 53, 255));
-//     mGuiLayer->retain();
-
-//     mGuiLayer = LayerColor::create(cocos2d::Color4B(255, 0, 0, 255));
-//     mGuiLayer->setPosition(VisibleRect::center());
-//     mGuiLayer->setContentSize(winSize);
-//     mScene->addChild(mGuiLayer);
-
-//     Vec2 viewOrigin = Director::getInstance()->getVisibleOrigin();
-//     Size viewSize = Director::getInstance()->getVisibleSize();
-// 
-//     auto leftPanel = Layout::create();
-//     mScene->addChild(leftPanel);
-// 
-//     leftPanel->setLayoutType(Layout::Type::VERTICAL);
-//     leftPanel->setAnchorPoint(Vec2());
-//     leftPanel->setPosition(Vec2(viewSize.width / 2, viewSize.height / 2 + 50));
-// 
-//     leftPanel->setBackGroundColorType(Layout::BackGroundColorType::SOLID);  //// I didn't forget this!
-//     leftPanel->setBackGroundColor(cocos2d::Color3B::RED);
-//     mInfoLayout = leftPanel;
-
-//     mInfoLayout = crateInfoLayout();
-// 
-//     return true;
-// }
 
 //--------------------------------------------------------------------
 void GuiManager::crateInfoLayer()
@@ -105,6 +85,34 @@ void GuiManager::crateInfoLayer()
     mLeftGuiLayer->addChild(mScoreLabel);
     mLeftGuiLayer->addChild(mTargetLabel);
     mLeftGuiLayer->addChild(mMovesLabel);
+}
+
+//--------------------------------------------------------------------
+void GuiManager::createShuffleButton()
+//--------------------------------------------------------------------
+{
+    mShuffleButton = ui::Button::create(GameResources::s_ButtonImg);
+    mShuffleButton->setPositionType(Widget::PositionType::PERCENT);
+    mShuffleButton->setPositionPercent(Vec2(0.5f, 0.1f));
+    mShuffleButton->setTitleFontName(GameResources::s_fontYellow);
+    mShuffleButton->setTitleText(Localization::shuffleTitle);
+    mShuffleButton->setTitleFontSize(28);    
+    mShuffleButton->setScale9Enabled(true);
+    mShuffleButton->setScale(0.8f);
+    mLeftGuiLayer->addChild(mShuffleButton);
+}
+
+//--------------------------------------------------------------------
+void GuiManager::setShuffleButtonCallback(std::function<void()> touchEndedCallback)
+//--------------------------------------------------------------------
+{
+    if (mShuffleButton) {
+        mShuffleButton->addTouchEventListener([touchEndedCallback](Ref* pSender, ui::Widget::TouchEventType type) {
+            if (type == Widget::TouchEventType::ENDED) {
+                touchEndedCallback();
+            }
+        });
+    }
 }
 
 //--------------------------------------------------------------------

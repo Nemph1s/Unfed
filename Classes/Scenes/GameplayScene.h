@@ -12,19 +12,19 @@
 
 #include "cocos2d.h"
 #include <functional>
+#include "Utils/PlatformMacros.h"
 
 class LevelObj;
 class SwapObj;
 class CookieObj;
+
 class GameplayScene : public cocos2d::Scene
 {
+CC_CONSTRUCTOR_ACCESS:
+    virtual ~GameplayScene();
+
 public:
     static GameplayScene* createWithSize(const cocos2d::Size& size);
-
- CC_CONSTRUCTOR_ACCESS:
-    // Nodes should be created using create();
-    GameplayScene();
-    virtual ~GameplayScene();
 
     virtual bool initWithSize(const cocos2d::Size& size);
 
@@ -47,14 +47,18 @@ public:
     void showSelectionIndicatorForCookie(CookieObj* cookie);
     void hideSelectionIndicator();
 
+    void removeAllCookieSprites();
+
 protected:
+    // Nodes should be created using create();
+    GameplayScene();
 
     bool isCookieTouched();
     void clearTouchedCookie();
     void updateSwipeDelta(int column, int row, int& horzDelta, int& vertDelta);
     bool trySwapCookieTo(int horzDelta, int vertDelta);  
 
-
+    //---Class Attributes-------------------------------------------------
 	cocos2d::EventListener* mListener;
 
     CC_PROPERTY(LevelObj*, mLevel, Level);
@@ -64,10 +68,9 @@ protected:
 	CC_SYNTHESIZE_READONLY(int, mSwipeFromColumn, SwipeFromColumn);
     CC_SYNTHESIZE_READONLY(int, mSwipeFromRow, SwipeFromRow);
 
-    CC_SYNTHESIZE_READONLY(cocos2d::Sprite*, mSelectionSprite, SelectionSprite);
-
-	CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mGameLayer, GameLayer);
-	CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mTilesLayer, TilesLayer);
-	CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mCookiesLayer, CookiesLayer);
+    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Sprite*, mSelectionSprite, SelectionSprite);
+    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Layer*, mGameLayer, GameLayer);
+    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Layer*, mTilesLayer, TilesLayer);
+    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Layer*, mCookiesLayer, CookiesLayer);
 };
 

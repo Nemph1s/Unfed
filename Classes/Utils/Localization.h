@@ -20,4 +20,5 @@ namespace Localization {
     static std::string targetTitle = "Target:";
     static std::string movesTitle = "Moves:";
 
+    static std::string shuffleTitle = "Shuffle";
 }

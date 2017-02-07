@@ -13,20 +13,19 @@
 #include "cocos2d.h"
 #include <string.h>
 #include "Common/CommonTypes.h"
+#include "Utils/PlatformMacros.h"
 
 class CookieObj : public cocos2d::Node
 {
+CC_CONSTRUCTOR_ACCESS:
+    virtual ~CookieObj();
+
 public:
    /**
    * Allocates and initializes a node.
    * @return A initialized node which is marked as "autorelease".
    */
    static CookieObj * create(const CommonTypes::CookieInfo &cookieInfo);
-
-CC_CONSTRUCTOR_ACCESS:
-   // Nodes should be created using create();
-   CookieObj();
-   virtual ~CookieObj();
 
    virtual bool init(const CommonTypes::CookieInfo & cookieInfo);
 
@@ -37,12 +36,17 @@ CC_CONSTRUCTOR_ACCESS:
    void updateDebugTileLabel();
    int getTypeAsInt();
 
-protected:   
+protected: 
+    // Nodes should be created using create();
+    CookieObj();
 
+    //---Class Attributes-------------------------------------------------
    CC_SYNTHESIZE(int, mColumn, Column);
    CC_SYNTHESIZE(int, mRow, Row);
+
    CC_SYNTHESIZE_READONLY(CommonTypes::CookieType, mType, Type);
-   CC_SYNTHESIZE(cocos2d::Sprite*, mSpriteNode, SpriteNode);
-   CC_PROPERTY(cocos2d::Label*, mDebugLabel, DebugLabel);
+
+   CC_SYNTHESIZE_PTR(cocos2d::Sprite*, mSpriteNode, SpriteNode);
+   CC_SYNTHESIZE_PTR(cocos2d::Label*, mDebugLabel, DebugLabel);
 };
 

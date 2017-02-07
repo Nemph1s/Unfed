@@ -18,14 +18,6 @@
 #include "Utils/JsonParser.h"
 
 //--------------------------------------------------------------------
-LevelObj::LevelObj()
-    : mPossibleSwaps(nullptr)
-//--------------------------------------------------------------------
-{
-   cocos2d::log("LevelObj::LevelObj");
-}
-
-//--------------------------------------------------------------------
 LevelObj::~LevelObj()
 //--------------------------------------------------------------------
 {
@@ -114,13 +106,9 @@ CookieObj* LevelObj::cookieAt(int column, int row)
 {
     bool invalidColumn = column >= 0 && column < NumColumns;
     bool invalidRow = row >= 0 && row < NumColumns;
-    if (!invalidColumn) {
-        cocos2d::log("LevelObj::cookieAt: Invalid column : %d", column);
-        CC_ASSERT(invalidColumn);
-    }
-    if (!invalidRow) {
-        cocos2d::log("LevelObj::cookieAt: Invalid row: %d", row);
-        CC_ASSERT(invalidRow);
+    if (!invalidColumn || !invalidRow) {
+        cocos2d::log("LevelObj::cookieAt: Invalid cookie at column = %d, row = %d", column, row);
+        return nullptr;
     }
     return mCookies[column][row];
 }
@@ -341,9 +329,6 @@ ChainObj * LevelObj::detectTChainMatches(ChainObj * horzChain, ChainObj * vertCh
     int vertMiddlePos = firstVertCookie->getRow() + vertCookies->count() / 2;
     auto middleHorzCookie = cookieAt(horzMiddlePos, firstHorzCookie->getRow());
     auto middleVertCookie = cookieAt(firstVertCookie->getColumn(), vertMiddlePos);
-
-//     auto middleHorzCookie = dynamic_cast<CookieObj*>(horzCookies->getObjectAtIndex(horzMiddlePos));
-//     auto middleVertCookie = dynamic_cast<CookieObj*>(vertCookies->getObjectAtIndex(vertMiddlePos));
 
     if (middleHorzCookie == firstVertCookie || middleHorzCookie == lastVertCookie ||
         middleVertCookie == firstHorzCookie || middleVertCookie == lastHorzCookie) {

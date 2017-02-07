@@ -30,10 +30,7 @@ using namespace GameResources;
 //--------------------------------------------------------------------
 GameplayScene::GameplayScene()
     : mLevel(nullptr)
-    , mGameLayer(nullptr)
-    , mCookiesLayer(nullptr)
     , mListener(nullptr)
-    , mSelectionSprite(nullptr)
    //--------------------------------------------------------------------
 {
 }
@@ -280,6 +277,13 @@ void GameplayScene::hideSelectionIndicator()
 }
 
 //--------------------------------------------------------------------
+void GameplayScene::removeAllCookieSprites()
+//--------------------------------------------------------------------
+{
+    mCookiesLayer->removeAllChildren();
+}
+
+//--------------------------------------------------------------------
 bool GameplayScene::isCookieTouched()
 //--------------------------------------------------------------------
 {
@@ -355,7 +359,7 @@ void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int r
     auto sprite = Sprite::create(cookie->spriteName());
     sprite->setPosition(Helper::pointForColumnAndRow(column, row));
     cookie->setSpriteNode(sprite);
-    cookie->setDebugLabel(Label::create());
+    cookie->updateDebugTileLabel();
 
     mCookiesLayer->addChild(sprite);
     mCookiesLayer->addChild(cookie);
