@@ -9,10 +9,13 @@
 */
 
 #include "Controller/ViewController.h"
+
 #include "Managers/AnimationsManager.h"
 #include "Managers/AudioManager.h"
+#include "Managers/GuiManager.h"
 
 #include "GameObjects/LevelObj.h"
+#include "GameObjects/ChainObj.h"
 #include "Scenes/GameplayScene.h"
 
 using cocos2d::Director;
@@ -46,19 +49,23 @@ bool ViewController::init()
 
    auto director = Director::getInstance();
    auto glview = director->getOpenGLView();
-
-   auto animationMgr = AnimationsManager::getInstance();
-   auto audioMgr = AudioManager::getInstance();
       
    // Create and configure the scene.
    mGameplayScene = GameplayScene::createWithSize(glview->getFrameSize());
    //self.scene.scaleMode = SKSceneScaleModeAspectFill;
 
-   animationMgr->initWithScene(mGameplayScene);
+   AudioManager::getInstance()->init();
+   AnimationsManager::getInstance()->initWithScene(mGameplayScene);
+   GuiManager::getInstance()->initWithScene(mGameplayScene);
 
    // Load the level.
    int levelId = 0;
    mLevel = LevelObj::createWithId(levelId);
+
+   mScore = mLevel->getLevelInfo().targetScore;
+   mMovesLeft = mLevel->getLevelInfo().moves;
+
+   GuiManager::getInstance()->crateInfoLayer();
 
    //TODO: create tags instead of name
    mLevel->setName("Level");
@@ -81,13 +88,13 @@ bool ViewController::init()
        if (mLevel->isPossibleSwap(swap)) {
 
            mLevel->performSwap(swap);
-           animationMgr->animateSwap(swap, swapCallback);
-           audioMgr->playSound(SoundType::SwapSound);
+           AnimationsManager::getInstance()->animateSwap(swap, swapCallback);
+           AudioManager::getInstance()->playSound(SoundType::SwapSound);
 
        } else {
 
-           animationMgr->animateInvalidSwap(swap, invalidSwapCallback);
-           audioMgr->playSound(SoundType::InvalidSwapSound);
+           AnimationsManager::getInstance()->animateInvalidSwap(swap, invalidSwapCallback);
+           AudioManager::getInstance()->playSound(SoundType::InvalidSwapSound);
 
        }
    };
@@ -107,7 +114,24 @@ void ViewController::startGame()
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::startGame");
+
+   mMovesLeft = mLevel->getLevelInfo().moves;
+   mScore = 0;
+   updateInfoLabels();
+   mLevel->resetComboMultiplier();
+
    shuffle();
+}
+
+//--------------------------------------------------------------------
+void ViewController::updateInfoLabels()
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ViewController::updateInfoLabels");
+    CC_ASSERT(mLevel);
+    GuiManager::getInstance()->updateScoreLabel(mScore);
+    GuiManager::getInstance()->updateMovesLabel(mMovesLeft);
+    GuiManager::getInstance()->updateTargetScoreLabel(mLevel->getLevelInfo().targetScore);
 }
 
 //--------------------------------------------------------------------
@@ -131,27 +155,33 @@ void ViewController::handleMatches()
         return;
     }
 
-    auto animationMgr = AnimationsManager::getInstance();
-    auto audioMgr = AudioManager::getInstance();
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        if (!chain)
+            continue;
+        mScore += chain->getScore();
+    }
 
     auto completion = CallFunc::create([=]() {
 
         auto columns = mLevel->useGravityToFillHoles();
         auto addNewCookies = CallFunc::create([=]() {
 
+            updateInfoLabels();
+
             auto newColumns = mLevel->fillTopUpHoles();
             auto enableTouches = CallFunc::create([=]() {
                 handleMatches();                
             });
 
-            animationMgr->animateNewCookies(newColumns, enableTouches);
+            AnimationsManager::getInstance()->animateNewCookies(newColumns, enableTouches);
         });
 
-        animationMgr->animateFallingCookies(columns, addNewCookies);
+        AnimationsManager::getInstance()->animateFallingCookies(columns, addNewCookies);
     });
     
-    animationMgr->animateMatching(chains, completion);
-    audioMgr->playSound(SoundType::MatchSound);
+    AnimationsManager::getInstance()->animateMatching(chains, completion);
+    AudioManager::getInstance()->playSound(SoundType::MatchSound);
 }
 
 //--------------------------------------------------------------------
@@ -160,4 +190,6 @@ void ViewController::beginNextTurn()
 {
     mLevel->detectPossibleSwaps();
     mGameplayScene->userInteractionEnabled();
+
+    mLevel->resetComboMultiplier();
 }

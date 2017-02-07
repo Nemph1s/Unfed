@@ -17,10 +17,15 @@
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
+#include "Common/CommonTypes.h"
 
 #include "Scenes/GameplayScene.h"
 
+#include "cocos2d/cocos/ui/UIText.h"
+
 USING_NS_CC;
+using namespace CommonTypes;
+using ui::Text;
 
 //--------------------------------------------------------------------
 bool AnimationsManager::initWithScene(cocos2d::Scene * scene)
@@ -75,7 +80,7 @@ void AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* com
     cookieA->setZOrder(100);
     cookieB->setZOrder(90);
 
-    const float duration = 0.3;
+    const float duration = 0.3f;
     auto deltaA = cookieB->getPosition() - cookieA->getPosition();
     auto deltaB = cookieA->getPosition() - cookieB->getPosition();
 
@@ -105,6 +110,9 @@ void AnimationsManager::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc*
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         if (!chain)
             continue;
+
+        animateScoreForChain(chain);
+
         auto cookies = chain->getCookies();
         for (auto it = cookies->begin(); it != cookies->end(); it++) {
 
@@ -210,8 +218,6 @@ void AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::CallF
         auto array = dynamic_cast<cocos2d::Array*>(*it);
         CC_ASSERT(array);
 
-        auto startCookie = dynamic_cast<CookieObj*>(array->objectAtIndex(0));
-//        int startRow = startCookie ? startCookie->getRow() - 1 : -1;
         int startRow = -1;
         float colDelay = Helper::randomFloatBetween(0.05f, 0.15f) * 1;
 
@@ -225,13 +231,12 @@ void AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::CallF
 
             // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
             // This calculation works because fillHoles guarantees that lower cookies are first in the array.
-            int colCount = colums->count();
-            float delay = 0.1f + 0.175f * (colCount - columnIdx - 1);
+            float delay = 0.1f + 0.175f * (colums->count() - columnIdx - 1);
 
             // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
             // You can tweak these numbers to change the feel of the animation.
             float timeToTile = fabs(startRow - cookie->getRow());
-            float duration = (timeToTile * 0.1f) + colDelay;// *0.75f;
+            float duration = (timeToTile * 0.1f) + colDelay;
 
             // You calculate which animation is the longest. This is the time the game has to wait before it may continue.
             longestDuration = MAX(longestDuration, duration + delay);
@@ -257,4 +262,82 @@ void AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::CallF
 
     // You wait until all the cookies have fallen down before allowing the gameplay to continue.
     scene->runAction(Sequence::create(DelayTime::create(longestDuration), completion, nullptr));
+}
+
+//--------------------------------------------------------------------
+void AnimationsManager::animateScoreForChain(ChainObj * chain)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(chain);
+    // Figure out what the midpoint of the chain is.
+
+    auto cookies = chain->getCookies();
+    CC_ASSERT(cookies);
+
+    auto firstCookie = dynamic_cast<CookieObj*>(cookies->getObjectAtIndex(0));
+    auto lastCookie = dynamic_cast<CookieObj*>(cookies->getLastObject());
+    CC_ASSERT(firstCookie);
+    CC_ASSERT(lastCookie);
+
+    auto firstSpritePos = firstCookie->getSpriteNode()->getPosition();
+    auto lastSpritePos = lastCookie->getSpriteNode()->getPosition();
+
+    Vec2 centerPosition = Vec2((firstSpritePos.x + lastSpritePos.x) / 2,
+        (firstSpritePos.y + lastSpritePos.y) / 2);// - 8);
+
+    //TODO: move to helper
+    auto color = Color4B::WHITE;
+    switch (lastCookie->getType())
+    {
+    case CookieType::Croissant:
+        color = Color4B::ORANGE;
+        break;
+    case CookieType::Cupcake:
+        color = Color4B::RED;
+        break;
+    case CookieType::Danish:
+        color = Color4B::BLUE;
+        break;
+    case CookieType::Donut:
+        color = Color4B::MAGENTA;
+        break;
+    case CookieType::Macaron:
+        color = Color4B::GREEN;
+        break;
+    case CookieType::SugarCookie:
+        color = Color4B::YELLOW;
+        break;
+    default:
+        break;
+    }
+
+    // Add a label for the score that slowly floats up.
+
+    auto fontSize = 80;
+    auto str = StringUtils::format("+%d", chain->getScore());
+    Text* scoreLabel = Text::create(str, GameResources::s_fontYellow, fontSize);
+    scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
+    scoreLabel->setPosition(centerPosition);
+    scoreLabel->setZOrder(300);
+    scoreLabel->setTextColor(Color4B::WHITE);
+    scoreLabel->enableOutline(color, 2);
+    scoreLabel->setScale(0.5f);
+
+    auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
+    CC_ASSERT(scene);
+
+    scene->getCookiesLayer()->addChild(scoreLabel);
+
+    auto duration = 0.5f;
+    auto scaleAction = ScaleTo::create(duration, 2.0f);
+    auto easeOut = EaseOut::create(scaleAction, duration);
+    auto fadeOut = FadeOut::create(0.5f);
+
+    auto callback = CallFunc::create([scoreLabel]() {
+        if (scoreLabel) {
+            scoreLabel->removeFromParent();
+        }
+    });
+    scoreLabel->runAction(Sequence::create(DelayTime::create(duration/2), fadeOut, nullptr));
+    scoreLabel->runAction(Sequence::create(easeOut, callback, nullptr));
 }

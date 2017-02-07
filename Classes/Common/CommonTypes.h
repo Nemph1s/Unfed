@@ -11,6 +11,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <string.h>
 
 namespace CommonTypes {
 
@@ -80,6 +81,17 @@ namespace CommonTypes {
        , FallingCookieSound = 4 /**< enum value Scrape. */
        , SoundsMax = 5 /**< enum value of sounds number. */
        , Unknown /**< enum value unknown. */
+   };
+
+   /**
+   * @brief LevelInfo struct.
+   */
+   struct LabelInfo
+   {
+       const char* text; /**< text of label */
+       int8_t fontSize; /**< font size */
+       float posXPercent; /**< position x in Percent */
+       float posYPercent; /**< position Y in Percent */
    };
 
 }

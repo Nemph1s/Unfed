@@ -20,22 +20,27 @@ class ViewController : public cocos2d::Ref
 public:
 
 CC_CONSTRUCTOR_ACCESS:
-   // Nodes should be created using create();
-   ViewController();
-   virtual ~ViewController();
+    // Nodes should be created using create();
+    ViewController();
+    virtual ~ViewController();
 
-   virtual bool init();
+    virtual bool init();
 
-   void startGame();
+    void startGame();
 
 protected:
 
-   void shuffle();
-   void handleMatches();
+    void updateInfoLabels();
 
-   void beginNextTurn();
+    void shuffle();
+    void handleMatches();
 
-   CC_SYNTHESIZE_READONLY(LevelObj*, mLevel, Level);
-   CC_SYNTHESIZE_READONLY(GameplayScene*, mGameplayScene, GameplayScene);
+    void beginNextTurn();
+
+    CC_SYNTHESIZE_READONLY(int, mMovesLeft, MovesLeft);
+    CC_SYNTHESIZE_READONLY(int, mScore, Score);
+
+    CC_SYNTHESIZE_READONLY(LevelObj*, mLevel, Level);
+    CC_SYNTHESIZE_READONLY(GameplayScene*, mGameplayScene, GameplayScene);
 };
 

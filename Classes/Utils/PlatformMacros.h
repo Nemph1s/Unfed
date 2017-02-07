@@ -32,5 +32,4 @@
     __TYPE__ ( __TYPE__ &&) = delete; \
     __TYPE__ & operator=( __TYPE__ const&) = delete; \
     __TYPE__ & operator=( __TYPE__ &&) = delete; \
-    ~ __TYPE__ () {}; \
-    
+    ~ __TYPE__ () {}; 
