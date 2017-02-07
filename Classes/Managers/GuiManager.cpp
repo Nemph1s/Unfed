@@ -30,7 +30,7 @@ using ui::Button;
 using ui::Widget;
 
 //--------------------------------------------------------------------
-bool GuiManager::initWithScene(cocos2d::Scene* scene)
+bool _GuiManager::initWithScene(cocos2d::Scene* scene)
 //--------------------------------------------------------------------
 {
     cocos2d::log("GuiManager::initWithScene:");
@@ -46,7 +46,7 @@ bool GuiManager::initWithScene(cocos2d::Scene* scene)
 }
 
 //--------------------------------------------------------------------
-void GuiManager::crateInfoLayer()
+void _GuiManager::crateInfoLayer()
 //--------------------------------------------------------------------
 {
     int8_t fontSize = 32;
@@ -88,7 +88,7 @@ void GuiManager::crateInfoLayer()
 }
 
 //--------------------------------------------------------------------
-void GuiManager::createShuffleButton()
+void _GuiManager::createShuffleButton()
 //--------------------------------------------------------------------
 {
     mShuffleButton = ui::Button::create(GameResources::s_ButtonImg);
@@ -103,7 +103,7 @@ void GuiManager::createShuffleButton()
 }
 
 //--------------------------------------------------------------------
-void GuiManager::setShuffleButtonCallback(std::function<void()> touchEndedCallback)
+void _GuiManager::setShuffleButtonCallback(std::function<void()> touchEndedCallback)
 //--------------------------------------------------------------------
 {
     if (mShuffleButton) {
@@ -116,7 +116,7 @@ void GuiManager::setShuffleButtonCallback(std::function<void()> touchEndedCallba
 }
 
 //--------------------------------------------------------------------
-void GuiManager::updateScoreLabel(int value)
+void _GuiManager::updateScoreLabel(int value)
 //--------------------------------------------------------------------
 {
     if (!mScoreLabel)
@@ -126,7 +126,7 @@ void GuiManager::updateScoreLabel(int value)
 }
 
 //--------------------------------------------------------------------
-void GuiManager::updateTargetScoreLabel(int value)
+void _GuiManager::updateTargetScoreLabel(int value)
 //--------------------------------------------------------------------
 {
     if (!mTargetLabel)
@@ -136,7 +136,7 @@ void GuiManager::updateTargetScoreLabel(int value)
 }
 
 //--------------------------------------------------------------------
-void GuiManager::updateMovesLabel(int value)
+void _GuiManager::updateMovesLabel(int value)
 //--------------------------------------------------------------------
 {
     if (!mMovesLabel)
@@ -146,7 +146,7 @@ void GuiManager::updateMovesLabel(int value)
 }
 
 //--------------------------------------------------------------------
-cocos2d::ui::Text * GuiManager::createLabel(const CommonTypes::LabelInfo& info)
+cocos2d::ui::Text * _GuiManager::createLabel(const CommonTypes::LabelInfo& info)
 //--------------------------------------------------------------------
 {
     //TODO: use in future cocostudio::GUIReader::shareReader()->widgetFromJsonFile()

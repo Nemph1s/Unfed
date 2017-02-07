@@ -36,6 +36,7 @@ protected:
     // Nodes should be created using create();
     SwapObj() {};
 
+    //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE_READONLY_PTR(CookieObj*, mCookieA, CookieA);
     CC_SYNTHESIZE_READONLY_PTR(CookieObj*, mCookieB, CookieB);
    

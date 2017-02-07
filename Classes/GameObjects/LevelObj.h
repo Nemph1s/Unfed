@@ -96,6 +96,7 @@ protected:
     void logDebugChains(cocos2d::Set* horizontal, cocos2d::Set* vertical, cocos2d::Set* difficult);
 #endif // COCOS2D_DEBUG 
 
+    //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE_READONLY(int, mComboMultiplier, ComboMultiplier);
     CC_SYNTHESIZE_READONLY(LevelInfo, mLevelInfo, LevelInfo);
     CC_SYNTHESIZE_READONLY_PTR(cocos2d::Set*, mPossibleSwaps, PossibleSwaps);

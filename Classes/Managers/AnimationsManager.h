@@ -15,9 +15,10 @@
 
 class SwapObj;
 class ChainObj;
-class AnimationsManager
+
+class _AnimationsManager
 {
-    CREATE_SINGLETON(AnimationsManager);
+    CREATE_SINGLETON(_AnimationsManager);
 
 public:
     bool initWithScene(cocos2d::Scene* scene);
@@ -28,6 +29,8 @@ public:
     void animateFallingCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion);
     void animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion);
 
+    void animateNewCookieSprite(cocos2d::Sprite* sprite);
+
     void animateScoreForChain(ChainObj* chain);
 
 protected:
@@ -35,3 +38,5 @@ protected:
     cocos2d::Scene* mCurrentScene;
 
 };
+
+#define AnimationsManager _AnimationsManager::getInstance()

@@ -13,9 +13,9 @@
 #include "Utils/PlatformMacros.h"
 #include "Common/CommonTypes.h"
 
-class AudioManager
+class _AudioManager
 {
-    CREATE_SINGLETON(AudioManager);
+    CREATE_SINGLETON(_AudioManager);
 
 public:
     bool init();
@@ -27,3 +27,5 @@ protected:
     bool preloadSounds();
 
 };
+
+#define AudioManager _AudioManager::getInstance()

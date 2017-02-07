@@ -28,7 +28,7 @@ using namespace CommonTypes;
 using ui::Text;
 
 //--------------------------------------------------------------------
-bool AnimationsManager::initWithScene(cocos2d::Scene * scene)
+bool _AnimationsManager::initWithScene(cocos2d::Scene * scene)
 //--------------------------------------------------------------------
 {
     if (scene) {
@@ -39,7 +39,7 @@ bool AnimationsManager::initWithScene(cocos2d::Scene * scene)
 }
 
 //--------------------------------------------------------------------
-void AnimationsManager::animateSwap(SwapObj* swap, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateSwap(SwapObj* swap, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(swap);
@@ -67,7 +67,7 @@ void AnimationsManager::animateSwap(SwapObj* swap, cocos2d::CallFunc* completion
 }
 
 //--------------------------------------------------------------------
-void AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(swap);
@@ -97,7 +97,7 @@ void AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* com
 }
 
 //--------------------------------------------------------------------
-void AnimationsManager::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -141,7 +141,7 @@ void AnimationsManager::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc*
 }
 
 //--------------------------------------------------------------------
-void AnimationsManager::animateFallingCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateFallingCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(colums);
@@ -188,7 +188,7 @@ void AnimationsManager::animateFallingCookies(cocos2d::Array* colums, cocos2d::C
                 auto easeAction = EaseOut::create(moveAction, duration);
                 sprite->runAction(easeAction);
 
-                AudioManager::getInstance()->playSound(CommonTypes::SoundType::FallingCookieSound);
+                AudioManager->playSound(CommonTypes::SoundType::FallingCookieSound);
             });
 
             cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
@@ -201,7 +201,7 @@ void AnimationsManager::animateFallingCookies(cocos2d::Array* colums, cocos2d::C
 }
 
 //--------------------------------------------------------------------
-void AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(colums);
@@ -253,7 +253,7 @@ void AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::CallF
                 cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(0.175f), fadeIn, nullptr));
                 cookie->getSpriteNode()->runAction(easeAction);
                 
-                AudioManager::getInstance()->playSound(CommonTypes::SoundType::AddCookieSound);
+                AudioManager->playSound(CommonTypes::SoundType::AddCookieSound);
             });
 
             cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
@@ -265,7 +265,26 @@ void AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::CallF
 }
 
 //--------------------------------------------------------------------
-void AnimationsManager::animateScoreForChain(ChainObj * chain)
+void _AnimationsManager::animateNewCookieSprite(cocos2d::Sprite * sprite)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(sprite);
+
+    sprite->setOpacity(0);
+    sprite->setScale(0.5f);
+
+    auto duration = Helper::randomFloatBetween(0.25f, 0.5f);
+    auto callback = CallFunc::create([sprite]() {
+        auto duration = 0.25f;
+        sprite->runAction(FadeIn::create(duration));
+        sprite->runAction(ScaleTo::create(duration, 1.0f));
+    });
+
+    sprite->runAction(Sequence::create(DelayTime::create(duration), callback, nullptr));
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateScoreForChain(ChainObj * chain)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chain);

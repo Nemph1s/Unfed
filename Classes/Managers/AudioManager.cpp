@@ -20,7 +20,7 @@ using namespace CommonTypes;
 const auto AudioEngine = CocosDenshion::SimpleAudioEngine::getInstance();
 
 //--------------------------------------------------------------------
-bool AudioManager::init()
+bool _AudioManager::init()
 //--------------------------------------------------------------------
 {
     cocos2d::log("AudioManager::init:");
@@ -31,14 +31,14 @@ bool AudioManager::init()
 }
 
 //--------------------------------------------------------------------
-void AudioManager::playBGMusic()
+void _AudioManager::playBGMusic()
 //--------------------------------------------------------------------
 {
     AudioEngine->playBackgroundMusic(GameResources::s_gameplaySoundBG.c_str(), true);
 }
 
 //--------------------------------------------------------------------
-void AudioManager::playSound(CommonTypes::SoundType type)
+void _AudioManager::playSound(CommonTypes::SoundType type)
 //--------------------------------------------------------------------
 {
     auto soundType = Helper::getInstance()->to_underlying(type);
@@ -52,7 +52,7 @@ void AudioManager::playSound(CommonTypes::SoundType type)
 }
 
 //--------------------------------------------------------------------
-bool AudioManager::preloadSounds()
+bool _AudioManager::preloadSounds()
 //--------------------------------------------------------------------
 {
     cocos2d::log("AudioManager::preloadSounds:");

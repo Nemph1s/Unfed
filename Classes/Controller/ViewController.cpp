@@ -54,9 +54,9 @@ bool ViewController::init()
    mGameplayScene = GameplayScene::createWithSize(glview->getFrameSize());
    //self.scene.scaleMode = SKSceneScaleModeAspectFill;
 
-   AudioManager::getInstance()->init();
-   AnimationsManager::getInstance()->initWithScene(mGameplayScene);
-   GuiManager::getInstance()->initWithScene(mGameplayScene);
+   AudioManager->init();
+   AnimationsManager->initWithScene(mGameplayScene);
+   GuiManager->initWithScene(mGameplayScene);
 
    // Load the level.
    int levelId = 0;
@@ -73,7 +73,7 @@ bool ViewController::init()
    mGameplayScene->addTiles();
 
    mShuffleButtonCallback = std::bind(&ViewController::shuffleButtonCallback, this);
-   GuiManager::getInstance()->setShuffleButtonCallback(mShuffleButtonCallback);
+   GuiManager->setShuffleButtonCallback(mShuffleButtonCallback);
 
    auto swapCallback = std::bind(&ViewController::swapCallback, this, std::placeholders::_1);
    mGameplayScene->setSwapCallback(swapCallback);
@@ -106,9 +106,9 @@ void ViewController::updateInfoLabels()
 {
     cocos2d::log("ViewController::updateInfoLabels");
     CC_ASSERT(mLevel);
-    GuiManager::getInstance()->updateScoreLabel(mScore);
-    GuiManager::getInstance()->updateMovesLabel(mMovesLeft);
-    GuiManager::getInstance()->updateTargetScoreLabel(mLevel->getLevelInfo().targetScore);
+    GuiManager->updateScoreLabel(mScore);
+    GuiManager->updateMovesLabel(mMovesLeft);
+    GuiManager->updateTargetScoreLabel(mLevel->getLevelInfo().targetScore);
 }
 
 //--------------------------------------------------------------------
@@ -151,14 +151,14 @@ void ViewController::handleMatches()
                 handleMatches();                
             });
 
-            AnimationsManager::getInstance()->animateNewCookies(newColumns, enableTouches);
+            AnimationsManager->animateNewCookies(newColumns, enableTouches);
         });
 
-        AnimationsManager::getInstance()->animateFallingCookies(columns, addNewCookies);
+        AnimationsManager->animateFallingCookies(columns, addNewCookies);
     });
     
-    AnimationsManager::getInstance()->animateMatching(chains, completion);
-    AudioManager::getInstance()->playSound(SoundType::MatchSound);
+    AnimationsManager->animateMatching(chains, completion);
+    AudioManager->playSound(SoundType::MatchSound);
 }
 
 //--------------------------------------------------------------------
@@ -209,11 +209,11 @@ void ViewController::swapCallback(SwapObj * swap)
     if (mLevel->isPossibleSwap(swap)) {
 
         mLevel->performSwap(swap);
-        AnimationsManager::getInstance()->animateSwap(swap, swapCallback);
-        AudioManager::getInstance()->playSound(SoundType::SwapSound);
+        AnimationsManager->animateSwap(swap, swapCallback);
+        AudioManager->playSound(SoundType::SwapSound);
     }
     else {
-        AnimationsManager::getInstance()->animateInvalidSwap(swap, invalidSwapCallback);
-        AudioManager::getInstance()->playSound(SoundType::InvalidSwapSound);
+        AnimationsManager->animateInvalidSwap(swap, invalidSwapCallback);
+        AudioManager->playSound(SoundType::InvalidSwapSound);
     }
 }

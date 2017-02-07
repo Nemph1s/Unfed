@@ -15,20 +15,13 @@
 
 #include "cocos2d.h"
 
-namespace cocos2d {
-    namespace ui {
-        class Text;
-        class Layout;
-        class Button;
-        class Widget;
-    }
-}
+namespace cocos2d { namespace ui { class Text; class Layout; class Button; class Widget; } }
 
 class GameplayScene;
 
-class GuiManager
+class _GuiManager
 {
-    CREATE_SINGLETON(GuiManager);
+    CREATE_SINGLETON(_GuiManager);
 
 public:
     bool initWithScene(cocos2d::Scene* scene);
@@ -57,3 +50,5 @@ protected:
     cocos2d::ui::Text* mMovesLabel = nullptr;
     cocos2d::ui::Text* mScoreLabel = nullptr;
 };
+
+#define GuiManager _GuiManager::getInstance()

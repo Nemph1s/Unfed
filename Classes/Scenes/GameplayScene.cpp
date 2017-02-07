@@ -96,7 +96,7 @@ bool GameplayScene::initWithSize(const Size& size)
     mSelectionSprite = new Sprite();
     mSelectionSprite->retain();
 
-    AudioManager::getInstance()->playBGMusic();
+    AudioManager->playBGMusic();
 
     return true;
 }
@@ -158,7 +158,11 @@ void GameplayScene::addSpritesForCookies(Set* cookies)
 	for (it; it != cookies->end(); it++) {
 		auto cookie = dynamic_cast<CookieObj*>(*it);
         CC_ASSERT(cookie);
+
         createSpriteWithCookie(cookie, cookie->getColumn(), cookie->getRow());
+
+        auto sprite = cookie->getSpriteNode();
+        AnimationsManager->animateNewCookieSprite(sprite);
 	}
 }
 
