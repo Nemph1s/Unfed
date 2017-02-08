@@ -12,25 +12,19 @@
 
 #include "cocos2d.h"
 #include <functional>
-
-//temporary variables
-//TODO: move to globalInfo or to json file
-static const float TileWidth = 32.0 * 2;
-static const float TileHeight = 36.0 * 2;
+#include "Utils/PlatformMacros.h"
 
 class LevelObj;
 class SwapObj;
 class CookieObj;
+
 class GameplayScene : public cocos2d::Scene
 {
-public:
-
-    static GameplayScene* createWithSize(const cocos2d::Size& size);
-
- CC_CONSTRUCTOR_ACCESS:
-    // Nodes should be created using create();
-    GameplayScene();
+CC_CONSTRUCTOR_ACCESS:
     virtual ~GameplayScene();
+
+public:
+    static GameplayScene* createWithSize(const cocos2d::Size& size);
 
     virtual bool initWithSize(const cocos2d::Size& size);
 
@@ -39,9 +33,8 @@ public:
 
 	void addTiles();
     void addSpritesForCookies(cocos2d::Set* cookies);
-    cocos2d::Vec2 pointForColumnAndRow(int column, int row);
 
-	bool convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row);
+    void createSpriteWithCookie(CookieObj* cookie, int column, int row);
 
     bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
@@ -51,18 +44,21 @@ public:
     void userInteractionEnabled();
     void userInteractionDisabled();
 
-    void animateSwap(SwapObj* swap, cocos2d::CallFunc* func);
-
     void showSelectionIndicatorForCookie(CookieObj* cookie);
     void hideSelectionIndicator();
 
+    void removeAllCookieSprites();
+
 protected:
+    // Nodes should be created using create();
+    GameplayScene();
 
     bool isCookieTouched();
     void clearTouchedCookie();
     void updateSwipeDelta(int column, int row, int& horzDelta, int& vertDelta);
     bool trySwapCookieTo(int horzDelta, int vertDelta);  
 
+    //---Class Attributes-------------------------------------------------
 	cocos2d::EventListener* mListener;
 
     CC_PROPERTY(LevelObj*, mLevel, Level);
@@ -72,10 +68,9 @@ protected:
 	CC_SYNTHESIZE_READONLY(int, mSwipeFromColumn, SwipeFromColumn);
     CC_SYNTHESIZE_READONLY(int, mSwipeFromRow, SwipeFromRow);
 
-    CC_SYNTHESIZE_READONLY(cocos2d::Sprite*, mSelectionSprite, SelectionSprite);
-
-	CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mGameLayer, GameLayer);
-	CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mTilesLayer, TilesLayer);
-	CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mCookiesLayer, CookiesLayer);
+    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Sprite*, mSelectionSprite, SelectionSprite);
+    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Layer*, mGameLayer, GameLayer);
+    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Layer*, mTilesLayer, TilesLayer);
+    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Layer*, mCookiesLayer, CookiesLayer);
 };
 

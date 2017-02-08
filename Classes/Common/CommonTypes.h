@@ -11,6 +11,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <string.h>
 
 namespace CommonTypes {
 
@@ -55,6 +56,44 @@ namespace CommonTypes {
       int16_t targetScore; /**< Goal score */
       int moves; /**< available moves */
 	  TilesArray tiles; /**< array of tiles */
+   };
+
+   /**
+   * @brief ChainType enum.
+   * Type of the sound object
+   */
+   enum class ChainType : int {
+       ChainTypeHorizontal = 0 /**< enum value ChainTypeHorizontal. */
+       , ChainTypeVertical = 1 /**< enum value ChainTypeVertical. */
+       , ChainTypeL = 2 /**< enum value ChainTypeL. */
+       , ChainTypeT = 3 /**< enum value ChainTypeL. */
+       , Unknown /**< enum value unknown. */
+   };
+
+
+   /**
+   * @brief SoundType enum.
+   * Type of the sound object
+   */
+   enum class SoundType : int {
+       SwapSound  = 0 /**< enum value Chomp. */
+       , AddCookieSound = 1 /**< enum value Drip. */
+       , InvalidSwapSound = 2 /**< enum value Error. */
+       , MatchSound = 3 /**< enum value KaChing. */
+       , FallingCookieSound = 4 /**< enum value Scrape. */
+       , SoundsMax = 5 /**< enum value of sounds number. */
+       , Unknown /**< enum value unknown. */
+   };
+
+   /**
+   * @brief LevelInfo struct.
+   */
+   struct LabelInfo
+   {
+       const char* text; /**< text of label */
+       int8_t fontSize; /**< font size */
+       float posXPercent; /**< position x in Percent */
+       float posYPercent; /**< position Y in Percent */
    };
 
 }

@@ -146,36 +146,52 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\Controller\ViewController.cpp" />
+    <ClCompile Include="..\Classes\GameObjects\ChainObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\CookieObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\LevelObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\SwapObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\TileObj.cpp" />
+    <ClCompile Include="..\Classes\Managers\AnimationsManager.cpp" />
+    <ClCompile Include="..\Classes\Managers\AudioManager.cpp" />
+    <ClCompile Include="..\Classes\Managers\GuiManager.cpp" />
+    <ClCompile Include="..\Classes\Managers\ResourceManager.cpp" />
     <ClCompile Include="..\Classes\Scenes\GameplayScene.cpp" />
     <ClCompile Include="..\Classes\Utils\GlobalInfo.cpp" />
+    <ClCompile Include="..\Classes\Utils\Helpers\Helper.cpp" />
     <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp" />
-    <ClCompile Include="..\Classes\Utils\JsonParser.cpp" />
+    <ClCompile Include="..\Classes\Utils\Parser\JsonParser.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\Common\CommonTypes.h" />
     <ClInclude Include="..\Classes\Controller\ViewController.h" />
+    <ClInclude Include="..\Classes\GameObjects\ChainObj.h" />
     <ClInclude Include="..\Classes\GameObjects\CookieObj.h" />
     <ClInclude Include="..\Classes\GameObjects\LevelObj.h" />
     <ClInclude Include="..\Classes\GameObjects\SwapObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObj.h" />
+    <ClInclude Include="..\Classes\Managers\AnimationsManager.h" />
+    <ClInclude Include="..\Classes\Managers\AudioManager.h" />
+    <ClInclude Include="..\Classes\Managers\GuiManager.h" />
+    <ClInclude Include="..\Classes\Managers\ResourceManager.h" />
     <ClInclude Include="..\Classes\Scenes\GameplayScene.h" />
     <ClInclude Include="..\Classes\Utils\GameResources.h" />
     <ClInclude Include="..\Classes\Utils\GlobalInfo.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\Helper.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\VisibleRect.h" />
-    <ClInclude Include="..\Classes\Utils\JsonParser.h" />
+    <ClInclude Include="..\Classes\Utils\Localization.h" />
+    <ClInclude Include="..\Classes\Utils\Parser\JsonParser.h" />
+    <ClInclude Include="..\Classes\Utils\PlatformMacros.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cocos2d\cocos\2d\libcocos2d.vcxproj">
       <Project>{98a51ba8-fc3a-415b-ac8f-8c7bd464e93e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\cocos2d\cocos\ui\proj.win32\libui.vcxproj">
+      <Project>{7e06e92c-537a-442b-9e4a-4761c84f8a1a}</Project>
     </ProjectReference>
     <ProjectReference Include="..\libs\jsoncpp\jsoncpp.vcxproj">
       <Project>{6c468030-ab7d-4e72-85ef-a8be119a3797}</Project>

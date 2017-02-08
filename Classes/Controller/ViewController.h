@@ -11,8 +11,10 @@
 #pragma once
 
 #include "cocos2d.h"
+#include "Utils/PlatformMacros.h"
 
 class LevelObj;
+class SwapObj;
 class GameplayScene;
 
 class ViewController : public cocos2d::Ref
@@ -20,19 +22,35 @@ class ViewController : public cocos2d::Ref
 public:
 
 CC_CONSTRUCTOR_ACCESS:
-   // Nodes should be created using create();
-   ViewController();
-   virtual ~ViewController();
+    // Nodes should be created using create();
+    ViewController();
+    virtual ~ViewController();
 
-   virtual bool init();
+    virtual bool init();
 
-   void startGame();
+    void startGame();
 
 protected:
+    void updateInfoLabels();
 
-   void shuffle();
+    void shuffle();
+    void handleMatches();
 
-   CC_SYNTHESIZE_READONLY(LevelObj*, mLevel, Level);
-   CC_SYNTHESIZE_READONLY(GameplayScene*, mGameplayScene, GameplayScene);
+    void beginNextTurn();
+    void decrementMoves();
+
+    //---Callbacks-------------------------------------------------------
+    void shuffleButtonCallback();
+    void swapCallback(SwapObj* swap);
+    //--------------------------------------------------------------------
+
+    //---Class Attributes-------------------------------------------------
+    std::function<void()> mShuffleButtonCallback;
+
+    CC_SYNTHESIZE_READONLY(int, mMovesLeft, MovesLeft);
+    CC_SYNTHESIZE_READONLY(int, mScore, Score);
+
+    CC_SYNTHESIZE_READONLY_PTR(LevelObj*, mLevel, Level);
+    CC_SYNTHESIZE_READONLY_PTR(GameplayScene*, mGameplayScene, GameplayScene)
 };
 

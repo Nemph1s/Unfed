@@ -16,7 +16,13 @@
 
 namespace GameResources {
 
+    //TODO: move to global info or to json file
+    static const float TileWidth = 32.0 * 2;
+    static const float TileHeight = 36.0 * 2;
+
    static std::string s_backgroundImg = "Images/Background2@2x.jpg";
+
+   static std::string s_ButtonImg = "Images/Button@2x.png";
 
    static std::string s_TileImg = "Sprites.atlas/Tile@2x.png";
 
@@ -37,9 +43,25 @@ namespace GameResources {
       , "Sprites.atlas/Macaroon-Highlighted@2x.png"
       , "Sprites.atlas/SugarCookie-Highlighted@2x.png"
    };
-
+   
    static std::string s_templateLevelName = "Levels/Level_%d.json";
    //TODO: move to config file
    static int16_t s_levelsCount = 4;
+
+   static std::vector<std::string> s_gameplaySounds{
+       "Sounds/Chomp.wav"
+       , "Sounds/Drip.wav"
+       , "Sounds/Error.wav"
+       , "Sounds/Ka-Ching.wav"
+       , "Sounds/Scrape.wav"
+   };
+
+   static std::string s_gameplaySoundBG= "Sounds/erokia_elementary-wave.mp3";
+
+   static std::string s_fontYellow = "fonts/YELLOW.TTF";
+   static std::string s_fontYellowExpanded = "fonts/Yellowe.ttf";
+   static std::string s_fontYellowCondensed = "fonts/Yellowc.ttf";
+   static std::string s_fontYellowItalic = "fonts/Yellowi.ttf";
+   static std::string s_fontYellowShadow = "fonts/Yellows.ttf";
 
 }

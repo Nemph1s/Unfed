@@ -28,6 +28,12 @@
     <Filter Include="src\Utils\Helper">
       <UniqueIdentifier>{1dca8088-59a5-4316-91eb-3faa2bf42552}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Managers">
+      <UniqueIdentifier>{e6215269-76bb-46f3-9b82-009a455fab4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Utils\Parser">
+      <UniqueIdentifier>{7f1e1815-5657-4f5f-bcfa-4abfe7227a43}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -54,14 +60,32 @@
     <ClCompile Include="..\Classes\Utils\GlobalInfo.cpp">
       <Filter>src\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Utils\JsonParser.cpp">
-      <Filter>src\Utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp">
       <Filter>src\Utils\Helper</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\GameObjects\SwapObj.cpp">
       <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Managers\ResourceManager.cpp">
+      <Filter>src\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Managers\AudioManager.cpp">
+      <Filter>src\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Utils\Helpers\Helper.cpp">
+      <Filter>src\Utils\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\ChainObj.cpp">
+      <Filter>src\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Managers\AnimationsManager.cpp">
+      <Filter>src\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Managers\GuiManager.cpp">
+      <Filter>src\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Utils\Parser\JsonParser.cpp">
+      <Filter>src\Utils\Parser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,9 +119,6 @@
     <ClInclude Include="..\Classes\Utils\GlobalInfo.h">
       <Filter>src\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Utils\JsonParser.h">
-      <Filter>src\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\Utils\Helpers\Helper.h">
       <Filter>src\Utils\Helper</Filter>
     </ClInclude>
@@ -106,6 +127,30 @@
     </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\SwapObj.h">
       <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Managers\ResourceManager.h">
+      <Filter>src\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Utils\PlatformMacros.h">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Managers\AudioManager.h">
+      <Filter>src\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\ChainObj.h">
+      <Filter>src\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Managers\AnimationsManager.h">
+      <Filter>src\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Managers\GuiManager.h">
+      <Filter>src\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Utils\Localization.h">
+      <Filter>src\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Utils\Parser\JsonParser.h">
+      <Filter>src\Utils\Parser</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -22,7 +22,6 @@ CookieObj::CookieObj()
     : mColumn(0)
     , mRow(0)
     , mType(CookieType::Unknown)
-    , mSpriteNode(nullptr)
     , mDebugLabel(nullptr)
 //--------------------------------------------------------------------
 {
@@ -64,6 +63,17 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
     mRow = cookieInfo.row;
     mType = cookieInfo.cookieType;
 
+#ifdef UNFED_ENABLE_DEBUG
+    mDebugLabel = cocos2d::Label::create();
+    mDebugLabel->setBMFontSize(16);
+    mDebugLabel->setDimensions(32, 32);
+    mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::LEFT);
+    mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::TOP);
+    mDebugLabel->setPosition(cocos2d::Vec2(GameResources::TileWidth / 4, (GameResources::TileHeight / 1.25f)));
+    mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
+    mSpriteNode->addChild(mDebugLabel, 10);
+#endif //UNFED_ENABLE_DEBUG
+
     return true;
 }
 
@@ -85,7 +95,6 @@ string CookieObj::highlightedSpriteName()
 string CookieObj::description()
 //--------------------------------------------------------------------
 {
-    //cocos2d::log("CookieObj::description: type:%d square:(%d,%d)", mType, mColumn, mRow);
     return cocos2d::StringUtils::format("type:%d square:(%d,%d)", mType, mColumn, mRow);
 }
 
@@ -93,7 +102,7 @@ string CookieObj::description()
 int CookieObj::getTypeAsInt()
 //--------------------------------------------------------------------
 {
-    return Helper::Instance().to_underlying(mType);
+    return Helper::getInstance()->to_underlying(mType);
 }
 
 //--------------------------------------------------------------------
