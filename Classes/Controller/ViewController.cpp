@@ -30,6 +30,9 @@ using namespace CommonTypes;
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
+    : mLevel(nullptr)
+    , mGameplayScene(nullptr)
+    , mSwapController(nullptr)
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::ViewController");

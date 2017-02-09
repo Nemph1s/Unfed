@@ -13,7 +13,6 @@
 #include "cocos2d.h"
 
 #include "Common/CommonTypes.h"
-#include "Utils/PlatformMacros.h"
 
 class CookieObj;
 class ChainObj : public cocos2d::Node
@@ -39,12 +38,12 @@ public:
 
 protected:
     // Nodes should be created using create();
-    ChainObj() {};
+    ChainObj();
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(int, mScore, Score);
 
     CC_SYNTHESIZE_READONLY(CommonTypes::ChainType, mType, Type);
-    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Array*, mCookies, Cookies);
+    CC_SYNTHESIZE_READONLY(cocos2d::Array*, mCookies, Cookies);
 };
 

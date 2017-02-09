@@ -186,3 +186,12 @@ bool SwapController::trySwapCookieTo(int horzDelta, int vertDelta)
 
     return true;
 }
+
+//--------------------------------------------------------------------
+SwapController::SwapController()
+//--------------------------------------------------------------------
+    : mLevel(nullptr)
+    , mGameplayScene(nullptr)
+    , mPossibleSwaps(nullptr)
+{
+}

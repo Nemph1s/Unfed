@@ -17,6 +17,8 @@
 #include "Utils/Helpers/Helper.h"
 #include "Utils/Parser/JsonParser.h"
 
+using namespace CommonTypes;
+
 //--------------------------------------------------------------------
 LevelObj::~LevelObj()
 //--------------------------------------------------------------------
@@ -358,7 +360,7 @@ void LevelObj::removeCookies(cocos2d::Set * chains)
                 CC_ASSERT(cookie);
                 continue;
             }
-            cocos2d::log("LevelObj::removeCookies: remove %s", cookie->description().c_str());
+            cocos2d::log("LevelObj::removeCookies: remove %s", cookie->description());
             mCookies[cookie->getColumn()][cookie->getRow()] = nullptr;
         }
     }
@@ -377,7 +379,7 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
         for (int row = NumRows - 1; row >= 0; row--) {
 
             // If there’s a tile at a position but no cookie, then there’s a hole.
-            if (isVisibleTileAt(column, row) && cookieAt(column, row) == nullptr) {
+            if (isEmptyTileAt(column, row) && cookieAt(column, row) == nullptr) {
             
                 // Scan upward to find the cookie that sits directly above the hole
                 for (int lookup = row - 1; lookup >= 0; lookup--) {
@@ -420,7 +422,7 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
         for (int column = 0; column < NumColumns; column++) {
 
             // If there’s a tile at a position but no cookie, then there’s a hole.
-            if (isVisibleTileAt(column, row) && (cookieAt(column, row) == nullptr)) {
+            if (isEmptyTileAt(column, row) && (cookieAt(column, row) == nullptr)) {
 
                 int cookieType = getRandomCookieType(column, row);
                 CookieObj* cookie = createCookie(column, row, cookieType);
@@ -430,7 +432,7 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
                     columns->addObject(array);
                 }
                 array->addObject(cookie);
-                createdString.appendWithFormat("\t%s\n", cookie->description().c_str());
+                createdString.appendWithFormat("\t%s\n", cookie->description());
             }
         }
         createdString.append("}\n");
@@ -494,17 +496,18 @@ void LevelObj::createInitialTiles()
 TileObj * LevelObj::createTile(int column, int row, int type)
 //--------------------------------------------------------------------
 {
-    TileInfo info = { column, row, static_cast<TileType>(type) };
+    GameObjectInfo baseInfo = { column, row, GameObjectType::TileObj };
+    TileInfo info = { baseInfo, static_cast<TileType>(type) };
     TileObj* tile = TileObj::create(info);
     mTiles[column][row] = tile;
     return tile;
 }
 
 //--------------------------------------------------------------------
-bool LevelObj::isVisibleTileAt(int column, int row)
+bool LevelObj::isEmptyTileAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    return tileAt(column, row) ? tileAt(column, row)->isVisibleTile() : false;
+    return tileAt(column, row) ? tileAt(column, row)->isEmptyTile() : false;
 }
 
 //--------------------------------------------------------------------
@@ -517,7 +520,7 @@ cocos2d::Set* LevelObj::createInitialCookies()
     
     for (int row = 0; row < NumRows; row++) {
         for (int column = 0; column < NumColumns; column++) {
-            if (isVisibleTileAt(column, row)) {
+            if (isEmptyTileAt(column, row)) {
                 int cookieType = getRandomCookieType(column, row);
                 CookieObj* cookie = createCookie(column, row, cookieType);
                 set->addObject(cookie);
@@ -534,10 +537,11 @@ cocos2d::Set* LevelObj::createInitialCookies()
 CookieObj * LevelObj::createCookie(int column, int row, int type)
 //--------------------------------------------------------------------
 {
-   CookieInfo info = { column, row, static_cast<CookieType>(type) };
-   CookieObj* cookie = CookieObj::create(info);
-   mCookies[column][row] = cookie;
-   return cookie;
+    GameObjectInfo baseInfo = { column, row, GameObjectType::CookieObj };
+    CookieInfo info = { baseInfo, static_cast<CookieType>(type) };
+    CookieObj* cookie = CookieObj::create(info);
+    mCookies[column][row] = cookie;
+    return cookie;
 }
 
 //--------------------------------------------------------------------

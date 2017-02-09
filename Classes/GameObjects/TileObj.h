@@ -11,10 +11,10 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
-#include "Utils/PlatformMacros.h"
+#include "GameObjects/Base/BaseObj.h"
 
-class TileObj : public cocos2d::Node
+
+class TileObj : public BaseObj
 {
 CC_CONSTRUCTOR_ACCESS:
     virtual ~TileObj();
@@ -26,27 +26,22 @@ public:
     */
     static TileObj * create(const CommonTypes::TileInfo &info);
 
-    virtual bool init(const CommonTypes::TileInfo &info);
+    bool init(const CommonTypes::TileInfo &info);
 
-    std::string spriteName() const;
+    virtual cocos2d::String& spriteName() const override;
 
-    int getTypeAsInt() const;
+    virtual int getTypeAsInt() const override;
 
-    bool isVisibleTile();
-
-    //Move to subclass 
+    bool isEmptyTile();
 
 protected:
     // Nodes should be created using create();
     TileObj();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE(int, mColumn, Column);
-    CC_SYNTHESIZE(int, mRow, Row);
+    CC_SYNTHESIZE_READONLY(CommonTypes::TileType, mTileType, TileType);
 
-    CC_SYNTHESIZE_READONLY(CommonTypes::TileType, mType, Type);
-
-    CC_SYNTHESIZE_PTR(cocos2d::Sprite*, mSpriteNode, SpriteNode);
+    CC_SYNTHESIZE(cocos2d::Sprite*, mSpriteNode, SpriteNode);
    
 };
 

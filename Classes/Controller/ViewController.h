@@ -11,7 +11,6 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Utils/PlatformMacros.h"
 
 class LevelObj;
 class SwapObj;
@@ -59,8 +58,8 @@ protected:
     CC_SYNTHESIZE_READONLY(int, mMovesLeft, MovesLeft);
     CC_SYNTHESIZE_READONLY(int, mScore, Score);
 
-    CC_SYNTHESIZE_READONLY_PTR(LevelObj*, mLevel, Level);
-    CC_SYNTHESIZE_READONLY_PTR(SwapController*, mSwapController, SwapController);
-    CC_SYNTHESIZE_READONLY_PTR(GameplayScene*, mGameplayScene, GameplayScene)
+    CC_SYNTHESIZE_READONLY(LevelObj*, mLevel, Level);
+    CC_SYNTHESIZE_READONLY(SwapController*, mSwapController, SwapController);
+    CC_SYNTHESIZE_READONLY(GameplayScene*, mGameplayScene, GameplayScene)
 };
 

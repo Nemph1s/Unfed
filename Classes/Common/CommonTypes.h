@@ -15,6 +15,35 @@
 
 namespace CommonTypes {
 
+    //temporary variables
+    //TODO: move to globalInfo or to json file
+    static const int NumColumns = 9;
+    static const int NumRows = 9;
+
+    typedef int TilesArray[CommonTypes::NumColumns][CommonTypes::NumRows];
+
+    /**
+    * @brief GameObjectType enum.
+    * Type of the cookie object
+    */
+    enum class GameObjectType : int {
+        TileObj = 0 /**< enum value TileObj. */
+        , CookieObj = 1 /**< enum value CookieObj. */
+        , DirtObj = 2 /**< enum value DirtObj. */
+        , WallObj = 3 /**< enum value WallObj. */
+        , Unknown /**< enum value unknown. */
+    };
+
+    /**
+    * @brief GameObjectInfo struct.
+    */
+    struct GameObjectInfo
+    {
+        int column; /**< vertical series of cells in a table */
+        int row; /**< horizontal series of cells in a table */
+        GameObjectType type; /**< type of game object */
+    };
+
    /**
    * @brief CookieType enum.
    * Type of the cookie object
@@ -35,17 +64,9 @@ namespace CommonTypes {
    */
    struct CookieInfo
    {
-      int column; /**< vertical series of cells in a table */
-      int row; /**< horizontal series of cells in a table */
-      CookieType cookieType; /**< type of Cookie object */
+       GameObjectInfo baseInfo; /**< type of GaneInfoObject struct */
+       CookieType cookieType; /**< type of Cookie object */
    };
-
-   //temporary variables
-   //TODO: move to globalInfo or to json file
-   static const int NumColumns = 9;
-   static const int NumRows = 9;
-
-   typedef int TilesArray[CommonTypes::NumColumns][CommonTypes::NumRows];
 
    /**
    * @brief LevelInfo struct.
@@ -77,8 +98,7 @@ namespace CommonTypes {
    enum class TileType : int {
        Empty = 0 /**< enum value Empty. */
        , Normal = 1 /**< enum value Normal. */
-       , RemovableX1 = 2 /**< enum value RemovableX1. */
-       , RemovableX2 = 3 /**< enum value ChainTypeL. */
+       , Water = 2 /**< enum value Water. */
        , Unknown /**< enum value unknown. */
    };
 
@@ -87,8 +107,7 @@ namespace CommonTypes {
    */
    struct TileInfo
    {
-       int column; /**< vertical series of cells in a table */
-       int row; /**< horizontal series of cells in a table */
+       GameObjectInfo baseInfo; /**< type of GaneInfoObject struct */
        TileType tileType; /**< type of Tile object */
    };
 
@@ -109,7 +128,7 @@ namespace CommonTypes {
    /**
    * @brief LevelInfo struct.
    */
-   struct LabelInfo
+   struct TextLabelInfo
    {
        const char* text; /**< text of label */
        int8_t fontSize; /**< font size */

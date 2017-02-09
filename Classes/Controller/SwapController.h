@@ -11,7 +11,6 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Utils/PlatformMacros.h"
 
 class SwapObj;
 class LevelObj;
@@ -48,14 +47,14 @@ public:
                           
 protected:
     // Nodes should be created using create();
-    SwapController() {};
+    SwapController();
  
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(SwapObj* swap)>, mSwapCallback, SwapCallback);
 
-    CC_SYNTHESIZE_PTR(LevelObj*, mLevel, Level);
-    CC_SYNTHESIZE_PTR(GameplayScene*, mGameplayScene, GameplayScene);
-    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Set*, mPossibleSwaps, PossibleSwaps);
+    CC_SYNTHESIZE(LevelObj*, mLevel, Level);
+    CC_SYNTHESIZE(GameplayScene*, mGameplayScene, GameplayScene);
+    CC_SYNTHESIZE_READONLY(cocos2d::Set*, mPossibleSwaps, PossibleSwaps);
 };
 
 

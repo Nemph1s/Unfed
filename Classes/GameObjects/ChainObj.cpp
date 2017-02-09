@@ -58,7 +58,7 @@ std::string ChainObj::description()
     for (auto it = mCookies->begin(); it != mCookies->end(); ++it, count++) {
         
         auto cookie = static_cast<CookieObj*>(*it);
-        strChains->appendWithFormat("\t\t%s\n", cookie->description().c_str());
+        strChains->appendWithFormat("\t\t%s\n", cookie->description().getCString());
     }
     strChains->append("\t}");
 
@@ -125,4 +125,11 @@ void ChainObj::addCookiesFromChain(ChainObj * chain)
         CC_ASSERT(cookie);
         addCookie(cookie);
     }
+}
+
+//--------------------------------------------------------------------
+ChainObj::ChainObj()
+    : mCookies(nullptr)
+//--------------------------------------------------------------------
+{
 }

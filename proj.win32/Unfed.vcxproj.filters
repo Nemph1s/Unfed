@@ -37,6 +37,9 @@
     <Filter Include="src\GameObjects\Swap">
       <UniqueIdentifier>{dfdb385a-7a3f-419d-b52f-55b7e0a9b257}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\GameObjects\Base">
+      <UniqueIdentifier>{338c0eac-c3fe-4a5f-9105-e1431e0c8841}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -92,6 +95,9 @@
     </ClCompile>
     <ClCompile Include="..\Classes\GameObjects\Swap\SwapObj.cpp">
       <Filter>src\GameObjects\Swap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\Base\BaseObj.cpp">
+      <Filter>src\GameObjects\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +166,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\Swap\SwapObj.h">
       <Filter>src\GameObjects\Swap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\Base\BaseObj.h">
+      <Filter>src\GameObjects\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

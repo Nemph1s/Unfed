@@ -14,9 +14,8 @@
 
 //--------------------------------------------------------------------
 TileObj::TileObj()
-    : mColumn(0)
-    , mRow(0)
-    , mType(CommonTypes::TileType::Unknown)
+    : BaseObj()
+    , mTileType(CommonTypes::TileType::Unknown)
 //--------------------------------------------------------------------
 {
 }
@@ -45,19 +44,17 @@ TileObj * TileObj::create(const CommonTypes::TileInfo & info)
 bool TileObj::init(const CommonTypes::TileInfo & info)
 //--------------------------------------------------------------------
 {
-    if (!Node::init()) {
+    if (!BaseObj::init(info.baseInfo)) {
         cocos2d::log("TileObj::init: can't init Node inctance");
         return false;
     }
-    mColumn = info.column;
-    mRow = info.row;
-    mType = info.tileType;
+    mTileType = info.tileType;
 
     return true;
 }
 
 //--------------------------------------------------------------------
-std::string TileObj::spriteName() const
+cocos2d::String& TileObj::spriteName() const
 //--------------------------------------------------------------------
 {
     return GameResources::s_TileImg;
@@ -67,14 +64,14 @@ std::string TileObj::spriteName() const
 int TileObj::getTypeAsInt() const
 //--------------------------------------------------------------------
 {
-    return Helper::getInstance()->to_underlying(mType);
+    return Helper::getInstance()->to_underlying(mTileType);
 }
 
 //--------------------------------------------------------------------
-bool TileObj::isVisibleTile()
+bool TileObj::isEmptyTile()
 //--------------------------------------------------------------------
 {
-    if (mType == CommonTypes::TileType::Empty) {
+    if (mTileType == CommonTypes::TileType::Empty) {
         return false;
     } else {
         return true;

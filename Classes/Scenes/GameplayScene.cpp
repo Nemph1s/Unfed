@@ -31,6 +31,10 @@ using namespace GameResources;
 GameplayScene::GameplayScene()
     : mLevel(nullptr)
     , mListener(nullptr)
+    , mSelectionSprite(nullptr)
+    , mCookiesLayer(nullptr)
+    , mGameLayer(nullptr)
+    , mTilesLayer(nullptr)
    //--------------------------------------------------------------------
 {
 }
@@ -73,7 +77,7 @@ bool GameplayScene::initWithSize(const Size& size)
     this->setAnchorPoint(Vec2(0.5, 0.5));
     this->setPosition(VisibleRect::leftBottom());
 
-    auto bg = Sprite::create(GameResources::s_backgroundImg);
+    auto bg = Sprite::create(GameResources::s_backgroundImg.getCString());
     auto scaleFactor = std::min(bg->getContentSize().width / size.width, bg->getContentSize().height / size.height);
     bg->setScale(1.0f / scaleFactor);
     bg->setPosition(VisibleRect::center());
@@ -137,10 +141,10 @@ void GameplayScene::addTiles()
 	cocos2d::log("GameplayScene::addTiles:");
 	for (int row = 0; row < CommonTypes::NumRows; row++) {
 		for (int column = 0; column < CommonTypes::NumColumns; column++) {
-			if (!mLevel->isVisibleTileAt(column, row)) {
+			if (!mLevel->isEmptyTileAt(column, row)) {
 				continue;
 			}
-			auto tileSprite = Sprite::create(GameResources::s_TileImg);
+			auto tileSprite = Sprite::create(GameResources::s_TileImg.getCString());
             tileSprite->setPosition(Helper::pointForColumnAndRow(column, row));
             tileSprite->setOpacity(127);
 			mTilesLayer->addChild(tileSprite);
@@ -253,7 +257,7 @@ void GameplayScene::showSelectionIndicatorForCookie(CookieObj* cookie)
     }
 
     auto img = new Image();
-    img->initWithImageFile(cookie->highlightedSpriteName());
+    img->initWithImageFile(cookie->highlightedSpriteName().getCString());
 
     auto texture = new Texture2D();
     texture->initWithImage(img);
@@ -329,7 +333,7 @@ void GameplayScene::updateSwipeDelta(int column, int row, int& horzDelta, int& v
 void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int row)
 //--------------------------------------------------------------------
 {
-    auto sprite = Sprite::create(cookie->spriteName());
+    auto sprite = Sprite::create(cookie->spriteName().getCString());
     sprite->setPosition(Helper::pointForColumnAndRow(column, row));
     cookie->setSpriteNode(sprite);
     cookie->updateDebugTileLabel();

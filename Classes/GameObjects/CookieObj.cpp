@@ -19,9 +19,8 @@ using namespace CommonTypes;
 
 //--------------------------------------------------------------------
 CookieObj::CookieObj()
-    : mColumn(0)
-    , mRow(0)
-    , mType(CookieType::Unknown)
+    : BaseObj()
+    , mCookieType(CookieType::Unknown)
     , mDebugLabel(nullptr)
 //--------------------------------------------------------------------
 {
@@ -52,16 +51,12 @@ CookieObj::~CookieObj()
 bool CookieObj::init(const CookieInfo & cookieInfo)
 //--------------------------------------------------------------------
 {
-    if (!Node::init()) {
+    if (!BaseObj::init(cookieInfo.baseInfo)) {
         cocos2d::log("CookieObj::init: can't init Node inctance");
         return false;
     }
 
-    //cocos2d::log("CookieObj::init: column=%d row=%d cookieType=%d", mColumn, mRow, mType);
-
-    mColumn = cookieInfo.column;
-    mRow = cookieInfo.row;
-    mType = cookieInfo.cookieType;
+    mCookieType = cookieInfo.cookieType;
 
 #ifdef UNFED_ENABLE_DEBUG
     mDebugLabel = cocos2d::Label::create();
@@ -78,31 +73,52 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
 }
 
 //--------------------------------------------------------------------
-string CookieObj::spriteName()
+cocos2d::String& CookieObj::spriteName() const
 //--------------------------------------------------------------------
 {
     return GameResources::s_cookieSpriteNames.at(getTypeAsInt());
 }
 
 //--------------------------------------------------------------------
-string CookieObj::highlightedSpriteName()
+cocos2d::String& CookieObj::highlightedSpriteName() const
 //--------------------------------------------------------------------
 {
     return GameResources::s_cookieHighlightedSpriteNames.at(getTypeAsInt());
 }
 
 //--------------------------------------------------------------------
-string CookieObj::description()
+cocos2d::String& CookieObj::description() const
 //--------------------------------------------------------------------
 {
-    return cocos2d::StringUtils::format("type:%d square:(%d,%d)", mType, mColumn, mRow);
+    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", mCookieType, mColumn, mRow);
 }
 
 //--------------------------------------------------------------------
-int CookieObj::getTypeAsInt()
+int CookieObj::getTypeAsInt() const
 //--------------------------------------------------------------------
 {
-    return Helper::getInstance()->to_underlying(mType);
+    return Helper::getInstance()->to_underlying(mCookieType);
+}
+
+//--------------------------------------------------------------------
+bool CookieObj::isMovable() const
+//--------------------------------------------------------------------
+{
+    return true;
+}
+
+//--------------------------------------------------------------------
+bool CookieObj::isRemovable() const
+//--------------------------------------------------------------------
+{
+    return true;
+}
+
+//--------------------------------------------------------------------
+bool CookieObj::isPossibleSwap() const
+//--------------------------------------------------------------------
+{
+    return true;
 }
 
 //--------------------------------------------------------------------

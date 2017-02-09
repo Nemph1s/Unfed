@@ -60,3 +60,11 @@ std::string SwapObj::description()
     //cocos2d::log("GameplayScene::trySwapCookieTo: %s;", str.c_str());
     return str;
 }
+
+//--------------------------------------------------------------------
+SwapObj::SwapObj()
+    : mCookieA(nullptr)
+    , mCookieB(nullptr)
+//--------------------------------------------------------------------
+{
+}

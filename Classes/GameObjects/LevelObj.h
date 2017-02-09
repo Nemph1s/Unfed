@@ -43,7 +43,7 @@ public:
     TileObj* tileAt(int column, int row);
     CookieObj* cookieAt(int column, int row);
 
-    bool isVisibleTileAt(int column, int row);
+    bool isEmptyTileAt(int column, int row);
 
     cocos2d::Set* removeMatches();
 
