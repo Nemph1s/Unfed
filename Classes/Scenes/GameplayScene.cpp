@@ -10,9 +10,9 @@
 
 #include "Scenes/GameplayScene.h"
 
+#include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/CookieObj.h"
-#include "GameObjects/SwapObj.h"
 #include "GameObjects/ChainObj.h"
 
 #include "Utils/Helpers/VisibleRect.h"
@@ -137,8 +137,7 @@ void GameplayScene::addTiles()
 	cocos2d::log("GameplayScene::addTiles:");
 	for (int row = 0; row < CommonTypes::NumRows; row++) {
 		for (int column = 0; column < CommonTypes::NumColumns; column++) {
-            TileObj* tile = mLevel->tileAt(column, row);
-			if (!tile) {
+			if (!mLevel->isVisibleTileAt(column, row)) {
 				continue;
 			}
 			auto tileSprite = Sprite::create(GameResources::s_TileImg);
@@ -198,7 +197,11 @@ void GameplayScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
         updateSwipeDelta(column, row, horzDelta, vertDelta);
 
         if (horzDelta != 0 || vertDelta != 0) {
-            if (trySwapCookieTo(horzDelta, vertDelta)) {
+            if (!mTrySwapCookieCallback) {
+                return;
+            }
+
+            if (mTrySwapCookieCallback(horzDelta, vertDelta)) {
                 hideSelectionIndicator();
                 clearTouchedCookie();
             }
@@ -320,40 +323,6 @@ void GameplayScene::updateSwipeDelta(int column, int row, int& horzDelta, int& v
     else if (row > mSwipeFromRow) { // swipe up
         vertDelta = 1;
     }
-}
-
-//--------------------------------------------------------------------
-bool GameplayScene::trySwapCookieTo(int horzDelta, int vertDelta)
-//--------------------------------------------------------------------
-{
-    cocos2d::log("GameplayScene::trySwapCookieTo: horzDelta=%d; vertDelta=%d;", horzDelta, vertDelta);
-    int toColumn = mSwipeFromColumn + horzDelta;
-    int toRow = mSwipeFromRow + vertDelta;
-
-    if (toColumn < 0 || toColumn >= NumColumns) 
-        return false;
-    if (toRow < 0 || toRow >= NumRows) 
-        return false;
-
-    CookieObj* toCookie = mLevel->cookieAt(toColumn, toRow);
-    if (!toCookie)
-        return false;
-
-    CookieObj* fromCookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
-   
-    cocos2d::log("GameplayScene::trySwapCookieTo: fromCookie=[%d,%d]; toCookie=[%d][%d];"
-        , fromCookie->getColumn(), fromCookie->getRow(), toCookie->getColumn(), toCookie->getRow());
-
-    if (!mSwapCallback)
-        return false;
-    
-    SwapObj* swap = SwapObj::createWithCookies(fromCookie, toCookie);
-    if (!swap)
-        return false;
-
-    mSwapCallback(swap);
-    
-    return true;
 }
 
 //--------------------------------------------------------------------

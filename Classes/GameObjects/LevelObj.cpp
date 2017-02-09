@@ -10,9 +10,9 @@
 
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/TileObj.h"
-#include "GameObjects/SwapObj.h"
 #include "GameObjects/CookieObj.h"
 #include "GameObjects/ChainObj.h"
+#include "GameObjects/Swap/SwapObj.h"
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/Parser/JsonParser.h"
@@ -53,16 +53,7 @@ bool LevelObj::initWithId(const int16_t& levelId)
         return false;
     }
 
-    mLevelInfo = JsonParser->getLevelInfo();
-
-    for (int i = 0; i < NumColumns; i++) {
-        for (int j = 0; j < NumRows; j++) {
-
-            if (mLevelInfo.tiles[i][j] == 1) {
-                mTiles[i][j] = new TileObj();
-            }
-        }
-    }
+    createInitialTiles();
 
     return true;
 }
@@ -73,11 +64,11 @@ cocos2d::Set* LevelObj::shuffle()
 {
     cocos2d::log("LevelObj::shuffle:");
     cocos2d::Set* set = createInitialCookies();
-    detectPossibleSwaps();
+    bool isSwapsDetected = mDetectPossibleSwapsCallback();
 
-    while (mPossibleSwaps->count() == 0) {
+    while (!isSwapsDetected) {
         set = createInitialCookies();
-        detectPossibleSwaps();
+        isSwapsDetected = mDetectPossibleSwapsCallback();
     }
 
     return set;
@@ -112,29 +103,6 @@ CookieObj* LevelObj::cookieAt(int column, int row)
     }
     return mCookies[column][row];
 }
-
-//--------------------------------------------------------------------
-void LevelObj::performSwap(SwapObj * swap)
-//--------------------------------------------------------------------
-{
-    if (!swap) {
-        return;
-    }
-    cocos2d::log("LevelObj::performSwap: %s", swap->description().c_str());
-    int columnA = swap->getCookieA()->getColumn();
-    int rowA = swap->getCookieA()->getRow();
-    int columnB = swap->getCookieB()->getColumn();
-    int rowB = swap->getCookieB()->getRow();
-
-    mCookies[columnA][rowA] = swap->getCookieB();
-    swap->getCookieB()->setColumn(columnA);
-    swap->getCookieB()->setRow(rowA);
-
-    mCookies[columnB][rowB] = swap->getCookieA();
-    swap->getCookieA()->setColumn(columnB);
-    swap->getCookieA()->setRow(rowB);
-}
-
 
 //--------------------------------------------------------------------
 cocos2d::Set * LevelObj::detectHorizontalMatches()
@@ -409,7 +377,7 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
         for (int row = NumRows - 1; row >= 0; row--) {
 
             // If there’s a tile at a position but no cookie, then there’s a hole.
-            if (tileAt(column, row) != nullptr && cookieAt(column, row) == nullptr) {
+            if (isVisibleTileAt(column, row) && cookieAt(column, row) == nullptr) {
             
                 // Scan upward to find the cookie that sits directly above the hole
                 for (int lookup = row - 1; lookup >= 0; lookup--) {
@@ -452,7 +420,7 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
         for (int column = 0; column < NumColumns; column++) {
 
             // If there’s a tile at a position but no cookie, then there’s a hole.
-            if (tileAt(column, row) != nullptr && (cookieAt(column, row) == nullptr)) {
+            if (isVisibleTileAt(column, row) && (cookieAt(column, row) == nullptr)) {
 
                 int cookieType = getRandomCookieType(column, row);
                 CookieObj* cookie = createCookie(column, row, cookieType);
@@ -507,6 +475,39 @@ void LevelObj::resetComboMultiplier()
 }
 
 //--------------------------------------------------------------------
+void LevelObj::createInitialTiles()
+//--------------------------------------------------------------------
+{
+    mLevelInfo = JsonParser->getLevelInfo();
+
+    for (int column = 0; column < NumColumns; column++) {
+        for (int row = 0; row < NumRows; row++) {
+
+            int tileType = mLevelInfo.tiles[column][row];
+            auto tile = createTile(column, row, tileType);
+            this->addChild(tile);
+        }
+    }
+}
+   
+//--------------------------------------------------------------------
+TileObj * LevelObj::createTile(int column, int row, int type)
+//--------------------------------------------------------------------
+{
+    TileInfo info = { column, row, static_cast<TileType>(type) };
+    TileObj* tile = TileObj::create(info);
+    mTiles[column][row] = tile;
+    return tile;
+}
+
+//--------------------------------------------------------------------
+bool LevelObj::isVisibleTileAt(int column, int row)
+//--------------------------------------------------------------------
+{
+    return tileAt(column, row) ? tileAt(column, row)->isVisibleTile() : false;
+}
+
+//--------------------------------------------------------------------
 cocos2d::Set* LevelObj::createInitialCookies()
 //--------------------------------------------------------------------
 {
@@ -516,7 +517,7 @@ cocos2d::Set* LevelObj::createInitialCookies()
     
     for (int row = 0; row < NumRows; row++) {
         for (int column = 0; column < NumColumns; column++) {
-            if (mTiles[column][row] != nullptr) {
+            if (isVisibleTileAt(column, row)) {
                 int cookieType = getRandomCookieType(column, row);
                 CookieObj* cookie = createCookie(column, row, cookieType);
                 set->addObject(cookie);
@@ -584,86 +585,6 @@ bool LevelObj::isSameTypeOfCookieAt(int column, int row, int type)
         return false;
 
     return true;    
-}
-
-//--------------------------------------------------------------------
-void LevelObj::detectPossibleSwaps()
-//--------------------------------------------------------------------
-{
-    cocos2d::log("LevelObj::detectPossibleSwaps:");
-    cocos2d::Set* set = new cocos2d::Set();
-
-    for (int row = 0; row < NumRows; row++) {
-        for (int column = 0; column < NumColumns; column++) {
-            auto cookie = cookieAt(column, row);
-            if (cookie != nullptr) {
-                // Is it possible to swap this cookie with the one on the right?
-                if (column < NumColumns - 1) {
-                    // Have a cookie in this spot? If there is no tile, there is no cookie.
-                    auto other = cookieAt(column + 1, row);
-                    if (other != nullptr) {
-                        // Swap them
-                        mCookies[column][row] = other;
-                        mCookies[column + 1][row] = cookie;
-
-                        // Is either cookie now part of a chain?
-                        if (hasChainAt(column + 1, row) || hasChainAt(column, row)) {
-
-                            SwapObj *swap = SwapObj::createWithCookies(cookie, other);
-                            set->addObject(swap);
-                        }
-                        // Swap them back
-                        mCookies[column][row] = cookie;
-                        mCookies[column + 1][row] = other;
-                    }
-                }
-                // This does exactly the same thing, but for the cookie above instead of on the right.
-                if (row < NumRows - 1) {
-
-                    auto other = cookieAt(column, row + 1);
-                    if (other != nullptr) {
-                        // Swap them
-                        mCookies[column][row] = other;
-                        mCookies[column][row + 1] = cookie;
-
-                        if (hasChainAt(column, row + 1) || hasChainAt(column, row)) {
-
-                            SwapObj *swap = SwapObj::createWithCookies(cookie, other);
-                            set->addObject(swap);
-                        }
-
-                        mCookies[column][row] = cookie;
-                        mCookies[column][row + 1] = other;
-                    }
-                }
-            }
-        }
-    }
-    mPossibleSwaps = set;
-    int count = 0;
-    auto strSwaps = cocos2d::String::create("possible swaps: {\n");
-    for (auto it = mPossibleSwaps->begin(); it != mPossibleSwaps->end(); ++it, count++) {
-        auto swap = static_cast<SwapObj*>(*it);
-        strSwaps->appendWithFormat("\t%s\n", swap->description().c_str());
-    }
-    strSwaps->append("}");
-    cocos2d::log("LevelObj::detectPossibleSwaps: count = %d\n%s", count, strSwaps->getCString());
-}
-
-//--------------------------------------------------------------------
-bool LevelObj::isPossibleSwap(SwapObj* swap)
-//--------------------------------------------------------------------
-{
-    auto it = mPossibleSwaps->begin();
-    for (; it != mPossibleSwaps->end(); ++it) {
-        auto other = static_cast<SwapObj*>(*it);
-        if (!other)
-            continue;
-        if ((other->getCookieA() == swap->getCookieA() && other->getCookieB() == swap->getCookieB()) ||
-            (other->getCookieB() == swap->getCookieA() && other->getCookieA() == swap->getCookieB()))
-            return true;
-    }
-    return false;
 }
 
 //--------------------------------------------------------------------

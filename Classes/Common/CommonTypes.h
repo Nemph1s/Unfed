@@ -70,6 +70,27 @@ namespace CommonTypes {
        , Unknown /**< enum value unknown. */
    };
 
+   /**
+   * @brief TileType enum.
+   * Type of the sound object
+   */
+   enum class TileType : int {
+       Empty = 0 /**< enum value Empty. */
+       , Normal = 1 /**< enum value Normal. */
+       , RemovableX1 = 2 /**< enum value RemovableX1. */
+       , RemovableX2 = 3 /**< enum value ChainTypeL. */
+       , Unknown /**< enum value unknown. */
+   };
+
+   /**
+   * @brief TileInfo struct.
+   */
+   struct TileInfo
+   {
+       int column; /**< vertical series of cells in a table */
+       int row; /**< horizontal series of cells in a table */
+       TileType tileType; /**< type of Tile object */
+   };
 
    /**
    * @brief SoundType enum.

@@ -8,7 +8,7 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/SwapObj.h"
+#include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/CookieObj.h"
 
 //--------------------------------------------------------------------

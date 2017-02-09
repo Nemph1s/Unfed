@@ -9,14 +9,16 @@
 */
 
 #include "Controller/ViewController.h"
+#include "Controller/SwapController.h"
 
 #include "Managers/AnimationsManager.h"
 #include "Managers/AudioManager.h"
 #include "Managers/GuiManager.h"
 
+#include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/ChainObj.h"
-#include "GameObjects/SwapObj.h"
+
 #include "Scenes/GameplayScene.h"
 
 using cocos2d::Director;
@@ -31,6 +33,63 @@ ViewController::ViewController()
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::ViewController");
+   CC_SAFE_RELEASE_NULL(mSwapController);
+}
+
+//--------------------------------------------------------------------
+bool ViewController::initGameScene()
+//--------------------------------------------------------------------
+{
+    auto director = Director::getInstance();
+    auto glview = director->getOpenGLView();
+
+    // Create and configure the scene.
+    mGameplayScene = GameplayScene::createWithSize(glview->getFrameSize());
+    //self.scene.scaleMode = SKSceneScaleModeAspectFill;
+
+    AudioManager->init();
+    AnimationsManager->initWithScene(mGameplayScene);
+    GuiManager->initWithScene(mGameplayScene);
+
+    // Load the level.
+    int levelId = 0;
+    mLevel = LevelObj::createWithId(levelId);
+    mScore = mLevel->getLevelInfo().targetScore;
+    mMovesLeft = mLevel->getLevelInfo().moves;
+
+    //TODO: create tags instead of name
+    mLevel->setName("Level");
+
+    mGameplayScene->setLevel(mLevel);
+    mGameplayScene->addTiles();
+
+    return true;
+}
+
+//--------------------------------------------------------------------
+bool ViewController::initSwapController()
+//--------------------------------------------------------------------
+{
+    mSwapController = SwapController::create();
+
+    mSwapController->setLevel(mLevel);
+    mSwapController->setGameplayScene(mGameplayScene);
+
+    auto swapCallback = std::bind(&ViewController::swapCallback, this, std::placeholders::_1);
+    mSwapController->setSwapCallback(swapCallback);
+
+    auto swapCtrl = mSwapController;
+    auto tryToSwapCallback = [swapCtrl](int horzDelta, int vertDelta) {
+        return swapCtrl->trySwapCookieTo(horzDelta, vertDelta);
+    };
+    mGameplayScene->setTrySwapCookieCallback(tryToSwapCallback);
+
+    auto detectPossibleSwapsCallback = [swapCtrl]() {
+        return swapCtrl->detectPossibleSwaps();
+    };
+    mLevel->setDetectPossibleSwapsCallback(detectPossibleSwapsCallback);
+
+    return true;
 }
 
 //--------------------------------------------------------------------
@@ -38,7 +97,22 @@ ViewController::~ViewController()
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::~ViewController");
-   CC_SAFE_RELEASE_NULL(mLevel);
+   CC_SAFE_RELEASE_NULL(mSwapController);
+}
+
+//--------------------------------------------------------------------
+ViewController * ViewController::create()
+//--------------------------------------------------------------------
+{
+    ViewController * ret = new (std::nothrow) ViewController();
+    if (ret && ret->init()) {
+        ret->autorelease();
+        CC_SAFE_RETAIN(ret);
+    }
+    else {
+        CC_SAFE_DELETE(ret);
+    }
+    return ret;
 }
 
 //--------------------------------------------------------------------
@@ -47,39 +121,14 @@ bool ViewController::init()
 {
    cocos2d::log("ViewController::init");
 
-   auto director = Director::getInstance();
-   auto glview = director->getOpenGLView();
-      
-   // Create and configure the scene.
-   mGameplayScene = GameplayScene::createWithSize(glview->getFrameSize());
-   //self.scene.scaleMode = SKSceneScaleModeAspectFill;
-
-   AudioManager->init();
-   AnimationsManager->initWithScene(mGameplayScene);
-   GuiManager->initWithScene(mGameplayScene);
-
-   // Load the level.
-   int levelId = 0;
-   mLevel = LevelObj::createWithId(levelId);
-   mScore = mLevel->getLevelInfo().targetScore;
-   mMovesLeft = mLevel->getLevelInfo().moves;
-
-
-
-   //TODO: create tags instead of name
-   mLevel->setName("Level");
-
-   mGameplayScene->setLevel(mLevel);
-   mGameplayScene->addTiles();
+   initGameScene();
+   initSwapController();
 
    mShuffleButtonCallback = std::bind(&ViewController::shuffleButtonCallback, this);
-   GuiManager->setShuffleButtonCallback(mShuffleButtonCallback);
-
-   auto swapCallback = std::bind(&ViewController::swapCallback, this, std::placeholders::_1);
-   mGameplayScene->setSwapCallback(swapCallback);
+   GuiManager->setShuffleButtonCallback(mShuffleButtonCallback); 
 
    // Present the scene.
-   director->runWithScene(mGameplayScene);
+   Director::getInstance()->runWithScene(mGameplayScene);
 
    startGame();
 
@@ -166,7 +215,7 @@ void ViewController::beginNextTurn()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ViewController::beginNextTurn");
-    mLevel->detectPossibleSwaps();
+    mSwapController->detectPossibleSwaps();
     mGameplayScene->userInteractionEnabled();
 
     mLevel->resetComboMultiplier();
@@ -206,9 +255,9 @@ void ViewController::swapCallback(SwapObj * swap)
         mGameplayScene->userInteractionEnabled();
     });
 
-    if (mLevel->isPossibleSwap(swap)) {
+    if (mSwapController->isPossibleSwap(swap)) {
 
-        mLevel->performSwap(swap);
+        mSwapController->performSwap(swap);
         AnimationsManager->animateSwap(swap, swapCallback);
         AudioManager->playSound(SoundType::SwapSound);
     }

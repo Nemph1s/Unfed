@@ -78,10 +78,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-    mController = new ViewController();
-    if (mController->init()) {
-        CC_SAFE_RETAIN(mController);
-    }
+    mController = ViewController::create();
     
     return true;
 }
