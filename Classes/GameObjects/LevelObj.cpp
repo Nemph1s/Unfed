@@ -365,6 +365,7 @@ void LevelObj::removeCookies(cocos2d::Set * chains)
             }
             cocos2d::log("LevelObj::removeCookies: remove %s", cookie->description());
             cookie->removeFromParent();
+            SmartFactory->recycle(cookie);
             mCookies[cookie->getColumn()][cookie->getRow()] = nullptr;
         }
     }

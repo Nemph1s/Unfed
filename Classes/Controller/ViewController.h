@@ -38,6 +38,7 @@ protected:
 
     bool initGameScene();
     bool initSwapController();
+    bool initObjectController();
 
     void updateInfoLabels();
 
@@ -60,6 +61,7 @@ protected:
 
     CC_SYNTHESIZE_READONLY(LevelObj*, mLevel, Level);
     CC_SYNTHESIZE_READONLY(SwapController*, mSwapController, SwapController);
+    CC_SYNTHESIZE_READONLY(ObjectController*, mObjectController, ObjectController);
     CC_SYNTHESIZE_READONLY(GameplayScene*, mGameplayScene, GameplayScene)
 };
 

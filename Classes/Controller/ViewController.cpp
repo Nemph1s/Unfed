@@ -10,6 +10,7 @@
 
 #include "Controller/ViewController.h"
 #include "Controller/SwapController.h"
+#include "Controller/ObjectController.h"
 
 #include "Managers/AnimationsManager.h"
 #include "Managers/AudioManager.h"
@@ -35,10 +36,12 @@ ViewController::ViewController()
     : mLevel(nullptr)
     , mGameplayScene(nullptr)
     , mSwapController(nullptr)
+    , mObjectController(nullptr)
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::ViewController");
    CC_SAFE_RELEASE_NULL(mSwapController);
+   CC_SAFE_RELEASE_NULL(mObjectController);
 }
 
 //--------------------------------------------------------------------
@@ -97,6 +100,17 @@ bool ViewController::initSwapController()
         return swapCtrl->detectPossibleSwaps();
     };
     mLevel->setDetectPossibleSwapsCallback(detectPossibleSwapsCallback);
+
+    return true;
+}
+
+//--------------------------------------------------------------------
+bool ViewController::initObjectController()
+//--------------------------------------------------------------------
+{
+    mObjectController = ObjectController::create();
+
+    mObjectController->setLevel(mLevel);
 
     return true;
 }
