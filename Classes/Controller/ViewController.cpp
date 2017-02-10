@@ -36,12 +36,10 @@ ViewController::ViewController()
     : mLevel(nullptr)
     , mGameplayScene(nullptr)
     , mSwapController(nullptr)
-    , mObjectController(nullptr)
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::ViewController");
-   CC_SAFE_RELEASE_NULL(mSwapController);
-   CC_SAFE_RELEASE_NULL(mObjectController);
+   CC_SAFE_RETAIN(mSwapController);
 }
 
 //--------------------------------------------------------------------
@@ -100,17 +98,6 @@ bool ViewController::initSwapController()
         return swapCtrl->detectPossibleSwaps();
     };
     mLevel->setDetectPossibleSwapsCallback(detectPossibleSwapsCallback);
-
-    return true;
-}
-
-//--------------------------------------------------------------------
-bool ViewController::initObjectController()
-//--------------------------------------------------------------------
-{
-    mObjectController = ObjectController::create();
-
-    mObjectController->setLevel(mLevel);
 
     return true;
 }

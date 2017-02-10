@@ -11,8 +11,11 @@
 #pragma once
 
 #include "cocos2d.h"
+#include "Common/CommonTypes.h"
 
 class BaseObj;
+class TileObj;
+class CookieObj;
 class LevelObj;
 
 class ObjectController : public cocos2d::Ref
@@ -30,17 +33,31 @@ public:
     bool init();
 
     void createInitialTiles();
-    BaseObj* createTile(int column, int row, int type);
-
     cocos2d::Set* createInitialCookies();
-    BaseObj* createCookie(int column, int row, int type);
+
+    BaseObj* createRandomCookie(int column, int row);
     int getRandomCookieType(int column, int row);
 
+    TileObj* tileAt(int column, int row);
+    CookieObj* cookieAt(int column, int row);
+    bool hasChainAt(int column, int row);
+
+    bool isEmptyTileAt(int column, int row);
+    bool isSameTypeOfCookieAt(int column, int row, int type);
+
+    void updateCookieObjectAt(int column, int row, BaseObj* cookie);
+    void removeCookie(int column, int row);
 
 protected:
     // Nodes should be created using create();
     ObjectController();
 
+    BaseObj* createTile(int column, int row, int type);
+    BaseObj* createCookie(int column, int row, int type);
+
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
+
+    BaseObj* mTiles[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
+    BaseObj* mCookies[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
 };
