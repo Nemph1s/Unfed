@@ -36,7 +36,7 @@ protected:
 
     void crateInfoLayer();
     void createShuffleButton();
-    cocos2d::ui::Text* createLabel(const CommonTypes::LabelInfo& info);
+    cocos2d::ui::Text* createLabel(const CommonTypes::TextLabelInfo& info);
     
     CC_SYNTHESIZE(cocos2d::Scene*, mCurrentScene, CurrentScene);
 

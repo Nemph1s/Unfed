@@ -34,6 +34,15 @@
     <Filter Include="src\Utils\Parser">
       <UniqueIdentifier>{7f1e1815-5657-4f5f-bcfa-4abfe7227a43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\GameObjects\Swap">
+      <UniqueIdentifier>{dfdb385a-7a3f-419d-b52f-55b7e0a9b257}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\GameObjects\Base">
+      <UniqueIdentifier>{338c0eac-c3fe-4a5f-9105-e1431e0c8841}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Common\Factory">
+      <UniqueIdentifier>{803b3e4b-ba9a-43e2-acdc-604156b7dfda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -63,9 +72,6 @@
     <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp">
       <Filter>src\Utils\Helper</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GameObjects\SwapObj.cpp">
-      <Filter>src\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\Managers\ResourceManager.cpp">
       <Filter>src\Managers</Filter>
     </ClCompile>
@@ -86,6 +92,21 @@
     </ClCompile>
     <ClCompile Include="..\Classes\Utils\Parser\JsonParser.cpp">
       <Filter>src\Utils\Parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\SwapController.cpp">
+      <Filter>src\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\Swap\SwapObj.cpp">
+      <Filter>src\GameObjects\Swap</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\Base\BaseObj.cpp">
+      <Filter>src\GameObjects\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Common\Factory\SmartFactory.cpp">
+      <Filter>src\Common\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController.cpp">
+      <Filter>src\Controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -125,9 +146,6 @@
     <ClInclude Include="..\Classes\Utils\Helpers\VisibleRect.h">
       <Filter>src\Utils\Helper</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\GameObjects\SwapObj.h">
-      <Filter>src\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\Managers\ResourceManager.h">
       <Filter>src\Managers</Filter>
     </ClInclude>
@@ -151,6 +169,21 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Utils\Parser\JsonParser.h">
       <Filter>src\Utils\Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\SwapController.h">
+      <Filter>src\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\Swap\SwapObj.h">
+      <Filter>src\GameObjects\Swap</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\Base\BaseObj.h">
+      <Filter>src\GameObjects\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Common\Factory\SmartFactory.h">
+      <Filter>src\Common\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController.h">
+      <Filter>src\Controller</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

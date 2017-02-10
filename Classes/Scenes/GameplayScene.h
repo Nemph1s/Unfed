@@ -56,21 +56,20 @@ protected:
     bool isCookieTouched();
     void clearTouchedCookie();
     void updateSwipeDelta(int column, int row, int& horzDelta, int& vertDelta);
-    bool trySwapCookieTo(int horzDelta, int vertDelta);  
 
     //---Class Attributes-------------------------------------------------
 	cocos2d::EventListener* mListener;
 
     CC_PROPERTY(LevelObj*, mLevel, Level);
 
-    CC_SYNTHESIZE(std::function<void(SwapObj* swap)>, mSwapCallback, SwapCallback);
+    CC_SYNTHESIZE(std::function<bool(int horzDelta, int vertDelta)>, mTrySwapCookieCallback, TrySwapCookieCallback);
 
 	CC_SYNTHESIZE_READONLY(int, mSwipeFromColumn, SwipeFromColumn);
     CC_SYNTHESIZE_READONLY(int, mSwipeFromRow, SwipeFromRow);
 
-    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Sprite*, mSelectionSprite, SelectionSprite);
-    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Layer*, mGameLayer, GameLayer);
-    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Layer*, mTilesLayer, TilesLayer);
-    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Layer*, mCookiesLayer, CookiesLayer);
+    CC_SYNTHESIZE_READONLY(cocos2d::Sprite*, mSelectionSprite, SelectionSprite);
+    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mGameLayer, GameLayer);
+    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mTilesLayer, TilesLayer);
+    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mCookiesLayer, CookiesLayer);
 };
 

@@ -10,9 +10,9 @@
 
 #include "Scenes/GameplayScene.h"
 
+#include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/CookieObj.h"
-#include "GameObjects/SwapObj.h"
 #include "GameObjects/ChainObj.h"
 
 #include "Utils/Helpers/VisibleRect.h"
@@ -22,6 +22,7 @@
 #include "Managers/AudioManager.h"
 #include "Managers/AnimationsManager.h"
 #include "Managers/GuiManager.h"
+#include "Controller/ObjectController.h"
 #include <math.h>
 
 USING_NS_CC;
@@ -31,6 +32,10 @@ using namespace GameResources;
 GameplayScene::GameplayScene()
     : mLevel(nullptr)
     , mListener(nullptr)
+    , mSelectionSprite(nullptr)
+    , mCookiesLayer(nullptr)
+    , mGameLayer(nullptr)
+    , mTilesLayer(nullptr)
    //--------------------------------------------------------------------
 {
 }
@@ -73,8 +78,9 @@ bool GameplayScene::initWithSize(const Size& size)
     this->setAnchorPoint(Vec2(0.5, 0.5));
     this->setPosition(VisibleRect::leftBottom());
 
-    auto bg = Sprite::create(GameResources::s_backgroundImg);
-    auto scaleFactor = std::min(bg->getContentSize().width / size.width, bg->getContentSize().height / size.height);
+    auto bg = Sprite::create(GameResources::s_backgroundImg.getCString());
+    auto scaleFactor = std::min(bg->getContentSize().width / size.width
+        , bg->getContentSize().height / size.height);
     bg->setScale(1.0f / scaleFactor);
     bg->setPosition(VisibleRect::center());
     this->addChild(bg, 0);
@@ -83,7 +89,8 @@ bool GameplayScene::initWithSize(const Size& size)
     mGameLayer->setPosition(VisibleRect::center());
     this->addChild(mGameLayer);
 
-    Vec2 layerPos = Vec2(-TileWidth * NumColumns / 2, -TileHeight * NumRows / 2);
+    Vec2 layerPos = Vec2(-TileWidth * CommonTypes::NumColumns / 2
+        , -TileHeight * CommonTypes::NumRows / 2);
 
     mTilesLayer = Layer::create();
     mTilesLayer->setPosition(layerPos);
@@ -137,11 +144,11 @@ void GameplayScene::addTiles()
 	cocos2d::log("GameplayScene::addTiles:");
 	for (int row = 0; row < CommonTypes::NumRows; row++) {
 		for (int column = 0; column < CommonTypes::NumColumns; column++) {
-            TileObj* tile = mLevel->tileAt(column, row);
-			if (!tile) {
+            auto objCtrl = mLevel->getObjectController();
+			if (objCtrl->isEmptyTileAt(column, row)) {
 				continue;
 			}
-			auto tileSprite = Sprite::create(GameResources::s_TileImg);
+			auto tileSprite = Sprite::create(GameResources::s_TileImg.getCString());
             tileSprite->setPosition(Helper::pointForColumnAndRow(column, row));
             tileSprite->setOpacity(127);
 			mTilesLayer->addChild(tileSprite);
@@ -173,7 +180,8 @@ bool GameplayScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
     Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
 
     if (Helper::convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {
-        CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
+        auto objCtrl = mLevel->getObjectController();
+        CookieObj* cookie = objCtrl->cookieAt(mSwipeFromColumn, mSwipeFromRow);
         if (cookie) {
             showSelectionIndicatorForCookie(cookie);
             return true;
@@ -198,7 +206,11 @@ void GameplayScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
         updateSwipeDelta(column, row, horzDelta, vertDelta);
 
         if (horzDelta != 0 || vertDelta != 0) {
-            if (trySwapCookieTo(horzDelta, vertDelta)) {
+            if (!mTrySwapCookieCallback) {
+                return;
+            }
+
+            if (mTrySwapCookieCallback(horzDelta, vertDelta)) {
                 hideSelectionIndicator();
                 clearTouchedCookie();
             }
@@ -250,7 +262,7 @@ void GameplayScene::showSelectionIndicatorForCookie(CookieObj* cookie)
     }
 
     auto img = new Image();
-    img->initWithImageFile(cookie->highlightedSpriteName());
+    img->initWithImageFile(cookie->highlightedSpriteName().getCString());
 
     auto texture = new Texture2D();
     texture->initWithImage(img);
@@ -323,44 +335,10 @@ void GameplayScene::updateSwipeDelta(int column, int row, int& horzDelta, int& v
 }
 
 //--------------------------------------------------------------------
-bool GameplayScene::trySwapCookieTo(int horzDelta, int vertDelta)
-//--------------------------------------------------------------------
-{
-    cocos2d::log("GameplayScene::trySwapCookieTo: horzDelta=%d; vertDelta=%d;", horzDelta, vertDelta);
-    int toColumn = mSwipeFromColumn + horzDelta;
-    int toRow = mSwipeFromRow + vertDelta;
-
-    if (toColumn < 0 || toColumn >= NumColumns) 
-        return false;
-    if (toRow < 0 || toRow >= NumRows) 
-        return false;
-
-    CookieObj* toCookie = mLevel->cookieAt(toColumn, toRow);
-    if (!toCookie)
-        return false;
-
-    CookieObj* fromCookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
-   
-    cocos2d::log("GameplayScene::trySwapCookieTo: fromCookie=[%d,%d]; toCookie=[%d][%d];"
-        , fromCookie->getColumn(), fromCookie->getRow(), toCookie->getColumn(), toCookie->getRow());
-
-    if (!mSwapCallback)
-        return false;
-    
-    SwapObj* swap = SwapObj::createWithCookies(fromCookie, toCookie);
-    if (!swap)
-        return false;
-
-    mSwapCallback(swap);
-    
-    return true;
-}
-
-//--------------------------------------------------------------------
 void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int row)
 //--------------------------------------------------------------------
 {
-    auto sprite = Sprite::create(cookie->spriteName());
+    auto sprite = Sprite::create(cookie->spriteName().getCString());
     sprite->setPosition(Helper::pointForColumnAndRow(column, row));
     cookie->setSpriteNode(sprite);
     cookie->updateDebugTileLabel();

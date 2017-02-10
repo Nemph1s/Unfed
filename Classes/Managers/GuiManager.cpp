@@ -66,17 +66,17 @@ void _GuiManager::crateInfoLayer()
     mRightGuiLayer->setContentSize(Size(width, viewSize.height));
     mCurrentScene->addChild(mRightGuiLayer);
 
-    LabelInfo scoreTitleInfo = { Localization::scoreTitle.c_str(), fontSize, 0.5f, 0.75f };
-    LabelInfo targetTitleInfo = { Localization::targetTitle.c_str(), fontSize, 0.5f, 0.55f };
-    LabelInfo movesTitleInfo = { Localization::movesTitle.c_str(), fontSize, 0.5f, 0.35f };
+    TextLabelInfo scoreTitleInfo = { Localization::scoreTitle.c_str(), fontSize, 0.5f, 0.75f };
+    TextLabelInfo targetTitleInfo = { Localization::targetTitle.c_str(), fontSize, 0.5f, 0.55f };
+    TextLabelInfo movesTitleInfo = { Localization::movesTitle.c_str(), fontSize, 0.5f, 0.35f };
     mLeftGuiLayer->addChild(createLabel(scoreTitleInfo));
     mLeftGuiLayer->addChild(createLabel(targetTitleInfo));
     mLeftGuiLayer->addChild(createLabel(movesTitleInfo));
 
     const char* tmpStr = "999999999";
-    LabelInfo scoreInfo = { tmpStr, fontSize + 4, 0.5f, 0.7f };
-    LabelInfo targetInfo = { tmpStr, fontSize + 4, 0.5f, 0.5f };
-    LabelInfo movesInfo = { tmpStr, fontSize + 4, 0.5f, 0.3f };
+    TextLabelInfo scoreInfo = { tmpStr, fontSize + 4, 0.5f, 0.7f };
+    TextLabelInfo targetInfo = { tmpStr, fontSize + 4, 0.5f, 0.5f };
+    TextLabelInfo movesInfo = { tmpStr, fontSize + 4, 0.5f, 0.3f };
     
     mScoreLabel = createLabel(scoreInfo);
     mTargetLabel = createLabel(targetInfo);
@@ -91,10 +91,10 @@ void _GuiManager::crateInfoLayer()
 void _GuiManager::createShuffleButton()
 //--------------------------------------------------------------------
 {
-    mShuffleButton = ui::Button::create(GameResources::s_ButtonImg);
+    mShuffleButton = ui::Button::create(GameResources::s_ButtonImg.getCString());
     mShuffleButton->setPositionType(Widget::PositionType::PERCENT);
     mShuffleButton->setPositionPercent(Vec2(0.5f, 0.1f));
-    mShuffleButton->setTitleFontName(GameResources::s_fontYellow);
+    mShuffleButton->setTitleFontName(GameResources::s_fontYellow.getCString());
     mShuffleButton->setTitleText(Localization::shuffleTitle);
     mShuffleButton->setTitleFontSize(28);    
     mShuffleButton->setScale9Enabled(true);
@@ -146,12 +146,12 @@ void _GuiManager::updateMovesLabel(int value)
 }
 
 //--------------------------------------------------------------------
-cocos2d::ui::Text * _GuiManager::createLabel(const CommonTypes::LabelInfo& info)
+cocos2d::ui::Text * _GuiManager::createLabel(const CommonTypes::TextLabelInfo& info)
 //--------------------------------------------------------------------
 {
     //TODO: use in future cocostudio::GUIReader::shareReader()->widgetFromJsonFile()
 
-    Text* text = Text::create(info.text, GameResources::s_fontYellow, info.fontSize);
+    Text* text = Text::create(info.text, GameResources::s_fontYellow.getCString(), info.fontSize);
     text->ignoreContentAdaptWithSize(false);
     text->setContentSize(Size(280, 150));
     text->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);

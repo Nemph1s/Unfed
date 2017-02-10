@@ -8,7 +8,7 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/SwapObj.h"
+#include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/CookieObj.h"
 
 //--------------------------------------------------------------------
@@ -59,4 +59,12 @@ std::string SwapObj::description()
         , mCookieB->getColumn(), mCookieB->getRow());
     //cocos2d::log("GameplayScene::trySwapCookieTo: %s;", str.c_str());
     return str;
+}
+
+//--------------------------------------------------------------------
+SwapObj::SwapObj()
+    : mCookieA(nullptr)
+    , mCookieB(nullptr)
+//--------------------------------------------------------------------
+{
 }

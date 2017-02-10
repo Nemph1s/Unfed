@@ -34,7 +34,7 @@ bool _AudioManager::init()
 void _AudioManager::playBGMusic()
 //--------------------------------------------------------------------
 {
-    AudioEngine->playBackgroundMusic(GameResources::s_gameplaySoundBG.c_str(), true);
+    AudioEngine->playBackgroundMusic(GameResources::s_gameplaySoundBG.getCString(), true);
 }
 
 //--------------------------------------------------------------------
@@ -48,7 +48,7 @@ void _AudioManager::playSound(CommonTypes::SoundType type)
         cocos2d::log("AudioManager::playSound: wrong sound type!");
         return;
     }
-    AudioEngine->playEffect(GameResources::s_gameplaySounds.at(soundType).c_str());
+    AudioEngine->playEffect(GameResources::s_gameplaySounds.at(soundType).getCString());
 }
 
 //--------------------------------------------------------------------
@@ -56,11 +56,11 @@ bool _AudioManager::preloadSounds()
 //--------------------------------------------------------------------
 {
     cocos2d::log("AudioManager::preloadSounds:");
-    AudioEngine->preloadBackgroundMusic(GameResources::s_gameplaySoundBG.c_str());
+    AudioEngine->preloadBackgroundMusic(GameResources::s_gameplaySoundBG.getCString());
     auto soundMax = Helper::getInstance()->to_underlying(SoundType::SoundsMax);
 
     for (int i = 0; i < soundMax; i++) {
-        AudioEngine->preloadEffect(GameResources::s_gameplaySounds.at(i).c_str());
+        AudioEngine->preloadEffect(GameResources::s_gameplaySounds.at(i).getCString());
     }
     return true;
 }

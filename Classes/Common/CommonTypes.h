@@ -15,6 +15,40 @@
 
 namespace CommonTypes {
 
+    //temporary variables
+    //TODO: move to globalInfo or to json file
+    static const int NumColumns = 9;
+    static const int NumRows = 9;
+
+    typedef int TilesArray[CommonTypes::NumColumns][CommonTypes::NumRows];
+
+    /**
+    * @brief GameObjectType enum.
+    * Type of the cookie object
+    */
+    enum class BaseObjectType : int {
+        TileObj = 0 /**< enum value TileObj. */
+        , CookieObj = 1 /**< enum value CookieObj. */
+        , DirtObj = 2 /**< enum value DirtObj. */
+        , WallObj = 3 /**< enum value WallObj. */
+        , Unknown /**< enum value unknown. */
+    };
+
+    /**
+    * @brief GameObjectInfo struct.
+    */
+    struct BaseObjectInfo
+    {
+        BaseObjectType type; /**< type of game object */
+        int column; /**< vertical series of cells in a table */
+        int row; /**< horizontal series of cells in a table */
+
+        BaseObjectInfo(BaseObjectType _type) 
+            : type(_type), column(-1), row(-1) {}
+        BaseObjectInfo(BaseObjectType _type, int _column, int _row) 
+            : type(_type), column(_column), row(_row) {}
+    };
+
    /**
    * @brief CookieType enum.
    * Type of the cookie object
@@ -35,17 +69,9 @@ namespace CommonTypes {
    */
    struct CookieInfo
    {
-      int column; /**< vertical series of cells in a table */
-      int row; /**< horizontal series of cells in a table */
-      CookieType cookieType; /**< type of Cookie object */
+       BaseObjectInfo baseInfo; /**< type of GaneInfoObject struct */
+       CookieType cookieType; /**< type of Cookie object */
    };
-
-   //temporary variables
-   //TODO: move to globalInfo or to json file
-   static const int NumColumns = 9;
-   static const int NumRows = 9;
-
-   typedef int TilesArray[CommonTypes::NumColumns][CommonTypes::NumRows];
 
    /**
    * @brief LevelInfo struct.
@@ -56,6 +82,7 @@ namespace CommonTypes {
       int16_t targetScore; /**< Goal score */
       int moves; /**< available moves */
 	  TilesArray tiles; /**< array of tiles */
+      int typesCount; /**< count of types */
    };
 
    /**
@@ -70,6 +97,25 @@ namespace CommonTypes {
        , Unknown /**< enum value unknown. */
    };
 
+   /**
+   * @brief TileType enum.
+   * Type of the sound object
+   */
+   enum class TileType : int {
+       Empty = 0 /**< enum value Empty. */
+       , Normal = 1 /**< enum value Normal. */
+       , Water = 2 /**< enum value Water. */
+       , Unknown /**< enum value unknown. */
+   };
+
+   /**
+   * @brief TileInfo struct.
+   */
+   struct TileInfo
+   {
+       BaseObjectInfo baseInfo; /**< type of GaneInfoObject struct */
+       TileType tileType; /**< type of Tile object */
+   };
 
    /**
    * @brief SoundType enum.
@@ -88,7 +134,7 @@ namespace CommonTypes {
    /**
    * @brief LevelInfo struct.
    */
-   struct LabelInfo
+   struct TextLabelInfo
    {
        const char* text; /**< text of label */
        int8_t fontSize; /**< font size */
