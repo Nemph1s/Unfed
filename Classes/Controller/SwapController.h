@@ -14,7 +14,6 @@
 
 class SwapObj;
 class LevelObj;
-class CookieObj;
 class GameplayScene;
 
 class SwapController : public cocos2d::Ref

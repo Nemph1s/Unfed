@@ -22,6 +22,7 @@
 #include "Managers/AudioManager.h"
 #include "Managers/AnimationsManager.h"
 #include "Managers/GuiManager.h"
+#include "Controller/ObjectController.h"
 #include <math.h>
 
 USING_NS_CC;
@@ -78,7 +79,8 @@ bool GameplayScene::initWithSize(const Size& size)
     this->setPosition(VisibleRect::leftBottom());
 
     auto bg = Sprite::create(GameResources::s_backgroundImg.getCString());
-    auto scaleFactor = std::min(bg->getContentSize().width / size.width, bg->getContentSize().height / size.height);
+    auto scaleFactor = std::min(bg->getContentSize().width / size.width
+        , bg->getContentSize().height / size.height);
     bg->setScale(1.0f / scaleFactor);
     bg->setPosition(VisibleRect::center());
     this->addChild(bg, 0);
@@ -87,7 +89,8 @@ bool GameplayScene::initWithSize(const Size& size)
     mGameLayer->setPosition(VisibleRect::center());
     this->addChild(mGameLayer);
 
-    Vec2 layerPos = Vec2(-TileWidth * NumColumns / 2, -TileHeight * NumRows / 2);
+    Vec2 layerPos = Vec2(-TileWidth * CommonTypes::NumColumns / 2
+        , -TileHeight * CommonTypes::NumRows / 2);
 
     mTilesLayer = Layer::create();
     mTilesLayer->setPosition(layerPos);
@@ -141,7 +144,8 @@ void GameplayScene::addTiles()
 	cocos2d::log("GameplayScene::addTiles:");
 	for (int row = 0; row < CommonTypes::NumRows; row++) {
 		for (int column = 0; column < CommonTypes::NumColumns; column++) {
-			if (mLevel->isEmptyTileAt(column, row)) {
+            auto objCtrl = mLevel->getObjectController();
+			if (objCtrl->isEmptyTileAt(column, row)) {
 				continue;
 			}
 			auto tileSprite = Sprite::create(GameResources::s_TileImg.getCString());
@@ -176,7 +180,8 @@ bool GameplayScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
     Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
 
     if (Helper::convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {
-        CookieObj* cookie = mLevel->cookieAt(mSwipeFromColumn, mSwipeFromRow);
+        auto objCtrl = mLevel->getObjectController();
+        CookieObj* cookie = objCtrl->cookieAt(mSwipeFromColumn, mSwipeFromRow);
         if (cookie) {
             showSelectionIndicatorForCookie(cookie);
             return true;

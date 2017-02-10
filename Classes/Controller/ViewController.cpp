@@ -10,6 +10,7 @@
 
 #include "Controller/ViewController.h"
 #include "Controller/SwapController.h"
+#include "Controller/ObjectController.h"
 
 #include "Managers/AnimationsManager.h"
 #include "Managers/AudioManager.h"
@@ -38,7 +39,7 @@ ViewController::ViewController()
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::ViewController");
-   CC_SAFE_RELEASE_NULL(mSwapController);
+   CC_SAFE_RETAIN(mSwapController);
 }
 
 //--------------------------------------------------------------------

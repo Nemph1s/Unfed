@@ -55,11 +55,11 @@ protected:
     //---Class Attributes-------------------------------------------------
     std::function<void()> mShuffleButtonCallback;
 
-    CC_SYNTHESIZE_READONLY(int, mMovesLeft, MovesLeft);
-    CC_SYNTHESIZE_READONLY(int, mScore, Score);
+    CC_SYNTHESIZE_READONLY(int, mMovesLeft, MovesLeft)
+    CC_SYNTHESIZE_READONLY(int, mScore, Score)
 
-    CC_SYNTHESIZE_READONLY(LevelObj*, mLevel, Level);
-    CC_SYNTHESIZE_READONLY(SwapController*, mSwapController, SwapController);
+    CC_SYNTHESIZE_READONLY(LevelObj*, mLevel, Level)
+    CC_SYNTHESIZE_READONLY(SwapController*, mSwapController, SwapController)
     CC_SYNTHESIZE_READONLY(GameplayScene*, mGameplayScene, GameplayScene)
 };
 

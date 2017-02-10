@@ -12,15 +12,9 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
-#include "Utils/PlatformMacros.h"
 
-using namespace CommonTypes;
-
-class BaseObj;
-class SwapObj;
-class TileObj;
-class CookieObj;
 class ChainObj;
+class ObjectController;
 class SwapController;
 
 class LevelObj : public cocos2d::Node
@@ -39,13 +33,9 @@ public:
 
     virtual bool initWithId(const int16_t& levelId);
 
+    void initObjectController();
+
     cocos2d::Set* shuffle();
-
-    TileObj* tileAt(int column, int row);
-    CookieObj* cookieAt(int column, int row);
-
-    bool isEmptyTileAt(int column, int row);
-
     cocos2d::Set* removeMatches();
 
     cocos2d::Array* useGravityToFillHoles();
@@ -55,17 +45,8 @@ public:
 
 protected:
     // Nodes should be created using create();
-    LevelObj() {};
+    LevelObj();
 
-    void createInitialTiles();
-    BaseObj* createTile(int column, int row, int type);
-
-    cocos2d::Set* createInitialCookies();
-    BaseObj* createCookie(int column, int row, int type);
-    int getRandomCookieType(int column, int row);
-    bool isSameTypeOfCookieAt(int column, int row, int type);
- 
-    bool hasChainAt(int column, int row);
     void addChainsFromSetToSet(cocos2d::Set* from, cocos2d::Set* to);
 
     cocos2d::Set* detectHorizontalMatches();
@@ -86,8 +67,7 @@ protected:
     CC_SYNTHESIZE(std::function<bool()>, mDetectPossibleSwapsCallback, DetectPossibleSwapsCallback);
 
     CC_SYNTHESIZE_READONLY(int, mComboMultiplier, ComboMultiplier);
-    CC_SYNTHESIZE_READONLY(LevelInfo, mLevelInfo, LevelInfo);
+    CC_SYNTHESIZE_READONLY(CommonTypes::LevelInfo, mLevelInfo, LevelInfo);
 
-    BaseObj* mTiles[NumColumns][NumRows] = { nullptr };
-    BaseObj* mCookies[NumColumns][NumRows] = { nullptr };
+    CC_SYNTHESIZE_READONLY(ObjectController*, mObjCtrl, ObjectController);
 };

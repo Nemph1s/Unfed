@@ -9,12 +9,24 @@
 */
 
 #include "Controller/SwapController.h"
+#include "Controller/ObjectController.h"
 
 #include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/CookieObj.h"
 
+#include "Common/CommonTypes.h"
+
 #include "Scenes/GameplayScene.h"
+
+//--------------------------------------------------------------------
+SwapController::SwapController()
+//--------------------------------------------------------------------
+    : mLevel(nullptr)
+    , mGameplayScene(nullptr)
+    , mPossibleSwaps(nullptr)
+{
+}
 
 //--------------------------------------------------------------------
 SwapController::~SwapController()
@@ -51,51 +63,53 @@ bool SwapController::detectPossibleSwaps()
     cocos2d::log("SwapController::detectPossibleSwaps:");
     cocos2d::Set* set = new cocos2d::Set();
 
-    for (int row = 0; row < NumRows; row++) {
-        for (int column = 0; column < NumColumns; column++) {
-            auto cookie = mLevel->cookieAt(column, row);
+    for (int row = 0; row < CommonTypes::NumRows; row++) {
+        for (int column = 0; column < CommonTypes::NumColumns; column++) {
+            auto objCtrl = mLevel->getObjectController();
+            auto cookie = objCtrl->cookieAt(column, row);
             if (cookie == nullptr) {
                 continue;
             }
 
             // Is it possible to swap this cookie with the one on the right?
-            if (column < NumColumns - 1) {
+            if (column < CommonTypes::NumColumns - 1) {
                 // Have a cookie in this spot? If there is no tile, there is no cookie.
-                auto other = mLevel->cookieAt(column + 1, row);
-                if (other != nullptr) {
-                    // Swap them
-                    mLevel->mCookies[column][row] = other;
-                    mLevel->mCookies[column + 1][row] = cookie;
+                auto other = objCtrl->cookieAt(column + 1, row);
+                if (other == nullptr) 
+                    continue;
 
-                    // Is either cookie now part of a chain?
-                    if (mLevel->hasChainAt(column + 1, row) || mLevel->hasChainAt(column, row)) {
+                // Swap them
+                objCtrl->updateCookieObjectAt(column, row, other);
+                objCtrl->updateCookieObjectAt(column + 1, row, cookie);
 
-                        SwapObj *swap = SwapObj::createWithCookies(cookie, other);
-                        set->addObject(swap);
-                    }
-                    // Swap them back
-                    mLevel->mCookies[column][row] = cookie;
-                    mLevel->mCookies[column + 1][row] = other;
+                // Is either cookie now part of a chain?
+                if (objCtrl->hasChainAt(column + 1, row) || objCtrl->hasChainAt(column, row)) {
+
+                    SwapObj *swap = SwapObj::createWithCookies(cookie, other);
+                    set->addObject(swap);
                 }
+                // Swap them back
+                objCtrl->updateCookieObjectAt(column, row, cookie);
+                objCtrl->updateCookieObjectAt(column + 1, row, other);
             }
             // This does exactly the same thing, but for the cookie above instead of on the right.
-            if (row < NumRows - 1) {
+            if (row < CommonTypes::NumRows - 1) {
 
-                auto other = mLevel->cookieAt(column, row + 1);
-                if (other != nullptr) {
-                    // Swap them
-                    mLevel->mCookies[column][row] = other;
-                    mLevel->mCookies[column][row + 1] = cookie;
+                auto other = objCtrl->cookieAt(column, row + 1);
+                if (other == nullptr) 
+                    continue;
 
-                    if (mLevel->hasChainAt(column, row + 1) || mLevel->hasChainAt(column, row)) {
+                // Swap them
+                objCtrl->updateCookieObjectAt(column, row, other);
+                objCtrl->updateCookieObjectAt(column, row + 1, cookie);
 
-                        SwapObj *swap = SwapObj::createWithCookies(cookie, other);
-                        set->addObject(swap);
-                    }
+                if (objCtrl->hasChainAt(column, row + 1) || objCtrl->hasChainAt(column, row)) {
 
-                    mLevel->mCookies[column][row] = cookie;
-                    mLevel->mCookies[column][row + 1] = other;
+                    SwapObj *swap = SwapObj::createWithCookies(cookie, other);
+                    set->addObject(swap);
                 }
+                objCtrl->updateCookieObjectAt(column, row, cookie);
+                objCtrl->updateCookieObjectAt(column, row + 1, other);
             }
         }
     }
@@ -132,20 +146,21 @@ bool SwapController::isPossibleSwap(SwapObj * swap)
 void SwapController::performSwap(SwapObj * swap)
 //--------------------------------------------------------------------
 {
-    if (!swap) {
+    if (!swap)
         return;
-    }
+    
     cocos2d::log("performSwap::performSwap: %s", swap->description().c_str());
     int columnA = swap->getCookieA()->getColumn();
     int rowA = swap->getCookieA()->getRow();
     int columnB = swap->getCookieB()->getColumn();
     int rowB = swap->getCookieB()->getRow();
 
-    mLevel->mCookies[columnA][rowA] = swap->getCookieB();
+    auto objCtrl = mLevel->getObjectController();
+    objCtrl->updateCookieObjectAt(columnA, rowA, swap->getCookieB());
     swap->getCookieB()->setColumn(columnA);
     swap->getCookieB()->setRow(rowA);
 
-    mLevel->mCookies[columnB][rowB] = swap->getCookieA();
+    objCtrl->updateCookieObjectAt(columnB, rowB, swap->getCookieA());
     swap->getCookieA()->setColumn(columnB);
     swap->getCookieA()->setRow(rowB);
 }
@@ -161,16 +176,17 @@ bool SwapController::trySwapCookieTo(int horzDelta, int vertDelta)
     int toColumn = swipeFromColumn + horzDelta;
     int toRow = swipeFromRow + vertDelta;
 
-    if (toColumn < 0 || toColumn >= NumColumns)
+    if (toColumn < 0 || toColumn >= CommonTypes::NumColumns)
         return false;
-    if (toRow < 0 || toRow >= NumRows)
+    if (toRow < 0 || toRow >= CommonTypes::NumRows)
         return false;
 
-    CookieObj* toCookie = mLevel->cookieAt(toColumn, toRow);
+    auto objCtrl = mLevel->getObjectController();
+    CookieObj* toCookie = objCtrl->cookieAt(toColumn, toRow);
     if (!toCookie)
         return false;
 
-    CookieObj* fromCookie = mLevel->cookieAt(swipeFromColumn, swipeFromRow);
+    CookieObj* fromCookie = objCtrl->cookieAt(swipeFromColumn, swipeFromRow);
 
     cocos2d::log("GameplayScene::trySwapCookieTo: fromCookie=[%d,%d]; toCookie=[%d][%d];"
         , fromCookie->getColumn(), fromCookie->getRow(), toCookie->getColumn(), toCookie->getRow());
@@ -185,13 +201,4 @@ bool SwapController::trySwapCookieTo(int horzDelta, int vertDelta)
     mSwapCallback(swap);
 
     return true;
-}
-
-//--------------------------------------------------------------------
-SwapController::SwapController()
-//--------------------------------------------------------------------
-    : mLevel(nullptr)
-    , mGameplayScene(nullptr)
-    , mPossibleSwaps(nullptr)
-{
 }

@@ -14,10 +14,6 @@
 #include "Common/CommonTypes.h"
 #include <list>
 
-#define INIT_POOL_TYPE(__TYPE__) \
-typedef typename std::list<BaseObj*> T##__TYPE__##List; \
-typedef typename std::list<BaseObj*>::iterator T##__TYPE__##ListItr;
-
 class BaseObj;
 
 class _SmartFactory
@@ -51,7 +47,8 @@ protected:
     _SmartFactory & operator=(_SmartFactory &&) = delete;
 
 private:
-    INIT_POOL_TYPE(BaseObj);
+    typedef typename std::list<BaseObj*> TBaseObjList; 
+    typedef typename std::list<BaseObj*>::iterator TBaseObjListItr;
 
     TBaseObjList* mBaseObjPool = nullptr;
     TBaseObjList* mCookieObjPool = nullptr;
