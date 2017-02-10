@@ -16,7 +16,12 @@
 BaseObj::BaseObj()
     : mColumn(-1)
     , mRow(-1)
-    , mType(CommonTypes::GameObjectType::Unknown)
+    , mType(CommonTypes::BaseObjectType::Unknown)
+    , mIsMovable(false)
+    , mIsPossibleSwap(false)
+    , mIsRemovable(false)
+    , mSpriteNode(nullptr)
+    , mDummyString(nullptr)
 //--------------------------------------------------------------------
 {
 }
@@ -25,6 +30,7 @@ BaseObj::BaseObj()
 BaseObj::~BaseObj()
 //--------------------------------------------------------------------
 {
+    CC_SAFE_RELEASE(mDummyString);
 }
 
 //--------------------------------------------------------------------
@@ -41,7 +47,9 @@ BaseObj * BaseObj::create()
     return ret;
 }
 
-BaseObj * BaseObj::create(const CommonTypes::GameObjectInfo & info)
+//--------------------------------------------------------------------
+BaseObj * BaseObj::create(const CommonTypes::BaseObjectInfo & info)
+//--------------------------------------------------------------------
 {
     BaseObj * ret = new (std::nothrow) BaseObj();
     if (ret && ret->init(info)) {
@@ -66,7 +74,7 @@ bool BaseObj::init()
 }
 
 //--------------------------------------------------------------------
-bool BaseObj::init(const CommonTypes::GameObjectInfo & info)
+bool BaseObj::init(const CommonTypes::BaseObjectInfo & info)
 //--------------------------------------------------------------------
 {
     if (!Node::init()) {
@@ -76,6 +84,8 @@ bool BaseObj::init(const CommonTypes::GameObjectInfo & info)
     mColumn = info.column;
     mRow = info.row;
     mType = info.type;
+    mDummyString = cocos2d::String::create("");
+    CC_SAFE_RETAIN(mDummyString);
 
     return true;
 }
@@ -84,7 +94,12 @@ bool BaseObj::init(const CommonTypes::GameObjectInfo & info)
 cocos2d::String& BaseObj::spriteName() const
 //--------------------------------------------------------------------
 {
-    return cocos2d::String();
+    return *mDummyString;
+}
+
+cocos2d::String & BaseObj::description() const
+{
+    return *mDummyString;
 }
 
 //--------------------------------------------------------------------
@@ -95,22 +110,14 @@ int BaseObj::getTypeAsInt() const
 }
 
 //--------------------------------------------------------------------
-bool BaseObj::isMovable() const
+void BaseObj::clear()
 //--------------------------------------------------------------------
 {
-    return false;
-}
-
-//--------------------------------------------------------------------
-bool BaseObj::isRemovable() const
-//--------------------------------------------------------------------
-{
-    return false;
-}
-
-//--------------------------------------------------------------------
-bool BaseObj::isPossibleSwap() const
-//--------------------------------------------------------------------
-{
-    return false;
+    mColumn = -1;
+    mRow = -1;
+    mType = CommonTypes::BaseObjectType::Unknown;
+    mIsMovable = false;
+    mIsPossibleSwap = false;
+    mIsRemovable = false;
+    mSpriteNode = nullptr;
 }

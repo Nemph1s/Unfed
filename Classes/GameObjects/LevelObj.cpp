@@ -10,12 +10,15 @@
 
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/TileObj.h"
+#include "GameObjects/Base/BaseObj.h"
 #include "GameObjects/CookieObj.h"
 #include "GameObjects/ChainObj.h"
 #include "GameObjects/Swap/SwapObj.h"
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/Parser/JsonParser.h"
+
+#include "Common/Factory/SmartFactory.h"
 
 using namespace CommonTypes;
 
@@ -90,7 +93,7 @@ TileObj* LevelObj::tileAt(int column, int row)
         cocos2d::log("LevelObj::tileAt: Invalid row: %d", row);
         CC_ASSERT(invalidRow);
     }
-    return mTiles[column][row];
+    return dynamic_cast<TileObj*>(mTiles[column][row]);
 }
 
 //--------------------------------------------------------------------
@@ -103,7 +106,7 @@ CookieObj* LevelObj::cookieAt(int column, int row)
         cocos2d::log("LevelObj::cookieAt: Invalid cookie at column = %d, row = %d", column, row);
         return nullptr;
     }
-    return mCookies[column][row];
+    return dynamic_cast<CookieObj*>(mCookies[column][row]);
 }
 
 //--------------------------------------------------------------------
@@ -361,6 +364,7 @@ void LevelObj::removeCookies(cocos2d::Set * chains)
                 continue;
             }
             cocos2d::log("LevelObj::removeCookies: remove %s", cookie->description());
+            cookie->removeFromParent();
             mCookies[cookie->getColumn()][cookie->getRow()] = nullptr;
         }
     }
@@ -379,27 +383,32 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
         for (int row = NumRows - 1; row >= 0; row--) {
 
             // If there’s a tile at a position but no cookie, then there’s a hole.
-            if (isEmptyTileAt(column, row) && cookieAt(column, row) == nullptr) {
+            if (!isEmptyTileAt(column, row) && cookieAt(column, row) == nullptr) {
             
                 // Scan upward to find the cookie that sits directly above the hole
                 for (int lookup = row - 1; lookup >= 0; lookup--) {
                     auto cookie = cookieAt(column, lookup);
-                    if (cookie != nullptr) {
-                        // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
-                        mCookies[column][lookup] = nullptr;
-                        mCookies[column][row] = cookie;
-                        cookie->setRow(row);
-
-                        // Lazy creation of array
-                        if (array == nullptr) {
-                            array = cocos2d::Array::createWithCapacity(NumRows);
-                            columns->addObject(array);
-                        }
-                        array->addObject(cookie);
-
-                        // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
-                        break;
+                    if (cookie == nullptr) {
+                        continue;
                     }
+                    if (!cookie->getIsMovable()) {
+                        continue;
+                    }
+
+                    // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
+                    mCookies[column][lookup] = nullptr;
+                    mCookies[column][row] = cookie;
+                    cookie->setRow(row);
+
+                    // Lazy creation of array
+                    if (array == nullptr) {
+                        array = cocos2d::Array::createWithCapacity(NumRows);
+                        columns->addObject(array);
+                    }
+                    array->addObject(cookie);
+
+                    // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
+                    break;
                 }
             }
         }
@@ -422,10 +431,10 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
         for (int column = 0; column < NumColumns; column++) {
 
             // If there’s a tile at a position but no cookie, then there’s a hole.
-            if (isEmptyTileAt(column, row) && (cookieAt(column, row) == nullptr)) {
+            if (!isEmptyTileAt(column, row) && (cookieAt(column, row) == nullptr)) {
 
                 int cookieType = getRandomCookieType(column, row);
-                CookieObj* cookie = createCookie(column, row, cookieType);
+                BaseObj* cookie = createCookie(column, row, cookieType);
 
                 if (array == nullptr) {
                     array = cocos2d::Array::createWithCapacity(NumRows);
@@ -493,12 +502,12 @@ void LevelObj::createInitialTiles()
 }
    
 //--------------------------------------------------------------------
-TileObj * LevelObj::createTile(int column, int row, int type)
+BaseObj * LevelObj::createTile(int column, int row, int type)
 //--------------------------------------------------------------------
 {
-    GameObjectInfo baseInfo = { column, row, GameObjectType::TileObj };
+    BaseObjectInfo baseInfo = { BaseObjectType::TileObj, column, row  };
     TileInfo info = { baseInfo, static_cast<TileType>(type) };
-    TileObj* tile = TileObj::create(info);
+    BaseObj* tile = SmartFactory->createTileObj(info);
     mTiles[column][row] = tile;
     return tile;
 }
@@ -520,9 +529,9 @@ cocos2d::Set* LevelObj::createInitialCookies()
     
     for (int row = 0; row < NumRows; row++) {
         for (int column = 0; column < NumColumns; column++) {
-            if (isEmptyTileAt(column, row)) {
+            if (!isEmptyTileAt(column, row)) {
                 int cookieType = getRandomCookieType(column, row);
-                CookieObj* cookie = createCookie(column, row, cookieType);
+                BaseObj* cookie = createCookie(column, row, cookieType);
                 set->addObject(cookie);
                 createdString.appendWithFormat("%d ", cookieType);
             }
@@ -534,12 +543,12 @@ cocos2d::Set* LevelObj::createInitialCookies()
 }
 
 //--------------------------------------------------------------------
-CookieObj * LevelObj::createCookie(int column, int row, int type)
+BaseObj * LevelObj::createCookie(int column, int row, int type)
 //--------------------------------------------------------------------
 {
-    GameObjectInfo baseInfo = { column, row, GameObjectType::CookieObj };
+    BaseObjectInfo baseInfo = { BaseObjectType::CookieObj, column, row };
     CookieInfo info = { baseInfo, static_cast<CookieType>(type) };
-    CookieObj* cookie = CookieObj::create(info);
+    BaseObj* cookie = SmartFactory->createCookieObj(info);
     mCookies[column][row] = cookie;
     return cookie;
 }
@@ -548,8 +557,10 @@ CookieObj * LevelObj::createCookie(int column, int row, int type)
 int LevelObj::getRandomCookieType(int column, int row)
 //--------------------------------------------------------------------
 {
-    int cookieMax = Helper::getInstance()->to_underlying(CommonTypes::CookieType::Macaron);
-
+    int cookieMax = Helper::getInstance()->to_underlying(CommonTypes::CookieType::CookieMax);
+    if (mLevelInfo.typesCount < cookieMax) {
+        cookieMax = mLevelInfo.typesCount;
+    }
     int type = 0;
     bool findNextType = false;
     do {

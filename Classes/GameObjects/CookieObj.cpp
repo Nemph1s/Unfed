@@ -57,6 +57,9 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
     }
 
     mCookieType = cookieInfo.cookieType;
+    mIsMovable = true;
+    mIsPossibleSwap = true;
+    mIsRemovable = true;
 
 #ifdef UNFED_ENABLE_DEBUG
     mDebugLabel = cocos2d::Label::create();
@@ -101,24 +104,10 @@ int CookieObj::getTypeAsInt() const
 }
 
 //--------------------------------------------------------------------
-bool CookieObj::isMovable() const
+void CookieObj::clear()
 //--------------------------------------------------------------------
 {
-    return true;
-}
-
-//--------------------------------------------------------------------
-bool CookieObj::isRemovable() const
-//--------------------------------------------------------------------
-{
-    return true;
-}
-
-//--------------------------------------------------------------------
-bool CookieObj::isPossibleSwap() const
-//--------------------------------------------------------------------
-{
-    return true;
+    mCookieType = CommonTypes::CookieType::Unknown;
 }
 
 //--------------------------------------------------------------------

@@ -12,4 +12,5 @@
 
   "targetScore" : 1000,
   "moves" : 15,
+  "typesCount" : 6,
 }

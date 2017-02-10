@@ -24,26 +24,32 @@ public:
     * @return A initialized node which is marked as "autorelease".
     */
     static BaseObj * create();
-    static BaseObj * create(const CommonTypes::GameObjectInfo &info);
+    static BaseObj * create(const CommonTypes::BaseObjectInfo &info);
 
     virtual bool init();
-    bool init(const CommonTypes::GameObjectInfo &info);
+    bool init(const CommonTypes::BaseObjectInfo &info);
 
     virtual cocos2d::String& spriteName() const;
+    virtual cocos2d::String& description() const;
 
     virtual int getTypeAsInt() const;
 
-    virtual bool isMovable() const;
-    virtual bool isRemovable() const;
-    virtual bool isPossibleSwap() const;
+    virtual void clear();
 
 protected:
     // Nodes should be created using create();
     BaseObj();
 
     //---Class Attributes-------------------------------------------------
+    CC_SYNTHESIZE_READONLY(bool, mIsMovable, IsMovable);
+    CC_SYNTHESIZE_READONLY(bool, mIsRemovable, IsRemovable);
+    CC_SYNTHESIZE_READONLY(bool, mIsPossibleSwap, IsPossibleSwap);
+
+    cocos2d::String* mDummyString;
+
     CC_SYNTHESIZE(int, mColumn, Column);
     CC_SYNTHESIZE(int, mRow, Row);
-    CC_SYNTHESIZE(CommonTypes::GameObjectType, mType, Type);
+    CC_SYNTHESIZE(CommonTypes::BaseObjectType, mType, Type);
+    CC_SYNTHESIZE(cocos2d::Sprite*, mSpriteNode, SpriteNode);
 
 };

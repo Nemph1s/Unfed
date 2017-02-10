@@ -68,12 +68,19 @@ int TileObj::getTypeAsInt() const
 }
 
 //--------------------------------------------------------------------
+void TileObj::clear()
+//--------------------------------------------------------------------
+{
+    mTileType = CommonTypes::TileType::Unknown;
+}
+
+//--------------------------------------------------------------------
 bool TileObj::isEmptyTile()
 //--------------------------------------------------------------------
 {
     if (mTileType == CommonTypes::TileType::Empty) {
-        return false;
-    } else {
         return true;
+    } else {
+        return false;
     }    
 }

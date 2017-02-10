@@ -19,6 +19,8 @@ class TileObj : public BaseObj
 CC_CONSTRUCTOR_ACCESS:
     virtual ~TileObj();
 
+/*    friend SmartFactory;*/
+
 public:
     /**
     * Allocates and initializes a node.
@@ -32,6 +34,8 @@ public:
 
     virtual int getTypeAsInt() const override;
 
+    virtual void clear() override;
+
     bool isEmptyTile();
 
 protected:
@@ -39,9 +43,6 @@ protected:
     TileObj();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE_READONLY(CommonTypes::TileType, mTileType, TileType);
-
-    CC_SYNTHESIZE(cocos2d::Sprite*, mSpriteNode, SpriteNode);
-   
+    CC_SYNTHESIZE_READONLY(CommonTypes::TileType, mTileType, TileType);  
 };
 

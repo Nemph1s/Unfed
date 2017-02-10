@@ -26,7 +26,7 @@ namespace CommonTypes {
     * @brief GameObjectType enum.
     * Type of the cookie object
     */
-    enum class GameObjectType : int {
+    enum class BaseObjectType : int {
         TileObj = 0 /**< enum value TileObj. */
         , CookieObj = 1 /**< enum value CookieObj. */
         , DirtObj = 2 /**< enum value DirtObj. */
@@ -37,11 +37,16 @@ namespace CommonTypes {
     /**
     * @brief GameObjectInfo struct.
     */
-    struct GameObjectInfo
+    struct BaseObjectInfo
     {
+        BaseObjectType type; /**< type of game object */
         int column; /**< vertical series of cells in a table */
         int row; /**< horizontal series of cells in a table */
-        GameObjectType type; /**< type of game object */
+
+        BaseObjectInfo(BaseObjectType _type) 
+            : type(_type), column(-1), row(-1) {}
+        BaseObjectInfo(BaseObjectType _type, int _column, int _row) 
+            : type(_type), column(_column), row(_row) {}
     };
 
    /**
@@ -64,7 +69,7 @@ namespace CommonTypes {
    */
    struct CookieInfo
    {
-       GameObjectInfo baseInfo; /**< type of GaneInfoObject struct */
+       BaseObjectInfo baseInfo; /**< type of GaneInfoObject struct */
        CookieType cookieType; /**< type of Cookie object */
    };
 
@@ -77,6 +82,7 @@ namespace CommonTypes {
       int16_t targetScore; /**< Goal score */
       int moves; /**< available moves */
 	  TilesArray tiles; /**< array of tiles */
+      int typesCount; /**< count of types */
    };
 
    /**
@@ -107,7 +113,7 @@ namespace CommonTypes {
    */
    struct TileInfo
    {
-       GameObjectInfo baseInfo; /**< type of GaneInfoObject struct */
+       BaseObjectInfo baseInfo; /**< type of GaneInfoObject struct */
        TileType tileType; /**< type of Tile object */
    };
 

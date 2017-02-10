@@ -16,6 +16,7 @@
 
 using namespace CommonTypes;
 
+class BaseObj;
 class SwapObj;
 class TileObj;
 class CookieObj;
@@ -57,10 +58,10 @@ protected:
     LevelObj() {};
 
     void createInitialTiles();
-    TileObj* createTile(int column, int row, int type);
+    BaseObj* createTile(int column, int row, int type);
 
     cocos2d::Set* createInitialCookies();
-    CookieObj* createCookie(int column, int row, int type);
+    BaseObj* createCookie(int column, int row, int type);
     int getRandomCookieType(int column, int row);
     bool isSameTypeOfCookieAt(int column, int row, int type);
  
@@ -87,6 +88,6 @@ protected:
     CC_SYNTHESIZE_READONLY(int, mComboMultiplier, ComboMultiplier);
     CC_SYNTHESIZE_READONLY(LevelInfo, mLevelInfo, LevelInfo);
 
-    TileObj* mTiles[NumColumns][NumRows] = { nullptr };
-    CookieObj* mCookies[NumColumns][NumRows] = { nullptr };
+    BaseObj* mTiles[NumColumns][NumRows] = { nullptr };
+    BaseObj* mCookies[NumColumns][NumRows] = { nullptr };
 };

@@ -141,7 +141,7 @@ void GameplayScene::addTiles()
 	cocos2d::log("GameplayScene::addTiles:");
 	for (int row = 0; row < CommonTypes::NumRows; row++) {
 		for (int column = 0; column < CommonTypes::NumColumns; column++) {
-			if (!mLevel->isEmptyTileAt(column, row)) {
+			if (mLevel->isEmptyTileAt(column, row)) {
 				continue;
 			}
 			auto tileSprite = Sprite::create(GameResources::s_TileImg.getCString());

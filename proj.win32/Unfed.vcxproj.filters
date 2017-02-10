@@ -40,6 +40,9 @@
     <Filter Include="src\GameObjects\Base">
       <UniqueIdentifier>{338c0eac-c3fe-4a5f-9105-e1431e0c8841}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Common\Factory">
+      <UniqueIdentifier>{803b3e4b-ba9a-43e2-acdc-604156b7dfda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -98,6 +101,9 @@
     </ClCompile>
     <ClCompile Include="..\Classes\GameObjects\Base\BaseObj.cpp">
       <Filter>src\GameObjects\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Common\Factory\SmartFactory.cpp">
+      <Filter>src\Common\Factory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -169,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\Base\BaseObj.h">
       <Filter>src\GameObjects\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Common\Factory\SmartFactory.h">
+      <Filter>src\Common\Factory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
