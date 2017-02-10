@@ -67,9 +67,9 @@ protected:
 	CC_SYNTHESIZE_READONLY(int, mSwipeFromColumn, SwipeFromColumn);
     CC_SYNTHESIZE_READONLY(int, mSwipeFromRow, SwipeFromRow);
 
-    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Sprite*, mSelectionSprite, SelectionSprite);
-    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Layer*, mGameLayer, GameLayer);
-    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Layer*, mTilesLayer, TilesLayer);
-    CC_SYNTHESIZE_READONLY_PTR(cocos2d::Layer*, mCookiesLayer, CookiesLayer);
+    CC_SYNTHESIZE_READONLY(cocos2d::Sprite*, mSelectionSprite, SelectionSprite);
+    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mGameLayer, GameLayer);
+    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mTilesLayer, TilesLayer);
+    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mCookiesLayer, CookiesLayer);
 };
 

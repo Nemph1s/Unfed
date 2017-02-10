@@ -16,7 +16,7 @@ void _JsonParser::parseLevelInfo(const int16_t & level)
 //--------------------------------------------------------------------
 {
 	cocos2d::log("JsonParser::parseLevelInfo: parsing level=%d", level);
-	auto fullPath = cocos2d::StringUtils::format(GameResources::s_templateLevelName.c_str(), level);
+	auto fullPath = cocos2d::StringUtils::format(GameResources::s_templateLevelName.getCString(), level);
 	auto json = cocos2d::FileUtils::getInstance()->getStringFromFile(fullPath.c_str());
 	mLoadedLevel = level;
 
@@ -46,6 +46,7 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
 	levelInfo.id = mLoadedLevel;
 	levelInfo.targetScore = getTargetScore();
 	levelInfo.moves = getMoves();
+    levelInfo.typesCount = getTypesCount();
 
 	const Json::Value& node = getTiles();
 
@@ -93,4 +94,15 @@ int16_t _JsonParser::getMoves()
 		res = mRootNode["moves"].asInt();
 	}
 	return res;
+}
+
+//--------------------------------------------------------------------
+int16_t _JsonParser::getTypesCount()
+//--------------------------------------------------------------------
+{
+    int16_t res = 0;
+    if (mRootNode["typesCount"].isInt()) {
+        res = mRootNode["typesCount"].asInt();
+    }
+    return res;
 }

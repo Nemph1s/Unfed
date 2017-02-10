@@ -12,7 +12,6 @@
 
 #include "cocos2d.h"
 #include <string.h>
-#include "Utils/PlatformMacros.h"
 
 class CookieObj;
 
@@ -26,7 +25,7 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static SwapObj * createWithCookies(CookieObj* cookieA, CookieObj* cookieB);
+    static SwapObj* createWithCookies(CookieObj* cookieA, CookieObj* cookieB);
 
     virtual bool initWithCookies(CookieObj* cookieA, CookieObj* cookieB);
 
@@ -34,11 +33,11 @@ public:
 
 protected:
     // Nodes should be created using create();
-    SwapObj() {};
+    SwapObj();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE_READONLY_PTR(CookieObj*, mCookieA, CookieA);
-    CC_SYNTHESIZE_READONLY_PTR(CookieObj*, mCookieB, CookieB);
+    CC_SYNTHESIZE_READONLY(CookieObj*, mCookieA, CookieA);
+    CC_SYNTHESIZE_READONLY(CookieObj*, mCookieB, CookieB);
    
 };
 

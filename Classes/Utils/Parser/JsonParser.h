@@ -29,6 +29,7 @@ public:
    const Json::Value& getTiles();
    int16_t getTargetScore();
    int16_t getMoves();   
+   int16_t getTypesCount();
 
 protected:
 

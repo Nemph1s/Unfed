@@ -15,6 +15,8 @@
 #include "Managers/AudioManager.h"
 #include "Managers/GuiManager.h"
 
+#include "Common/Factory/SmartFactory.h"
+
 #include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/ChainObj.h"
@@ -30,6 +32,9 @@ using namespace CommonTypes;
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
+    : mLevel(nullptr)
+    , mGameplayScene(nullptr)
+    , mSwapController(nullptr)
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::ViewController");
@@ -51,6 +56,10 @@ bool ViewController::initGameScene()
     AnimationsManager->initWithScene(mGameplayScene);
     GuiManager->initWithScene(mGameplayScene);
 
+    SmartFactory->init((NumColumns * NumRows) / 2);
+    SmartFactory->initTilesPool(NumColumns * NumRows);
+    SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
+    
     // Load the level.
     int levelId = 0;
     mLevel = LevelObj::createWithId(levelId);

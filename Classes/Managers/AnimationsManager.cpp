@@ -11,7 +11,7 @@
 #include "Managers/AnimationsManager.h"
 #include "Managers/AudioManager.h"
 
-#include "GameObjects/SwapObj.h"
+#include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/ChainObj.h"
 #include "GameObjects/CookieObj.h"
 
@@ -306,7 +306,7 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
 
     //TODO: move to helper
     auto color = Color4B::WHITE;
-    switch (lastCookie->getType())
+    switch (lastCookie->getCookieType())
     {
     case CookieType::Croissant:
         color = Color4B::ORANGE;
@@ -334,7 +334,7 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
 
     auto fontSize = 80;
     auto str = StringUtils::format("+%d", chain->getScore());
-    Text* scoreLabel = Text::create(str, GameResources::s_fontYellow, fontSize);
+    Text* scoreLabel = Text::create(str, GameResources::s_fontYellow.getCString(), fontSize);
     scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
     scoreLabel->setPosition(centerPosition);
     scoreLabel->setZOrder(300);
