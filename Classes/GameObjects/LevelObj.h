@@ -21,11 +21,11 @@ class SwapObj;
 class TileObj;
 class CookieObj;
 class ChainObj;
-class SwapController;
 
 class LevelObj : public cocos2d::Node
 {
     friend SwapController;
+    friend ObjectController;
 
 CC_CONSTRUCTOR_ACCESS:
     virtual ~LevelObj();
@@ -63,6 +63,7 @@ protected:
     cocos2d::Set* createInitialCookies();
     BaseObj* createCookie(int column, int row, int type);
     int getRandomCookieType(int column, int row);
+
     bool isSameTypeOfCookieAt(int column, int row, int type);
  
     bool hasChainAt(int column, int row);

@@ -105,6 +105,9 @@
     <ClCompile Include="..\Classes\Common\Factory\SmartFactory.cpp">
       <Filter>src\Common\Factory</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController.cpp">
+      <Filter>src\Controller</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -178,6 +181,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Common\Factory\SmartFactory.h">
       <Filter>src\Common\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController.h">
+      <Filter>src\Controller</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

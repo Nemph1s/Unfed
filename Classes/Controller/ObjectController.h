@@ -12,6 +12,7 @@
 
 #include "cocos2d.h"
 
+class BaseObj;
 class LevelObj;
 
 class ObjectController : public cocos2d::Ref
@@ -27,6 +28,13 @@ public:
     static ObjectController* create();
 
     bool init();
+
+    void createInitialTiles();
+    BaseObj* createTile(int column, int row, int type);
+
+    cocos2d::Set* createInitialCookies();
+    BaseObj* createCookie(int column, int row, int type);
+    int getRandomCookieType(int column, int row);
 
 
 protected:
