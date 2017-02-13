@@ -1,3 +1,7 @@
+#include "DirtObject.h"
+
+
+
 /**
 * @file GameObjects/TileObj.cpp
 * Copyright (C) 2017
@@ -8,29 +12,29 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/TileObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
 //--------------------------------------------------------------------
-TileObj::TileObj()
-    : BaseObj()
-    , mTileType(CommonTypes::TileType::Unknown)
+DirtObject::DirtObject()
+    : TileObj()
+    , mHP(0)
 //--------------------------------------------------------------------
 {
 }
 
 //--------------------------------------------------------------------
-TileObj::~TileObj()
+DirtObject::~DirtObject()
 //--------------------------------------------------------------------
 {
 }
 
 //--------------------------------------------------------------------
-TileObj * TileObj::create(const CommonTypes::TileInfo & info)
+DirtObject * DirtObject::create(const CommonTypes::TileInfo & info)
 //--------------------------------------------------------------------
 {
-    TileObj * ret = new (std::nothrow) TileObj();
+    DirtObject * ret = new (std::nothrow) DirtObject();
     if (ret && ret->init(info)) {
         ret->autorelease();
     }
@@ -41,46 +45,33 @@ TileObj * TileObj::create(const CommonTypes::TileInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool TileObj::init(const CommonTypes::TileInfo & info)
+bool DirtObject::init(const CommonTypes::TileInfo & info)
 //--------------------------------------------------------------------
 {
-    if (!BaseObj::init(info.baseInfo)) {
+    if (!TileObj::init(info)) {
         cocos2d::log("TileObj::init: can't init Node inctance");
         return false;
     }
-    mTileType = info.tileType;
+ 
+    if (info.tileType == CommonTypes::TileType::Dirt) {
+        mHP = 1;
+    }
+    mIsRemovable = true;
 
     return true;
 }
 
 //--------------------------------------------------------------------
-cocos2d::String& TileObj::spriteName() const
+cocos2d::String& DirtObject::spriteName() const
 //--------------------------------------------------------------------
 {
-    return GameResources::s_TileImg;
+    return GameResources::s_DirtImg;
 }
 
 //--------------------------------------------------------------------
-int TileObj::getTypeAsInt() const
+void DirtObject::clear()
 //--------------------------------------------------------------------
 {
-    return Helper::getInstance()->to_underlying(mTileType);
-}
-
-//--------------------------------------------------------------------
-void TileObj::clear()
-//--------------------------------------------------------------------
-{
-    mTileType = CommonTypes::TileType::Unknown;
-}
-
-//--------------------------------------------------------------------
-bool TileObj::isEmptyTile()
-//--------------------------------------------------------------------
-{
-    if (mTileType == CommonTypes::TileType::Empty) {
-        return true;
-    } else {
-        return false;
-    }    
+    TileObj::clear();
+    mHP = 0;
 }

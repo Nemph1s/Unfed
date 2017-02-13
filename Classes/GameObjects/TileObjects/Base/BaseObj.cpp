@@ -8,7 +8,7 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/Base/BaseObj.h"
+#include "GameObjects/TileObjects/Base/BaseObj.h"
 
 #include "Utils/Helpers/Helper.h"
 

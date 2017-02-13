@@ -20,7 +20,7 @@
 
 #include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/LevelObj.h"
-#include "GameObjects/ChainObj.h"
+#include "GameObjects/Chain/ChainObj.h"
 
 #include "Scenes/GameplayScene.h"
 

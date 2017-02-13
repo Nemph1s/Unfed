@@ -37,11 +37,17 @@
     <Filter Include="src\GameObjects\Swap">
       <UniqueIdentifier>{dfdb385a-7a3f-419d-b52f-55b7e0a9b257}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\GameObjects\Base">
-      <UniqueIdentifier>{338c0eac-c3fe-4a5f-9105-e1431e0c8841}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Common\Factory">
       <UniqueIdentifier>{803b3e4b-ba9a-43e2-acdc-604156b7dfda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\GameObjects\Chain">
+      <UniqueIdentifier>{0902fdd0-1642-47dd-8c43-c23c91c505f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\GameObjects\TileObjects">
+      <UniqueIdentifier>{6ec1ddab-f643-40a9-8ca0-6e1ab4f6a2bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\GameObjects\TileObjects\Base">
+      <UniqueIdentifier>{338c0eac-c3fe-4a5f-9105-e1431e0c8841}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -54,13 +60,7 @@
     <ClCompile Include="..\Classes\Controller\ViewController.cpp">
       <Filter>src\Controller</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GameObjects\CookieObj.cpp">
-      <Filter>src\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\GameObjects\LevelObj.cpp">
-      <Filter>src\GameObjects</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\GameObjects\TileObj.cpp">
       <Filter>src\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\Scenes\GameplayScene.cpp">
@@ -81,9 +81,6 @@
     <ClCompile Include="..\Classes\Utils\Helpers\Helper.cpp">
       <Filter>src\Utils\Helper</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GameObjects\ChainObj.cpp">
-      <Filter>src\GameObjects</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\Managers\AnimationsManager.cpp">
       <Filter>src\Managers</Filter>
     </ClCompile>
@@ -99,14 +96,23 @@
     <ClCompile Include="..\Classes\GameObjects\Swap\SwapObj.cpp">
       <Filter>src\GameObjects\Swap</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GameObjects\Base\BaseObj.cpp">
-      <Filter>src\GameObjects\Base</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\Common\Factory\SmartFactory.cpp">
       <Filter>src\Common\Factory</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\Controller\ObjectController.cpp">
       <Filter>src\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\Chain\ChainObj.cpp">
+      <Filter>src\GameObjects\Chain</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\CookieObj.cpp">
+      <Filter>src\GameObjects\TileObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\TileObj.cpp">
+      <Filter>src\GameObjects\TileObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.cpp">
+      <Filter>src\GameObjects\TileObjects\Base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,13 +128,7 @@
     <ClInclude Include="..\Classes\Controller\ViewController.h">
       <Filter>src\Controller</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\GameObjects\CookieObj.h">
-      <Filter>src\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\LevelObj.h">
-      <Filter>src\GameObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\GameObjects\TileObj.h">
       <Filter>src\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Scenes\GameplayScene.h">
@@ -155,9 +155,6 @@
     <ClInclude Include="..\Classes\Managers\AudioManager.h">
       <Filter>src\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\GameObjects\ChainObj.h">
-      <Filter>src\GameObjects</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\Managers\AnimationsManager.h">
       <Filter>src\Managers</Filter>
     </ClInclude>
@@ -176,14 +173,23 @@
     <ClInclude Include="..\Classes\GameObjects\Swap\SwapObj.h">
       <Filter>src\GameObjects\Swap</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\GameObjects\Base\BaseObj.h">
-      <Filter>src\GameObjects\Base</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\Common\Factory\SmartFactory.h">
       <Filter>src\Common\Factory</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Controller\ObjectController.h">
       <Filter>src\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\Chain\ChainObj.h">
+      <Filter>src\GameObjects\Chain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\CookieObj.h">
+      <Filter>src\GameObjects\TileObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\TileObj.h">
+      <Filter>src\GameObjects\TileObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.h">
+      <Filter>src\GameObjects\TileObjects\Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

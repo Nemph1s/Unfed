@@ -9,10 +9,10 @@
 */
 
 #include "GameObjects/LevelObj.h"
-#include "GameObjects/TileObj.h"
-#include "GameObjects/Base/BaseObj.h"
-#include "GameObjects/CookieObj.h"
-#include "GameObjects/ChainObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/Base/BaseObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/Chain/ChainObj.h"
 #include "GameObjects/Swap/SwapObj.h"
 
 #include "Utils/Helpers/Helper.h"

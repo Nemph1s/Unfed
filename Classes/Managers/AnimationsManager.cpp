@@ -12,8 +12,8 @@
 #include "Managers/AudioManager.h"
 
 #include "GameObjects/Swap/SwapObj.h"
-#include "GameObjects/ChainObj.h"
-#include "GameObjects/CookieObj.h"
+#include "GameObjects/Chain/ChainObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"

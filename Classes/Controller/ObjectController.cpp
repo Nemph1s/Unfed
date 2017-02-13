@@ -15,9 +15,9 @@
 #include "Utils/Parser/JsonParser.h"
 #include "Utils/Helpers/Helper.h"
 
-#include "GameObjects/TileObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/LevelObj.h"
-#include "GameObjects/CookieObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
 
 using namespace CommonTypes;
 
@@ -70,6 +70,12 @@ void ObjectController::createInitialTiles()
             mLevel->addChild(tile);
         }
     }
+}
+
+//--------------------------------------------------------------------
+void ObjectController::createInitialTileObjects()
+//--------------------------------------------------------------------
+{
 }
 
 //--------------------------------------------------------------------
@@ -227,6 +233,12 @@ bool ObjectController::isSameTypeOfCookieAt(int column, int row, int type)
         return false;
 
     return true;
+}
+
+//--------------------------------------------------------------------
+void ObjectController::removeTileObject(int column, int row)
+//--------------------------------------------------------------------
+{
 }
 
 //--------------------------------------------------------------------

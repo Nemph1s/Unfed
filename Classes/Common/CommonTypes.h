@@ -105,6 +105,7 @@ namespace CommonTypes {
        Empty = 0 /**< enum value Empty. */
        , Normal = 1 /**< enum value Normal. */
        , Water = 2 /**< enum value Water. */
+       , Dirt = 3 /**< enum value Dirt. */
        , Unknown /**< enum value unknown. */
    };
 

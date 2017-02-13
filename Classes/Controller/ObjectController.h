@@ -33,6 +33,7 @@ public:
     bool init();
 
     void createInitialTiles();
+    void createInitialTileObjects();
     cocos2d::Set* createInitialCookies();
 
     BaseObj* createRandomCookie(int column, int row);
@@ -45,8 +46,11 @@ public:
     bool isEmptyTileAt(int column, int row);
     bool isSameTypeOfCookieAt(int column, int row, int type);
 
+    void removeTileObject(int column, int row);
+
     void updateCookieObjectAt(int column, int row, BaseObj* cookie);
     void removeCookie(int column, int row);
+
 
 protected:
     // Nodes should be created using create();
@@ -60,4 +64,6 @@ protected:
 
     BaseObj* mTiles[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
     BaseObj* mCookies[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
+    // Tile object array (Dirt etc)
+    BaseObj* mTileObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
 };

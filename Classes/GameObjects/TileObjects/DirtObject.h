@@ -11,38 +11,30 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "GameObjects/Base/BaseObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
 
 
-class TileObj : public BaseObj
+class DirtObject : public TileObj
 {
 CC_CONSTRUCTOR_ACCESS:
-    virtual ~TileObj();
-
-/*    friend SmartFactory;*/
+    virtual ~DirtObject();
 
 public:
     /**
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static TileObj * create(const CommonTypes::TileInfo &info);
+    static DirtObject * create(const CommonTypes::TileInfo &info);
 
     bool init(const CommonTypes::TileInfo &info);
 
     virtual cocos2d::String& spriteName() const override;
-
-    virtual int getTypeAsInt() const override;
-
     virtual void clear() override;
-
-    bool isEmptyTile();
 
 protected:
     // Nodes should be created using create();
-    TileObj();
+    DirtObject();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE_READONLY(CommonTypes::TileType, mTileType, TileType);  
+    CC_SYNTHESIZE(int, mHP, HP);
 };
-
