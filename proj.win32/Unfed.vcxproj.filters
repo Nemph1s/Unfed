@@ -114,6 +114,9 @@
     <ClCompile Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.cpp">
       <Filter>src\GameObjects\TileObjects\Base</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\DirtObject.cpp">
+      <Filter>src\GameObjects\TileObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -190,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.h">
       <Filter>src\GameObjects\TileObjects\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\DirtObject.h">
+      <Filter>src\GameObjects\TileObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
