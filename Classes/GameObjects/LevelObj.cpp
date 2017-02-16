@@ -81,6 +81,7 @@ void LevelObj::initObjectController()
     mObjCtrl->setLevel(this);
 
     mObjCtrl->createInitialTiles();
+//    mObjCtrl->createInitialFieldObjects();
 }
 
 //--------------------------------------------------------------------
@@ -129,6 +130,38 @@ cocos2d::Set * LevelObj::removeMatches()
 
     return set;
 }
+// 
+// //--------------------------------------------------------------------
+// cocos2d::Set * LevelObj::detectMatches()
+// //--------------------------------------------------------------------
+// {
+//     cocos2d::log("LevelObj::detectMatches:");
+//     auto horizontalChains = detectHorizontalMatches();
+//     auto verticalChains = detectVerticalMatches();
+//     auto difficultChains = detectDifficultMatches(horizontalChains, verticalChains);
+// 
+//     auto set = cocos2d::Set::create();
+// 
+//     addChainsFromSetToSet(horizontalChains, set);
+//     addChainsFromSetToSet(verticalChains, set);
+//     addChainsFromSetToSet(difficultChains, set);
+// 
+// #ifdef COCOS2D_DEBUG
+//     logDebugChains(horizontalChains, verticalChains, difficultChains);
+// #endif //COCOS2D_DEBUG
+// 
+//     calculateScore(horizontalChains);
+//     removeCookies(horizontalChains);
+// 
+//     calculateScore(verticalChains);
+//     removeCookies(verticalChains);
+// 
+//     calculateScore(difficultChains);
+//     removeCookies(difficultChains);
+// 
+// 
+//     return set;
+// }
 
 //--------------------------------------------------------------------
 cocos2d::Set* LevelObj::removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos)
@@ -158,9 +191,16 @@ cocos2d::Set* LevelObj::removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec
             calculateScore(chainSet);
             removeCookies(chainSet);
         }
-    }    
+    }
     return set;
 }
+
+// void LevelObj::removeMatches(cocos2d::Set* matches)
+// //--------------------------------------------------------------------
+// {
+//     calculateScore(matches);
+//     removeCookies(matches);
+// }
 
 //--------------------------------------------------------------------
 cocos2d::Set * LevelObj::detectHorizontalMatches()
@@ -379,6 +419,35 @@ void LevelObj::removeCookies(cocos2d::Set * chains)
             mObjCtrl->removeCookie(cookie->getColumn(), cookie->getRow());
         }
     }
+}
+
+//--------------------------------------------------------------------
+cocos2d::Set* LevelObj::removeFieldObjects(cocos2d::Set * chains)
+//--------------------------------------------------------------------
+{
+    auto set = new cocos2d::Set();
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+
+        auto cookies = chain->getCookies();
+        for (auto it = cookies->begin(); it != cookies->end(); it++) {
+            auto cookie = dynamic_cast<CookieObj*>(*it);
+            CC_ASSERT(cookie);
+
+            auto obj = mObjCtrl->fieldObjectAt(cookie->getColumn(), cookie->getRow());
+            if (!obj) 
+                continue;
+
+            // TODO: make observer and remove object via unique method in tileObj aka collect()
+            obj->match();
+            if (obj->isReadyToRemove()) {
+                set->addObject(obj);
+                mObjCtrl->removeFieldObject(cookie->getColumn(), cookie->getRow());
+            }
+        }
+    }
+    return set;
 }
 
 //--------------------------------------------------------------------

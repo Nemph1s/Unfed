@@ -13,6 +13,7 @@
 #include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/Chain/ChainObj.h"
 
 #include "Utils/Helpers/VisibleRect.h"
@@ -160,6 +161,13 @@ void GameplayScene::addTiles()
             tileSprite->setPosition(Helper::pointForColumnAndRow(column, row));
             tileSprite->setOpacity(127);
 			mTilesLayer->addChild(tileSprite);
+
+            // Create Field objects
+            auto fieldObj = objCtrl->fieldObjectAt(column, row);
+            if (!fieldObj) {
+                continue;
+            }
+            createSpriteWithFieldObj(fieldObj);
 		}
 	}
 }
@@ -353,6 +361,17 @@ void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int r
 
     mCookiesLayer->addChild(sprite);
     mCookiesLayer->addChild(cookie);
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::createSpriteWithFieldObj(BaseObj * fieldObj)
+//--------------------------------------------------------------------
+{
+    auto sprite = Sprite::create(fieldObj->spriteName().getCString());
+    sprite->setPosition(Helper::pointForColumnAndRow(fieldObj->getColumn(), fieldObj->getRow()));
+    sprite->setScale(2.0f);
+    fieldObj->setSpriteNode(sprite);
+    mTilesLayer->addChild(sprite);
 }
 
 //--------------------------------------------------------------------

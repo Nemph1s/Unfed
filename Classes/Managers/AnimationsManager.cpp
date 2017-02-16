@@ -361,3 +361,37 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
     scoreLabel->runAction(Sequence::create(DelayTime::create(duration/2), fadeOut, nullptr));
     scoreLabel->runAction(Sequence::create(easeOut, callback, nullptr));
 }
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects, cocos2d::CallFunc * completion)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(fieldObjects);
+    CC_ASSERT(completion);
+
+    const float duration = 0.3f;
+
+    for (auto it = fieldObjects->begin(); it != fieldObjects->end(); it++) {
+
+        auto obj = dynamic_cast<BaseObj*>(*it);
+        if (!obj)
+            continue;
+
+        const float scaleFactor = 0.1f;
+
+        auto scaleAction = ScaleTo::create(duration, scaleFactor);
+        auto easeOut = EaseOut::create(scaleAction, duration);
+
+        auto sprite = obj->getSpriteNode();
+        auto callback = CallFunc::create([sprite, obj]() {
+            if (sprite) {
+                sprite->removeFromParent();
+                obj->setSpriteNode(nullptr);
+            }
+        });
+        obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
+    }
+    CC_ASSERT(mCurrentScene);
+
+    mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
+}

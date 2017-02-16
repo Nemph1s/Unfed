@@ -36,8 +36,14 @@ public:
     void initObjectController();
 
     cocos2d::Set* shuffle();
+
     cocos2d::Set* removeMatches();
     cocos2d::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
+
+//     cocos2d::Set* detectMatches();
+//     void removeMatches(cocos2d::Set* matches);
+    cocos2d::Set* removeFieldObjects(cocos2d::Set* chains);
+
 
     cocos2d::Array* useGravityToFillHoles();
     cocos2d::Array* fillTopUpHoles();
@@ -54,6 +60,8 @@ protected:
 
     void addChainsFromSetToSet(cocos2d::Set* from, cocos2d::Set* to);
 
+
+
     cocos2d::Set* detectHorizontalMatches();
     cocos2d::Set* detectVerticalMatches();
     cocos2d::Set* detectDifficultMatches(cocos2d::Set* horizontal, cocos2d::Set* vertical);
@@ -62,6 +70,7 @@ protected:
     ChainObj* detectTChainMatches(ChainObj* horzChain, ChainObj* vertChain);
 
     void removeCookies(cocos2d::Set* chains);
+
     void calculateScore(cocos2d::Set* chains);
 
 #ifdef COCOS2D_DEBUG

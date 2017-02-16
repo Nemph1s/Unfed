@@ -62,7 +62,7 @@ bool ViewController::initGameScene()
     SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
     
     // Load the level.
-    int levelId = 0;
+    int levelId = 5;
     mLevel = LevelObj::createWithId(levelId);
     mScore = mLevel->getLevelInfo().targetScore;
     mMovesLeft = mLevel->getLevelInfo().moves;
@@ -203,10 +203,16 @@ void ViewController::handleMatches()
         beginNextTurn();
         return;
     }
+    
+    auto callback = CallFunc::create([]() {
+    });
+    auto fieldObjects = mLevel->removeFieldObjects(chains);
+    AnimationsManager->animateRemovingFieldObjects(fieldObjects, callback);
 
     updateScore(chains);
     animateHandleMatches(chains);
 }
+
 
 //--------------------------------------------------------------------
 void ViewController::animateHandleMatches(cocos2d::Set* chains)

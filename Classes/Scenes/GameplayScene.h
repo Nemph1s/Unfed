@@ -17,6 +17,7 @@
 class LevelObj;
 class SwapObj;
 class CookieObj;
+class BaseObj;
 
 class GameplayScene : public cocos2d::Scene
 {
@@ -35,6 +36,7 @@ public:
     void addSpritesForCookies(cocos2d::Set* cookies);
 
     void createSpriteWithCookie(CookieObj* cookie, int column, int row);
+    void createSpriteWithFieldObj(BaseObj* fieldObj);
 
     bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);

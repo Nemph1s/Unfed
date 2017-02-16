@@ -16,6 +16,8 @@
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
+using CommonTypes::TileType;
+
 //--------------------------------------------------------------------
 DirtObject::DirtObject()
     : TileObj()
@@ -53,8 +55,8 @@ bool DirtObject::init(const CommonTypes::TileInfo & info)
         return false;
     }
  
-    if (info.tileType == CommonTypes::TileType::Dirt) {
-        mHP = 1;
+    if (info.tileType >= TileType::Dirt && info.tileType <= TileType::DirtX3) {
+        mHP = (getTypeAsInt() - Helper::to_underlying(TileType::Dirt)) + 1;
     }
     mIsRemovable = true;
 
@@ -66,6 +68,31 @@ cocos2d::String& DirtObject::spriteName() const
 //--------------------------------------------------------------------
 {
     return GameResources::s_DirtImg;
+}
+
+//--------------------------------------------------------------------
+cocos2d::String& DirtObject::description() const
+//--------------------------------------------------------------------
+{
+    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
+}
+
+//--------------------------------------------------------------------
+void DirtObject::match()
+//--------------------------------------------------------------------
+{
+    mHP--;
+}
+
+//--------------------------------------------------------------------
+bool DirtObject::isReadyToRemove() const
+//--------------------------------------------------------------------
+{
+    bool result = false;
+    if (getIsRemovable()) {
+        result = (mHP <= 0);
+    }
+    return result;
 }
 
 //--------------------------------------------------------------------

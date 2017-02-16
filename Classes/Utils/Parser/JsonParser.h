@@ -27,6 +27,7 @@ public:
    CommonTypes::LevelInfo getLevelInfo();
 
    const Json::Value& getTiles();
+   const Json::Value& getFieldObjects();
    int16_t getTargetScore();
    int16_t getMoves();   
    int16_t getTypesCount();
