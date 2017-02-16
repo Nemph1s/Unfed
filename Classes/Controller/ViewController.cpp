@@ -160,6 +160,19 @@ void ViewController::startGame()
 }
 
 //--------------------------------------------------------------------
+void ViewController::updateScore(cocos2d::Set * chains)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(chains);
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        if (!chain)
+            continue;
+        mScore += chain->getScore();
+    }
+}
+
+//--------------------------------------------------------------------
 void ViewController::updateInfoLabels()
 //--------------------------------------------------------------------
 {
@@ -191,13 +204,15 @@ void ViewController::handleMatches()
         return;
     }
 
-    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
-        auto chain = dynamic_cast<ChainObj*>(*itChain);
-        if (!chain)
-            continue;
-        mScore += chain->getScore();
-    }
+    updateScore(chains);
+    animateHandleMatches(chains);
+}
 
+//--------------------------------------------------------------------
+void ViewController::animateHandleMatches(cocos2d::Set* chains)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(chains);
     auto completion = CallFunc::create([=]() {
 
         auto columns = mLevel->useGravityToFillHoles();
@@ -207,7 +222,7 @@ void ViewController::handleMatches()
 
             auto newColumns = mLevel->fillTopUpHoles();
             auto enableTouches = CallFunc::create([=]() {
-                handleMatches();                
+                handleMatches();
             });
 
             AnimationsManager->animateNewCookies(newColumns, enableTouches);
@@ -215,7 +230,7 @@ void ViewController::handleMatches()
 
         AnimationsManager->animateFallingCookies(columns, addNewCookies);
     });
-    
+
     AnimationsManager->animateMatching(chains, completion);
     AudioManager->playSound(SoundType::MatchSound);
 }
@@ -275,4 +290,19 @@ void ViewController::swapCallback(SwapObj * swap)
         AnimationsManager->animateInvalidSwap(swap, invalidSwapCallback);
         AudioManager->playSound(SoundType::InvalidSwapSound);
     }
+}
+
+//--------------------------------------------------------------------
+void ViewController::activateChainCallback(CommonTypes::ChainType & type, cocos2d::Vec2 & pos)
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ViewController::activateChainCallback");
+    auto chains = mLevel->removeChainAt(type, pos);
+
+    if (chains->count() > 0) {
+        mGameplayScene->userInteractionDisabled();
+
+        updateScore(chains);
+        animateHandleMatches(chains);
+    }    
 }

@@ -37,11 +37,16 @@ public:
 
     cocos2d::Set* shuffle();
     cocos2d::Set* removeMatches();
+    cocos2d::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
 
     cocos2d::Array* useGravityToFillHoles();
     cocos2d::Array* fillTopUpHoles();
 
     void resetComboMultiplier();
+
+    cocos2d::Set* createHorizontalChainAt(int column);
+    cocos2d::Set* createVerticalChainAt(int row);
+    cocos2d::Set* createXChainAt(int column, int row);
 
 protected:
     // Nodes should be created using create();

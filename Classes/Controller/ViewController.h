@@ -11,6 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
+#include "Common/CommonTypes.h"
 
 class LevelObj;
 class SwapObj;
@@ -39,10 +40,12 @@ protected:
     bool initGameScene();
     bool initSwapController();
 
+    void updateScore(cocos2d::Set* chains);
     void updateInfoLabels();
 
     void shuffle();
     void handleMatches();
+    void animateHandleMatches(cocos2d::Set* chains);
 
     void beginNextTurn();
     void decrementMoves();
@@ -50,6 +53,7 @@ protected:
     //---Callbacks-------------------------------------------------------
     void shuffleButtonCallback();
     void swapCallback(SwapObj* swap);
+    void activateChainCallback(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
     //--------------------------------------------------------------------
 
     //---Class Attributes-------------------------------------------------

@@ -10,9 +10,9 @@
 
 #include "Common/Factory/SmartFactory.h"
 
-#include "GameObjects/Base/BaseObj.h"
-#include "GameObjects/TileObj.h"
-#include "GameObjects/CookieObj.h"
+#include "GameObjects/TileObjects/Base/BaseObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
 #include "SmartFactory.h"
 
 //--------------------------------------------------------------------

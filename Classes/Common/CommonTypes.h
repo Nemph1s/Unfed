@@ -94,6 +94,7 @@ namespace CommonTypes {
        , ChainTypeVertical = 1 /**< enum value ChainTypeVertical. */
        , ChainTypeL = 2 /**< enum value ChainTypeL. */
        , ChainTypeT = 3 /**< enum value ChainTypeL. */
+       , ChainTypeX = 4 /**< enum value ChainTypeL. */
        , Unknown /**< enum value unknown. */
    };
 

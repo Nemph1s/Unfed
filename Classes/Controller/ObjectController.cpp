@@ -253,8 +253,11 @@ void ObjectController::removeCookie(int column, int row)
 //--------------------------------------------------------------------
 {
     auto cookie = cookieAt(column, row);
-    CC_ASSERT(cookie);
-    cocos2d::log("ObjectController::removeCookies: remove %s", cookie->description());
+    if (!cookie) {
+        cocos2d::log("ObjectController::removeCookies: cookie at (%d,%d) already removed", column, row);
+        return;
+    }
+    cocos2d::log("ObjectController::removeCookies: remove %s", cookie->description().getCString());
 
     cookie->removeFromParent();
     SmartFactory->recycle(cookie);
