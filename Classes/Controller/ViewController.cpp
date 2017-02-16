@@ -203,11 +203,6 @@ void ViewController::handleMatches()
         beginNextTurn();
         return;
     }
-    
-    auto callback = CallFunc::create([]() {
-    });
-    auto fieldObjects = mLevel->removeFieldObjects(chains);
-    AnimationsManager->animateRemovingFieldObjects(fieldObjects, callback);
 
     updateScore(chains);
     animateHandleMatches(chains);
@@ -219,6 +214,10 @@ void ViewController::animateHandleMatches(cocos2d::Set* chains)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
+
+    auto fieldObjects = mLevel->removeFieldObjects(chains);
+    AnimationsManager->animateRemovingFieldObjects(fieldObjects, CallFunc::create([](){}));
+
     auto completion = CallFunc::create([=]() {
 
         auto columns = mLevel->useGravityToFillHoles();

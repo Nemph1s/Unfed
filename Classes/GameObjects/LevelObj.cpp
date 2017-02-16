@@ -81,7 +81,7 @@ void LevelObj::initObjectController()
     mObjCtrl->setLevel(this);
 
     mObjCtrl->createInitialTiles();
-//    mObjCtrl->createInitialFieldObjects();
+    mObjCtrl->createInitialFieldObjects();
 }
 
 //--------------------------------------------------------------------
@@ -130,38 +130,6 @@ cocos2d::Set * LevelObj::removeMatches()
 
     return set;
 }
-// 
-// //--------------------------------------------------------------------
-// cocos2d::Set * LevelObj::detectMatches()
-// //--------------------------------------------------------------------
-// {
-//     cocos2d::log("LevelObj::detectMatches:");
-//     auto horizontalChains = detectHorizontalMatches();
-//     auto verticalChains = detectVerticalMatches();
-//     auto difficultChains = detectDifficultMatches(horizontalChains, verticalChains);
-// 
-//     auto set = cocos2d::Set::create();
-// 
-//     addChainsFromSetToSet(horizontalChains, set);
-//     addChainsFromSetToSet(verticalChains, set);
-//     addChainsFromSetToSet(difficultChains, set);
-// 
-// #ifdef COCOS2D_DEBUG
-//     logDebugChains(horizontalChains, verticalChains, difficultChains);
-// #endif //COCOS2D_DEBUG
-// 
-//     calculateScore(horizontalChains);
-//     removeCookies(horizontalChains);
-// 
-//     calculateScore(verticalChains);
-//     removeCookies(verticalChains);
-// 
-//     calculateScore(difficultChains);
-//     removeCookies(difficultChains);
-// 
-// 
-//     return set;
-// }
 
 //--------------------------------------------------------------------
 cocos2d::Set* LevelObj::removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos)
