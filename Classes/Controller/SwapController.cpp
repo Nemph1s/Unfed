@@ -187,6 +187,8 @@ bool SwapController::trySwapCookieTo(int horzDelta, int vertDelta)
         return false;
 
     CookieObj* fromCookie = objCtrl->cookieAt(swipeFromColumn, swipeFromRow);
+    if (!fromCookie)
+        return false;
 
     cocos2d::log("GameplayScene::trySwapCookieTo: fromCookie=[%d,%d]; toCookie=[%d][%d];"
         , fromCookie->getColumn(), fromCookie->getRow(), toCookie->getColumn(), toCookie->getRow());

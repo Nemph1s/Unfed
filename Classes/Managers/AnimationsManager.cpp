@@ -153,7 +153,7 @@ void _AnimationsManager::animateFallingCookies(cocos2d::Array* colums, cocos2d::
         auto array = dynamic_cast<cocos2d::Array*>(*it);
         CC_ASSERT(array);
 
-        float colDelay = Helper::randomFloatBetween(0.05f, 0.15f) * 1;
+        float colDelay = Helper::randomFloatBetween(0.055f, 0.07f) * 1;
         for (auto itArr = array->begin(); itArr != array->end(); itArr++) {
 
             auto cookie = dynamic_cast<CookieObj*>(*itArr);
@@ -169,9 +169,6 @@ void _AnimationsManager::animateFallingCookies(cocos2d::Array* colums, cocos2d::
             // You can tweak these numbers to change the feel of the animation.
             float timeToTile = (cookie->getSpriteNode()->getPositionY() - newPos.y) / GameResources::TileHeight;
             float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
-            if (colums->count() == 1) {
-                duration = (timeToTile * 0.125f);
-            }
 
             // Calculate which animation is the longest. This is the time the game has to wait before it may continue.
             longestDuration = MAX(longestDuration, duration + delay);
@@ -219,7 +216,7 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
         CC_ASSERT(array);
 
         int startRow = -1;
-        float colDelay = Helper::randomFloatBetween(0.05f, 0.15f) * 1;
+        float colDelay = Helper::randomFloatBetween(0.055f, 0.07f) * 1;
 
         for (auto itArr = array->begin(); itArr != array->end(); itArr++) {
             auto cookie = dynamic_cast<CookieObj*>(*itArr);
