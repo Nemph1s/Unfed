@@ -43,8 +43,8 @@ protected:
     cocos2d::ui::Button* mShuffleButton = nullptr;
 
     cocos2d::ui::Layout* mInfoLayout = nullptr;
-    cocos2d::LayerColor* mLeftGuiLayer = nullptr;
-    cocos2d::LayerColor* mRightGuiLayer = nullptr;
+    cocos2d::LayerColor* mTopGuiLayer = nullptr;
+    cocos2d::LayerColor* mBottomGuiLayer = nullptr;
 
     cocos2d::ui::Text* mTargetLabel = nullptr;
     cocos2d::ui::Text* mMovesLabel = nullptr;

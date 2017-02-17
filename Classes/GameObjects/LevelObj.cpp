@@ -163,13 +163,6 @@ cocos2d::Set* LevelObj::removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec
     return set;
 }
 
-// void LevelObj::removeMatches(cocos2d::Set* matches)
-// //--------------------------------------------------------------------
-// {
-//     calculateScore(matches);
-//     removeCookies(matches);
-// }
-
 //--------------------------------------------------------------------
 cocos2d::Set * LevelObj::detectHorizontalMatches()
 //--------------------------------------------------------------------
