@@ -20,11 +20,12 @@ namespace GameResources {
     static const float TileWidth = 32.0 * 2;
     static const float TileHeight = 36.0 * 2;
 
-   static cocos2d::String s_backgroundImg = "Images/Background2@2x.jpg";
+   static cocos2d::String s_backgroundImg = "Images/Background1@2x.png";
 
    static cocos2d::String s_ButtonImg = "Images/Button@2x.png";
 
-   static cocos2d::String s_TileImg = "Sprites.atlas/Tile@2x.png";
+   static cocos2d::String s_TileImg = "Sprites.atlas/TileShadow@2x.png";
+   static cocos2d::String s_DirtImg = "Sprites.atlas/Dirt@2x.png";
 
    static std::vector<cocos2d::String> s_cookieSpriteNames {
       "Sprites.atlas/Croissant@2x.png"

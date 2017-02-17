@@ -10,7 +10,7 @@
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
-#include "GameObjects/CookieObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
 #include <random>
 
 using namespace GameResources;
@@ -46,7 +46,9 @@ CookieType Helper::randomCookieType(int fromRange, int toRange)
 cocos2d::Vec2 Helper::pointForColumnAndRow(int column, int row)
 //--------------------------------------------------------------------
 {
-    return cocos2d::Vec2(column * TileWidth + TileWidth / 2, (NumRows - row - 1) * TileHeight + TileHeight / 2);
+    float offsetX = 2.5f * column;
+    float offsetY = 2.5f * (NumRows - row - 1);
+    return cocos2d::Vec2(offsetX + column * TileWidth + TileWidth / 2, offsetY + (NumRows - row - 1) * TileHeight + TileHeight / 2);
 }
 
 //--------------------------------------------------------------------

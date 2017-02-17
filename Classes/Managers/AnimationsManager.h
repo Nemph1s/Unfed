@@ -33,6 +33,8 @@ public:
 
     void animateScoreForChain(ChainObj* chain);
 
+    void animateRemovingFieldObjects(cocos2d::Set* fieldObjects, cocos2d::CallFunc* completion);
+
 protected:
 
     cocos2d::Scene* mCurrentScene;

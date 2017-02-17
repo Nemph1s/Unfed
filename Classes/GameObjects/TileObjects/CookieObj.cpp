@@ -8,7 +8,7 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/CookieObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
@@ -107,6 +107,7 @@ int CookieObj::getTypeAsInt() const
 void CookieObj::clear()
 //--------------------------------------------------------------------
 {
+    BaseObj::clear();
     mCookieType = CommonTypes::CookieType::Unknown;
 }
 

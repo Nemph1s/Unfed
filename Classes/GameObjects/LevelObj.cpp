@@ -9,10 +9,10 @@
 */
 
 #include "GameObjects/LevelObj.h"
-#include "GameObjects/TileObj.h"
-#include "GameObjects/Base/BaseObj.h"
-#include "GameObjects/CookieObj.h"
-#include "GameObjects/ChainObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/Base/BaseObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/Chain/ChainObj.h"
 #include "GameObjects/Swap/SwapObj.h"
 
 #include "Utils/Helpers/Helper.h"
@@ -81,6 +81,7 @@ void LevelObj::initObjectController()
     mObjCtrl->setLevel(this);
 
     mObjCtrl->createInitialTiles();
+    mObjCtrl->createInitialFieldObjects();
 }
 
 //--------------------------------------------------------------------
@@ -129,6 +130,45 @@ cocos2d::Set * LevelObj::removeMatches()
 
     return set;
 }
+
+//--------------------------------------------------------------------
+cocos2d::Set* LevelObj::removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos)
+//--------------------------------------------------------------------
+{
+    auto set = cocos2d::Set::create();
+
+    int column = -1, row = -1;
+    if (Helper::convertPointToTilePos(pos, column, row)) {
+        cocos2d::Set* chainSet = nullptr;
+        switch (type)
+        {
+        case ChainType::ChainTypeHorizontal:
+            chainSet = createHorizontalChainAt(column);
+            break;
+        case ChainType::ChainTypeVertical:
+            chainSet = createVerticalChainAt(row);
+            break;
+        case ChainType::ChainTypeX:
+            chainSet = createXChainAt(column, row);
+            break;
+        default:
+            break;
+        }
+        if (chainSet) {
+            addChainsFromSetToSet(chainSet, set);
+            calculateScore(chainSet);
+            removeCookies(chainSet);
+        }
+    }
+    return set;
+}
+
+// void LevelObj::removeMatches(cocos2d::Set* matches)
+// //--------------------------------------------------------------------
+// {
+//     calculateScore(matches);
+//     removeCookies(matches);
+// }
 
 //--------------------------------------------------------------------
 cocos2d::Set * LevelObj::detectHorizontalMatches()
@@ -350,6 +390,35 @@ void LevelObj::removeCookies(cocos2d::Set * chains)
 }
 
 //--------------------------------------------------------------------
+cocos2d::Set* LevelObj::removeFieldObjects(cocos2d::Set * chains)
+//--------------------------------------------------------------------
+{
+    auto set = new cocos2d::Set();
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+
+        auto cookies = chain->getCookies();
+        for (auto it = cookies->begin(); it != cookies->end(); it++) {
+            auto cookie = dynamic_cast<CookieObj*>(*it);
+            CC_ASSERT(cookie);
+
+            auto obj = mObjCtrl->fieldObjectAt(cookie->getColumn(), cookie->getRow());
+            if (!obj) 
+                continue;
+
+            // TODO: make observer and remove object via unique method in tileObj aka collect()
+            obj->match();
+            if (obj->isReadyToRemove()) {
+                set->addObject(obj);
+                mObjCtrl->removeFieldObject(cookie->getColumn(), cookie->getRow());
+            }
+        }
+    }
+    return set;
+}
+
+//--------------------------------------------------------------------
 cocos2d::Array* LevelObj::useGravityToFillHoles()
 //--------------------------------------------------------------------
 {
@@ -464,6 +533,61 @@ void LevelObj::resetComboMultiplier()
 //--------------------------------------------------------------------
 {
     mComboMultiplier = 1;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Set* LevelObj::createHorizontalChainAt(int column)
+//--------------------------------------------------------------------
+{
+    auto set = new cocos2d::Set();
+    auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
+    for (int row = 0; row < NumRows; row++) {
+        auto cookie = mObjCtrl->cookieAt(row, column);
+        // skip over any gaps in the level design.
+        if (cookie != nullptr) {
+            chain->addCookie(cookie);
+        }
+    }
+    set->addObject(chain);
+    return set;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Set* LevelObj::createVerticalChainAt(int row)
+//--------------------------------------------------------------------
+{
+    auto set = new cocos2d::Set();
+    auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
+    for (int column = 0; column < NumColumns; column++) {
+        auto cookie = mObjCtrl->cookieAt(row, column);
+        // skip over any gaps in the level design.
+        if (cookie != nullptr) {
+            chain->addCookie(cookie);
+        }
+    }
+    set->addObject(chain);
+    return set;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Set* LevelObj::createXChainAt(int column, int row)
+//--------------------------------------------------------------------
+{
+    auto set = new cocos2d::Set();
+    auto chain = ChainObj::createWithType(ChainType::ChainTypeX);
+    for (int i = 0; i < NumColumns; i++) {
+        auto cookieA = mObjCtrl->cookieAt(i, row);
+        auto cookieB = mObjCtrl->cookieAt(column, i);
+        // skip over any gaps in the level design.
+        if (cookieA != nullptr) {
+            chain->addCookie(cookieA);
+        }
+        if (cookieB != nullptr) {
+            chain->addCookie(cookieB);
+        }
+    }
+    set->addObject(chain);
+    return set;
 }
 
 //--------------------------------------------------------------------

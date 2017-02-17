@@ -12,8 +12,9 @@
 
 #include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/LevelObj.h"
-#include "GameObjects/CookieObj.h"
-#include "GameObjects/ChainObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/Chain/ChainObj.h"
 
 #include "Utils/Helpers/VisibleRect.h"
 #include "Utils/Helpers/Helper.h"
@@ -24,6 +25,8 @@
 #include "Managers/GuiManager.h"
 #include "Controller/ObjectController.h"
 #include <math.h>
+
+#include "cocos2d/cocos/ui/UIScale9Sprite.h"
 
 USING_NS_CC;
 using namespace GameResources;
@@ -78,19 +81,25 @@ bool GameplayScene::initWithSize(const Size& size)
     this->setAnchorPoint(Vec2(0.5, 0.5));
     this->setPosition(VisibleRect::leftBottom());
 
-    auto bg = Sprite::create(GameResources::s_backgroundImg.getCString());
+    auto bgLayer = LayerColor::create(Color4B::WHITE);
+    bgLayer->setPosition(VisibleRect::leftBottom());
+    this->addChild(bgLayer);
+
+    auto bg = ui::Scale9Sprite::create(GameResources::s_backgroundImg.getCString());
     auto scaleFactor = std::min(bg->getContentSize().width / size.width
         , bg->getContentSize().height / size.height);
     bg->setScale(1.0f / scaleFactor);
+    bg->setScale(bg->getScale() * 2 );
     bg->setPosition(VisibleRect::center());
-    this->addChild(bg, 0);
+    bgLayer->addChild(bg, 0);
 
     mGameLayer = Layer::create();
     mGameLayer->setPosition(VisibleRect::center());
     this->addChild(mGameLayer);
 
-    Vec2 layerPos = Vec2(-TileWidth * CommonTypes::NumColumns / 2
-        , -TileHeight * CommonTypes::NumRows / 2);
+    auto offset = -2.5f * CommonTypes::NumColumns / 2;
+    Vec2 layerPos = Vec2(offset - TileWidth * CommonTypes::NumColumns / 2
+        , offset - TileHeight * CommonTypes::NumRows / 2);
 
     mTilesLayer = Layer::create();
     mTilesLayer->setPosition(layerPos);
@@ -152,6 +161,13 @@ void GameplayScene::addTiles()
             tileSprite->setPosition(Helper::pointForColumnAndRow(column, row));
             tileSprite->setOpacity(127);
 			mTilesLayer->addChild(tileSprite);
+
+            // Create Field objects
+            auto fieldObj = objCtrl->fieldObjectAt(column, row);
+            if (!fieldObj) {
+                continue;
+            }
+            createSpriteWithFieldObj(fieldObj);
 		}
 	}
 }
@@ -345,6 +361,17 @@ void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int r
 
     mCookiesLayer->addChild(sprite);
     mCookiesLayer->addChild(cookie);
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::createSpriteWithFieldObj(BaseObj * fieldObj)
+//--------------------------------------------------------------------
+{
+    auto sprite = Sprite::create(fieldObj->spriteName().getCString());
+    sprite->setPosition(Helper::pointForColumnAndRow(fieldObj->getColumn(), fieldObj->getRow()));
+    sprite->setScale(2.0f);
+    fieldObj->setSpriteNode(sprite);
+    mTilesLayer->addChild(sprite);
 }
 
 //--------------------------------------------------------------------

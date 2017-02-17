@@ -15,9 +15,9 @@
 #include "Utils/Parser/JsonParser.h"
 #include "Utils/Helpers/Helper.h"
 
-#include "GameObjects/TileObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/LevelObj.h"
-#include "GameObjects/CookieObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
 
 using namespace CommonTypes;
 
@@ -73,6 +73,24 @@ void ObjectController::createInitialTiles()
 }
 
 //--------------------------------------------------------------------
+void ObjectController::createInitialFieldObjects()
+//--------------------------------------------------------------------
+{
+    auto levelInfo = mLevel->getLevelInfo();
+
+    for (int column = 0; column < NumColumns; column++) {
+        for (int row = 0; row < NumRows; row++) {
+
+            int tileType = levelInfo.fieldObjects[column][row];
+            if (tileType > 0) {
+                auto tile = createFieldObject(column, row, tileType);
+                mLevel->addChild(tile);
+            }            
+        }
+    }
+}
+
+//--------------------------------------------------------------------
 BaseObj * ObjectController::createTile(int column, int row, int type)
 //--------------------------------------------------------------------
 {
@@ -117,6 +135,18 @@ BaseObj * ObjectController::createCookie(int column, int row, int type)
     CC_ASSERT(cookie);
     mCookies[column][row] = cookie;
     return cookie;
+}
+
+//--------------------------------------------------------------------
+BaseObj * ObjectController::createFieldObject(int column, int row, int type)
+//--------------------------------------------------------------------
+{
+    BaseObjectInfo baseInfo = { BaseObjectType::FieldObj, column, row };
+    TileInfo info = { baseInfo, static_cast<TileType>(type) };
+    BaseObj* obj = SmartFactory->createFieldObj(info);
+    CC_ASSERT(obj);
+    mFieldObjects[column][row] = obj;
+    return obj;
 }
 
 //--------------------------------------------------------------------
@@ -209,6 +239,23 @@ bool ObjectController::hasChainAt(int column, int row)
 }
 
 //--------------------------------------------------------------------
+BaseObj * ObjectController::fieldObjectAt(int column, int row)
+//--------------------------------------------------------------------
+{
+    bool invalidColumn = column >= 0 && column < NumColumns;
+    bool invalidRow = row >= 0 && row < NumColumns;
+    if (!invalidColumn) {
+        cocos2d::log("ObjectController::fieldObjectAt: Invalid column : %d", column);
+        CC_ASSERT(invalidColumn);
+    }
+    if (!invalidRow) {
+        cocos2d::log("ObjectController::fieldObjectAt: Invalid row: %d", row);
+        CC_ASSERT(invalidRow);
+    }
+    return mFieldObjects[column][row];
+}
+
+//--------------------------------------------------------------------
 bool ObjectController::isEmptyTileAt(int column, int row)
 //--------------------------------------------------------------------
 {
@@ -230,6 +277,20 @@ bool ObjectController::isSameTypeOfCookieAt(int column, int row, int type)
 }
 
 //--------------------------------------------------------------------
+void ObjectController::removeFieldObject(int column, int row)
+//--------------------------------------------------------------------
+{
+    auto obj = fieldObjectAt(column, row);
+    if (obj) {
+        cocos2d::log("ObjectController::removeCookies: remove %s", obj->description().getCString());
+
+        obj->removeFromParent();
+        SmartFactory->recycle(obj);
+    }
+    mFieldObjects[column][row] = nullptr;
+}
+
+//--------------------------------------------------------------------
 void ObjectController::updateCookieObjectAt(int column, int row, BaseObj* cookie)
 //--------------------------------------------------------------------
 {
@@ -241,9 +302,12 @@ void ObjectController::removeCookie(int column, int row)
 //--------------------------------------------------------------------
 {
     auto cookie = cookieAt(column, row);
-    CC_ASSERT(cookie);
-    cocos2d::log("ObjectController::removeCookies: remove %s", cookie->description());
 
+    if (!cookie) {
+        cocos2d::log("ObjectController::removeCookies: cookie at (%d,%d) already removed", column, row);
+        return;
+    }
+    cocos2d::log("ObjectController::removeCookies: remove %s", cookie->description().getCString());
     cookie->removeFromParent();
     SmartFactory->recycle(cookie);
     mCookies[column][row] = nullptr;

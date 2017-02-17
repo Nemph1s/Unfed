@@ -9,7 +9,7 @@
 */
 
 #include "GameObjects/Swap/SwapObj.h"
-#include "GameObjects/CookieObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
 
 //--------------------------------------------------------------------
 SwapObj::~SwapObj()

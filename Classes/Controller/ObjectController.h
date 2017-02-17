@@ -33,6 +33,7 @@ public:
     bool init();
 
     void createInitialTiles();
+    void createInitialFieldObjects();
     cocos2d::Set* createInitialCookies();
 
     BaseObj* createRandomCookie(int column, int row);
@@ -42,11 +43,16 @@ public:
     CookieObj* cookieAt(int column, int row);
     bool hasChainAt(int column, int row);
 
+    BaseObj* fieldObjectAt(int column, int row);
+
     bool isEmptyTileAt(int column, int row);
     bool isSameTypeOfCookieAt(int column, int row, int type);
 
+    void removeFieldObject(int column, int row);
+
     void updateCookieObjectAt(int column, int row, BaseObj* cookie);
     void removeCookie(int column, int row);
+
 
 protected:
     // Nodes should be created using create();
@@ -55,9 +61,13 @@ protected:
     BaseObj* createTile(int column, int row, int type);
     BaseObj* createCookie(int column, int row, int type);
 
+    BaseObj* createFieldObject(int column, int row, int type);
+
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
 
     BaseObj* mTiles[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
     BaseObj* mCookies[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
+    // Tile object array (Dirt etc)
+    BaseObj* mFieldObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
 };

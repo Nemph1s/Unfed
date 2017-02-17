@@ -8,7 +8,7 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/Base/BaseObj.h"
+#include "GameObjects/TileObjects/Base/BaseObj.h"
 
 #include "Utils/Helpers/Helper.h"
 
@@ -107,6 +107,20 @@ int BaseObj::getTypeAsInt() const
 //--------------------------------------------------------------------
 {
     return Helper::getInstance()->to_underlying(mType);
+}
+
+//--------------------------------------------------------------------
+void BaseObj::match()
+//--------------------------------------------------------------------
+{
+    //TODO: implement this method in cookie to update score matching
+}
+
+//--------------------------------------------------------------------
+bool BaseObj::isReadyToRemove() const
+//--------------------------------------------------------------------
+{
+    return false;
 }
 
 //--------------------------------------------------------------------

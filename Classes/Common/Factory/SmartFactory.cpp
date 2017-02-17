@@ -10,10 +10,11 @@
 
 #include "Common/Factory/SmartFactory.h"
 
-#include "GameObjects/Base/BaseObj.h"
-#include "GameObjects/TileObj.h"
-#include "GameObjects/CookieObj.h"
-#include "SmartFactory.h"
+#include "GameObjects/TileObjects/Base/BaseObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/DirtObject.h"
+
 
 //--------------------------------------------------------------------
 _SmartFactory * _SmartFactory::getInstance()
@@ -114,8 +115,9 @@ BaseObj * _SmartFactory::create(const CommonTypes::BaseObjectInfo & info)
     case CommonTypes::BaseObjectType::TileObj:
         baseObject = createTileObj(tileInfo);
         break;
-    case CommonTypes::BaseObjectType::DirtObj:
-    case CommonTypes::BaseObjectType::WallObj:
+    case CommonTypes::BaseObjectType::FieldObj:
+        baseObject = createFieldObj(tileInfo);
+        break;
     case CommonTypes::BaseObjectType::Unknown:
     default:
         baseObject = createBaseObj(info);
@@ -138,8 +140,9 @@ void _SmartFactory::recycle(BaseObj * obj)
     case CommonTypes::BaseObjectType::TileObj:
         mTileObjPool->push_back(obj);
         break;
-    case CommonTypes::BaseObjectType::DirtObj:
-    case CommonTypes::BaseObjectType::WallObj:
+    case CommonTypes::BaseObjectType::FieldObj:
+        CC_SAFE_RELEASE(obj);
+        break;
     case CommonTypes::BaseObjectType::Unknown:
     default:
         mBaseObjPool->push_back(obj);
@@ -209,6 +212,28 @@ BaseObj * _SmartFactory::createCookieObj(const CommonTypes::CookieInfo & info)
         CC_SAFE_RETAIN(baseObject);
         CCASSERT(baseObject, "error while creating CookieObj");
     }
+    return baseObject;
+}
+
+BaseObj * _SmartFactory::createFieldObj(const CommonTypes::TileInfo & info)
+{
+    BaseObj* baseObject = nullptr;
+
+    switch (info.tileType)
+    {
+    case CommonTypes::TileType::Dirt:
+    case CommonTypes::TileType::DirtX2:
+    case CommonTypes::TileType::DirtX3:
+        baseObject = DirtObject::create(info);
+        CC_SAFE_RETAIN(baseObject);
+        CCASSERT(baseObject, "error while creating DirtObject");
+        break;
+    default:
+        CC_ASSERT(baseObject);
+        break;
+    }
+    cocos2d::log("SmartFactory::create: created with type=%d", baseObject->getTypeAsInt());
+
     return baseObject;
 }
 

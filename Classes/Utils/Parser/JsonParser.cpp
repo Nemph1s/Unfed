@@ -60,6 +60,19 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
 			levelInfo.tiles[i][j] = node[node.size() - j - 1][i].asInt();
 		}
 	}
+
+    const Json::Value& fieldObjects = getFieldObjects();
+
+    for (uint16_t i = 0; i < fieldObjects.size(); ++i) {
+        const Json::Value& subnode = fieldObjects[i];
+        CC_ASSERT(subnode.isArray());
+
+        for (uint16_t j = 0; j < subnode.size(); ++j) {
+            CC_ASSERT(subnode[j].isInt());
+            levelInfo.fieldObjects[i][j] = fieldObjects[i][j].asInt();
+            levelInfo.fieldObjects[i][j] = fieldObjects[fieldObjects.size() - j - 1][i].asInt();
+        }
+    }
 	return levelInfo;
 }
 
@@ -73,6 +86,18 @@ const Json::Value& _JsonParser::getTiles()
 
 	return value;
 }
+
+//--------------------------------------------------------------------
+const Json::Value & _JsonParser::getFieldObjects()
+//--------------------------------------------------------------------
+{
+    Json::Value& value = mRootNode["fieldObjects"];
+    if (!value.isArray())
+        throw std::logic_error("bad fieldObjects array");
+
+    return value;
+}
+
 
 //--------------------------------------------------------------------
 int16_t _JsonParser::getTargetScore()

@@ -34,6 +34,9 @@ public:
 
     virtual int getTypeAsInt() const;
 
+    virtual void match();
+    virtual bool isReadyToRemove() const;
+
     virtual void clear();
 
 protected:

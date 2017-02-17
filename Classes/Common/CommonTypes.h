@@ -29,8 +29,7 @@ namespace CommonTypes {
     enum class BaseObjectType : int {
         TileObj = 0 /**< enum value TileObj. */
         , CookieObj = 1 /**< enum value CookieObj. */
-        , DirtObj = 2 /**< enum value DirtObj. */
-        , WallObj = 3 /**< enum value WallObj. */
+        , FieldObj = 2 /**< enum value FieldObj. */
         , Unknown /**< enum value unknown. */
     };
 
@@ -83,6 +82,7 @@ namespace CommonTypes {
       int moves; /**< available moves */
 	  TilesArray tiles; /**< array of tiles */
       int typesCount; /**< count of types */
+      TilesArray fieldObjects; /**< array of tileObjects */
    };
 
    /**
@@ -94,6 +94,7 @@ namespace CommonTypes {
        , ChainTypeVertical = 1 /**< enum value ChainTypeVertical. */
        , ChainTypeL = 2 /**< enum value ChainTypeL. */
        , ChainTypeT = 3 /**< enum value ChainTypeL. */
+       , ChainTypeX = 4 /**< enum value ChainTypeL. */
        , Unknown /**< enum value unknown. */
    };
 
@@ -105,6 +106,10 @@ namespace CommonTypes {
        Empty = 0 /**< enum value Empty. */
        , Normal = 1 /**< enum value Normal. */
        , Water = 2 /**< enum value Water. */
+       , SandWall = 10 /**< enum value SandWall. */
+       , Dirt = 11 /**< enum value Dirt. */
+       , DirtX2 = 12 /**< enum value DirtX2. */
+       , DirtX3 = 13 /**< enum value DirtX3. */
        , Unknown /**< enum value unknown. */
    };
 
