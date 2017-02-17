@@ -117,6 +117,9 @@
     <ClCompile Include="..\Classes\GameObjects\TileObjects\DirtObject.cpp">
       <Filter>src\GameObjects\TileObjects</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ChainController.cpp">
+      <Filter>src\Controller</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -196,6 +199,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\TileObjects\DirtObject.h">
       <Filter>src\GameObjects\TileObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ChainController.h">
+      <Filter>src\Controller</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
