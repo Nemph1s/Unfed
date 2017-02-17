@@ -53,6 +53,7 @@ public:
     cocos2d::Set* createHorizontalChainAt(int column);
     cocos2d::Set* createVerticalChainAt(int row);
     cocos2d::Set* createXChainAt(int column, int row);
+    cocos2d::Set* createAllOfOneChain(int entryColumn, int entryRow);
 
 protected:
     // Nodes should be created using create();

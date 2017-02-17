@@ -151,6 +151,9 @@ cocos2d::Set* LevelObj::removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec
         case ChainType::ChainTypeX:
             chainSet = createXChainAt(column, row);
             break;
+        case ChainType::ChainTypeAllOfOne:
+            chainSet = createAllOfOneChain(column, row);
+            break;
         default:
             break;
         }
@@ -577,6 +580,31 @@ cocos2d::Set* LevelObj::createXChainAt(int column, int row)
         }
         if (cookieB != nullptr) {
             chain->addCookie(cookieB);
+        }
+    }
+    set->addObject(chain);
+    return set;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Set* LevelObj::createAllOfOneChain(int entryColumn, int entryRow)
+//--------------------------------------------------------------------
+{
+    auto set = new cocos2d::Set();
+    auto entryCookie = mObjCtrl->cookieAt(entryColumn, entryRow);
+    CC_ASSERT(entryCookie);
+
+    auto chain = ChainObj::createWithType(ChainType::ChainTypeAllOfOne);
+    for (int column = 0; column < NumColumns; column++) {
+        for (int row = NumRows - 1; row >= 0; row--) {
+            auto cookie = mObjCtrl->cookieAt(row, column);
+            // skip over any gaps in the level design.
+            if (!cookie) 
+                continue;
+
+            if (cookie->getCookieType() == entryCookie->getCookieType()) {
+                chain->addCookie(cookie);
+            }
         }
     }
     set->addObject(chain);
