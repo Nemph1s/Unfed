@@ -159,7 +159,7 @@ void _AnimationsManager::animateFallingCookies(cocos2d::Array* colums, cocos2d::
             auto cookie = dynamic_cast<CookieObj*>(*itArr);
             CC_ASSERT(cookie);
 
-            auto newPos = Helper::pointForCookie(cookie);
+            auto newPos = Helper::pointForTile(cookie);
             // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
             // This calculation works because fillHoles guarantees that lower cookies are first in the array.
 
@@ -198,6 +198,66 @@ void _AnimationsManager::animateFallingCookies(cocos2d::Array* colums, cocos2d::
 }
 
 //--------------------------------------------------------------------
+void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d::CallFunc * completion)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(colums);
+    CC_ASSERT(completion);
+
+    float longestDuration = 0;
+    for (auto it = colums->begin(); it != colums->end(); it++) {
+
+        auto array = dynamic_cast<cocos2d::Array*>(*it);
+        CC_ASSERT(array);
+
+        float colDelay = Helper::randomFloatBetween(0.055f, 0.07f) * 1;
+        for (auto itArr = array->begin(); itArr != array->end(); itArr++) {
+
+            auto obj = dynamic_cast<BaseObj*>(*itArr);
+            CC_ASSERT(obj);
+
+            auto newPos = Helper::pointForTile(obj);
+            // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
+            // This calculation works because fillHoles guarantees that lower cookies are first in the array.
+
+            float delay = (0.05f + 0.15f * colDelay);
+
+            // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
+            // You can tweak these numbers to change the feel of the animation.
+            float timeToTile = (obj->getSpriteNode()->getPositionY() - newPos.y) / GameResources::TileHeight;
+            float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
+
+            // Calculate which animation is the longest. This is the time the game has to wait before it may continue.
+            longestDuration = MAX(longestDuration, duration + delay);
+
+            // Perform the animation, which consists of a delay, a movement and a sound effect.
+            auto callback = CallFunc::create([=]() {
+
+                if (obj->getType() == BaseObjectType::CookieObj) {
+                    auto cookie = dynamic_cast<CookieObj*>(obj);
+                    cookie->updateDebugTileLabel();
+                }
+                
+                auto sprite = obj->getSpriteNode();
+                auto delta = newPos - sprite->getPosition();
+
+                auto moveAction = MoveBy::create(duration, delta);
+                auto easeAction = EaseOut::create(moveAction, duration);
+                sprite->runAction(easeAction);
+
+                AudioManager->playSound(CommonTypes::SoundType::FallingCookieSound);
+            });
+
+            obj->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
+        }
+    }
+
+    CC_ASSERT(mCurrentScene);
+    // You wait until all the cookies have fallen down before allowing the gameplay to continue.
+    mCurrentScene->runAction(Sequence::create(DelayTime::create(longestDuration), completion, nullptr));
+}
+
+//--------------------------------------------------------------------
 void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
@@ -224,7 +284,7 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
             scene->createSpriteWithCookie(cookie, cookie->getColumn(), startRow);
             cookie->getSpriteNode()->setOpacity(0);
 
-            auto newPos = Helper::pointForCookie(cookie);
+            auto newPos = Helper::pointForTile(cookie);
 
             // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
             // This calculation works because fillHoles guarantees that lower cookies are first in the array.

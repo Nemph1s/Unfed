@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/Base/BaseObj.cpp
+* @file GameObjects/TileObjects/Base/BaseObj.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -20,6 +20,7 @@ BaseObj::BaseObj()
     , mIsMovable(false)
     , mIsPossibleSwap(false)
     , mIsRemovable(false)
+    , mIsContainer(false)
     , mSpriteNode(nullptr)
     , mDummyString(nullptr)
 //--------------------------------------------------------------------

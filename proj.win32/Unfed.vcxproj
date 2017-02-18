@@ -155,7 +155,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\GameObjects\Swap\SwapObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\TileObjects\CookieObj.cpp" />
-    <ClCompile Include="..\Classes\GameObjects\TileObjects\DirtObject.cpp" />
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\Obstacles\BushObj.cpp" />
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\Obstacles\DirtObject.cpp" />
     <ClCompile Include="..\Classes\GameObjects\TileObjects\TileObj.cpp" />
     <ClCompile Include="..\Classes\Managers\AnimationsManager.cpp" />
     <ClCompile Include="..\Classes\Managers\AudioManager.cpp" />
@@ -181,7 +182,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\GameObjects\Swap\SwapObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\CookieObj.h" />
-    <ClInclude Include="..\Classes\GameObjects\TileObjects\DirtObject.h" />
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\Obstacles\BushObj.h" />
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\Obstacles\DirtObject.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\TileObj.h" />
     <ClInclude Include="..\Classes\Managers\AnimationsManager.h" />
     <ClInclude Include="..\Classes\Managers\AudioManager.h" />

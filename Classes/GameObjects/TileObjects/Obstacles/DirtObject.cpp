@@ -1,9 +1,5 @@
-#include "DirtObject.h"
-
-
-
 /**
-* @file GameObjects/TileObj.cpp
+* @file GameObjects/TileObjects/Obstacles/DirtObject.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -12,6 +8,7 @@
 * @author VMartyniuk
 */
 
+#include "GameObjects/TileObjects/Obstacles/DirtObject.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
@@ -55,10 +52,11 @@ bool DirtObject::init(const CommonTypes::TileInfo & info)
         return false;
     }
  
-    if (info.tileType >= TileType::Dirt && info.tileType <= TileType::DirtX3) {
+    if (info.tileType >= TileType::Dirt && info.tileType <= TileType::Dirt_HP3) {
         mHP = (getTypeAsInt() - Helper::to_underlying(TileType::Dirt)) + 1;
     }
     mIsRemovable = true;
+    mIsContainer = true;
 
     return true;
 }

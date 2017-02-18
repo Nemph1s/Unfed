@@ -52,10 +52,10 @@ cocos2d::Vec2 Helper::pointForColumnAndRow(int column, int row)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Vec2 Helper::pointForCookie(CookieObj * cookie)
+cocos2d::Vec2 Helper::pointForTile(BaseObj * obj)
 //--------------------------------------------------------------------
 {
-    return pointForColumnAndRow(cookie->getColumn(), cookie->getRow());
+    return pointForColumnAndRow(obj->getColumn(), obj->getRow());
 }
 
 //--------------------------------------------------------------------

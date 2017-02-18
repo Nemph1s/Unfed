@@ -13,6 +13,7 @@
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
 
+class BaseObj;
 class ChainObj;
 class ObjectController;
 class ChainController;
@@ -55,6 +56,9 @@ protected:
 
     void calculateScore(cocos2d::Set* chains);
     void removeCookies(cocos2d::Set* chains);   
+
+    bool isPossibleToAddCookie(int column, int row);
+    bool useGravityOnObject(cocos2d::Array* colArr, cocos2d::Array* rowArr, BaseObj* obj, int destinationRow);
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<bool()>, mDetectPossibleSwapsCallback, DetectPossibleSwapsCallback);

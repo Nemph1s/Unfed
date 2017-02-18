@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/Base/BaseObj.hpp
+* @file GameObjects/TileObjects/Base/BaseObj.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -47,6 +47,7 @@ protected:
     CC_SYNTHESIZE_READONLY(bool, mIsMovable, IsMovable);
     CC_SYNTHESIZE_READONLY(bool, mIsRemovable, IsRemovable);
     CC_SYNTHESIZE_READONLY(bool, mIsPossibleSwap, IsPossibleSwap);
+    CC_SYNTHESIZE_READONLY(bool, mIsContainer, IsContainer);
 
     cocos2d::String* mDummyString;
 

@@ -61,17 +61,6 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
     mIsPossibleSwap = true;
     mIsRemovable = true;
 
-#ifdef UNFED_ENABLE_DEBUG
-    mDebugLabel = cocos2d::Label::create();
-    mDebugLabel->setBMFontSize(16);
-    mDebugLabel->setDimensions(32, 32);
-    mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::LEFT);
-    mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::TOP);
-    mDebugLabel->setPosition(cocos2d::Vec2(GameResources::TileWidth / 4, (GameResources::TileHeight / 1.25f)));
-    mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
-    mSpriteNode->addChild(mDebugLabel, 10);
-#endif //UNFED_ENABLE_DEBUG
-
     return true;
 }
 
@@ -115,6 +104,18 @@ void CookieObj::clear()
 void CookieObj::updateDebugTileLabel()
 //--------------------------------------------------------------------
 {
+    if (!mDebugLabel) {
+#ifdef COCOS2D_DEBUG
+        mDebugLabel = cocos2d::Label::create();
+        mDebugLabel->setBMFontSize(16);
+        mDebugLabel->setDimensions(32, 32);
+        mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::LEFT);
+        mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::TOP);
+        mDebugLabel->setPosition(cocos2d::Vec2(GameResources::TileWidth / 4, (GameResources::TileHeight / 1.25f)));
+        mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
+        mSpriteNode->addChild(mDebugLabel, 10);
+#endif //UNFED_ENABLE_DEBUG
+    }
     if (mDebugLabel) {
         auto text = cocos2d::StringUtils::format("[%d,%d]", mColumn, mRow);
         mDebugLabel->setString(text);

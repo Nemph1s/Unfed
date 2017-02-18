@@ -369,7 +369,7 @@ void GameplayScene::createSpriteWithFieldObj(BaseObj * fieldObj)
 {
     auto sprite = Sprite::create(fieldObj->spriteName().getCString());
     sprite->setPosition(Helper::pointForColumnAndRow(fieldObj->getColumn(), fieldObj->getRow()));
-    sprite->setScale(2.0f);
+    sprite->setScale(1.1f);
     fieldObj->setSpriteNode(sprite);
     mTilesLayer->addChild(sprite);
 }

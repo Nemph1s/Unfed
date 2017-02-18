@@ -49,6 +49,9 @@
     <Filter Include="src\GameObjects\TileObjects\Base">
       <UniqueIdentifier>{338c0eac-c3fe-4a5f-9105-e1431e0c8841}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\GameObjects\TileObjects\Obstacles">
+      <UniqueIdentifier>{011dbb72-128a-49c7-8edb-3d4e5b01ffa6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -114,11 +117,14 @@
     <ClCompile Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.cpp">
       <Filter>src\GameObjects\TileObjects\Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GameObjects\TileObjects\DirtObject.cpp">
-      <Filter>src\GameObjects\TileObjects</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\Controller\ChainController.cpp">
       <Filter>src\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\Obstacles\DirtObject.cpp">
+      <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\Obstacles\BushObj.cpp">
+      <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -197,11 +203,14 @@
     <ClInclude Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.h">
       <Filter>src\GameObjects\TileObjects\Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\GameObjects\TileObjects\DirtObject.h">
-      <Filter>src\GameObjects\TileObjects</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\Controller\ChainController.h">
       <Filter>src\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\Obstacles\DirtObject.h">
+      <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\Obstacles\BushObj.h">
+      <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "cocos2d.h"
-
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 
 class CookieObj : public BaseObj

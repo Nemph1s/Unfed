@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObj.hpp
+* @file GameObjects/Obstacles/BushObj.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -10,21 +10,19 @@
 
 #pragma once
 
-#include "cocos2d.h"
 #include "GameObjects/TileObjects/TileObj.h"
 
-
-class DirtObject : public TileObj
+class BushObj : public TileObj
 {
 CC_CONSTRUCTOR_ACCESS:
-    virtual ~DirtObject();
+    virtual ~BushObj();
 
 public:
     /**
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static DirtObject * create(const CommonTypes::TileInfo &info);
+    static BushObj * create(const CommonTypes::TileInfo &info);
 
     bool init(const CommonTypes::TileInfo &info);
 
@@ -38,8 +36,9 @@ public:
 
 protected:
     // Nodes should be created using create();
-    DirtObject();
+    BushObj();
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(int, mHP, HP);
 };
+

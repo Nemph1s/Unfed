@@ -46,11 +46,13 @@ public:
     BaseObj* fieldObjectAt(int column, int row);
 
     bool isEmptyTileAt(int column, int row);
+    bool isPossibleToAddCookie(int column, int row);
     bool isSameTypeOfCookieAt(int column, int row, int type);
 
     void removeFieldObject(int column, int row);
 
     void updateCookieObjectAt(int column, int row, BaseObj* cookie);
+    void updateObjectAt(int column, int row, BaseObj* obj, CommonTypes::BaseObjectType type);
     void removeCookie(int column, int row);
 
 

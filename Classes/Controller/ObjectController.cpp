@@ -112,7 +112,7 @@ cocos2d::Set * ObjectController::createInitialCookies()
 
     for (int row = 0; row < NumRows; row++) {
         for (int column = 0; column < NumColumns; column++) {
-            if (!isEmptyTileAt(column, row)) {
+            if (isPossibleToAddCookie(column, row)) {
                 int cookieType = getRandomCookieType(column, row);
                 BaseObj* cookie = createCookie(column, row, cookieType);
                 set->addObject(cookie);
@@ -221,7 +221,7 @@ bool ObjectController::hasChainAt(int column, int row)
         return false;
 
     int type = cookieAt(column, row)->getTypeAsInt();
-    int fieldSize = CommonTypes::NumColumns;
+    int fieldSize = NumColumns;
 
     int horzLength = 1;
 
@@ -263,6 +263,25 @@ bool ObjectController::isEmptyTileAt(int column, int row)
 }
 
 //--------------------------------------------------------------------
+bool ObjectController::isPossibleToAddCookie(int column, int row)
+//--------------------------------------------------------------------
+{
+    // If there's a tile at a position but no cookie, then there's a hole.
+    auto isEmptyTile = isEmptyTileAt(column, row);
+    auto isCookieAt = cookieAt(column, row);
+    if (!isEmptyTile && isCookieAt == nullptr) {
+        auto fieldObj = fieldObjectAt(column, row);
+        if (!fieldObj) {
+            return true;
+        }
+        if (fieldObj->getIsContainer()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+//--------------------------------------------------------------------
 bool ObjectController::isSameTypeOfCookieAt(int column, int row, int type)
 //--------------------------------------------------------------------
 {
@@ -295,6 +314,35 @@ void ObjectController::updateCookieObjectAt(int column, int row, BaseObj* cookie
 //--------------------------------------------------------------------
 {
     mCookies[column][row] = cookie;
+}
+
+//--------------------------------------------------------------------
+void ObjectController::updateObjectAt(int column, int row, BaseObj * obj, BaseObjectType type)
+//--------------------------------------------------------------------
+{
+    switch (type)
+    {
+    case BaseObjectType::TileObj:
+        mTiles[column][row] = obj;
+        break;
+    case BaseObjectType::CookieObj:
+        mCookies[column][row] = obj;
+        break;
+    case BaseObjectType::FieldObj:
+        //TODO: uncomment when mFieldObjects will be an array
+//         cocos2d::Array* arr = mFieldObjects[column][row];
+//         if (arr) {
+//             arr->addObject(obj);
+//         } else {
+//             auto newArr = cocos2d::Array::createWithCapacity(NumColumns);
+//             newArr->addObject(obj);
+//             mFieldObjects[column][row] = newArr;
+//         }
+        mFieldObjects[column][row] = obj;
+        break;
+    default:
+        break;
+    }
 }
 
 //--------------------------------------------------------------------

@@ -15,6 +15,7 @@
 #include "Utils/PlatformMacros.h"
 
 class CookieObj;
+class BaseObj;
 class Helper 
 {
     CREATE_SINGLETON(Helper);
@@ -32,7 +33,7 @@ public:
     static CommonTypes::CookieType randomCookieType(int fromRange, int toRange);
 
     static cocos2d::Vec2 pointForColumnAndRow(int column, int row);
-    static cocos2d::Vec2 pointForCookie(CookieObj* cookie);
+    static cocos2d::Vec2 pointForTile(BaseObj* obj);
 
     static bool convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row);
 };

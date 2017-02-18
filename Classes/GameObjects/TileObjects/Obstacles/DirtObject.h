@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObjects/TileObj.h
+* @file GameObjects/TileObjects/Obstacles/DirtObject.h
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -10,37 +10,34 @@
 
 #pragma once
 
-#include "GameObjects/TileObjects/Base/BaseObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
 
-class TileObj : public BaseObj
+class DirtObject : public TileObj
 {
 CC_CONSTRUCTOR_ACCESS:
-    virtual ~TileObj();
-
-/*    friend SmartFactory;*/
+    virtual ~DirtObject();
 
 public:
     /**
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static TileObj * create(const CommonTypes::TileInfo &info);
+    static DirtObject * create(const CommonTypes::TileInfo &info);
 
     bool init(const CommonTypes::TileInfo &info);
 
-    virtual cocos2d::String& spriteName() const override;
+    cocos2d::String& spriteName() const override;
+    cocos2d::String& description() const override;
 
-    virtual int getTypeAsInt() const override;
+    void match() override;
+    bool isReadyToRemove() const override;
 
     virtual void clear() override;
 
-    bool isEmptyTile();
-
 protected:
     // Nodes should be created using create();
-    TileObj();
+    DirtObject();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE_READONLY(CommonTypes::TileType, mTileType, TileType);  
+    CC_SYNTHESIZE(int, mHP, HP);
 };
-

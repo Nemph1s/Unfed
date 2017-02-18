@@ -27,6 +27,7 @@ public:
     void animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* completion);
     void animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* completion);
     void animateFallingCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion);
+    void animateFallingObjects(cocos2d::Array* colums, cocos2d::CallFunc* completion);
     void animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion);
 
     void animateNewCookieSprite(cocos2d::Sprite* sprite);

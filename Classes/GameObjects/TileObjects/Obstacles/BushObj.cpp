@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObjects/TileObj.cpp
+* @file GameObjects/TileObjects/Obstacles/BushObj.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,29 +8,32 @@
 * @author VMartyniuk
 */
 
+#include "GameObjects/TileObjects/Obstacles/BushObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
+using CommonTypes::TileType;
+
 //--------------------------------------------------------------------
-TileObj::TileObj()
-    : BaseObj()
-    , mTileType(CommonTypes::TileType::Unknown)
+BushObj::BushObj()
+    : TileObj()
+    , mHP(0)
 //--------------------------------------------------------------------
 {
 }
 
 //--------------------------------------------------------------------
-TileObj::~TileObj()
+BushObj::~BushObj()
 //--------------------------------------------------------------------
 {
 }
 
 //--------------------------------------------------------------------
-TileObj * TileObj::create(const CommonTypes::TileInfo & info)
+BushObj * BushObj::create(const CommonTypes::TileInfo & info)
 //--------------------------------------------------------------------
 {
-    TileObj * ret = new (std::nothrow) TileObj();
+    BushObj * ret = new (std::nothrow) BushObj();
     if (ret && ret->init(info)) {
         ret->autorelease();
     }
@@ -41,47 +44,59 @@ TileObj * TileObj::create(const CommonTypes::TileInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool TileObj::init(const CommonTypes::TileInfo & info)
+bool BushObj::init(const CommonTypes::TileInfo & info)
 //--------------------------------------------------------------------
 {
-    if (!BaseObj::init(info.baseInfo)) {
-        cocos2d::log("TileObj::init: can't init Node inctance");
+    if (!TileObj::init(info)) {
+        cocos2d::log("BushObj::init: can't init TileObj inctance");
         return false;
     }
-    mTileType = info.tileType;
+
+    if (info.tileType >= TileType::Bush && info.tileType <= TileType::Bush_HP2) {
+        mHP = (getTypeAsInt() - Helper::to_underlying(TileType::Bush)) + 1;
+    }
+    mIsRemovable = true;
+    mIsMovable = false;
 
     return true;
 }
 
 //--------------------------------------------------------------------
-cocos2d::String& TileObj::spriteName() const
+cocos2d::String& BushObj::spriteName() const
 //--------------------------------------------------------------------
 {
-    return GameResources::s_TileImg;
+    return GameResources::s_BushNormalImg;
 }
 
 //--------------------------------------------------------------------
-int TileObj::getTypeAsInt() const
+cocos2d::String& BushObj::description() const
 //--------------------------------------------------------------------
 {
-    return Helper::getInstance()->to_underlying(mTileType);
+    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
 }
 
 //--------------------------------------------------------------------
-void TileObj::clear()
+void BushObj::match()
 //--------------------------------------------------------------------
 {
-    BaseObj::clear();
-    mTileType = CommonTypes::TileType::Unknown;
+    mHP--;
 }
 
 //--------------------------------------------------------------------
-bool TileObj::isEmptyTile()
+bool BushObj::isReadyToRemove() const
 //--------------------------------------------------------------------
 {
-    if (mTileType == CommonTypes::TileType::Empty) {
-        return true;
-    } else {
-        return false;
-    }    
+    bool result = false;
+    if (getIsRemovable()) {
+        result = (mHP <= 0);
+    }
+    return result;
+}
+
+//--------------------------------------------------------------------
+void BushObj::clear()
+//--------------------------------------------------------------------
+{
+    TileObj::clear();
+    mHP = 0;
 }
