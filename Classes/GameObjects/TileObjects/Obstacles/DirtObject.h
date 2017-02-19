@@ -29,6 +29,9 @@ public:
     cocos2d::String& spriteName() const override;
     cocos2d::String& description() const override;
 
+    virtual void clear() override;
+    virtual bool checkMatchingCondition(int column, int row) override;
+
 protected:
     // Nodes should be created using create();
     DirtObject();

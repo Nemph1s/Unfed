@@ -87,3 +87,17 @@ cocos2d::String& BushObj::description() const
 {
     return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
 }
+
+//--------------------------------------------------------------------
+bool BushObj::checkMatchingCondition(int column, int row)
+//--------------------------------------------------------------------
+{
+    if (column < 0 || column >= CommonTypes::NumColumns || row < 0 || row >= CommonTypes::NumColumns) {
+        return false;
+    }
+    bool objectOnTop = (mColumn == column && mRow == row - 1);
+    bool objectOnBot = (mColumn == column && mRow == row + 1);
+    bool objectOnLeft = (mColumn == column - 1 && mRow == row);
+    bool objectOnRight = (mColumn == column + 1 && mRow == row);
+    return objectOnTop || objectOnBot || objectOnLeft || objectOnRight;
+}

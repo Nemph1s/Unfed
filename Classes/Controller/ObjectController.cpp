@@ -295,21 +295,19 @@ bool ObjectController::isSameTypeOfCookieAt(int column, int row, int type)
     return true;
 }
 
-//--------------------------------------------------------------------
-bool ObjectController::removeFieldObject(int column, int row)
-//--------------------------------------------------------------------
+bool ObjectController::matchFieldObject(BaseObj * obj)
 {
-    auto obj = fieldObjectAt(column, row);
-    if (!obj) {
-        return false;
-    } 
     obj->match();
+
     if (obj->isReadyToRemove()) {
-        cocos2d::log("ObjectController::removeCookies: remove %s", obj->description().getCString());
-        SmartFactory->recycle(obj);
-        obj->removeFromParent();
-        mFieldObjects[column][row] = nullptr;
-    }      
+        mFieldObjects[obj->getColumn()][obj->getRow()] = nullptr;
+
+         cocos2d::log("ObjectController::removeCookies: remove %s", obj->description().getCString());
+//        
+//         SmartFactory->recycle(obj);
+//         obj->removeFromParent();
+        
+    }
     return true;
 }
 

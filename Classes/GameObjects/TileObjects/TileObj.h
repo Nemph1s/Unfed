@@ -33,8 +33,10 @@ public:
     virtual void setSpriteNode(cocos2d::Sprite* var) override;
     virtual int getTypeAsInt() const override;
 
+    //TODO: move to field component
     virtual void match() override;
     virtual void clear() override;
+    virtual bool checkMatchingCondition(int column, int row);
     virtual bool isReadyToRemove() const override;
 
     bool isEmptyTile();

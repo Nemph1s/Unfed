@@ -56,7 +56,8 @@ protected:
 
     void calculateScore(cocos2d::Set* chains);
     void removeCookies(cocos2d::Set* chains);   
-    void detectFieldObject(cocos2d::Set* objects, int column, int row);
+
+    bool checkMathicngFieldObjWithChain(cocos2d::Set* chains, BaseObj* obj);
 
     bool isPossibleToAddCookie(int column, int row);
 

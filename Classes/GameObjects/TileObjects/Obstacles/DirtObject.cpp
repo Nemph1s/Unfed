@@ -64,7 +64,20 @@ bool DirtObject::init(const CommonTypes::TileInfo & info)
 cocos2d::String& DirtObject::spriteName() const
 //--------------------------------------------------------------------
 {
-    return GameResources::s_DirtImg;
+    const int x2State = 2;
+    const int x1State = 1;
+    cocos2d::String* str = nullptr;
+    switch (mHP)
+    {
+    case x1State:
+        str = &GameResources::s_DirtX2Img;
+        break;
+    case x2State:
+    default:
+        str = &GameResources::s_DirtImg;
+        break;
+    }
+    return *str;
 }
 
 //--------------------------------------------------------------------
@@ -72,4 +85,23 @@ cocos2d::String& DirtObject::description() const
 //--------------------------------------------------------------------
 {
     return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
+}
+
+
+//--------------------------------------------------------------------
+void DirtObject::clear()
+//--------------------------------------------------------------------
+{
+    TileObj::clear();
+    
+}
+
+//--------------------------------------------------------------------
+bool DirtObject::checkMatchingCondition(int column, int row)
+//--------------------------------------------------------------------
+{
+    if (column < 0 || column >= CommonTypes::NumColumns || row < 0 || row >= CommonTypes::NumColumns) {
+        return false;
+    }
+    return (mColumn == column && mRow == row);
 }

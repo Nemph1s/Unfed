@@ -148,19 +148,34 @@ void LevelObj::removeCookies(cocos2d::Set * chains)
 }
 
 //--------------------------------------------------------------------
-void LevelObj::detectFieldObject(cocos2d::Set * objects, int column, int row)
+bool LevelObj::checkMathicngFieldObjWithChain(cocos2d::Set * chains, BaseObj * obj)
 //--------------------------------------------------------------------
 {
-    if (column < 0 || column >= NumColumns || row < 0 || row >= NumColumns) {
-        return;
+    auto result = false;
+    auto fieldObj = dynamic_cast<TileObj*>(obj);
+    if (!fieldObj) {
+        return result;
     }
-    auto obj = mObjCtrl->fieldObjectAt(column, row);
-    if (obj && objects) {
-        // TODO: make observer and remove object via unique method in tileObj aka collect()
-        if (mObjCtrl->removeFieldObject(obj->getColumn(), obj->getRow())) {
-            objects->addObject(obj);
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+
+        auto cookies = chain->getCookies();
+        for (auto it = cookies->begin(); it != cookies->end(); it++) {
+            auto cookie = dynamic_cast<CookieObj*>(*it);
+            CC_ASSERT(cookie);
+
+            int col = cookie->getColumn();
+            int row = cookie->getRow();
+            if (fieldObj->checkMatchingCondition(col, row)) {
+                result = true;
+                break;
+            }
         }
+        if (result)
+            break;
     }
+    return result;
 }
 
 //--------------------------------------------------------------------
@@ -175,19 +190,20 @@ cocos2d::Set* LevelObj::detectFieldObjects(cocos2d::Set * chains)
 //--------------------------------------------------------------------
 {
     auto set = new cocos2d::Set();
-    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
-        auto chain = dynamic_cast<ChainObj*>(*itChain);
-        CC_ASSERT(chain);
-            
-        auto cookies = chain->getCookies();
-        for (auto it = cookies->begin(); it != cookies->end(); it++) {
-            auto cookie = dynamic_cast<CookieObj*>(*it);
-            CC_ASSERT(cookie);
 
-            detectFieldObject(set, cookie->getColumn() - 1, cookie->getRow());
-            detectFieldObject(set, cookie->getColumn() + 1, cookie->getRow());
-            detectFieldObject(set, cookie->getColumn(), cookie->getRow() + 1);
-            detectFieldObject(set, cookie->getColumn(), cookie->getRow() - 1);
+    for (int row = 0; row < NumRows; row++) {
+        for (int column = 0; column < NumColumns; column++) {
+
+            auto obj = mObjCtrl->fieldObjectAt(column, row);
+            if (!obj) {
+                continue;
+            }
+            if (checkMathicngFieldObjWithChain(chains, obj)) {
+                if (mObjCtrl->matchFieldObject(obj)) {
+                    set->addObject(obj);
+                    continue;
+                }
+            }
         }
     }
     return set;

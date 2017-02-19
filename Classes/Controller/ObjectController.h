@@ -49,7 +49,7 @@ public:
     bool isPossibleToAddCookie(int column, int row);
     bool isSameTypeOfCookieAt(int column, int row, int type);
 
-    bool removeFieldObject(int column, int row);
+    bool matchFieldObject(BaseObj* obj);
 
     void updateCookieObjectAt(int column, int row, BaseObj* cookie);
     void updateObjectAt(int column, int row, BaseObj* obj, CommonTypes::BaseObjectType type);

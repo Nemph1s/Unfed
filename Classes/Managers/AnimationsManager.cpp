@@ -19,6 +19,7 @@
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
 #include "Common/CommonTypes.h"
+#include "Common/Factory/SmartFactory.h"
 
 #include "Scenes/GameplayScene.h"
 
@@ -449,8 +450,12 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
                 sprite->removeFromParent();
                 obj->setSpriteNode(nullptr);
             }
+            //TODO: move this to another place
             if (obj->getHP() > 0) {
                 scene->createSpriteWithFieldObj(obj);
+            } else if (obj->isReadyToRemove()) {
+                SmartFactory->recycle(obj);
+                obj->removeFromParent();
             }
             
         });

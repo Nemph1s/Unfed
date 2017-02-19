@@ -26,6 +26,7 @@ namespace GameResources {
 
    static cocos2d::String s_TileImg = "Sprites.atlas/TileShadow@2x.png";
    static cocos2d::String s_DirtImg = "Sprites.atlas/Dirt@2x.png";
+   static cocos2d::String s_DirtX2Img = "Sprites.atlas/DirtX2@2x.png";
 
    static cocos2d::String s_BushCorruptedImg = "Sprites.atlas/Bush1@2x.png";
    static cocos2d::String s_BushNormalImg = "Sprites.atlas/Bush2@2x.png";
