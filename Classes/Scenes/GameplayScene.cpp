@@ -157,10 +157,14 @@ void GameplayScene::addTiles()
 			if (objCtrl->isEmptyTileAt(column, row)) {
 				continue;
 			}
+            auto tile = objCtrl->tileAt(column, row);
 			auto tileSprite = Sprite::create(GameResources::s_TileImg.getCString());
             tileSprite->setPosition(Helper::pointForColumnAndRow(column, row));
             tileSprite->setOpacity(127);
+            tile->setSpriteNode(tileSprite);
 			mTilesLayer->addChild(tileSprite);
+
+            tile->updateDebugTileLabel();
 
             // Create Field objects
             auto fieldObj = objCtrl->fieldObjectAt(column, row);

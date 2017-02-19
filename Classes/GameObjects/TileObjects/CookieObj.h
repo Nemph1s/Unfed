@@ -32,6 +32,9 @@ public:
    cocos2d::String& highlightedSpriteName() const;
    cocos2d::String& description() const;
 
+   virtual void setSpriteNode(cocos2d::Sprite* var) override;
+   virtual void setColumn(int var) override;
+   virtual void setRow(int var) override;
    virtual int getTypeAsInt() const override;
 
    virtual void clear() override;

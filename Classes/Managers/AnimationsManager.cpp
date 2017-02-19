@@ -14,6 +14,7 @@
 #include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/Chain/ChainObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
@@ -430,7 +431,7 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
 
     for (auto it = fieldObjects->begin(); it != fieldObjects->end(); it++) {
 
-        auto obj = dynamic_cast<BaseObj*>(*it);
+        auto obj = dynamic_cast<TileObj*>(*it);
         if (!obj)
             continue;
 
@@ -439,12 +440,19 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
         auto scaleAction = ScaleTo::create(duration, scaleFactor);
         auto easeOut = EaseOut::create(scaleAction, duration);
 
+        auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
+        CC_ASSERT(scene);
+
         auto sprite = obj->getSpriteNode();
-        auto callback = CallFunc::create([sprite, obj]() {
+        auto callback = CallFunc::create([scene, sprite, obj]() {
             if (sprite) {
                 sprite->removeFromParent();
                 obj->setSpriteNode(nullptr);
             }
+            if (obj->getHP() > 0) {
+                scene->createSpriteWithFieldObj(obj);
+            }
+            
         });
         obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
     }

@@ -29,16 +29,10 @@ public:
     cocos2d::String& spriteName() const override;
     cocos2d::String& description() const override;
 
-    void match() override;
-    bool isReadyToRemove() const override;
-
-    virtual void clear() override;
-
 protected:
     // Nodes should be created using create();
     BushObj();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE(int, mHP, HP);
 };
 

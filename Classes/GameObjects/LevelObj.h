@@ -43,7 +43,7 @@ public:
 
     cocos2d::Set* removeMatches();
     cocos2d::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
-    cocos2d::Set* removeFieldObjects(cocos2d::Set* chains);
+    cocos2d::Set* detectFieldObjects(cocos2d::Set* chains);
 
     cocos2d::Array* useGravityToFillHoles();
     cocos2d::Array* fillTopUpHoles();
@@ -56,9 +56,9 @@ protected:
 
     void calculateScore(cocos2d::Set* chains);
     void removeCookies(cocos2d::Set* chains);   
+    void detectFieldObject(cocos2d::Set* objects, int column, int row);
 
     bool isPossibleToAddCookie(int column, int row);
-    bool useGravityOnObject(cocos2d::Array* colArr, cocos2d::Array* rowArr, BaseObj* obj, int destinationRow);
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<bool()>, mDetectPossibleSwapsCallback, DetectPossibleSwapsCallback);

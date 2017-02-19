@@ -56,8 +56,7 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
 
 		for (uint16_t j = 0; j < subnode.size(); ++j) {
 			CC_ASSERT(subnode[j].isInt());
-            levelInfo.tiles[i][j] = node[i][j].asInt();
-			levelInfo.tiles[i][j] = node[node.size() - j - 1][i].asInt();
+            levelInfo.tiles[i][j] = node[j][i].asInt();
 		}
 	}
 
@@ -69,8 +68,7 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
 
         for (uint16_t j = 0; j < subnode.size(); ++j) {
             CC_ASSERT(subnode[j].isInt());
-            levelInfo.fieldObjects[i][j] = fieldObjects[i][j].asInt();
-            levelInfo.fieldObjects[i][j] = fieldObjects[fieldObjects.size() - j - 1][i].asInt();
+            levelInfo.fieldObjects[i][j] = fieldObjects[j][i].asInt();
         }
     }
 	return levelInfo;

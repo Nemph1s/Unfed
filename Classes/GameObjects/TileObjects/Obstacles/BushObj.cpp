@@ -18,7 +18,6 @@ using CommonTypes::TileType;
 //--------------------------------------------------------------------
 BushObj::BushObj()
     : TileObj()
-    , mHP(0)
 //--------------------------------------------------------------------
 {
 }
@@ -57,6 +56,7 @@ bool BushObj::init(const CommonTypes::TileInfo & info)
     }
     mIsRemovable = true;
     mIsMovable = false;
+    mIsContainer = false;
 
     return true;
 }
@@ -65,7 +65,20 @@ bool BushObj::init(const CommonTypes::TileInfo & info)
 cocos2d::String& BushObj::spriteName() const
 //--------------------------------------------------------------------
 {
-    return GameResources::s_BushNormalImg;
+    const int normalState = 2;
+    const int corruptedState = 1;
+    cocos2d::String* str = nullptr;
+    switch (mHP)
+    {
+    case corruptedState:
+        str = &GameResources::s_BushCorruptedImg;
+        break;
+    case normalState:
+    default:
+        str = &GameResources::s_BushNormalImg;
+        break;
+    }
+    return *str;
 }
 
 //--------------------------------------------------------------------
@@ -73,30 +86,4 @@ cocos2d::String& BushObj::description() const
 //--------------------------------------------------------------------
 {
     return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
-}
-
-//--------------------------------------------------------------------
-void BushObj::match()
-//--------------------------------------------------------------------
-{
-    mHP--;
-}
-
-//--------------------------------------------------------------------
-bool BushObj::isReadyToRemove() const
-//--------------------------------------------------------------------
-{
-    bool result = false;
-    if (getIsRemovable()) {
-        result = (mHP <= 0);
-    }
-    return result;
-}
-
-//--------------------------------------------------------------------
-void BushObj::clear()
-//--------------------------------------------------------------------
-{
-    TileObj::clear();
-    mHP = 0;
 }

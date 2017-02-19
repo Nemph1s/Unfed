@@ -45,6 +45,7 @@ CookieObj::~CookieObj()
 //--------------------------------------------------------------------
 {
     cocos2d::log("CookieObj::~CookieObj: deallocing CookieObj: %p - tag: %i", this, _tag);
+    CC_SAFE_RELEASE_NULL(mDebugLabel);
 }
 
 //--------------------------------------------------------------------
@@ -60,6 +61,20 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
     mIsMovable = true;
     mIsPossibleSwap = true;
     mIsRemovable = true;
+
+    if (!mDebugLabel) {
+#ifdef COCOS2D_DEBUG
+        mDebugLabel = cocos2d::Label::create();
+        mDebugLabel->setBMFontSize(16);
+        mDebugLabel->setDimensions(32, 32);
+        mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::LEFT);
+        mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::TOP);
+        mDebugLabel->setPosition(cocos2d::Vec2(GameResources::TileWidth / 4, (GameResources::TileHeight / 1.25f)));
+        mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
+        CC_SAFE_RETAIN(mDebugLabel);
+        //mSpriteNode->addChild(mDebugLabel, 10);
+#endif //UNFED_ENABLE_DEBUG
+    }
 
     return true;
 }
@@ -86,6 +101,32 @@ cocos2d::String& CookieObj::description() const
 }
 
 //--------------------------------------------------------------------
+void CookieObj::setSpriteNode(cocos2d::Sprite * var)
+//--------------------------------------------------------------------
+{
+    mSpriteNode = var;
+    if (mSpriteNode && !mDebugLabel->getParent()) {
+        mSpriteNode->addChild(mDebugLabel, 10);
+    }
+}
+
+//--------------------------------------------------------------------
+void CookieObj::setColumn(int var)
+//--------------------------------------------------------------------
+{
+    BaseObj::setColumn(var);
+    updateDebugTileLabel();
+}
+
+//--------------------------------------------------------------------
+void CookieObj::setRow(int var)
+//--------------------------------------------------------------------
+{
+    BaseObj::setRow(var);
+    updateDebugTileLabel();
+}
+
+//--------------------------------------------------------------------
 int CookieObj::getTypeAsInt() const
 //--------------------------------------------------------------------
 {
@@ -98,26 +139,18 @@ void CookieObj::clear()
 {
     BaseObj::clear();
     mCookieType = CommonTypes::CookieType::Unknown;
+    mDebugLabel->removeFromParent();
 }
 
 //--------------------------------------------------------------------
 void CookieObj::updateDebugTileLabel()
 //--------------------------------------------------------------------
 {
-    if (!mDebugLabel) {
-#ifdef COCOS2D_DEBUG
-        mDebugLabel = cocos2d::Label::create();
-        mDebugLabel->setBMFontSize(16);
-        mDebugLabel->setDimensions(32, 32);
-        mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::LEFT);
-        mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::TOP);
-        mDebugLabel->setPosition(cocos2d::Vec2(GameResources::TileWidth / 4, (GameResources::TileHeight / 1.25f)));
-        mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
-        mSpriteNode->addChild(mDebugLabel, 10);
-#endif //UNFED_ENABLE_DEBUG
-    }
     if (mDebugLabel) {
-        auto text = cocos2d::StringUtils::format("[%d,%d]", mColumn, mRow);
+        int col = mColumn == -1 ? 0 : mColumn;
+        int row = mRow == -1 ? 0 : mRow;
+     
+        auto text = cocos2d::StringUtils::format("[%d,%d]", col, row);
         mDebugLabel->setString(text);
     }
 }

@@ -30,11 +30,16 @@ public:
 
     virtual cocos2d::String& spriteName() const override;
 
+    virtual void setSpriteNode(cocos2d::Sprite* var) override;
     virtual int getTypeAsInt() const override;
 
+    virtual void match() override;
     virtual void clear() override;
+    virtual bool isReadyToRemove() const override;
 
     bool isEmptyTile();
+
+    void updateDebugTileLabel();
 
 protected:
     // Nodes should be created using create();
@@ -42,5 +47,7 @@ protected:
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE_READONLY(CommonTypes::TileType, mTileType, TileType);  
+    CC_SYNTHESIZE(int, mHP, HP);
+    CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);
 };
 

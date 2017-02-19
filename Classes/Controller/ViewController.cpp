@@ -215,7 +215,7 @@ void ViewController::animateHandleMatches(cocos2d::Set* chains)
 {
     CC_ASSERT(chains);
 
-    auto fieldObjects = mLevel->removeFieldObjects(chains);
+    auto fieldObjects = mLevel->detectFieldObjects(chains);
     AnimationsManager->animateRemovingFieldObjects(fieldObjects, CallFunc::create([](){}));
 
     auto completion = CallFunc::create([=]() {
