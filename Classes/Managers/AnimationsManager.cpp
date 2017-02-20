@@ -456,7 +456,6 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
                 scene->createSpriteWithFieldObj(obj);
             } else if (obj->isReadyToRemove()) {
                 SmartFactory->recycle(obj);
-                obj->removeFromParent();
             }
             
         });

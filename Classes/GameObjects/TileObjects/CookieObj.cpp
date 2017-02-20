@@ -45,7 +45,6 @@ CookieObj::~CookieObj()
 //--------------------------------------------------------------------
 {
     cocos2d::log("CookieObj::~CookieObj: deallocing CookieObj: %p - tag: %i", this, _tag);
-    CC_SAFE_RELEASE_NULL(mDebugLabel);
 }
 
 //--------------------------------------------------------------------
@@ -139,8 +138,10 @@ void CookieObj::clear()
 {
     BaseObj::clear();
     mCookieType = CommonTypes::CookieType::Unknown;
-    mDebugLabel->removeFromParent();
-    CC_SAFE_RELEASE_NULL(mDebugLabel);
+    if (mDebugLabel) {
+        mDebugLabel->removeFromParent();
+        CC_SAFE_RELEASE_NULL(mDebugLabel);
+    }
 }
 
 //--------------------------------------------------------------------

@@ -43,6 +43,8 @@ public:
     void performSwap(SwapObj* swap);
 
     bool trySwapCookieTo(int horzDelta, int vertDelta);
+
+    void clearPossibleSwaps();
                           
 protected:
     // Nodes should be created using create();

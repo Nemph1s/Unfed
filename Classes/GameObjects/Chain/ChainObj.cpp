@@ -32,6 +32,9 @@ ChainObj::~ChainObj()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ChainObj::~ChainObj: deallocing ChainObj: %p - tag: %i", this, _tag);
+    if (getParent()) {
+        removeFromParent();
+    }
     CC_SAFE_RELEASE_NULL(mCookies);
 }
 
@@ -104,8 +107,7 @@ void ChainObj::addCookie(CookieObj * cookie)
 //--------------------------------------------------------------------
 {
     if (mCookies == nullptr) {
-        mCookies = new cocos2d::Array();
-        mCookies->init();
+        mCookies = cocos2d::Array::createWithCapacity(CommonTypes::NumColumns * CommonTypes::NumRows);
         CC_SAFE_RETAIN(mCookies);
     }
     mCookies->addObject(cookie);

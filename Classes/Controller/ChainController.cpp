@@ -127,7 +127,7 @@ cocos2d::Set * ChainController::removeChainAt(CommonTypes::ChainType & type, coc
 cocos2d::Set * ChainController::detectHorizontalMatches()
 //--------------------------------------------------------------------
 {
-    auto set = new cocos2d::Set();
+    auto set = cocos2d::Set::create();
     for (int column = 0; column < NumColumns; column++) {
         for (int row = 0; row < NumRows - 2;) {
 
@@ -173,7 +173,7 @@ cocos2d::Set * ChainController::detectHorizontalMatches()
 cocos2d::Set * ChainController::detectVerticalMatches()
 //--------------------------------------------------------------------
 {
-    auto set = new cocos2d::Set();
+    auto set = cocos2d::Set::create();
     for (int row = 0; row < NumRows; row++) {
         for (int column = 0; column < NumColumns - 2; ) {
 
@@ -219,7 +219,7 @@ cocos2d::Set * ChainController::detectVerticalMatches()
 cocos2d::Set * ChainController::detectDifficultMatches(cocos2d::Set * horizontal, cocos2d::Set * vertical)
 //--------------------------------------------------------------------
 {
-    auto set = new cocos2d::Set();
+    auto set = cocos2d::Set::create();
     ChainObj* chainL = nullptr;
     ChainObj* chainT = nullptr;
 
@@ -339,7 +339,7 @@ void ChainController::addChainsFromSetToSet(cocos2d::Set * from, cocos2d::Set * 
 cocos2d::Set* ChainController::createHorizontalChainAt(int column)
 //--------------------------------------------------------------------
 {
-    auto set = new cocos2d::Set();
+    auto set = cocos2d::Set::create();
     auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
     for (int row = 0; row < NumRows; row++) {
         auto cookie = mObjCtrl->cookieAt(row, column);
@@ -356,7 +356,7 @@ cocos2d::Set* ChainController::createHorizontalChainAt(int column)
 cocos2d::Set* ChainController::createVerticalChainAt(int row)
 //--------------------------------------------------------------------
 {
-    auto set = new cocos2d::Set();
+    auto set = cocos2d::Set::create();
     auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
     for (int column = 0; column < NumColumns; column++) {
         auto cookie = mObjCtrl->cookieAt(row, column);
@@ -373,7 +373,7 @@ cocos2d::Set* ChainController::createVerticalChainAt(int row)
 cocos2d::Set* ChainController::createXChainAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    auto set = new cocos2d::Set();
+    auto set = cocos2d::Set::create();
     auto chain = ChainObj::createWithType(ChainType::ChainTypeX);
     for (int i = 0; i < NumColumns; i++) {
         auto cookieA = mObjCtrl->cookieAt(i, row);
@@ -394,7 +394,7 @@ cocos2d::Set* ChainController::createXChainAt(int column, int row)
 cocos2d::Set* ChainController::createAllOfOneChain(int entryColumn, int entryRow)
 //--------------------------------------------------------------------
 {
-    auto set = new cocos2d::Set();
+    auto set = cocos2d::Set::create();
     auto entryCookie = mObjCtrl->cookieAt(entryColumn, entryRow);
     CC_ASSERT(entryCookie);
 

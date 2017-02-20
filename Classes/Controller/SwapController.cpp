@@ -61,7 +61,9 @@ bool SwapController::detectPossibleSwaps()
 //--------------------------------------------------------------------
 {
     cocos2d::log("SwapController::detectPossibleSwaps:");
-    cocos2d::Set* set = new cocos2d::Set();
+
+    clearPossibleSwaps();
+    cocos2d::Set* set = cocos2d::Set::create();
 
     for (int row = 0; row < CommonTypes::NumRows; row++) {
         for (int column = 0; column < CommonTypes::NumColumns; column++) {
@@ -114,6 +116,7 @@ bool SwapController::detectPossibleSwaps()
         }
     }
     mPossibleSwaps = set;
+    CC_SAFE_RETAIN(mPossibleSwaps);
     int count = 0;
     auto strSwaps = cocos2d::String::create("possible swaps: {\n");
     for (auto it = mPossibleSwaps->begin(); it != mPossibleSwaps->end(); ++it, count++) {
@@ -203,4 +206,25 @@ bool SwapController::trySwapCookieTo(int horzDelta, int vertDelta)
     mSwapCallback(swap);
 
     return true;
+}
+
+//--------------------------------------------------------------------
+void SwapController::clearPossibleSwaps()
+//--------------------------------------------------------------------
+{
+    if (!mPossibleSwaps) {
+        return;
+    }
+    for (auto itr = mPossibleSwaps->begin(); itr != mPossibleSwaps->end(); itr++) {
+        SwapObj* obj = dynamic_cast<SwapObj*>(*itr);
+        if (obj) {
+            if (obj->getParent()) {
+                obj->removeAllChildren();
+                obj->removeFromParent();
+            }
+        }
+        CC_SAFE_RELEASE(obj);
+    }
+    mPossibleSwaps->removeAllObjects();
+    CC_SAFE_DELETE(mPossibleSwaps);
 }

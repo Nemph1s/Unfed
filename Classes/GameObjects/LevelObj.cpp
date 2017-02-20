@@ -189,7 +189,7 @@ bool LevelObj::isPossibleToAddCookie(int column, int row)
 cocos2d::Set* LevelObj::detectFieldObjects(cocos2d::Set * chains)
 //--------------------------------------------------------------------
 {
-    auto set = new cocos2d::Set();
+    auto set = cocos2d::Set::create();
 
     for (int row = 0; row < NumRows; row++) {
         for (int column = 0; column < NumColumns; column++) {

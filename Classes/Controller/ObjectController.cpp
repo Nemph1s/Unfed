@@ -91,23 +91,11 @@ void ObjectController::createInitialFieldObjects()
 }
 
 //--------------------------------------------------------------------
-BaseObj * ObjectController::createTile(int column, int row, int type)
-//--------------------------------------------------------------------
-{
-    BaseObjectInfo baseInfo = { BaseObjectType::TileObj, column, row };
-    TileInfo info = { baseInfo, static_cast<TileType>(type) };
-    BaseObj* tile = SmartFactory->createTileObj(info);
-    CC_ASSERT(tile);
-    mTiles[column][row] = tile;
-    return tile;
-}
-
-//--------------------------------------------------------------------
 cocos2d::Set * ObjectController::createInitialCookies()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ObjectController::createInitialCookies:");
-    cocos2d::Set* set = new cocos2d::Set();
+    cocos2d::Set* set = cocos2d::Set::create();
     auto createdString = cocos2d::String("");
 
     for (int row = 0; row < NumRows; row++) {
@@ -123,6 +111,18 @@ cocos2d::Set * ObjectController::createInitialCookies()
     }
     cocos2d::log("ObjectController::createInitialCookies: created array=%s", createdString.getCString());
     return set;
+}
+
+//--------------------------------------------------------------------
+BaseObj * ObjectController::createTile(int column, int row, int type)
+//--------------------------------------------------------------------
+{
+    BaseObjectInfo baseInfo = { BaseObjectType::TileObj, column, row };
+    TileInfo info = { baseInfo, static_cast<TileType>(type) };
+    BaseObj* tile = SmartFactory->createTileObj(info);
+    CC_ASSERT(tile);
+    mTiles[column][row] = tile;
+    return tile;
 }
 
 //--------------------------------------------------------------------

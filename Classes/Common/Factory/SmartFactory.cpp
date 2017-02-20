@@ -135,6 +135,7 @@ BaseObj * _SmartFactory::create(const BaseObjectInfo & info)
 void _SmartFactory::recycle(BaseObj * obj)
 //--------------------------------------------------------------------
 {
+    cocos2d::log("SmartFactory::recycle: type=%d", obj->getTypeAsInt());
     switch (obj->getType())
     {
     case BaseObjectType::CookieObj:
@@ -144,6 +145,7 @@ void _SmartFactory::recycle(BaseObj * obj)
         mTileObjPool->push_back(obj);
         break;
     case BaseObjectType::FieldObj:
+        obj->clear();
         CC_SAFE_RELEASE(obj);
         break;
     case BaseObjectType::Unknown:
@@ -151,7 +153,6 @@ void _SmartFactory::recycle(BaseObj * obj)
         mBaseObjPool->push_back(obj);
         break;
     }
-    cocos2d::log("SmartFactory::recycle: type=%d", obj->getTypeAsInt());
 }
 
 //--------------------------------------------------------------------
