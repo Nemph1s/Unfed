@@ -14,7 +14,19 @@
 
 class SwapObj;
 class LevelObj;
+class CookieObj;
 class GameplayScene;
+
+struct SwapChecker : public cocos2d::Ref
+{
+    cocos2d::Set* set;
+    int curCol;
+    int curRow;
+    int nextCol;
+    int nextRow;
+    SwapChecker(cocos2d::Set* _set, int _curCol, int _curRow, int _nextCol, int _nextRow)
+        : set(_set), curCol(_curCol), curRow(_curRow), nextCol(_nextCol), nextRow(_nextRow) {}
+};
 
 class SwapController : public cocos2d::Ref
 {
@@ -49,6 +61,8 @@ public:
 protected:
     // Nodes should be created using create();
     SwapController();
+
+    void detectSwap(SwapChecker* checker);
  
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(SwapObj* swap)>, mSwapCallback, SwapCallback);
