@@ -77,8 +77,8 @@ namespace CommonTypes {
    */
    struct LevelInfo
    {
-      int16_t id; /**< current level ID */
-      int16_t targetScore; /**< Goal score */
+      uint32_t id; /**< current level ID */
+      uint32_t targetScore; /**< Goal score */
       int moves; /**< available moves */
 	  TilesArray tiles; /**< array of tiles */
       int typesCount; /**< count of types */

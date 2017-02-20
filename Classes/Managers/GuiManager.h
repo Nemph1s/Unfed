@@ -28,8 +28,8 @@ public:
 
     void setShuffleButtonCallback(std::function<void()> touchEndedCallback);
 
-    void updateScoreLabel(int value);
-    void updateTargetScoreLabel(int value);
+    void updateScoreLabel(uint32_t value);
+    void updateTargetScoreLabel(uint32_t value);
     void updateMovesLabel(int value);
 
 protected:

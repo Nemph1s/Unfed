@@ -98,10 +98,10 @@ const Json::Value & _JsonParser::getFieldObjects()
 
 
 //--------------------------------------------------------------------
-int16_t _JsonParser::getTargetScore()
+uint32_t _JsonParser::getTargetScore()
 //--------------------------------------------------------------------
 {
-	int16_t res = 0;
+	uint32_t res = 0;
 	if (mRootNode["targetScore"].isInt()) {
 		res = mRootNode["targetScore"].asInt();
 	}
@@ -109,10 +109,10 @@ int16_t _JsonParser::getTargetScore()
 }
 
 //--------------------------------------------------------------------
-int16_t _JsonParser::getMoves()
+uint8_t _JsonParser::getMoves()
 //--------------------------------------------------------------------
 {
-	int16_t res = 0;
+	uint8_t res = 0;
 	if (mRootNode["moves"].isInt()) {
 		res = mRootNode["moves"].asInt();
 	}
@@ -120,10 +120,10 @@ int16_t _JsonParser::getMoves()
 }
 
 //--------------------------------------------------------------------
-int16_t _JsonParser::getTypesCount()
+uint8_t _JsonParser::getTypesCount()
 //--------------------------------------------------------------------
 {
-    int16_t res = 0;
+    uint8_t res = 0;
     if (mRootNode["typesCount"].isInt()) {
         res = mRootNode["typesCount"].asInt();
     }

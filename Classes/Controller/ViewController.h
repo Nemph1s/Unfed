@@ -59,8 +59,8 @@ protected:
     //---Class Attributes-------------------------------------------------
     std::function<void()> mShuffleButtonCallback;
 
-    CC_SYNTHESIZE_READONLY(int, mMovesLeft, MovesLeft)
-    CC_SYNTHESIZE_READONLY(int, mScore, Score)
+    CC_SYNTHESIZE_READONLY(uint8_t, mMovesLeft, MovesLeft)
+    CC_SYNTHESIZE_READONLY(uint32_t, mScore, Score)
 
     CC_SYNTHESIZE_READONLY(LevelObj*, mLevel, Level)
     CC_SYNTHESIZE_READONLY(SwapController*, mSwapController, SwapController)

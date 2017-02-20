@@ -28,9 +28,9 @@ public:
 
    const Json::Value& getTiles();
    const Json::Value& getFieldObjects();
-   int16_t getTargetScore();
-   int16_t getMoves();   
-   int16_t getTypesCount();
+   uint32_t getTargetScore();
+   uint8_t getMoves();   
+   uint8_t getTypesCount();
 
 protected:
 

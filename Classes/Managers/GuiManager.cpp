@@ -116,7 +116,7 @@ void _GuiManager::setShuffleButtonCallback(std::function<void()> touchEndedCallb
 }
 
 //--------------------------------------------------------------------
-void _GuiManager::updateScoreLabel(int value)
+void _GuiManager::updateScoreLabel(uint32_t value)
 //--------------------------------------------------------------------
 {
     if (!mScoreLabel)
@@ -126,7 +126,7 @@ void _GuiManager::updateScoreLabel(int value)
 }
 
 //--------------------------------------------------------------------
-void _GuiManager::updateTargetScoreLabel(int value)
+void _GuiManager::updateTargetScoreLabel(uint32_t value)
 //--------------------------------------------------------------------
 {
     if (!mTargetLabel)

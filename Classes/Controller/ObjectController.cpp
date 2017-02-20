@@ -295,7 +295,9 @@ bool ObjectController::isSameTypeOfCookieAt(int column, int row, int type)
     return true;
 }
 
+//--------------------------------------------------------------------
 bool ObjectController::matchFieldObject(BaseObj * obj)
+//--------------------------------------------------------------------
 {
     obj->match();
 
