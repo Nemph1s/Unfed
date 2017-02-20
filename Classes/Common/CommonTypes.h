@@ -96,6 +96,7 @@ namespace CommonTypes {
        , ChainTypeT = 3 /**< enum value ChainTypeT. */
        , ChainTypeX = 4 /**< enum value ChainTypeX. */
        , ChainTypeAllOfOne = 5 /**< enum value ChainTypeAllOfOne. */
+       , ChainFromAToB = 6 /**< enum value ChainTypeAllOfOne. */
        , Unknown /**< enum value unknown. */
    };
 

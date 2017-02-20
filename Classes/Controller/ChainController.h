@@ -52,6 +52,7 @@ protected:
     cocos2d::Set* createVerticalChainAt(int row);
     cocos2d::Set* createXChainAt(int column, int row);
     cocos2d::Set* createAllOfOneChain(int entryColumn, int entryRow);
+    cocos2d::Set* createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to);
 
 #ifdef COCOS2D_DEBUG
     void logDebugChains(cocos2d::Set* horizontal, cocos2d::Set* vertical, cocos2d::Set* difficult);

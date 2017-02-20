@@ -415,6 +415,37 @@ cocos2d::Set* ChainController::createAllOfOneChain(int entryColumn, int entryRow
     return set;
 }
 
+//--------------------------------------------------------------------
+cocos2d::Set * ChainController::createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to)
+//--------------------------------------------------------------------
+{
+    int fromCol = -1; int fromRow = -1;
+    int toCol = -1; int toRow = -1;
+    auto set = cocos2d::Set::create();
+    if (!Helper::convertPointToTilePos(from, fromCol, fromRow)) {
+        return set;
+    }
+    if (!Helper::convertPointToTilePos(to, toCol, toRow)) {
+        return set;
+    }
+    
+    int i = fromCol;
+    int j = fromRow;
+    auto chain = ChainObj::createWithType(ChainType::ChainFromAToB);
+    do {
+        do {
+            if (mObjCtrl->cookieAt(i, j)) {
+                chain->addCookie(mObjCtrl->cookieAt(i, j));
+            }
+            j = fromRow > toRow ? j - 1 : j + 1;
+        } while (j == toRow);
+        i = fromCol > fromCol ? i - 1 : i + 1;
+    } while (i == toCol);
+
+    set->addObject(chain);
+    return set;
+}
+
 
 #ifdef COCOS2D_DEBUG
 //--------------------------------------------------------------------
