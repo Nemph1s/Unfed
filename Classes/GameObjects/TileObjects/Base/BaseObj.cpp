@@ -134,5 +134,12 @@ void BaseObj::clear()
     mIsMovable = false;
     mIsPossibleSwap = false;
     mIsRemovable = false;
-    mSpriteNode = nullptr;
+    mIsContainer = false;
+    if (getParent()) {
+        removeFromParent();
+    }
+    if (mSpriteNode) {
+        mSpriteNode->removeFromParent();
+        mSpriteNode = nullptr;
+    }
 }

@@ -365,3 +365,23 @@ void ObjectController::removeCookie(int column, int row)
     mCookies[column][row] = nullptr;
 }
 
+//--------------------------------------------------------------------
+void ObjectController::removeAllCookies()
+//--------------------------------------------------------------------
+{
+    for (int row = 0; row < NumRows; row++) {
+        for (int column = 0; column < NumColumns; column++) {
+            auto cookie = cookieAt(column, row);
+            if (cookie) {
+                cookie->clear();
+                if (cookie->getSpriteNode()) {
+                    cookie->getSpriteNode()->removeFromParent();
+                    cookie->setSpriteNode(nullptr);
+                }
+                    
+            }
+            removeCookie(column, row);
+        }
+    }
+}
+

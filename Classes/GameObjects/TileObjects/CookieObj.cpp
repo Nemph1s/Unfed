@@ -140,6 +140,7 @@ void CookieObj::clear()
     BaseObj::clear();
     mCookieType = CommonTypes::CookieType::Unknown;
     mDebugLabel->removeFromParent();
+    CC_SAFE_RELEASE_NULL(mDebugLabel);
 }
 
 //--------------------------------------------------------------------

@@ -62,7 +62,7 @@ bool ViewController::initGameScene()
     SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
     
     // Load the level.
-    int levelId = 0;
+    int levelId = 4;
     mLevel = LevelObj::createWithId(levelId);
     mScore = mLevel->getLevelInfo().targetScore;
     mMovesLeft = mLevel->getLevelInfo().moves;
@@ -188,6 +188,7 @@ void ViewController::shuffle()
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::shuffle");
+   mLevel->getObjectController()->removeAllCookies();
    mGameplayScene->removeAllCookieSprites();
    mGameplayScene->addSpritesForCookies(mLevel->shuffle());
 }

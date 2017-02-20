@@ -55,6 +55,7 @@ public:
     void updateObjectAt(int column, int row, BaseObj* obj, CommonTypes::BaseObjectType type);
     void removeCookie(int column, int row);
 
+    void removeAllCookies();
 
 protected:
     // Nodes should be created using create();

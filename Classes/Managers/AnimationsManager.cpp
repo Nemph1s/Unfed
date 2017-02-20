@@ -439,7 +439,8 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
         const float scaleFactor = 0.1f;
 
         auto scaleAction = ScaleTo::create(duration, scaleFactor);
-        auto easeOut = EaseOut::create(scaleAction, duration);
+        auto fadeOut = FadeOut::create(duration);
+        auto easeOut = EaseOut::create(fadeOut, duration);
 
         auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
         CC_ASSERT(scene);

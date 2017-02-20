@@ -130,6 +130,8 @@ void TileObj::clear()
     BaseObj::clear();
     mTileType = CommonTypes::TileType::Unknown;
     mHP = 0;
+    mDebugLabel->removeFromParent();
+    CC_SAFE_RELEASE_NULL(mDebugLabel);
 }
 
 //--------------------------------------------------------------------
