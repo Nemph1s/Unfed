@@ -288,11 +288,19 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
     int cookieType = -1;
     // loop through the rows, from top to bottom
     for (int column = 0; column < NumColumns; column++) {
+
+        bool nonEmptyTileFounded = false;
         for (int row = 0; row < NumRows; row++) {
 
             cocos2d::Array* array = nullptr;
-            if (mObjCtrl->isEmptyTileAt(column, row)) {
-                break;
+            if (!mObjCtrl->isEmptyTileAt(column, row)) {
+                nonEmptyTileFounded = true;
+            } else {
+                if ((row <= NumRows / 2) && !nonEmptyTileFounded) {
+                    continue;
+                } else {
+                    break;
+                }                
             }
             auto fieldObj = mObjCtrl->fieldObjectAt(column, row);
             if (fieldObj) {
