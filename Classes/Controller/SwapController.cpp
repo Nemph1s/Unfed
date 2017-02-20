@@ -77,41 +77,39 @@ bool SwapController::detectPossibleSwaps()
             if (column < CommonTypes::NumColumns - 1) {
                 // Have a cookie in this spot? If there is no tile, there is no cookie.
                 auto other = objCtrl->cookieAt(column + 1, row);
-                if (other == nullptr) 
-                    continue;
+                if (other) {
+                    // Swap them
+                    objCtrl->updateCookieObjectAt(column, row, other);
+                    objCtrl->updateCookieObjectAt(column + 1, row, cookie);
 
-                // Swap them
-                objCtrl->updateCookieObjectAt(column, row, other);
-                objCtrl->updateCookieObjectAt(column + 1, row, cookie);
+                    // Is either cookie now part of a chain?
+                    if (objCtrl->hasChainAt(column + 1, row) || objCtrl->hasChainAt(column, row)) {
 
-                // Is either cookie now part of a chain?
-                if (objCtrl->hasChainAt(column + 1, row) || objCtrl->hasChainAt(column, row)) {
-
-                    SwapObj *swap = SwapObj::createWithCookies(cookie, other);
-                    set->addObject(swap);
+                        SwapObj *swap = SwapObj::createWithCookies(cookie, other);
+                        set->addObject(swap);
+                    }
+                    // Swap them back
+                    objCtrl->updateCookieObjectAt(column, row, cookie);
+                    objCtrl->updateCookieObjectAt(column + 1, row, other);
                 }
-                // Swap them back
-                objCtrl->updateCookieObjectAt(column, row, cookie);
-                objCtrl->updateCookieObjectAt(column + 1, row, other);
             }
             // This does exactly the same thing, but for the cookie above instead of on the right.
             if (row < CommonTypes::NumRows - 1) {
 
                 auto other = objCtrl->cookieAt(column, row + 1);
-                if (other == nullptr) 
-                    continue;
+                if (other) {
+                    // Swap them
+                    objCtrl->updateCookieObjectAt(column, row, other);
+                    objCtrl->updateCookieObjectAt(column, row + 1, cookie);
 
-                // Swap them
-                objCtrl->updateCookieObjectAt(column, row, other);
-                objCtrl->updateCookieObjectAt(column, row + 1, cookie);
+                    if (objCtrl->hasChainAt(column, row + 1) || objCtrl->hasChainAt(column, row)) {
 
-                if (objCtrl->hasChainAt(column, row + 1) || objCtrl->hasChainAt(column, row)) {
-
-                    SwapObj *swap = SwapObj::createWithCookies(cookie, other);
-                    set->addObject(swap);
+                        SwapObj *swap = SwapObj::createWithCookies(cookie, other);
+                        set->addObject(swap);
+                    }
+                    objCtrl->updateCookieObjectAt(column, row, cookie);
+                    objCtrl->updateCookieObjectAt(column, row + 1, other);
                 }
-                objCtrl->updateCookieObjectAt(column, row, cookie);
-                objCtrl->updateCookieObjectAt(column, row + 1, other);
             }
         }
     }
