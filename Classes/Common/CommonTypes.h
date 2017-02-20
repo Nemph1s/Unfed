@@ -107,12 +107,12 @@ namespace CommonTypes {
        Empty = 0 /**< enum value Empty. */
        , Normal = 1 /**< enum value Normal. */
        , Water = 2 /**< enum value Water. */
-       , SandWall = 10 /**< enum value SandWall. */
-       , Dirt = 11 /**< enum value Dirt. */
-       , Dirt_HP2 = 12 /**< enum value DirtX2. */
-       , Dirt_HP3 = 13 /**< enum value DirtX3. */
-       , Bush = 21 /**< enum value DirtX3. */
-       , Bush_HP2 = 22 /**< enum value DirtX3. */
+       , Dirt = 10 /**< enum value Dirt. */
+       , Dirt_HP2 = 11 /**< enum value DirtX2. */
+       , Dirt_HP3 = 12 /**< enum value DirtX3. */
+       , Bush = 20 /**< enum value DirtX3. */
+       , Bush_HP2 = 21 /**< enum value DirtX3. */
+       , RockWall = 30 /**< enum value RockWall. */
        , Unknown /**< enum value unknown. */
    };
 

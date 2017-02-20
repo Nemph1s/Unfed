@@ -231,28 +231,30 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
                     }
                     auto fieldObj = mObjCtrl->fieldObjectAt(column, lookup);
                     if (fieldObj) {
-                        if (!fieldObj->getIsMovable())
+                        
+                        if (!fieldObj->getIsMovable() && !fieldObj->getIsContainer())
                             break;
+                        else if (fieldObj->getIsMovable()) {
+                            // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
+                            mObjCtrl->updateObjectAt(column, lookup, nullptr, fieldObj->getType());
+                            mObjCtrl->updateObjectAt(column, row, fieldObj, fieldObj->getType());
+                            fieldObj->setRow(row);
 
-                        // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
-                        mObjCtrl->updateObjectAt(column, lookup, nullptr, fieldObj->getType());
-                        mObjCtrl->updateObjectAt(column, row, fieldObj, fieldObj->getType());
-                        fieldObj->setRow(row);
+                            // Lazy creation of array
+                            if (array == nullptr) {
+                                array = cocos2d::Array::createWithCapacity(NumRows);
+                                columns->addObject(array);
+                            }
+                            array->addObject(fieldObj);
 
-                        // Lazy creation of array
-                        if (array == nullptr) {
-                            array = cocos2d::Array::createWithCapacity(NumRows);
-                            columns->addObject(array);
+                            // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
+                            break;
                         }
-                        array->addObject(fieldObj);
-
-                        // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
-                        break;
                     }
                     auto cookie = mObjCtrl->cookieAt(column, lookup);
                     if (cookie) {
                         if (!cookie->getIsMovable())
-                            continue;
+                            break;
 
                         // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
                         mObjCtrl->updateObjectAt(column, lookup, nullptr, cookie->getType());

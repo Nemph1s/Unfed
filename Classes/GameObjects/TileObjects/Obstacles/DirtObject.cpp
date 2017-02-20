@@ -81,22 +81,6 @@ cocos2d::String& DirtObject::spriteName() const
 }
 
 //--------------------------------------------------------------------
-cocos2d::String& DirtObject::description() const
-//--------------------------------------------------------------------
-{
-    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
-}
-
-
-//--------------------------------------------------------------------
-void DirtObject::clear()
-//--------------------------------------------------------------------
-{
-    TileObj::clear();
-    
-}
-
-//--------------------------------------------------------------------
 bool DirtObject::checkMatchingCondition(int column, int row)
 //--------------------------------------------------------------------
 {

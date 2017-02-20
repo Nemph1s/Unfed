@@ -8,7 +8,7 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/TileObjects/Obstacles/BushObj.h"
+#include "GameObjects/TileObjects/Obstacles/RockObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
@@ -16,23 +16,23 @@
 using CommonTypes::TileType;
 
 //--------------------------------------------------------------------
-BushObj::BushObj()
+RockObj::RockObj()
     : TileObj()
 //--------------------------------------------------------------------
 {
 }
 
 //--------------------------------------------------------------------
-BushObj::~BushObj()
+RockObj::~RockObj()
 //--------------------------------------------------------------------
 {
 }
 
 //--------------------------------------------------------------------
-BushObj * BushObj::create(const CommonTypes::TileInfo & info)
+RockObj* RockObj::create(const CommonTypes::TileInfo & info)
 //--------------------------------------------------------------------
 {
-    BushObj * ret = new (std::nothrow) BushObj();
+    RockObj* ret = new (std::nothrow) RockObj();
     if (ret && ret->init(info)) {
         ret->autorelease();
     }
@@ -43,46 +43,42 @@ BushObj * BushObj::create(const CommonTypes::TileInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool BushObj::init(const CommonTypes::TileInfo & info)
+bool RockObj::init(const CommonTypes::TileInfo & info)
 //--------------------------------------------------------------------
 {
     if (!TileObj::init(info)) {
-        cocos2d::log("BushObj::init: can't init TileObj inctance");
+        cocos2d::log("RockObj::init: can't init TileObj inctance");
         return false;
     }
 
-    if (info.tileType >= TileType::Bush && info.tileType <= TileType::Bush_HP2) {
-        mHP = (getTypeAsInt() - Helper::to_underlying(TileType::Bush)) + 1;
+    if (info.tileType >= TileType::RockWall && info.tileType <= TileType::RockWall) {
+        mHP = (getTypeAsInt() - Helper::to_underlying(TileType::RockWall)) + 1;
     }
     mIsRemovable = true;
-    mIsMovable = false;
+    mIsMovable = true;
     mIsContainer = false;
 
     return true;
 }
 
 //--------------------------------------------------------------------
-cocos2d::String& BushObj::spriteName() const
+cocos2d::String& RockObj::spriteName() const
 //--------------------------------------------------------------------
 {
-    const int normalState = 2;
-    const int corruptedState = 1;
+    const int weakState = 1;
     cocos2d::String* str = nullptr;
     switch (mHP)
     {
-    case corruptedState:
-        str = &GameResources::s_BushCorruptedImg;
-        break;
-    case normalState:
+    case weakState:
     default:
-        str = &GameResources::s_BushNormalImg;
+        str = &GameResources::s_RockImg;
         break;
     }
     return *str;
 }
 
 //--------------------------------------------------------------------
-bool BushObj::checkMatchingCondition(int column, int row)
+bool RockObj::checkMatchingCondition(int column, int row)
 //--------------------------------------------------------------------
 {
     if (column < 0 || column >= CommonTypes::NumColumns || row < 0 || row >= CommonTypes::NumColumns) {

@@ -309,7 +309,7 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
                 auto easeAction = EaseOut::create(moveAction, duration);
                 auto fadeIn = FadeIn::create(0.0125f);
 
-                cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(0.175f), fadeIn, nullptr));
+                cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(0.15f), fadeIn, nullptr));
                 cookie->getSpriteNode()->runAction(easeAction);
                 
                 AudioManager->playSound(CommonTypes::SoundType::AddCookieSound);

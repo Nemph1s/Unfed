@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObjects/Obstacles/DirtObject.h
+* @file GameObjects/TileObjects/Obstacles/RockObj.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -12,17 +12,17 @@
 
 #include "GameObjects/TileObjects/TileObj.h"
 
-class DirtObject : public TileObj
+class RockObj : public TileObj
 {
 CC_CONSTRUCTOR_ACCESS:
-    virtual ~DirtObject();
+    virtual ~RockObj();
 
 public:
     /**
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static DirtObject * create(const CommonTypes::TileInfo &info);
+    static RockObj * create(const CommonTypes::TileInfo &info);
 
     bool init(const CommonTypes::TileInfo &info);
 
@@ -32,7 +32,7 @@ public:
 
 protected:
     // Nodes should be created using create();
-    DirtObject();
+    RockObj();
 
     //---Class Attributes-------------------------------------------------
 };

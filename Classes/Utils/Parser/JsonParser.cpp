@@ -60,15 +60,17 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
 		}
 	}
 
-    const Json::Value& fieldObjects = getFieldObjects();
+    if (!mRootNode["fieldObjects"].isNull()) {
+        const Json::Value& fieldObjects = getFieldObjects();
 
-    for (uint16_t i = 0; i < fieldObjects.size(); ++i) {
-        const Json::Value& subnode = fieldObjects[i];
-        CC_ASSERT(subnode.isArray());
+        for (uint16_t i = 0; i < fieldObjects.size(); ++i) {
+            const Json::Value& subnode = fieldObjects[i];
+            CC_ASSERT(subnode.isArray());
 
-        for (uint16_t j = 0; j < subnode.size(); ++j) {
-            CC_ASSERT(subnode[j].isInt());
-            levelInfo.fieldObjects[i][j] = fieldObjects[j][i].asInt();
+            for (uint16_t j = 0; j < subnode.size(); ++j) {
+                CC_ASSERT(subnode[j].isInt());
+                levelInfo.fieldObjects[i][j] = fieldObjects[j][i].asInt();
+            }
         }
     }
 	return levelInfo;

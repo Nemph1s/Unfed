@@ -85,6 +85,13 @@ cocos2d::String& TileObj::spriteName() const
 }
 
 //--------------------------------------------------------------------
+cocos2d::String & TileObj::description() const
+//--------------------------------------------------------------------
+{
+    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
+}
+
+//--------------------------------------------------------------------
 void TileObj::setSpriteNode(cocos2d::Sprite * var)
 //--------------------------------------------------------------------
 {

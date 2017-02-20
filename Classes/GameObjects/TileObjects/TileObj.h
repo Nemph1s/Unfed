@@ -29,6 +29,7 @@ public:
     bool init(const CommonTypes::TileInfo &info);
 
     virtual cocos2d::String& spriteName() const override;
+    virtual cocos2d::String& description() const override;
 
     virtual void setSpriteNode(cocos2d::Sprite* var) override;
     virtual int getTypeAsInt() const override;

@@ -126,6 +126,9 @@
     <ClCompile Include="..\Classes\GameObjects\TileObjects\Obstacles\BushObj.cpp">
       <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\Obstacles\RockObj.cpp">
+      <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -210,6 +213,9 @@
       <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\TileObjects\Obstacles\BushObj.h">
+      <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\Obstacles\RockObj.h">
       <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
     </ClInclude>
   </ItemGroup>

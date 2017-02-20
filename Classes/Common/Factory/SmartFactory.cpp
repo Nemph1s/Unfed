@@ -15,6 +15,7 @@
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/Obstacles/DirtObject.h"
 #include "GameObjects/TileObjects/Obstacles/BushObj.h"
+#include "GameObjects/TileObjects/Obstacles/RockObj.h"
 
 using namespace CommonTypes;
 
@@ -237,6 +238,11 @@ BaseObj * _SmartFactory::createFieldObj(const TileInfo & info)
         baseObject = BushObj::create(info);
         CC_SAFE_RETAIN(baseObject);
         CCASSERT(baseObject, "error while creating BushObj");
+        break;
+    case TileType::RockWall:
+        baseObject = RockObj::create(info);
+        CC_SAFE_RETAIN(baseObject);
+        CCASSERT(baseObject, "error while creating RockObj");
         break;
     default:
         CC_ASSERT(baseObject);
