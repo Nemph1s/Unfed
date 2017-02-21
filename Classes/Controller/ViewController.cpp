@@ -62,7 +62,7 @@ bool ViewController::initGameScene()
     SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
     
     // Load the level.
-    int levelId = 4;
+    int levelId = 7;
     mLevel = LevelObj::createWithId(levelId);
     mScore = mLevel->getLevelInfo().targetScore;
     mMovesLeft = mLevel->getLevelInfo().moves;
@@ -178,9 +178,11 @@ void ViewController::updateInfoLabels()
 {
     cocos2d::log("ViewController::updateInfoLabels");
     CC_ASSERT(mLevel);
-    GuiManager->updateScoreLabel(mScore);
+
+    float targetScore = mLevel->getLevelInfo().targetScore;
+    float percentage = static_cast<float>(mScore / targetScore);
+    GuiManager->updateScore(mScore, percentage);
     GuiManager->updateMovesLabel(mMovesLeft);
-    GuiManager->updateTargetScoreLabel(mLevel->getLevelInfo().targetScore);
 }
 
 //--------------------------------------------------------------------

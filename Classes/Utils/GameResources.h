@@ -24,6 +24,9 @@ namespace GameResources {
 
    static cocos2d::String s_ButtonImg = "Images/Button@2x.png";
 
+   static cocos2d::String s_scoreBarBackgroundImg = "Images/ProgressBarBack@2x.png";
+   static cocos2d::String s_scoreBarForegroundImg = "Images/ProgressBarFront@2x.png";
+
    static cocos2d::String s_TileImg = "Sprites.atlas/TileShadow@2x.png";
 
    static cocos2d::String s_RockImg = "Sprites.atlas/Rock@2x.png";
