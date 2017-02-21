@@ -159,6 +159,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\GameObjects\TileObjects\Obstacles\DirtObject.cpp" />
     <ClCompile Include="..\Classes\GameObjects\TileObjects\Obstacles\RockObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\TileObjects\TileObj.cpp" />
+    <ClCompile Include="..\Classes\Layers\CookiesLayer.cpp" />
     <ClCompile Include="..\Classes\Managers\AnimationsManager.cpp" />
     <ClCompile Include="..\Classes\Managers\AudioManager.cpp" />
     <ClCompile Include="..\Classes\Managers\GuiManager.cpp" />
@@ -187,6 +188,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\GameObjects\TileObjects\Obstacles\DirtObject.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\Obstacles\RockObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\TileObj.h" />
+    <ClInclude Include="..\Classes\Layers\CookiesLayer.h" />
     <ClInclude Include="..\Classes\Managers\AnimationsManager.h" />
     <ClInclude Include="..\Classes\Managers\AudioManager.h" />
     <ClInclude Include="..\Classes\Managers\GuiManager.h" />

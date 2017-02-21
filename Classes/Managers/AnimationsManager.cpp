@@ -22,6 +22,7 @@
 #include "Common/Factory/SmartFactory.h"
 
 #include "Scenes/GameplayScene.h"
+#include "Layers/CookiesLayer.h"
 
 #include "cocos2d/cocos/ui/UIText.h"
 

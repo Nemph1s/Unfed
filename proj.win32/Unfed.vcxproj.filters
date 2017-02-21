@@ -52,6 +52,9 @@
     <Filter Include="src\GameObjects\TileObjects\Obstacles">
       <UniqueIdentifier>{011dbb72-128a-49c7-8edb-3d4e5b01ffa6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Layers">
+      <UniqueIdentifier>{5d27183b-f496-4c99-aef4-45a088aaf7ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -128,6 +131,9 @@
     </ClCompile>
     <ClCompile Include="..\Classes\GameObjects\TileObjects\Obstacles\RockObj.cpp">
       <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Layers\CookiesLayer.cpp">
+      <Filter>src\Layers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -217,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\TileObjects\Obstacles\RockObj.h">
       <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Layers\CookiesLayer.h">
+      <Filter>src\Layers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -18,6 +18,7 @@
 #include "Common/CommonTypes.h"
 
 #include "Scenes/GameplayScene.h"
+#include "Layers/CookiesLayer.h"
 
 //--------------------------------------------------------------------
 SwapController::SwapController()
@@ -169,8 +170,9 @@ bool SwapController::trySwapCookieTo(int horzDelta, int vertDelta)
 //--------------------------------------------------------------------
 {
     cocos2d::log("SwapController::trySwapCookieTo: horzDelta=%d; vertDelta=%d;", horzDelta, vertDelta);
-    auto swipeFromColumn = mGameplayScene->getSwipeFromColumn();
-    auto swipeFromRow = mGameplayScene->getSwipeFromRow();
+    auto layer = mGameplayScene->getCookiesLayer();
+    auto swipeFromColumn = layer->getSwipeFromColumn();
+    auto swipeFromRow = layer->getSwipeFromRow();
 
     int toColumn = swipeFromColumn + horzDelta;
     int toRow = swipeFromRow + vertDelta;

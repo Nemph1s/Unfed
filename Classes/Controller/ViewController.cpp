@@ -92,7 +92,7 @@ bool ViewController::initSwapController()
     auto tryToSwapCallback = [swapCtrl](int horzDelta, int vertDelta) {
         return swapCtrl->trySwapCookieTo(horzDelta, vertDelta);
     };
-    mGameplayScene->setTrySwapCookieCallback(tryToSwapCallback);
+    mGameplayScene->setSwapCookieCallback(tryToSwapCallback);
 
     auto detectPossibleSwapsCallback = [swapCtrl]() {
         return swapCtrl->detectPossibleSwaps();
