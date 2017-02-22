@@ -364,36 +364,11 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
     Vec2 centerPosition = Vec2((firstSpritePos.x + lastSpritePos.x) / 2,
         (firstSpritePos.y + lastSpritePos.y) / 2);// - 8);
 
-    //TODO: move to helper
-    auto color = Color4B::WHITE;
-    switch (lastCookie->getCookieType())
-    {
-    case CookieType::Croissant:
-        color = Color4B::ORANGE;
-        break;
-    case CookieType::Cupcake:
-        color = Color4B::RED;
-        break;
-    case CookieType::Danish:
-        color = Color4B::BLUE;
-        break;
-    case CookieType::Donut:
-        color = Color4B::MAGENTA;
-        break;
-    case CookieType::Macaron:
-        color = Color4B::GREEN;
-        break;
-    case CookieType::SugarCookie:
-        color = Color4B::YELLOW;
-        break;
-    default:
-        break;
-    }
+    auto color = Helper::getScoreColorByObj(lastCookie);
 
     // Add a label for the score that slowly floats up.
-
     auto fontSize = 80;
-    auto str = StringUtils::format("+%d", chain->getScore());
+    auto str = StringUtils::format("%d", chain->getScore());
     Text* scoreLabel = Text::create(str, GameResources::s_fontYellow.getCString(), fontSize);
     scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
     scoreLabel->setPosition(centerPosition);
@@ -423,6 +398,47 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
 }
 
 //--------------------------------------------------------------------
+void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+
+    Vec2 centerPosition = obj->getSpriteNode()->getPosition();
+
+    auto color = Helper::getScoreColorByObj(obj);
+
+    // Add a label for the score that slowly floats up.
+    auto fontSize = 80;
+    auto str = StringUtils::format("%d", obj->getScoreValue());
+    Text* scoreLabel = Text::create(str, GameResources::s_fontYellow.getCString(), fontSize);
+    scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
+    scoreLabel->setPosition(centerPosition);
+    scoreLabel->setZOrder(300);
+    scoreLabel->setTextColor(Color4B::WHITE);
+    scoreLabel->enableOutline(color, 2);
+    scoreLabel->setScale(0.5f);
+
+    auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
+    CC_ASSERT(scene);
+
+    scene->getCookiesLayer()->addChild(scoreLabel);
+
+    auto duration = 1.15f;
+    //auto scaleAction = ScaleTo::create(duration, 2.0f);
+    auto moveAction = MoveBy::create(duration, Vec2(0.0f, 10.0f));
+    auto easeOut = EaseOut::create(moveAction, duration);
+    auto fadeOut = FadeOut::create(0.5f);
+
+    auto callback = CallFunc::create([scoreLabel]() {
+        if (scoreLabel) {
+            scoreLabel->removeFromParent();
+        }
+    });
+    scoreLabel->runAction(Sequence::create(DelayTime::create(duration / 2), fadeOut, nullptr));
+    scoreLabel->runAction(Sequence::create(easeOut, callback, nullptr));
+}
+
+//--------------------------------------------------------------------
 void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects, cocos2d::CallFunc * completion)
 //--------------------------------------------------------------------
 {
@@ -442,6 +458,8 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
         auto scaleAction = ScaleTo::create(duration, scaleFactor);
         auto fadeOut = FadeOut::create(duration);
         auto easeOut = EaseOut::create(fadeOut, duration);
+
+        animateScoreForFieldObj(obj);
 
         auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
         CC_ASSERT(scene);

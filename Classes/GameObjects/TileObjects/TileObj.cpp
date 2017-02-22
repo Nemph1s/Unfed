@@ -118,9 +118,6 @@ void TileObj::match()
     if (mHP > 0) {
         mTileType = static_cast<CommonTypes::TileType>(getTypeAsInt() - 1);
     }
-    else {
-        mTileType = CommonTypes::TileType::Unknown;
-    }
 }
 
 //--------------------------------------------------------------------

@@ -36,4 +36,10 @@ public:
     static cocos2d::Vec2 pointForTile(BaseObj* obj);
 
     static bool convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row);
+
+    static cocos2d::Color4B getScoreColorByObj(BaseObj* obj);
+
+private:
+    static cocos2d::Color4B getScoreColorByCookieType(CommonTypes::CookieType type);
+    static cocos2d::Color4B getScoreColorByTileType(CommonTypes::TileType type);
 };

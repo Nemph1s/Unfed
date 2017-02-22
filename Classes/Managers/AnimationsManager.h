@@ -15,6 +15,7 @@
 
 class SwapObj;
 class ChainObj;
+class BaseObj;
 
 class _AnimationsManager
 {
@@ -33,6 +34,7 @@ public:
     void animateNewCookieSprite(cocos2d::Sprite* sprite);
 
     void animateScoreForChain(ChainObj* chain);
+    void animateScoreForFieldObj(BaseObj* obj);
 
     void animateRemovingFieldObjects(cocos2d::Set* fieldObjects, cocos2d::CallFunc* completion);
 

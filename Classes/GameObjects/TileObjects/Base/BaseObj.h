@@ -49,6 +49,8 @@ protected:
     CC_SYNTHESIZE_READONLY(bool, mIsPossibleSwap, IsPossibleSwap);
     CC_SYNTHESIZE_READONLY(bool, mIsContainer, IsContainer);
 
+    CC_SYNTHESIZE_READONLY(uint8_t, mScoreValue, ScoreValue);
+
     cocos2d::String* mDummyString;
 
     CC_SYNTHESIZE(int, mColumn, Column);
