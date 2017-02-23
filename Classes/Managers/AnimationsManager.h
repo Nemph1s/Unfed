@@ -36,6 +36,8 @@ public:
     void animateScoreForChain(ChainObj* chain);
     void animateScoreForFieldObj(BaseObj* obj);
 
+    void animateBouncingObj(BaseObj* obj);
+
     void animateRemovingFieldObjects(cocos2d::Set* fieldObjects, cocos2d::CallFunc* completion);
 
 protected:

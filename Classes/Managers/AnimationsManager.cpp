@@ -231,7 +231,8 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
             float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
 
             // Calculate which animation is the longest. This is the time the game has to wait before it may continue.
-            longestDuration = MAX(longestDuration, duration + delay);
+            auto animateBouncingObjDelay = 0.5f;
+            longestDuration = MAX(longestDuration, duration + delay + animateBouncingObjDelay);
 
             // Perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
@@ -240,15 +241,19 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
                     auto cookie = dynamic_cast<CookieObj*>(obj);
                     cookie->updateDebugTileLabel();
                 }
+
+                auto moveCallback = CallFunc::create([=]() {
+                    AnimationsManager->animateBouncingObj(obj);
+                    AudioManager->playSound(CommonTypes::SoundType::FallingCookieSound);
+                });
                 
                 auto sprite = obj->getSpriteNode();
                 auto delta = newPos - sprite->getPosition();
 
                 auto moveAction = MoveBy::create(duration, delta);
                 auto easeAction = EaseOut::create(moveAction, duration);
-                sprite->runAction(easeAction);
 
-                AudioManager->playSound(CommonTypes::SoundType::FallingCookieSound);
+                sprite->runAction(Sequence::create(easeAction, moveCallback, nullptr));
             });
 
             obj->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
@@ -299,21 +304,26 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
             float duration = (timeToTile * 0.1f) + colDelay;
 
             // You calculate which animation is the longest. This is the time the game has to wait before it may continue.
-            longestDuration = MAX(longestDuration, duration + delay);
+            auto animateBouncingObjDelay = 0.5f;
+            longestDuration = MAX(longestDuration, duration + delay + animateBouncingObjDelay);
 
             // You perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
 
                 cookie->updateDebugTileLabel();
 
+                auto moveCallback = CallFunc::create([=]() {
+                    AnimationsManager->animateBouncingObj(cookie);
+                    AudioManager->playSound(CommonTypes::SoundType::AddCookieSound);
+                });
+
                 auto moveAction = MoveTo::create(duration, newPos);
                 auto easeAction = EaseOut::create(moveAction, duration);
                 auto fadeIn = FadeIn::create(0.0125f);
+                auto delayAction = DelayTime::create(0.15f);
 
-                cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(0.15f), fadeIn, nullptr));
-                cookie->getSpriteNode()->runAction(easeAction);
-                
-                AudioManager->playSound(CommonTypes::SoundType::AddCookieSound);
+                cookie->getSpriteNode()->runAction(Sequence::create(delayAction, fadeIn, nullptr));
+                cookie->getSpriteNode()->runAction(Sequence::create(easeAction, moveCallback, nullptr));
             });
 
             cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
@@ -436,6 +446,50 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
     });
     scoreLabel->runAction(Sequence::create(DelayTime::create(duration / 2), fadeOut, nullptr));
     scoreLabel->runAction(Sequence::create(easeOut, callback, nullptr));
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateBouncingObj(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+
+    float duration = 0.2f;
+    auto moveAction = MoveBy::create(duration, Vec2(0.0f, -10.0f));
+    auto easeMoveOut = EaseOut::create(moveAction, duration);
+    auto scaleXAction = ScaleTo::create(duration, 1.2f, 0.8f);
+    auto easeScaleXOut = EaseOut::create(scaleXAction, duration);
+
+    auto reverseScaleXCallback = CallFunc::create([obj]() {
+        float duration = 0.2f;
+        auto reverseScaleXAction = ScaleTo::create(duration, 1.0f, 1.0f);
+        auto reverseEaseScaleXOut = EaseOut::create(reverseScaleXAction, duration);
+        auto reverseMoveAction = MoveBy::create(duration, Vec2(0.0f, 10.0f));
+        auto reverseEaseMoveOut = EaseOut::create(reverseMoveAction, duration);
+        if (obj) {
+            auto sprite = obj->getSpriteNode();
+            if (sprite) {
+                sprite->runAction(reverseEaseScaleXOut);
+                sprite->runAction(reverseEaseMoveOut);
+            }
+        }
+    });
+
+    duration = 0.2f;
+    auto scaleYAction = ScaleTo::create(duration, 0.8f, 1.2f);
+    auto easeScaleYOut = EaseOut::create(scaleYAction, duration);
+
+    auto reverseScaleYAction = ScaleTo::create(duration*2, 1.0f, 1.0f);
+    auto reverseEaseScaleYOut = EaseOut::create(reverseScaleYAction, duration);
+
+    auto speed = 2.0f;
+    auto sprite = obj->getSpriteNode();
+    sprite->runAction(Speed::create(easeMoveOut, speed));
+    sprite->runAction(Speed::create(easeScaleXOut, speed));
+    auto seq1 = Sequence::create(DelayTime::create(0.2f), reverseScaleXCallback, nullptr);
+    sprite->runAction(Speed::create(seq1, speed));
+    auto seq2 = Sequence::create(DelayTime::create(0.4f), easeScaleYOut, reverseEaseScaleYOut, nullptr);
+    sprite->runAction(Speed::create(seq2, speed));
 }
 
 //--------------------------------------------------------------------
