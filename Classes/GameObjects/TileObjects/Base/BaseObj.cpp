@@ -141,7 +141,9 @@ void BaseObj::clear()
         removeFromParent();
     }
     if (mSpriteNode) {
-        mSpriteNode->removeFromParent();
+        if (mSpriteNode->getParent()) {
+            mSpriteNode->removeFromParent();
+        }
         mSpriteNode = nullptr;
     }
 }

@@ -47,6 +47,7 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
 	levelInfo.targetScore = getTargetScore();
 	levelInfo.moves = getMoves();
     levelInfo.typesCount = getTypesCount();
+    levelInfo.skipEmptyHoles = getSkipEmptyHoles();
 
 	const Json::Value& node = getTiles();
 
@@ -128,6 +129,17 @@ uint8_t _JsonParser::getTypesCount()
     uint8_t res = 0;
     if (mRootNode["typesCount"].isInt()) {
         res = mRootNode["typesCount"].asInt();
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
+bool _JsonParser::getSkipEmptyHoles()
+//--------------------------------------------------------------------
+{
+    bool res = false;
+    if (mRootNode["skipEmptyHoles"].asBool()) {
+        res = mRootNode["skipEmptyHoles"].asBool();
     }
     return res;
 }

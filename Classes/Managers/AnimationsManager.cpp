@@ -144,63 +144,6 @@ void _AnimationsManager::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateFallingCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion)
-//--------------------------------------------------------------------
-{
-    CC_ASSERT(colums);
-    CC_ASSERT(completion);
-
-    float longestDuration = 0;
-    for (auto it = colums->begin(); it != colums->end(); it++) {
-
-        auto array = dynamic_cast<cocos2d::Array*>(*it);
-        CC_ASSERT(array);
-
-        float colDelay = Helper::randomFloatBetween(0.055f, 0.07f) * 1;
-        for (auto itArr = array->begin(); itArr != array->end(); itArr++) {
-
-            auto cookie = dynamic_cast<CookieObj*>(*itArr);
-            CC_ASSERT(cookie);
-
-            auto newPos = Helper::pointForTile(cookie);
-            // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
-            // This calculation works because fillHoles guarantees that lower cookies are first in the array.
-
-            float delay = (0.05f + 0.15f * colDelay);
-
-            // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
-            // You can tweak these numbers to change the feel of the animation.
-            float timeToTile = (cookie->getSpriteNode()->getPositionY() - newPos.y) / GameResources::TileHeight;
-            float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
-
-            // Calculate which animation is the longest. This is the time the game has to wait before it may continue.
-            longestDuration = MAX(longestDuration, duration + delay);
-
-            // Perform the animation, which consists of a delay, a movement and a sound effect.
-            auto callback = CallFunc::create([=]() {
-
-                cookie->updateDebugTileLabel();
-
-                auto sprite = cookie->getSpriteNode();
-                auto delta = newPos - sprite->getPosition();
-
-                auto moveAction = MoveBy::create(duration, delta);
-                auto easeAction = EaseOut::create(moveAction, duration);
-                sprite->runAction(easeAction);
-
-                AudioManager->playSound(CommonTypes::SoundType::FallingCookieSound);
-            });
-
-            cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
-        }
-    }
-    
-    CC_ASSERT(mCurrentScene);
-    // You wait until all the cookies have fallen down before allowing the gameplay to continue.
-    mCurrentScene->runAction(Sequence::create(DelayTime::create(longestDuration), completion, nullptr));
-}
-
-//--------------------------------------------------------------------
 void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d::CallFunc * completion)
 //--------------------------------------------------------------------
 {
@@ -213,7 +156,7 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
         auto array = dynamic_cast<cocos2d::Array*>(*it);
         CC_ASSERT(array);
 
-        float colDelay = Helper::randomFloatBetween(0.055f, 0.07f) * 1;
+        float colDelay = Helper::randomFloatBetween(0.06f, 0.07f);
         for (auto itArr = array->begin(); itArr != array->end(); itArr++) {
 
             auto obj = dynamic_cast<BaseObj*>(*itArr);
@@ -231,7 +174,7 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
             float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
 
             // Calculate which animation is the longest. This is the time the game has to wait before it may continue.
-            auto animateBouncingObjDelay = 0.5f;
+            auto animateBouncingObjDelay = 0.25f;
             longestDuration = MAX(longestDuration, duration + delay + animateBouncingObjDelay);
 
             // Perform the animation, which consists of a delay, a movement and a sound effect.
@@ -277,16 +220,14 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
     auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
     CC_ASSERT(scene);
 
-    int columnIdx = 0;
-    for (auto it = colums->begin(); it != colums->end(); it++, columnIdx++) {
+    for (auto it = colums->begin(); it != colums->end(); it++) {
 
         auto array = dynamic_cast<cocos2d::Array*>(*it);
         CC_ASSERT(array);
 
         int startRow = -1;
-        float colDelay = Helper::randomFloatBetween(0.055f, 0.07f) * 1;
-
-        for (auto itArr = array->begin(); itArr != array->end(); itArr++) {
+        int rowIdx = 0;
+        for (auto itArr = array->begin(); itArr != array->end(); itArr++, rowIdx++) {
             auto cookie = dynamic_cast<CookieObj*>(*itArr);
             CC_ASSERT(cookie);
             scene->createSpriteWithCookie(cookie, cookie->getColumn(), startRow);
@@ -296,15 +237,15 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
 
             // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
             // This calculation works because fillHoles guarantees that lower cookies are first in the array.
-            float delay = 0.1f + 0.175f * (colums->count() - columnIdx - 1);
+            float delay = 0.1f + 0.175f * (array->count() - rowIdx - 1);
 
             // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
             // You can tweak these numbers to change the feel of the animation.
             float timeToTile = fabs(startRow - cookie->getRow());
-            float duration = (timeToTile * 0.1f) + colDelay;
+            float duration = (timeToTile * 0.1f) + 0.125f;            
 
             // You calculate which animation is the longest. This is the time the game has to wait before it may continue.
-            auto animateBouncingObjDelay = 0.5f;
+            auto animateBouncingObjDelay = 0.25f;
             longestDuration = MAX(longestDuration, duration + delay + animateBouncingObjDelay);
 
             // You perform the animation, which consists of a delay, a movement and a sound effect.

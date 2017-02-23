@@ -31,6 +31,7 @@ public:
    uint32_t getTargetScore();
    uint8_t getMoves();   
    uint8_t getTypesCount();
+   bool getSkipEmptyHoles();
 
 protected:
 

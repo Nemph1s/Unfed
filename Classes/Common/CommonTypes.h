@@ -82,7 +82,19 @@ namespace CommonTypes {
       int moves; /**< available moves */
 	  TilesArray tiles; /**< array of tiles */
       int typesCount; /**< count of types */
+      bool skipEmptyHoles; /**< availability to skip empty tiles when obj falling */
       TilesArray fieldObjects; /**< array of tileObjects */
+   };
+
+   /**
+   * @brief ChainType enum.
+   * Type of the sound object
+   */
+   enum class SearchEmptyHoles : int {
+       ObjFounded = 0 /**< enum value ObjFounded. */
+       , ContinueSearch = 1 /**< enum value ContinueSearch. */
+       , BreakSearch = 2 /**< enum value BreakSearch. */
+       , Unknown /**< enum value unknown. */
    };
 
    /**

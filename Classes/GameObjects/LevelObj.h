@@ -57,6 +57,8 @@ protected:
     void calculateScore(cocos2d::Set* chains);
     void removeCookies(cocos2d::Set* chains);   
 
+    CommonTypes::SearchEmptyHoles skipFillTopUpHoles(int column, int row, bool& filledTileFouned);
+
     bool checkMathicngFieldObjWithChain(cocos2d::Set* chains, BaseObj* obj);
 
     bool isPossibleToAddCookie(int column, int row);

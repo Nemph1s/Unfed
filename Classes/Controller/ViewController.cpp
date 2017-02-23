@@ -62,7 +62,7 @@ bool ViewController::initGameScene()
     SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
     
     // Load the level.
-    int levelId = 7;
+    int levelId = 2;
     mLevel = LevelObj::createWithId(levelId);
     mScore = mLevel->getLevelInfo().targetScore;
     mMovesLeft = mLevel->getLevelInfo().moves;
@@ -224,18 +224,15 @@ void ViewController::animateHandleMatches(cocos2d::Set* chains)
     auto completion = CallFunc::create([=]() {
 
         auto columns = mLevel->useGravityToFillHoles();
-        auto addNewCookies = CallFunc::create([=]() {
-
-            updateInfoLabels();
-
-            auto newColumns = mLevel->fillTopUpHoles();
-            auto enableTouches = CallFunc::create([=]() {
-                handleMatches();
-            });
-
-            AnimationsManager->animateNewCookies(newColumns, enableTouches);
+        auto newColumns = mLevel->fillTopUpHoles();
+        auto enableTouches = CallFunc::create([=]() {
+            handleMatches();
         });
 
+        auto addNewCookies = CallFunc::create([=]() {
+            updateInfoLabels();
+        });
+        AnimationsManager->animateNewCookies(newColumns, enableTouches);
         AnimationsManager->animateFallingObjects(columns, addNewCookies);
 //        AnimationsManager->animateFallingCookies(columns, addNewCookies);
     });

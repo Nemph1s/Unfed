@@ -148,6 +148,26 @@ void LevelObj::removeCookies(cocos2d::Set * chains)
 }
 
 //--------------------------------------------------------------------
+SearchEmptyHoles LevelObj::skipFillTopUpHoles(int column, int row, bool& filledTileFouned)
+//--------------------------------------------------------------------
+{
+    SearchEmptyHoles res;
+    if (!mObjCtrl->isEmptyTileAt(column, row)) {
+        filledTileFouned = true;
+        res = SearchEmptyHoles::ObjFounded;
+    }
+    else {
+        if ((row <= (NumRows / 2) + 1)  && !filledTileFouned) {
+            res = SearchEmptyHoles::ContinueSearch;
+        }
+        else {
+            res = SearchEmptyHoles::BreakSearch;
+        }
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
 bool LevelObj::checkMathicngFieldObjWithChain(cocos2d::Set * chains, BaseObj * obj)
 //--------------------------------------------------------------------
 {
@@ -226,8 +246,10 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
                 // Scan upward to find the cookie that sits directly above the hole
                 for (int lookup = row - 1; lookup >= 0; lookup--) {
 
-                    if (mObjCtrl->isEmptyTileAt(column, lookup)) {
-                        break;
+                    if (!mLevelInfo.skipEmptyHoles) {
+                        if (mObjCtrl->isEmptyTileAt(column, lookup)) {
+                            break;
+                        }
                     }
                     auto fieldObj = mObjCtrl->fieldObjectAt(column, lookup);
                     if (fieldObj) {
@@ -289,19 +311,22 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
     // loop through the rows, from top to bottom
     for (int column = 0; column < NumColumns; column++) {
 
-        bool nonEmptyTileFounded = false;
-        for (int row = 0; row < NumRows; row++) {
+        bool filledTileFouned = false;
 
-            cocos2d::Array* array = nullptr;
-            if (!mObjCtrl->isEmptyTileAt(column, row)) {
-                nonEmptyTileFounded = true;
-            } else {
-                if ((row <= NumRows / 2) && !nonEmptyTileFounded) {
+        cocos2d::Array* array = nullptr;
+        for (int row = 0; row < NumRows; row++) {
+                        
+ //--------------------------------------------------------------------       
+            if (!mLevelInfo.skipEmptyHoles) {
+                auto skipRow = skipFillTopUpHoles(column, row, filledTileFouned);
+                if (skipRow == SearchEmptyHoles::ContinueSearch) {
                     continue;
-                } else {
+                }
+                else if (skipRow == SearchEmptyHoles::BreakSearch) {
                     break;
-                }                
-            }
+                }
+            }                        
+//--------------------------------------------------------------------
             auto fieldObj = mObjCtrl->fieldObjectAt(column, row);
             if (fieldObj) {
                 if (!fieldObj->getIsMovable() && !fieldObj->getIsContainer())
