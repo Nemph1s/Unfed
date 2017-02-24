@@ -274,7 +274,7 @@ bool ObjectController::isPossibleToAddCookie(int column, int row)
         if (!fieldObj) {
             return true;
         }
-        if (fieldObj->getIsContainer()) {
+        if (fieldObj->isContainer()) {
             return true;
         }
     }

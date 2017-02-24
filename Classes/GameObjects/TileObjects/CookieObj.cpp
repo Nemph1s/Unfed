@@ -58,7 +58,7 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
 
     mCookieType = cookieInfo.cookieType;
     mIsMovable = true;
-    mIsPossibleSwap = true;
+    mIsSwappable = true;
     mIsRemovable = true;
 
     if (!mDebugLabel) {

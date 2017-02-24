@@ -136,8 +136,12 @@ bool SwapController::isPossibleSwap(SwapObj * swap)
         if (!other)
             continue;
         if ((other->getCookieA() == swap->getCookieA() && other->getCookieB() == swap->getCookieB()) ||
-            (other->getCookieB() == swap->getCookieA() && other->getCookieA() == swap->getCookieB()))
-            return true;
+            (other->getCookieB() == swap->getCookieA() && other->getCookieA() == swap->getCookieB())) {
+
+            if (swap->getCookieA()->isSwappable() && swap->getCookieB()->isSwappable()) {
+                return true;
+            }
+        }            
     }
     return false;
 }

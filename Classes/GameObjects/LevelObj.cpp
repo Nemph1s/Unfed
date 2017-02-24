@@ -218,10 +218,13 @@ cocos2d::Set* LevelObj::detectFieldObjects(cocos2d::Set * chains)
             if (!obj) {
                 continue;
             }
-            if (checkMathicngFieldObjWithChain(chains, obj)) {
-                if (mObjCtrl->matchFieldObject(obj)) {
-                    set->addObject(obj);
-                    continue;
+            if (obj->isRemovable()) {
+
+                if (checkMathicngFieldObjWithChain(chains, obj)) {
+                    if (mObjCtrl->matchFieldObject(obj)) {
+                        set->addObject(obj);
+                        continue;
+                    }
                 }
             }
         }
@@ -254,9 +257,9 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
                     auto fieldObj = mObjCtrl->fieldObjectAt(column, lookup);
                     if (fieldObj) {
                         
-                        if (!fieldObj->getIsMovable() && !fieldObj->getIsContainer())
+                        if (!fieldObj->isMovable() && !fieldObj->isContainer())
                             break;
-                        else if (fieldObj->getIsMovable()) {
+                        else if (fieldObj->isMovable()) {
                             // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
                             mObjCtrl->updateObjectAt(column, lookup, nullptr, fieldObj->getType());
                             mObjCtrl->updateObjectAt(column, row, fieldObj, fieldObj->getType());
@@ -275,7 +278,7 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
                     }
                     auto cookie = mObjCtrl->cookieAt(column, lookup);
                     if (cookie) {
-                        if (!cookie->getIsMovable())
+                        if (!cookie->isMovable())
                             break;
 
                         // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
@@ -306,7 +309,7 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
 {
     cocos2d::log("LevelObj::fillTopUpHoles:");
     auto columns = cocos2d::Array::createWithCapacity(NumColumns);
-    auto createdString = cocos2d::String("");
+    auto createdString = cocos2d::String::create("");
     int cookieType = -1;
     // loop through the rows, from top to bottom
     for (int column = 0; column < NumColumns; column++) {
@@ -329,7 +332,7 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
 //--------------------------------------------------------------------
             auto fieldObj = mObjCtrl->fieldObjectAt(column, row);
             if (fieldObj) {
-                if (!fieldObj->getIsMovable() && !fieldObj->getIsContainer())
+                if (!fieldObj->isMovable() && !fieldObj->isContainer())
                     break;
             }
             if (isPossibleToAddCookie(column, row)) {
@@ -341,12 +344,12 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
                     columns->addObject(array);
                 }
                 array->addObject(cookie);
-                createdString.appendWithFormat("\t%s\n", cookie->description());
+                createdString->appendWithFormat("\t%s\n", cookie->description());
             }
         }
-        createdString.append("}\n");
+        createdString->append("}\n");
     }
-    cocos2d::log("LevelObj::fillTopUpHoles:  new created cookies: {\n%s", createdString.getCString());
+    cocos2d::log("LevelObj::fillTopUpHoles:  new created cookies: {\n%s", createdString->getCString());
     return columns;
 }
 

@@ -18,7 +18,7 @@ BaseObj::BaseObj()
     , mRow(-1)
     , mType(CommonTypes::BaseObjectType::Unknown)
     , mIsMovable(false)
-    , mIsPossibleSwap(false)
+    , mIsSwappable(false)
     , mIsRemovable(false)
     , mIsContainer(false)
     , mSpriteNode(nullptr)
@@ -134,7 +134,7 @@ void BaseObj::clear()
     mRow = -1;
     mType = CommonTypes::BaseObjectType::Unknown;
     mIsMovable = false;
-    mIsPossibleSwap = false;
+    mIsSwappable = false;
     mIsRemovable = false;
     mIsContainer = false;
     if (getParent()) {

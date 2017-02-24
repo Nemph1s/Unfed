@@ -9,7 +9,7 @@
 */
 
 #include "GameObjects/TileObjects/Obstacles/RockObj.h"
-#include "GameObjects/TileObjects/TileObj.h"
+
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 

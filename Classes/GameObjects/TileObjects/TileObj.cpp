@@ -145,7 +145,7 @@ bool TileObj::isReadyToRemove() const
 //--------------------------------------------------------------------
 {
     bool result = false;
-    if (getIsRemovable()) {
+    if (isRemovable()) {
         result = (mHP <= 0);
     }
     return result;

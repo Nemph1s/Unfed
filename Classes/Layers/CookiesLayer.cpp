@@ -129,8 +129,10 @@ bool CookiesLayer::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
         auto objCtrl = mLevel->getObjectController();
         CookieObj* cookie = objCtrl->cookieAt(mSwipeFromColumn, mSwipeFromRow);
         if (cookie) {
-            showSelectionIndicatorForCookie(cookie);
-            return true;
+            if (cookie->isSwappable()) {
+                showSelectionIndicatorForCookie(cookie);
+                return true;
+            }            
         }
     }
     return false;
