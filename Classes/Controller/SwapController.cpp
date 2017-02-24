@@ -9,7 +9,7 @@
 */
 
 #include "Controller/SwapController.h"
-#include "Controller/ObjectController.h"
+#include "Controller/ObjectController/ObjectController.h"
 
 #include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/LevelObj.h"

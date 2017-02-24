@@ -20,7 +20,7 @@
 #include "Layers/CookiesLayer.h"
 
 #include "Managers/AudioManager.h"
-#include "Controller/ObjectController.h"
+#include "Controller/ObjectController/ObjectController.h"
 
 #include "cocos2d/cocos/ui/UIScale9Sprite.h"
 

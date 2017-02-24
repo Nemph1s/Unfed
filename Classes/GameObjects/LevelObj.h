@@ -36,9 +36,6 @@ public:
 
     virtual bool initWithId(const int16_t& levelId);
 
-    void initObjectController();
-    void initChainController();
-
     cocos2d::Set* shuffle();
 
     cocos2d::Set* removeMatches();
@@ -49,6 +46,9 @@ public:
     cocos2d::Array* fillTopUpHoles();
 
     void resetComboMultiplier();
+
+    //TODO: move to callback
+    removeMatches(cocos2d::Set* set);
 
 protected:
     // Nodes should be created using create();

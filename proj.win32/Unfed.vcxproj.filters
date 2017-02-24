@@ -55,6 +55,9 @@
     <Filter Include="src\Layers">
       <UniqueIdentifier>{5d27183b-f496-4c99-aef4-45a088aaf7ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Controller\ObjectController">
+      <UniqueIdentifier>{04c9a7bc-cc17-47a5-b410-4c0f643cdc1c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -105,9 +108,6 @@
     <ClCompile Include="..\Classes\Common\Factory\SmartFactory.cpp">
       <Filter>src\Common\Factory</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Controller\ObjectController.cpp">
-      <Filter>src\Controller</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\GameObjects\Chain\ChainObj.cpp">
       <Filter>src\GameObjects\Chain</Filter>
     </ClCompile>
@@ -134,6 +134,15 @@
     </ClCompile>
     <ClCompile Include="..\Classes\Layers\CookiesLayer.cpp">
       <Filter>src\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\DudeObj.cpp">
+      <Filter>src\GameObjects\TileObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController\DudeController.cpp">
+      <Filter>src\Controller\ObjectController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController\ObjectController.cpp">
+      <Filter>src\Controller\ObjectController</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -197,9 +206,6 @@
     <ClInclude Include="..\Classes\Common\Factory\SmartFactory.h">
       <Filter>src\Common\Factory</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Controller\ObjectController.h">
-      <Filter>src\Controller</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\Chain\ChainObj.h">
       <Filter>src\GameObjects\Chain</Filter>
     </ClInclude>
@@ -226,6 +232,15 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Layers\CookiesLayer.h">
       <Filter>src\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\DudeObj.h">
+      <Filter>src\GameObjects\TileObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController\DudeController.h">
+      <Filter>src\Controller\ObjectController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController\ObjectController.h">
+      <Filter>src\Controller\ObjectController</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

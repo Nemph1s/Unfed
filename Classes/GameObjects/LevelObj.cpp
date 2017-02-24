@@ -19,8 +19,10 @@
 #include "Utils/Parser/JsonParser.h"
 
 #include "Common/Factory/SmartFactory.h"
-#include "Controller/ObjectController.h"
+#include "Controller/ObjectController/ObjectController.h"
+#include "Controller/ObjectController/DudeController.h"
 #include "Controller/ChainController.h"
+
 
 using namespace CommonTypes;
 
@@ -71,30 +73,7 @@ bool LevelObj::initWithId(const int16_t& levelId)
     }
     mLevelInfo = JsonParser->getLevelInfo();
 
-    initObjectController();
-    initChainController();
-
     return true;
-}
-
-//--------------------------------------------------------------------
-void LevelObj::initObjectController()
-//--------------------------------------------------------------------
-{
-    mObjCtrl = ObjectController::create();
-    mObjCtrl->setLevel(this);
-
-    mObjCtrl->createInitialTiles();
-    mObjCtrl->createInitialFieldObjects();
-}
-
-//--------------------------------------------------------------------
-void LevelObj::initChainController()
-//--------------------------------------------------------------------
-{
-    mChainCtrl = ChainController::create();
-    mChainCtrl->setLevel(this);
-    mChainCtrl->setObjectController(mObjCtrl);
 }
 
 //--------------------------------------------------------------------
@@ -386,4 +365,14 @@ void LevelObj::resetComboMultiplier()
 //--------------------------------------------------------------------
 {
     mComboMultiplier = 1;
+}
+
+//--------------------------------------------------------------------
+void LevelObj::removeDudeMatches(cocos2d::Set * set)
+//--------------------------------------------------------------------
+{
+    if (set) {
+        calculateScore(set);
+        removeCookies(set);
+    }
 }

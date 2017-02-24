@@ -13,6 +13,7 @@
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/DudeObj.h"
 #include "GameObjects/TileObjects/Obstacles/DirtObject.h"
 #include "GameObjects/TileObjects/Obstacles/BushObj.h"
 #include "GameObjects/TileObjects/Obstacles/RockObj.h"
@@ -121,6 +122,9 @@ BaseObj * _SmartFactory::create(const BaseObjectInfo & info)
     case BaseObjectType::FieldObj:
         baseObject = createFieldObj(tileInfo);
         break;
+    case BaseObjectType::DudeObj:
+        baseObject = createDudeObj(tileInfo);
+        break;
     case BaseObjectType::Unknown:
     default:
         baseObject = createBaseObj(info);
@@ -145,6 +149,7 @@ void _SmartFactory::recycle(BaseObj * obj)
         mTileObjPool->push_back(obj);
         break;
     case BaseObjectType::FieldObj:
+    case BaseObjectType::DudeObj:
         obj->clear();
         CC_SAFE_RELEASE(obj);
         break;
@@ -244,6 +249,29 @@ BaseObj * _SmartFactory::createFieldObj(const TileInfo & info)
         baseObject = RockObj::create(info);
         CC_SAFE_RETAIN(baseObject);
         CCASSERT(baseObject, "error while creating RockObj");
+        break;
+    default:
+        CC_ASSERT(baseObject);
+        break;
+    }
+    cocos2d::log("SmartFactory::create: created with type=%d", baseObject->getTypeAsInt());
+
+    return baseObject;
+}
+
+//--------------------------------------------------------------------
+BaseObj * _SmartFactory::createDudeObj(const CommonTypes::TileInfo & info)
+//--------------------------------------------------------------------
+{
+    BaseObj* baseObject = nullptr;
+
+    switch (info.tileType)
+    {
+    case TileType::DudeLightr:
+    case TileType::DudeBulbr:
+        baseObject = DudeObj::create(info);
+        CC_SAFE_RETAIN(baseObject);
+        CCASSERT(baseObject, "error while creating DudeObj");
         break;
     default:
         CC_ASSERT(baseObject);

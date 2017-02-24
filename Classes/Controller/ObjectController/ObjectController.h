@@ -17,6 +17,7 @@ class BaseObj;
 class TileObj;
 class CookieObj;
 class LevelObj;
+class DudeController;
 
 class ObjectController : public cocos2d::Ref
 {
@@ -35,7 +36,7 @@ public:
     void createInitialTiles();
     void createInitialFieldObjects();
     cocos2d::Set* createInitialCookies();
-
+    
     BaseObj* createRandomCookie(int column, int row);
     int getRandomCookieType(int column, int row);
 
@@ -63,9 +64,9 @@ protected:
 
     BaseObj* createTile(int column, int row, int type);
     BaseObj* createCookie(int column, int row, int type);
-
+    
     BaseObj* createFieldObject(int column, int row, int type);
-
+    
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
 

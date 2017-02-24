@@ -9,7 +9,7 @@
 */
 
 #include "Controller/ChainController.h"
-#include "Controller/ObjectController.h"
+#include "Controller/ObjectController/ObjectController.h"
 
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/Chain/ChainObj.h"
@@ -428,7 +428,21 @@ cocos2d::Set * ChainController::createChainFromPosToPos(cocos2d::Vec2 from, coco
     if (!Helper::convertPointToTilePos(to, toCol, toRow)) {
         return set;
     }
-    
+
+    return createChainFromPosToPos(fromCol, fromRow, toCol, toRow);
+}
+
+//--------------------------------------------------------------------
+cocos2d::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow, int toCol, int toRow)
+//--------------------------------------------------------------------
+{
+    auto set = cocos2d::Set::create();
+
+    if (!(toCol >= 0 && toCol < NumColumns) || !(toRow >= 0 && toRow < NumColumns)) {
+        cocos2d::log("ChainController::createChainFromPosToPos: wrong destinationPos at column=%d, row=%d", toCol, toRow);
+        return set;
+    }
+ 
     int i = fromCol;
     int j = fromRow;
     auto chain = ChainObj::createWithType(ChainType::ChainFromAToB);

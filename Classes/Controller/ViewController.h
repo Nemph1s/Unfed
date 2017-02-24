@@ -16,7 +16,10 @@
 class LevelObj;
 class SwapObj;
 class GameplayScene;
+class ObjectController;
+class ChainController;
 class SwapController;
+class DudeController;
 
 class ViewController : public cocos2d::Ref
 {
@@ -38,7 +41,10 @@ protected:
     ViewController();
 
     bool initGameScene();
+    bool initObjectController();
     bool initSwapController();
+    bool initChainController();
+    bool initDudeController();
 
     void updateScore(cocos2d::Set* chains);
     void updateInfoLabels();
@@ -53,6 +59,8 @@ protected:
     //---Callbacks-------------------------------------------------------
     void shuffleButtonCallback();
     void swapCallback(SwapObj* swap);
+    //???? something wrong with
+    void activateDudeCallback(DudeObj* obj, CommonTypes::Direction direction);
     void activateChainCallback(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
     //--------------------------------------------------------------------
 
@@ -63,7 +71,12 @@ protected:
     CC_SYNTHESIZE_READONLY(uint32_t, mScore, Score)
 
     CC_SYNTHESIZE_READONLY(LevelObj*, mLevel, Level)
-    CC_SYNTHESIZE_READONLY(SwapController*, mSwapController, SwapController)
+    
     CC_SYNTHESIZE_READONLY(GameplayScene*, mGameplayScene, GameplayScene)
+    
+    CC_SYNTHESIZE_READONLY(ObjectController*, mObjectController, ObjectController)
+    CC_SYNTHESIZE_READONLY(ChainController*, mChainController, ChainController)
+    CC_SYNTHESIZE_READONLY(SwapController*, mSwapController, SwapController)
+    CC_SYNTHESIZE_READONLY(DudeController*, mDudeController, DudeController)
 };
 

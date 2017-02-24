@@ -8,7 +8,8 @@
 * @author VMartyniuk
 */
 
-#include "Controller/ObjectController.h"
+#include "Controller/ObjectController/ObjectController.h"
+#include "Controller/ObjectController/DudeController.h"
 
 #include "Common/Factory/SmartFactory.h"
 
@@ -187,15 +188,15 @@ int ObjectController::getRandomCookieType(int column, int row)
 TileObj* ObjectController::tileAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    bool invalidColumn = column >= 0 && column < NumColumns;
-    bool invalidRow = row >= 0 && row < NumColumns;
-    if (!invalidColumn) {
+    bool validColumn = column >= 0 && column < NumColumns;
+    bool validRow = row >= 0 && row < NumColumns;
+    if (!validColumn) {
         cocos2d::log("ObjectController::tileAt: Invalid column : %d", column);
-        CC_ASSERT(invalidColumn);
+        CC_ASSERT(validColumn);
     }
-    if (!invalidRow) {
+    if (!validRow) {
         cocos2d::log("ObjectController::tileAt: Invalid row: %d", row);
-        CC_ASSERT(invalidRow);
+        CC_ASSERT(validRow);
     }
     return dynamic_cast<TileObj*>(mTiles[column][row]);
 }
@@ -204,9 +205,9 @@ TileObj* ObjectController::tileAt(int column, int row)
 CookieObj* ObjectController::cookieAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    bool invalidColumn = column >= 0 && column < NumColumns;
-    bool invalidRow = row >= 0 && row < NumColumns;
-    if (!invalidColumn || !invalidRow) {
+    bool validColumn = column >= 0 && column < NumColumns;
+    bool validRow = row >= 0 && row < NumColumns;
+    if (!validColumn || !validRow) {
         cocos2d::log("ObjectController::cookieAt: Invalid cookie at column = %d, row = %d", column, row);
         return nullptr;
     }
@@ -360,7 +361,9 @@ void ObjectController::removeCookie(int column, int row)
         return;
     }
     cocos2d::log("ObjectController::removeCookies: remove %s", cookie->description().getCString());
-    cookie->removeFromParent();
+    if (cookie->getParent()) {
+        cookie->removeFromParent();
+    }
     SmartFactory->recycle(cookie);
     mCookies[column][row] = nullptr;
 }
@@ -375,7 +378,9 @@ void ObjectController::removeAllCookies()
             if (cookie) {
                 cookie->clear();
                 if (cookie->getSpriteNode()) {
-                    cookie->getSpriteNode()->removeFromParent();
+                    if (cookie->getSpriteNode()->getParent()) {
+                        cookie->getSpriteNode()->removeFromParent();
+                    }
                     cookie->setSpriteNode(nullptr);
                 }
                     
