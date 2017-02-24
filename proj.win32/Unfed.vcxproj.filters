@@ -58,6 +58,9 @@
     <Filter Include="src\Controller\ObjectController">
       <UniqueIdentifier>{04c9a7bc-cc17-47a5-b410-4c0f643cdc1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Controller\ObjectController\Dude">
+      <UniqueIdentifier>{4183a7e6-86fc-4278-89f9-14ff605c5441}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -138,11 +141,14 @@
     <ClCompile Include="..\Classes\GameObjects\TileObjects\DudeObj.cpp">
       <Filter>src\GameObjects\TileObjects</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Controller\ObjectController\DudeController.cpp">
-      <Filter>src\Controller\ObjectController</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\Controller\ObjectController\ObjectController.cpp">
       <Filter>src\Controller\ObjectController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController\DudeController.cpp">
+      <Filter>src\Controller\ObjectController\Dude</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.cpp">
+      <Filter>src\Controller\ObjectController\Dude</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -236,11 +242,14 @@
     <ClInclude Include="..\Classes\GameObjects\TileObjects\DudeObj.h">
       <Filter>src\GameObjects\TileObjects</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Controller\ObjectController\DudeController.h">
-      <Filter>src\Controller\ObjectController</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\Controller\ObjectController\ObjectController.h">
       <Filter>src\Controller\ObjectController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController\DudeController.h">
+      <Filter>src\Controller\ObjectController\Dude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.h">
+      <Filter>src\Controller\ObjectController\Dude</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

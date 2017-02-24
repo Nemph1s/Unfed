@@ -28,6 +28,9 @@ public:
 
     cocos2d::String& spriteName() const override;
 
+    CommonTypes::DudePathType getPathType();
+
+
 protected:
     // Nodes should be created using create();
     DudeObj();

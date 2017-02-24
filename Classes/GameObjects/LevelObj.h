@@ -48,7 +48,7 @@ public:
     void resetComboMultiplier();
 
     //TODO: move to callback
-    removeMatches(cocos2d::Set* set);
+    void removeDudeMatches(cocos2d::Set* set);
 
 protected:
     // Nodes should be created using create();
