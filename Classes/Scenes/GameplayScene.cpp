@@ -146,6 +146,14 @@ void GameplayScene::addSpritesForCookies(Set* cookies)
 }
 
 //--------------------------------------------------------------------
+void GameplayScene::addSpritesForObjects(cocos2d::Set* set)
+//--------------------------------------------------------------------
+{
+    cocos2d::log("GameplayScene::addSpritesForCookies:");
+    mCookiesLayer->addSpritesForObjects(set);
+}
+
+//--------------------------------------------------------------------
 void GameplayScene::userInteractionEnabled()
 //--------------------------------------------------------------------
 {

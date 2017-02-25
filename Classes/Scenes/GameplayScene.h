@@ -29,6 +29,7 @@ public:
 
 	void addTiles();
     void addSpritesForCookies(cocos2d::Set* cookies);
+    void addSpritesForObjects(cocos2d::Set* set);
 
     void createSpriteWithCookie(CookieObj* cookie, int column, int row);
     void createSpriteWithDude(BaseObj* dudeObj);

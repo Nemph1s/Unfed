@@ -185,6 +185,13 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
                     cookie->updateDebugTileLabel();
                 }
 
+                if (obj->getType() == BaseObjectType::TileObj 
+                    || obj->getType() == BaseObjectType::DudeObj 
+                    || obj->getType() == BaseObjectType::FieldObj) {
+                    auto tile = dynamic_cast<TileObj*>(obj);
+                    tile->updateDebugTileLabel();
+                }
+
                 auto moveCallback = CallFunc::create([=]() {
                     AnimationsManager->animateBouncingObj(obj);
                     AudioManager->playSound(CommonTypes::SoundType::FallingCookieSound);
@@ -477,5 +484,32 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
     }
     CC_ASSERT(mCurrentScene);
 
+    mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateRemoveDude(BaseObj * obj, cocos2d::CallFunc * completion)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+    CC_ASSERT(completion);
+
+    const float duration = 0.3f;
+
+    const float scaleFactor = 0.1f;
+
+    auto scaleAction = ScaleTo::create(duration, scaleFactor);
+    auto easeOut = EaseOut::create(scaleAction, duration);
+
+    auto sprite = obj->getSpriteNode();
+    auto callback = CallFunc::create([sprite, obj]() {
+        if (sprite) {
+            sprite->removeFromParent();
+            obj->setSpriteNode(nullptr);
+        }
+    });
+    sprite->runAction(Sequence::create(easeOut, callback, nullptr));
+
+    CC_ASSERT(mCurrentScene);
     mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
 }

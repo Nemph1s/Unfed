@@ -19,6 +19,11 @@
 #include "Utils/Helpers/Helper.h"
 
 #include "GameObjects/TileObjects/DudeObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/Chain/ChainObj.h"
+
+#define RequiredAmountForLightr 4
+#define RequiredAmountForBulbr 5
 
 using namespace CommonTypes;
 
@@ -27,6 +32,7 @@ DudeController::DudeController()
     : mObjCtrl(nullptr)
     , mChainCtrl(nullptr)
     , mDudeDirections()
+    , mDudeTypes()
 //--------------------------------------------------------------------
 {
 }
@@ -56,7 +62,34 @@ DudeController * DudeController::create()
 bool DudeController::init()
 //--------------------------------------------------------------------
 {
+    mDudeTypes[RequiredAmountForLightr] = TileType::DudeLightr;
+    mDudeTypes[RequiredAmountForBulbr] = TileType::DudeBulbr;
     return true;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Set* DudeController::createDudeObectsFromChains(cocos2d::Set * chains)
+//--------------------------------------------------------------------
+{
+    auto set = cocos2d::Set::create();
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+
+        auto cookies = chain->getCookies();
+        auto dudeType = getDudeTypeByMatchedCount(cookies->count());
+
+        if (dudeType != TileType::Unknown) {
+            auto cookie = dynamic_cast<CookieObj*>(cookies->getRandomObject());
+            if (!cookie) {
+                continue;
+            }
+            int type = Helper::to_underlying(dudeType);
+            auto dude = createDudeObject(cookie->getColumn(), cookie->getRow(), type);
+            set->addObject(dude);
+        }
+    }
+    return set;
 }
 
 //--------------------------------------------------------------------
@@ -99,6 +132,9 @@ bool DudeController::detectDirectionsForDudes()
 //--------------------------------------------------------------------
 {
     bool isDetected = false;
+    if (mDudeDirections.size() == 0) {
+        return isDetected;
+    }
     for (int row = 0; row < NumRows; row++) {
         for (int column = 0; column < NumColumns; column++) {
             
@@ -106,10 +142,10 @@ bool DudeController::detectDirectionsForDudes()
             if (dude) {
                 auto helper = mDudeDirections.at(dude);
                 if (helper) {
-                    auto topSet = mChainCtrl->createChainFromPosToPos(column, row, column, row - 1);
-                    auto botSet = mChainCtrl->createChainFromPosToPos(column, row, column, row + 1);
-                    auto leftSet = mChainCtrl->createChainFromPosToPos(column, row, column - 1, row);
-                    auto rightSet = mChainCtrl->createChainFromPosToPos(column, row, column + 1, row);
+                    auto topSet = mChainCtrl->createChainFromPosToPos(column, row, column, 0);
+                    auto botSet = mChainCtrl->createChainFromPosToPos(column, row, column, NumRows - 1);
+                    auto leftSet = mChainCtrl->createChainFromPosToPos(column, row, 0, row);
+                    auto rightSet = mChainCtrl->createChainFromPosToPos(column, row, NumColumns - 1, row);
                     helper->setTopChain(topSet);
                     helper->setTopChain(botSet);
                     helper->setTopChain(leftSet);
@@ -149,13 +185,13 @@ bool DudeController::canActivateDudeTo(int fromCol, int fromRow, int direction)
         return false;
 
 
-    mActivateDudeCallback(fromObj, static_cast<Direction>(direction));
+    mActivateDudeCallback(fromObj, direction);
 
     return true;
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * DudeController::activateDude(DudeObj* obj, CommonTypes::Direction direction)
+cocos2d::Set * DudeController::activateDude(DudeObj* obj, int direction)
 //--------------------------------------------------------------------
 {
     auto set = cocos2d::Set::create();
@@ -166,7 +202,8 @@ cocos2d::Set * DudeController::activateDude(DudeObj* obj, CommonTypes::Direction
 
     auto helper = mDudeDirections.at(obj);
     if (helper) {
-        auto newSet = helper->getChainByDirection(direction);
+        auto dir = static_cast<Direction>(direction);
+        auto newSet = helper->getChainByDirection(dir);
         mChainCtrl->addChainsFromSetToSet(newSet, set);
     }
     
@@ -189,7 +226,9 @@ void DudeController::removeDude(int column, int row)
         return;
     }
     cocos2d::log("DudeController::removeDude: remove %s", dude->description().getCString());
+    
     SmartFactory->recycle(dude);
+    mDudeDirections.erase(dude);
     mDudeObjects[column][row] = nullptr;
 }
 
@@ -202,4 +241,15 @@ void DudeController::removeAllDudes()
             removeDude(column, row);
         }
     }
+}
+
+//--------------------------------------------------------------------
+CommonTypes::TileType DudeController::getDudeTypeByMatchedCount(int count)
+//--------------------------------------------------------------------
+{
+    auto type = TileType::Unknown;
+    if (count < RequiredAmountForLightr || count > RequiredAmountForBulbr) {
+        return type;
+    }
+    return mDudeTypes.at(count);
 }

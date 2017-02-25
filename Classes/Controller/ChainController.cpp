@@ -60,7 +60,7 @@ bool ChainController::init()
 cocos2d::Set * ChainController::removeMatches()
 //--------------------------------------------------------------------
 {
-    cocos2d::log("LevelObj::removeMatches:");
+    cocos2d::log("ChainController::removeMatches:");
     auto horizontalChains = detectHorizontalMatches();
     auto verticalChains = detectVerticalMatches();
     auto difficultChains = detectDifficultMatches(horizontalChains, verticalChains);
@@ -443,7 +443,7 @@ cocos2d::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow
         return set;
     }
  
-    int i = fromCol;
+    int i = fromCol; 
     int j = fromRow;
     auto chain = ChainObj::createWithType(ChainType::ChainFromAToB);
     do {
@@ -451,10 +451,14 @@ cocos2d::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow
             if (mObjCtrl->cookieAt(i, j)) {
                 chain->addCookie(mObjCtrl->cookieAt(i, j));
             }
-            j = fromRow > toRow ? j - 1 : j + 1;
-        } while (j == toRow);
-        i = fromCol > fromCol ? i - 1 : i + 1;
-    } while (i == toCol);
+            if (fromRow != toRow) {
+                j = fromRow > toRow ? j - 1 : j + 1;
+            }            
+        } while (j != toRow);
+        if (fromCol != toCol) {
+            i = fromCol > toCol ? i - 1 : i + 1;
+        }
+    } while (i != toCol);
 
     set->addObject(chain);
     return set;

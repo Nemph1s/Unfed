@@ -21,6 +21,9 @@ class DudeController;
 
 class ObjectController : public cocos2d::Ref
 {
+
+    friend DudeController;
+
 CC_CONSTRUCTOR_ACCESS:
     virtual ~ObjectController();
 

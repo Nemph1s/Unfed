@@ -29,6 +29,7 @@ public:
     virtual void onEnter() override;
     virtual void onExit() override;
     void addSpritesForCookies(cocos2d::Set* cookies);
+    void addSpritesForObjects(cocos2d::Set* set);
 
     void createSpriteWithObj(BaseObj* obj, int column, int row);
 

@@ -279,13 +279,17 @@ bool ObjectController::isPossibleToAddCookie(int column, int row)
     auto isEmptyTile = isEmptyTileAt(column, row);
     auto isCookieAt = cookieAt(column, row);
     if (!isEmptyTile && isCookieAt == nullptr) {
-        auto fieldObj = fieldObjectAt(column, row);
-        if (!fieldObj) {
-            return true;
+        auto dudeObj = dudeObjectAt(column, row);
+        if (!dudeObj) {
+            auto fieldObj = fieldObjectAt(column, row);
+            if (!fieldObj) {
+                return true;
+            }
+            if (fieldObj->isContainer()) {
+                return true;
+            }
         }
-        if (fieldObj->isContainer()) {
-            return true;
-        }
+        
     }
     return false;
 }
@@ -352,6 +356,9 @@ void ObjectController::updateObjectAt(int column, int row, BaseObj * obj, BaseOb
 //             mFieldObjects[column][row] = newArr;
 //         }
         mFieldObjects[column][row] = obj;
+        break;
+    case BaseObjectType::DudeObj:
+        mDudeCtrl->mDudeObjects[column][row] = obj;
         break;
     default:
         break;

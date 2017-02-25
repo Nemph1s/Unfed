@@ -122,6 +122,23 @@ void CookiesLayer::addSpritesForCookies(Set* cookies)
 }
 
 //--------------------------------------------------------------------
+void CookiesLayer::addSpritesForObjects(cocos2d::Set * set)
+//--------------------------------------------------------------------
+{
+    cocos2d::log("CookiesLayer::addSpritesForDudes:");
+    auto it = set->begin();
+    for (it; it != set->end(); it++) {
+        auto obj = dynamic_cast<BaseObj*>(*it);
+        CC_ASSERT(obj);
+
+        createSpriteWithObj(obj, obj->getColumn(), obj->getRow());
+
+        auto sprite = obj->getSpriteNode();
+        AnimationsManager->animateNewCookieSprite(sprite);
+    }
+}
+
+//--------------------------------------------------------------------
 bool CookiesLayer::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
@@ -169,7 +186,7 @@ void CookiesLayer::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
         auto direction = getSwipeDirection(column, row);
 
         if (direction != Helper::to_underlying(Direction::Unknown)) {
-            if (mTrySwapCookieCallback) {
+            if (!mTrySwapCookieCallback) {
                 return;
             }
 
@@ -185,6 +202,22 @@ void CookiesLayer::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
 void CookiesLayer::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
+    if (mTouchedObj && mCanActivateDudeCallback) {
+        if (mTouchedObj->getType() == BaseObjectType::DudeObj) {
+            Vec2 locationInNode = this->convertToNodeSpace(touch->getLocation());
+
+            int column = -1, row = -1;
+            if (Helper::convertPointToTilePos(locationInNode, column, row)) {
+
+                auto direction = getSwipeDirection(column, row);
+                if (mCanActivateDudeCallback(mSwipeFromColumn, mSwipeFromRow, direction)) {
+                    hideSelectionIndicator();
+                    clearTouchedObj();
+                    return;
+                }
+            }
+        }
+    }
     if (mSelectionSprite->getParent() != nullptr && isObjTouched()) {
         hideSelectionIndicator();
     }

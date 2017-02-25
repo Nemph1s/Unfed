@@ -30,6 +30,7 @@ using namespace CommonTypes;
 LevelObj::LevelObj()
     : mObjCtrl(nullptr)
     , mChainCtrl(nullptr)
+    , mDudeCtrl(nullptr)
 //--------------------------------------------------------------------
 {
 }
@@ -89,22 +90,6 @@ cocos2d::Set* LevelObj::shuffle()
         isSwapsDetected = mDetectPossibleSwapsCallback();
     }
 
-    return set;
-}
-
-//--------------------------------------------------------------------
-cocos2d::Set * LevelObj::removeMatches()
-//--------------------------------------------------------------------
-{
-    auto set = mChainCtrl->removeMatches();
-    return set;
-}
-
-//--------------------------------------------------------------------
-cocos2d::Set* LevelObj::removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos)
-//--------------------------------------------------------------------
-{
-    auto set = mChainCtrl->removeChainAt(type, pos);
     return set;
 }
 
@@ -230,6 +215,28 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
 
                     if (!mLevelInfo.skipEmptyHoles) {
                         if (mObjCtrl->isEmptyTileAt(column, lookup)) {
+                            break;
+                        }
+                    }
+                    auto dudeObj = mObjCtrl->dudeObjectAt(column, lookup);
+                    if (dudeObj) {
+
+                        if (!dudeObj->isMovable() && !dudeObj->isContainer())
+                            break;
+                        else if (dudeObj->isMovable()) {
+                            // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
+                            mObjCtrl->updateObjectAt(column, lookup, nullptr, dudeObj->getType());
+                            mObjCtrl->updateObjectAt(column, row, dudeObj, dudeObj->getType());
+                            dudeObj->setRow(row);
+
+                            // Lazy creation of array
+                            if (array == nullptr) {
+                                array = cocos2d::Array::createWithCapacity(NumRows);
+                                columns->addObject(array);
+                            }
+                            array->addObject(dudeObj);
+
+                            // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
                             break;
                         }
                     }

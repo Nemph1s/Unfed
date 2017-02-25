@@ -133,6 +133,7 @@ bool ViewController::initObjectController()
 {
     mObjectController = ObjectController::create();
     mObjectController->setLevel(mLevel);
+    mLevel->setObjectController(mObjectController);
 
     mObjectController->createInitialTiles();
     mObjectController->createInitialFieldObjects();
@@ -149,7 +150,7 @@ bool ViewController::initChainController()
     mChainController = ChainController::create();
     mChainController->setLevel(mLevel);
     mChainController->setObjectController(mObjectController);
-
+    mLevel->setChainController(mChainController);
     return true;
 }
 
@@ -161,11 +162,29 @@ bool ViewController::initDudeController()
     mDudeController->setObjectController(mObjectController);
     mDudeController->setChainController(mChainController);
     mObjectController->setDudeController(mDudeController);
-
-    auto callback = std::bind(&ViewController::activateDudeCallback, this, std::placeholders::_2);
-    mDudeController->setActivateDudeCallback(callback);
+    mLevel->setDudeController(mDudeController);
 
     auto dudeCtrl = mDudeController;
+
+    auto activateDudeCallback = [=](DudeObj* dude, int direction) {
+        auto set = mDudeController->activateDude(dude, direction);
+
+        if (set->count() > 0) {
+            mGameplayScene->userInteractionDisabled();
+
+            mLevel->removeDudeMatches(set);
+            auto removeCallback = CallFunc::create([=]() {
+                mDudeController->removeDude(dude->getColumn(), dude->getRow());
+            });
+
+            AnimationsManager->animateRemoveDude(dude, removeCallback);
+
+            updateScore(set);
+            animateHandleMatches(set);
+        }
+    };
+    mDudeController->setActivateDudeCallback(activateDudeCallback);
+
     auto dudeActivationCallback = [dudeCtrl](int fromCol, int fromRow, int direction) {
         return dudeCtrl->canActivateDudeTo(fromCol, fromRow, direction);
     };
@@ -254,9 +273,12 @@ void ViewController::handleMatches()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ViewController::handleMatches");
-    auto chains = mLevel->removeMatches();
+    auto chains = mChainController->removeMatches();
+    auto dudes = mDudeController->createDudeObectsFromChains(chains);
+    mGameplayScene->addSpritesForObjects(dudes);
 
     if (chains->count() == 0) {
+        mDudeController->detectDirectionsForDudes();
         beginNextTurn();
         return;
     }
@@ -351,29 +373,29 @@ void ViewController::swapCallback(SwapObj * swap)
         AudioManager->playSound(SoundType::InvalidSwapSound);
     }
 }
-
-//--------------------------------------------------------------------
-void ViewController::activateDudeCallback(DudeObj* obj, CommonTypes::Direction direction)
-//--------------------------------------------------------------------
-{
-    auto set = mDudeController->activateDude(obj, direction);
-
-    mLevel->removeDudeMatches(set);
-
-    if (set->count() > 0) {
-        mGameplayScene->userInteractionDisabled();
-
-        updateScore(set);
-        animateHandleMatches(set);
-    }
-}
+// 
+// //--------------------------------------------------------------------
+// void ViewController::activateDudeCallback(DudeObj* obj, int direction)
+// //--------------------------------------------------------------------
+// {
+//     auto set = mDudeController->activateDude(obj, direction);
+// 
+//     mLevel->removeDudeMatches(set);
+// 
+//     if (set->count() > 0) {
+//         mGameplayScene->userInteractionDisabled();
+// 
+//         updateScore(set);
+//         animateHandleMatches(set);
+//     }
+// }
 
 //--------------------------------------------------------------------
 void ViewController::activateChainCallback(CommonTypes::ChainType & type, cocos2d::Vec2 & pos)
 //--------------------------------------------------------------------
 {
     cocos2d::log("ViewController::activateChainCallback");
-    auto chains = mLevel->removeChainAt(type, pos);
+    auto chains = mChainController->removeChainAt(type, pos);
 
     if (chains->count() > 0) {
         mGameplayScene->userInteractionDisabled();

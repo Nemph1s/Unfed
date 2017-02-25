@@ -12,6 +12,7 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
+#include <map>
 
 class BaseObj;
 class DudeObj;
@@ -35,6 +36,8 @@ public:
 
     bool init();
 
+    cocos2d::Set* createDudeObectsFromChains(cocos2d::Set* chains);
+
     BaseObj* createDudeObject(int column, int row, int type);
 
     BaseObj* objectAt(int column, int row);
@@ -45,7 +48,7 @@ public:
 
     //TODO: use as callback in DudesLayer!
     bool canActivateDudeTo(int fromCol, int fromRow, int direction);
-    cocos2d::Set* activateDude(DudeObj* obj, CommonTypes::Direction direction);
+    cocos2d::Set* activateDude(DudeObj* obj, int direction);
     void activateAllDudes();
 
     void removeDude(int column, int row);
@@ -55,13 +58,16 @@ protected:
     // Nodes should be created using create();
     DudeController();
 
+    CommonTypes::TileType getDudeTypeByMatchedCount(int count);
+
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE(std::function<void(DudeObj*, CommonTypes::Direction direction)>, mActivateDudeCallback, ActivateDudeCallback);
+    CC_SYNTHESIZE(std::function<void(DudeObj*, int direction)>, mActivateDudeCallback, ActivateDudeCallback);
 
     CC_SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController);
     CC_SYNTHESIZE(ChainController*, mChainCtrl, ChainController);
     
     cocos2d::Map<DudeObj*, DudeHelper*> mDudeDirections;
+    std::map<int, CommonTypes::TileType> mDudeTypes;
 
     // Dude object array 
     BaseObj* mDudeObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
