@@ -37,6 +37,8 @@ public:
 
     static bool convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row);
 
+    static bool convertDirectionToSwipeDelta(int dir, int& horzDelta, int& vertDelta);
+
     static cocos2d::Color4B getScoreColorByObj(BaseObj* obj);
 
 private:

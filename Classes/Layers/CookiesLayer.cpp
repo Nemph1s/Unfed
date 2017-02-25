@@ -10,7 +10,6 @@
 
 #include "Layers/CookiesLayer.h"
 
-#include "Common/CommonTypes.h"
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
@@ -19,14 +18,17 @@
 
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/DudeObj.h"
 
 USING_NS_CC;
 using namespace GameResources;
+using namespace CommonTypes;
 
 //--------------------------------------------------------------------
 CookiesLayer::CookiesLayer()
     : mListener(nullptr)
     , mLevel(nullptr)
+    , mTouchedObj(nullptr)
     , mSelectionSprite(nullptr)
 //--------------------------------------------------------------------
 {
@@ -65,7 +67,7 @@ bool CookiesLayer::init()
         cocos2d::log("CookiesLayer::initWithSize: can't init Scene inctance");
         return false;
     }
-    clearTouchedCookie();
+    clearTouchedObj();
 
     mSelectionSprite = Sprite::create();
     CC_SAFE_RETAIN(mSelectionSprite);
@@ -112,7 +114,7 @@ void CookiesLayer::addSpritesForCookies(Set* cookies)
         auto cookie = dynamic_cast<CookieObj*>(*it);
         CC_ASSERT(cookie);
 
-        createSpriteWithCookie(cookie, cookie->getColumn(), cookie->getRow());
+        createSpriteWithObj(cookie, cookie->getColumn(), cookie->getRow());
 
         auto sprite = cookie->getSpriteNode();
         AnimationsManager->animateNewCookieSprite(sprite);
@@ -131,8 +133,16 @@ bool CookiesLayer::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
         if (cookie) {
             if (cookie->isSwappable()) {
                 showSelectionIndicatorForCookie(cookie);
+                mTouchedObj = cookie;
                 return true;
             }            
+        }
+        BaseObj* dudeObj = objCtrl->dudeObjectAt(mSwipeFromColumn, mSwipeFromRow);
+        if (dudeObj) {
+            if (dudeObj->isSwappable()) {
+                mTouchedObj = dudeObj;
+                return true;
+            }
         }
     }
     return false;
@@ -142,25 +152,30 @@ bool CookiesLayer::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 void CookiesLayer::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
-    if (!isCookieTouched())
+    if (!isObjTouched())
         return;
+
+    if (mTouchedObj) {
+        if (mTouchedObj->getType() == BaseObjectType::DudeObj) {
+            return;
+        }
+    }
 
     Vec2 locationInNode = this->convertToNodeSpace(touch->getLocation());
 
     int column = -1, row = -1;
     if (Helper::convertPointToTilePos(locationInNode, column, row)) {
 
-        int horzDelta = 0, vertDelta = 0;
-        updateSwipeDelta(column, row, horzDelta, vertDelta);
+        auto direction = getSwipeDirection(column, row);
 
-        if (horzDelta != 0 || vertDelta != 0) {
-            if (!mTrySwapCookieCallback) {
+        if (direction != Helper::to_underlying(Direction::Unknown)) {
+            if (mTrySwapCookieCallback) {
                 return;
             }
 
-            if (mTrySwapCookieCallback(horzDelta, vertDelta)) {
+            if (mTrySwapCookieCallback(mSwipeFromColumn, mSwipeFromRow, direction)) {
                 hideSelectionIndicator();
-                clearTouchedCookie();
+                clearTouchedObj();
             }
         }
     }
@@ -170,13 +185,13 @@ void CookiesLayer::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
 void CookiesLayer::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
-    if (mSelectionSprite->getParent() != nullptr && isCookieTouched()) {
+    if (mSelectionSprite->getParent() != nullptr && isObjTouched()) {
         hideSelectionIndicator();
     }
-    if (!isCookieTouched())
+    if (!isObjTouched())
         return;
 
-    clearTouchedCookie();
+    clearTouchedObj();
 }
 
 //--------------------------------------------------------------------
@@ -185,20 +200,6 @@ void CookiesLayer::onTouchCancelled(cocos2d::Touch* touch, cocos2d::Event* event
 {
     cocos2d::log("GameplayScene::onTouchCancelled:");
     onTouchEnded(touch, event);
-}
-
-//--------------------------------------------------------------------
-void CookiesLayer::userInteractionEnabled()
-//--------------------------------------------------------------------
-{
-    Director::getInstance()->getEventDispatcher()->resumeEventListenersForTarget(this);
-}
-
-//--------------------------------------------------------------------
-void CookiesLayer::userInteractionDisabled()
-//--------------------------------------------------------------------
-{
-    Director::getInstance()->getEventDispatcher()->pauseEventListenersForTarget(this);
 }
 
 //--------------------------------------------------------------------
@@ -228,6 +229,9 @@ void CookiesLayer::showSelectionIndicatorForCookie(CookieObj* cookie)
 void CookiesLayer::hideSelectionIndicator()
 //--------------------------------------------------------------------
 {
+    if (!mSelectionSprite) {
+        return;
+    }
     auto sprite = mSelectionSprite;
     auto callbackFunc = CallFunc::create([sprite]() {
         if (sprite->getParent() != nullptr) {
@@ -244,53 +248,62 @@ void CookiesLayer::hideSelectionIndicator()
 void CookiesLayer::removeAllCookieSprites()
 //--------------------------------------------------------------------
 {
+    //TODO: dont remove dudes!
     this->removeAllChildren();
 }
 
 //--------------------------------------------------------------------
-bool CookiesLayer::isCookieTouched()
+bool CookiesLayer::isObjTouched()
 //--------------------------------------------------------------------
 {
-    if (mSwipeFromColumn == -1 || mSwipeFromRow == -1)
+    if (mSwipeFromColumn == -1 || mSwipeFromRow == -1 || !mTouchedObj)
         return false;
     return true;
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::clearTouchedCookie()
+void CookiesLayer::clearTouchedObj()
 //--------------------------------------------------------------------
 {
     mSwipeFromColumn = -1;
     mSwipeFromRow = -1;
+    mTouchedObj = nullptr;
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::updateSwipeDelta(int column, int row, int& horzDelta, int& vertDelta)
+int CookiesLayer::getSwipeDirection(int column, int row)
 //--------------------------------------------------------------------
 {
+    auto direction = Direction::Unknown;
     if (column < mSwipeFromColumn) { // swipe left
-        horzDelta = -1;
+        direction = Direction::Left;
     }
     else if (column > mSwipeFromColumn) { // swipe right
-        horzDelta = 1;
+        direction = Direction::Right;
     }
-    else if (row < mSwipeFromRow) { // swipe down
-        vertDelta = -1;
+    else if (row < mSwipeFromRow) { // swipe up
+        direction = Direction::Up;
     }
-    else if (row > mSwipeFromRow) { // swipe up
-        vertDelta = 1;
+    else if (row > mSwipeFromRow) { // swipe down
+        direction = Direction::Down;
     }
+    return Helper::to_underlying(direction);
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::createSpriteWithCookie(CookieObj * cookie, int column, int row)
+void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
 //--------------------------------------------------------------------
 {
-    auto sprite = Sprite::create(cookie->spriteName().getCString());
-    sprite->setPosition(Helper::pointForColumnAndRow(column, row));
-    cookie->setSpriteNode(sprite);
-    cookie->updateDebugTileLabel();
-
-    this->addChild(sprite);
-    this->addChild(cookie);
+    if (obj) {
+        auto sprite = Sprite::create(obj->spriteName().getCString());
+        sprite->setPosition(Helper::pointForColumnAndRow(column, row));
+        obj->setSpriteNode(sprite);
+        auto cookie = dynamic_cast<CookieObj*>(obj);
+        if (cookie) {
+            cookie->updateDebugTileLabel();
+        }
+        this->addChild(sprite);
+        this->addChild(obj);
+    }
+    
 }

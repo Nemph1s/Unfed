@@ -16,10 +16,13 @@
 class ChainObj;
 class LevelObj;
 class GameplayScene;
+class DudeController;
 class ObjectController;
 
 class ChainController : public cocos2d::Ref
 {
+    friend DudeController;
+
 CC_CONSTRUCTOR_ACCESS:
     virtual ~ChainController();
 

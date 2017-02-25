@@ -31,12 +31,14 @@ public:
     void addSpritesForCookies(cocos2d::Set* cookies);
 
     void createSpriteWithCookie(CookieObj* cookie, int column, int row);
+    void createSpriteWithDude(BaseObj* dudeObj);
     void createSpriteWithFieldObj(BaseObj* fieldObj);
 
     void userInteractionEnabled();
     void userInteractionDisabled();
 
-    void setSwapCookieCallback(std::function<bool(int horzDelta, int vertDelta)> func);
+    void setSwapCookieCallback(std::function<bool(int fromCol, int fromRow, int direction)> func);
+    void setDudeActivationCallback(std::function<bool(int fromCol, int fromRow, int direction)> func);
     void removeAllCookieSprites();
 
 protected:

@@ -145,12 +145,12 @@ namespace CommonTypes {
    * @brief Direction enum.
    * Type of direction
    */
-   enum Direction : int {
+   enum class Direction : int {
        Down = 0 /**< enum value Down. */
        , Up = 1 /**< enum value Up. */
        , Left = 2 /**< enum value Left. */
        , Right = 3 /**< enum value Right. */
-       , MaxDirections = 4
+       , Unknown /**< enum value unknown. */
    };
 
    /**

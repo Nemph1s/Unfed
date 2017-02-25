@@ -25,6 +25,7 @@ using namespace CommonTypes;
 //--------------------------------------------------------------------
 ObjectController::ObjectController()
     : mLevel(nullptr)
+    , mDudeCtrl(nullptr)
 //--------------------------------------------------------------------
 {
 }
@@ -254,6 +255,13 @@ BaseObj * ObjectController::fieldObjectAt(int column, int row)
         CC_ASSERT(invalidRow);
     }
     return mFieldObjects[column][row];
+}
+
+//--------------------------------------------------------------------
+BaseObj* ObjectController::dudeObjectAt(int column, int row)
+//--------------------------------------------------------------------
+{
+    return mDudeCtrl->objectAt(column, row);
 }
 
 //--------------------------------------------------------------------

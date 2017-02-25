@@ -72,6 +72,33 @@ bool Helper::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
 }
 
 //--------------------------------------------------------------------
+bool Helper::convertDirectionToSwipeDelta(int dir, int & horzDelta, int & vertDelta)
+//--------------------------------------------------------------------
+{
+    bool result = true;
+    auto direction = static_cast<CommonTypes::Direction>(dir);
+    switch (direction)
+    {
+    case Direction::Up:
+        vertDelta = -1;
+        break;
+    case Direction::Down:
+        vertDelta = 1;
+        break;
+    case Direction::Left:
+        horzDelta = -1;
+        break;
+    case Direction::Right:
+        horzDelta = 1;
+        break;
+    default:
+        result = false;
+        break;
+    }
+    return result;
+}
+
+//--------------------------------------------------------------------
 cocos2d::Color4B Helper::getScoreColorByObj(BaseObj * obj)
 //--------------------------------------------------------------------
 {

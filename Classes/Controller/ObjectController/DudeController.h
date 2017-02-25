@@ -37,13 +37,14 @@ public:
 
     BaseObj* createDudeObject(int column, int row, int type);
 
+    BaseObj* objectAt(int column, int row);
     DudeObj* dudeObjectAt(int column, int row);
 
     //TODO: add to each update field method!!!
     bool detectDirectionsForDudes();
 
     //TODO: use as callback in DudesLayer!
-    bool canActivateDudeTo(int horzDelta, int vertDelta);
+    bool canActivateDudeTo(int fromCol, int fromRow, int direction);
     cocos2d::Set* activateDude(DudeObj* obj, CommonTypes::Direction direction);
     void activateAllDudes();
 

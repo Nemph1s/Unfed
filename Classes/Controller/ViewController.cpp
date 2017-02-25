@@ -22,6 +22,7 @@
 
 #include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/LevelObj.h"
+#include "GameObjects/TileObjects/DudeObj.h"
 #include "GameObjects/Chain/ChainObj.h"
 
 #include "Scenes/GameplayScene.h"
@@ -146,7 +147,7 @@ bool ViewController::initChainController()
 //--------------------------------------------------------------------
 {
     mChainController = ChainController::create();
-    mChainController->setLevel(this);
+    mChainController->setLevel(mLevel);
     mChainController->setObjectController(mObjectController);
 
     return true;
@@ -159,15 +160,16 @@ bool ViewController::initDudeController()
     mDudeController = DudeController::create();
     mDudeController->setObjectController(mObjectController);
     mDudeController->setChainController(mChainController);
+    mObjectController->setDudeController(mDudeController);
 
-//     auto swapCallback = std::bind(&ViewController::activateDudeCallback, this, std::placeholders::_2);
-//     mSwapController->setSwapCallback(swapCallback);
-// 
-//     auto swapCtrl = mSwapController;
-//     auto tryToSwapCallback = [swapCtrl](int horzDelta, int vertDelta) {
-//         return swapCtrl->trySwapCookieTo(horzDelta, vertDelta);
-//     };
-//     mGameplayScene->setSwapCookieCallback(tryToSwapCallback);
+    auto callback = std::bind(&ViewController::activateDudeCallback, this, std::placeholders::_2);
+    mDudeController->setActivateDudeCallback(callback);
+
+    auto dudeCtrl = mDudeController;
+    auto dudeActivationCallback = [dudeCtrl](int fromCol, int fromRow, int direction) {
+        return dudeCtrl->canActivateDudeTo(fromCol, fromRow, direction);
+    };
+    mGameplayScene->setDudeActivationCallback(dudeActivationCallback);
 
     return true;
 }
@@ -179,14 +181,13 @@ bool ViewController::initSwapController()
     mSwapController = SwapController::create();
 
     mSwapController->setLevel(mLevel);
-    mSwapController->setGameplayScene(mGameplayScene);
 
     auto swapCallback = std::bind(&ViewController::swapCallback, this, std::placeholders::_1);
     mSwapController->setSwapCallback(swapCallback);
 
     auto swapCtrl = mSwapController;
-    auto tryToSwapCallback = [swapCtrl](int horzDelta, int vertDelta) {
-        return swapCtrl->trySwapCookieTo(horzDelta, vertDelta);
+    auto tryToSwapCallback = [swapCtrl](int fromCol, int fromRow, int direction) {
+        return swapCtrl->trySwapCookieTo(fromCol, fromRow, direction);
     };
     mGameplayScene->setSwapCookieCallback(tryToSwapCallback);
 
@@ -359,13 +360,12 @@ void ViewController::activateDudeCallback(DudeObj* obj, CommonTypes::Direction d
 
     mLevel->removeDudeMatches(set);
 
-    if (chains->count() > 0) {
+    if (set->count() > 0) {
         mGameplayScene->userInteractionDisabled();
 
-        updateScore(chains);
-        animateHandleMatches(chains);
+        updateScore(set);
+        animateHandleMatches(set);
     }
-}
 }
 
 //--------------------------------------------------------------------

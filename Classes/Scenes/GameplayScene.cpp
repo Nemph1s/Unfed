@@ -12,6 +12,7 @@
 
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
 
 #include "Utils/Helpers/VisibleRect.h"
 #include "Utils/Helpers/Helper.h"
@@ -148,21 +149,28 @@ void GameplayScene::addSpritesForCookies(Set* cookies)
 void GameplayScene::userInteractionEnabled()
 //--------------------------------------------------------------------
 {
-    mCookiesLayer->userInteractionEnabled();
+    Director::getInstance()->getEventDispatcher()->resumeEventListenersForTarget(mCookiesLayer);
 }
 
 //--------------------------------------------------------------------
 void GameplayScene::userInteractionDisabled()
 //--------------------------------------------------------------------
 {
-    mCookiesLayer->userInteractionDisabled();
+    Director::getInstance()->getEventDispatcher()->pauseEventListenersForTarget(mCookiesLayer);
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::setSwapCookieCallback(std::function<bool(int horzDelta, int vertDelta)> func)
+void GameplayScene::setSwapCookieCallback(std::function<bool(int fromCol, int fromRow, int direction)> func)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->setTrySwapCookieCallback(func);
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::setDudeActivationCallback(std::function<bool(int fromCol, int fromRow, int direction)> func)
+//--------------------------------------------------------------------
+{
+    mCookiesLayer->setCanActivateDudeCallback(func);
 }
 
 //--------------------------------------------------------------------
@@ -176,7 +184,14 @@ void GameplayScene::removeAllCookieSprites()
 void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int row)
 //--------------------------------------------------------------------
 {
-    mCookiesLayer->createSpriteWithCookie(cookie, column, row);
+    mCookiesLayer->createSpriteWithObj(cookie, column, row);
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::createSpriteWithDude(BaseObj * dudeObj)
+//--------------------------------------------------------------------
+{
+    mCookiesLayer->createSpriteWithObj(dudeObj, dudeObj->getColumn(), dudeObj->getRow());
 }
 
 //--------------------------------------------------------------------

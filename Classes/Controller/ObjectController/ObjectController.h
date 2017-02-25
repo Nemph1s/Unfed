@@ -45,6 +45,7 @@ public:
     bool hasChainAt(int column, int row);
 
     BaseObj* fieldObjectAt(int column, int row);
+    BaseObj* dudeObjectAt(int column, int row);
 
     bool isEmptyTileAt(int column, int row);
     bool isPossibleToAddCookie(int column, int row);
@@ -69,6 +70,7 @@ protected:
     
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
+    CC_SYNTHESIZE(DudeController*, mDudeCtrl, DudeController);
 
     BaseObj* mTiles[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
     BaseObj* mCookies[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };

@@ -15,6 +15,7 @@
 
 class LevelObj;
 class SwapObj;
+class DudeObj;
 class GameplayScene;
 class ObjectController;
 class ChainController;
