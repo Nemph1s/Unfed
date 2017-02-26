@@ -16,6 +16,7 @@
 
 class BaseObj;
 class DudeObj;
+class ChainObj;
 class DudeHelper;
 
 class ObjectController;
@@ -44,7 +45,7 @@ public:
     DudeObj* dudeObjectAt(int column, int row);
 
     //TODO: add to each update field method!!!
-    bool detectDirectionsForDudes();
+    void detectDirectionsForDudes();
 
     //TODO: use as callback in DudesLayer!
     bool canActivateDudeTo(int fromCol, int fromRow, int direction);
@@ -58,7 +59,12 @@ protected:
     // Nodes should be created using create();
     DudeController();
 
+    void updateDirectionsForDude(DudeObj* obj, DudeHelper* helper);
+
+    bool isEnoughCookiesForDude(int count, int neededCount);
+
     CommonTypes::TileType getDudeTypeByMatchedCount(int count);
+    CommonTypes::TileType getDudeTypeByChain(ChainObj* chain); //TODO: implement
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(DudeObj*, int direction)>, mActivateDudeCallback, ActivateDudeCallback);

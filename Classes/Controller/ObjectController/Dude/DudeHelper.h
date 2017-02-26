@@ -31,12 +31,14 @@ public:
     bool initWithDudeObject(const DudeObj* obj);
 
     cocos2d::Set* getChainByDirection(CommonTypes::Direction& direction);
+    //CommonTypes::DudePathType getPathType(CommonTypes::Direction& direction);
 
     void clear();
 
 protected:
     // Nodes should be created using create();
     DudeHelper();
+
 
     //---Class Attributes-------------------------------------------------
 

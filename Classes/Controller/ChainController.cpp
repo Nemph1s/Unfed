@@ -328,6 +328,9 @@ ChainObj * ChainController::detectTChainMatches(ChainObj * horzChain, ChainObj *
 void ChainController::addChainsFromSetToSet(cocos2d::Set * from, cocos2d::Set * to)
 //--------------------------------------------------------------------
 {
+    if (!to) {
+        to = cocos2d::Set::create();
+    }
     for (auto it = from->begin(); it != from->end(); it++) {
         auto chain = dynamic_cast<ChainObj*>(*it);
         CC_ASSERT(chain);
@@ -437,6 +440,8 @@ cocos2d::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow
 //--------------------------------------------------------------------
 {
     auto set = cocos2d::Set::create();
+    auto chain = ChainObj::createWithType(ChainType::ChainFromAToB);
+    set->addObject(chain);
 
     if (!(toCol >= 0 && toCol < NumColumns) || !(toRow >= 0 && toRow < NumColumns)) {
         cocos2d::log("ChainController::createChainFromPosToPos: wrong destinationPos at column=%d, row=%d", toCol, toRow);
@@ -445,7 +450,7 @@ cocos2d::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow
  
     int i = fromCol; 
     int j = fromRow;
-    auto chain = ChainObj::createWithType(ChainType::ChainFromAToB);
+    
     do {
         if (fromCol != toCol) {
             i = fromCol > toCol ? i - 1 : i + 1;
@@ -459,8 +464,7 @@ cocos2d::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow
             }                  
         } while (j != toRow);
     } while (i != toCol);
-
-    set->addObject(chain);
+    
     return set;
 }
 

@@ -267,8 +267,8 @@ BaseObj * _SmartFactory::createDudeObj(const CommonTypes::TileInfo & info)
 
     switch (info.tileType)
     {
-    case TileType::DudeLightr:
-    case TileType::DudeBulbr:
+    case TileType::DudeFromAToBx3:
+    case TileType::DudeFromAToB:
         baseObject = DudeObj::create(info);
         CC_SAFE_RETAIN(baseObject);
         CCASSERT(baseObject, "error while creating DudeObj");

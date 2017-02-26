@@ -61,7 +61,7 @@ protected:
     void shuffleButtonCallback();
     void swapCallback(SwapObj* swap);
     //???? something wrong with
-    //void activateDudeCallback(DudeObj* obj, int direction);
+    void activateDudeCallback(DudeObj* obj, int direction);
     void activateChainCallback(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
     //--------------------------------------------------------------------
 
