@@ -37,6 +37,11 @@ namespace GameResources {
    static cocos2d::String s_BushCorruptedImg = "Sprites.atlas/Bush1@2x.png";
    static cocos2d::String s_BushNormalImg = "Sprites.atlas/Bush2@2x.png";
 
+   static std::vector<cocos2d::String> s_dudeSpriteNames{
+       "Sprites.atlas/MonsterLighthr@2x.png"
+       , "Sprites.atlas/MonsterBulbr@2x.png"
+   };
+
    static std::vector<cocos2d::String> s_cookieSpriteNames {
       "Sprites.atlas/Croissant@2x.png"
       , "Sprites.atlas/Cupcake@2x.png"

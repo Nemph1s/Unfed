@@ -13,6 +13,7 @@
 #include "cocos2d.h"
 
 class LevelObj;
+class BaseObj;
 class CookieObj;
 
 class CookiesLayer : public cocos2d::Layer
@@ -28,16 +29,14 @@ public:
     virtual void onEnter() override;
     virtual void onExit() override;
     void addSpritesForCookies(cocos2d::Set* cookies);
+    void addSpritesForObjects(cocos2d::Set* set);
 
-    void createSpriteWithCookie(CookieObj* cookie, int column, int row);
+    void createSpriteWithObj(BaseObj* obj, int column, int row);
 
     bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchCancelled(cocos2d::Touch* touch, cocos2d::Event* event);
-
-    void userInteractionEnabled();
-    void userInteractionDisabled();
 
     void showSelectionIndicatorForCookie(CookieObj* cookie);
     void hideSelectionIndicator();
@@ -48,19 +47,22 @@ protected:
     // Nodes should be created using create();
     CookiesLayer();
 
-    bool isCookieTouched();
-    void clearTouchedCookie();
-    void updateSwipeDelta(int column, int row, int& horzDelta, int& vertDelta);
+    bool isObjTouched();
+    void clearTouchedObj();
+    int getSwipeDirection(int newCol, int newRow);
 
     //---Class Attributes-------------------------------------------------
     cocos2d::EventListener* mListener;
 
-    CC_SYNTHESIZE(std::function<bool(int horzDelta, int vertDelta)>, mTrySwapCookieCallback, TrySwapCookieCallback);
+    CC_SYNTHESIZE(std::function<bool(int fromCol, int fromRow, int direction)>, mTrySwapCookieCallback, TrySwapCookieCallback);
+    CC_SYNTHESIZE(std::function<bool(int fromCol, int fromRow, int direction)>, mCanActivateDudeCallback, CanActivateDudeCallback);
 
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
 
+    CC_SYNTHESIZE(BaseObj*, mTouchedObj, TouchedObj);
     CC_SYNTHESIZE_READONLY(int, mSwipeFromColumn, SwipeFromColumn);
     CC_SYNTHESIZE_READONLY(int, mSwipeFromRow, SwipeFromRow);
 
+    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mDudesLayer, DudesLayer);
     CC_SYNTHESIZE_READONLY(cocos2d::Sprite*, mSelectionSprite, SelectionSprite);
 };

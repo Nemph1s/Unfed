@@ -9,7 +9,7 @@
 */
 
 #include "Controller/ChainController.h"
-#include "Controller/ObjectController.h"
+#include "Controller/ObjectController/ObjectController.h"
 
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/Chain/ChainObj.h"
@@ -60,7 +60,7 @@ bool ChainController::init()
 cocos2d::Set * ChainController::removeMatches()
 //--------------------------------------------------------------------
 {
-    cocos2d::log("LevelObj::removeMatches:");
+    cocos2d::log("ChainController::removeMatches:");
     auto horizontalChains = detectHorizontalMatches();
     auto verticalChains = detectVerticalMatches();
     auto difficultChains = detectDifficultMatches(horizontalChains, verticalChains);
@@ -428,19 +428,37 @@ cocos2d::Set * ChainController::createChainFromPosToPos(cocos2d::Vec2 from, coco
     if (!Helper::convertPointToTilePos(to, toCol, toRow)) {
         return set;
     }
-    
-    int i = fromCol;
+
+    return createChainFromPosToPos(fromCol, fromRow, toCol, toRow);
+}
+
+//--------------------------------------------------------------------
+cocos2d::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow, int toCol, int toRow)
+//--------------------------------------------------------------------
+{
+    auto set = cocos2d::Set::create();
+
+    if (!(toCol >= 0 && toCol < NumColumns) || !(toRow >= 0 && toRow < NumColumns)) {
+        cocos2d::log("ChainController::createChainFromPosToPos: wrong destinationPos at column=%d, row=%d", toCol, toRow);
+        return set;
+    }
+ 
+    int i = fromCol; 
     int j = fromRow;
     auto chain = ChainObj::createWithType(ChainType::ChainFromAToB);
     do {
+        if (fromCol != toCol) {
+            i = fromCol > toCol ? i - 1 : i + 1;
+        }
         do {
+            if (fromRow != toRow) {
+                j = fromRow > toRow ? j - 1 : j + 1;
+            }
             if (mObjCtrl->cookieAt(i, j)) {
                 chain->addCookie(mObjCtrl->cookieAt(i, j));
-            }
-            j = fromRow > toRow ? j - 1 : j + 1;
-        } while (j == toRow);
-        i = fromCol > fromCol ? i - 1 : i + 1;
-    } while (i == toCol);
+            }                  
+        } while (j != toRow);
+    } while (i != toCol);
 
     set->addObject(chain);
     return set;

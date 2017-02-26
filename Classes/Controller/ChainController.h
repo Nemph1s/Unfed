@@ -16,10 +16,13 @@
 class ChainObj;
 class LevelObj;
 class GameplayScene;
+class DudeController;
 class ObjectController;
 
 class ChainController : public cocos2d::Ref
 {
+    friend DudeController;
+
 CC_CONSTRUCTOR_ACCESS:
     virtual ~ChainController();
 
@@ -31,6 +34,8 @@ public:
     static ChainController* create();
 
     bool init();
+
+    void addChainsFromSetToSet(cocos2d::Set* from, cocos2d::Set* to);
 
     cocos2d::Set* removeMatches();
     cocos2d::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
@@ -46,13 +51,12 @@ protected:
     ChainObj* detectLChainMatches(ChainObj* horzChain, ChainObj* vertChain);
     ChainObj* detectTChainMatches(ChainObj* horzChain, ChainObj* vertChain);
 
-    void addChainsFromSetToSet(cocos2d::Set* from, cocos2d::Set* to);
-
     cocos2d::Set* createHorizontalChainAt(int column);
     cocos2d::Set* createVerticalChainAt(int row);
     cocos2d::Set* createXChainAt(int column, int row);
     cocos2d::Set* createAllOfOneChain(int entryColumn, int entryRow);
     cocos2d::Set* createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to);
+    cocos2d::Set* createChainFromPosToPos(int fromCol, int fromRow, int toCol, int toRow);
 
 #ifdef COCOS2D_DEBUG
     void logDebugChains(cocos2d::Set* horizontal, cocos2d::Set* vertical, cocos2d::Set* difficult);

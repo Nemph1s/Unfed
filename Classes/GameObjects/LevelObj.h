@@ -18,6 +18,7 @@ class ChainObj;
 class ObjectController;
 class ChainController;
 class SwapController;
+class DudeController;
 
 class LevelObj : public cocos2d::Node
 {
@@ -36,19 +37,17 @@ public:
 
     virtual bool initWithId(const int16_t& levelId);
 
-    void initObjectController();
-    void initChainController();
-
     cocos2d::Set* shuffle();
 
-    cocos2d::Set* removeMatches();
-    cocos2d::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
     cocos2d::Set* detectFieldObjects(cocos2d::Set* chains);
 
     cocos2d::Array* useGravityToFillHoles();
     cocos2d::Array* fillTopUpHoles();
 
     void resetComboMultiplier();
+
+    //TODO: move to callback
+    void removeDudeMatches(cocos2d::Set* set);
 
 protected:
     // Nodes should be created using create();
@@ -69,6 +68,7 @@ protected:
     CC_SYNTHESIZE_READONLY(int, mComboMultiplier, ComboMultiplier);
     CC_SYNTHESIZE_READONLY(CommonTypes::LevelInfo, mLevelInfo, LevelInfo);
 
-    CC_SYNTHESIZE_READONLY(ObjectController*, mObjCtrl, ObjectController);
-    CC_SYNTHESIZE_READONLY(ChainController*, mChainCtrl, ChainController);
+    CC_SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController);
+    CC_SYNTHESIZE(DudeController*, mDudeCtrl, DudeController);
+    CC_SYNTHESIZE(ChainController*, mChainCtrl, ChainController);
 };

@@ -9,22 +9,21 @@
 */
 
 #include "Controller/SwapController.h"
-#include "Controller/ObjectController.h"
+#include "Controller/ObjectController/ObjectController.h"
 
 #include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/LevelObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 
 #include "Common/CommonTypes.h"
+#include "Utils/Helpers/Helper.h"
 
-#include "Scenes/GameplayScene.h"
 #include "Layers/CookiesLayer.h"
 
 //--------------------------------------------------------------------
 SwapController::SwapController()
 //--------------------------------------------------------------------
     : mLevel(nullptr)
-    , mGameplayScene(nullptr)
     , mPossibleSwaps(nullptr)
 {
 }
@@ -170,16 +169,15 @@ void SwapController::performSwap(SwapObj * swap)
 }
 
 //--------------------------------------------------------------------
-bool SwapController::trySwapCookieTo(int horzDelta, int vertDelta)
+bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("SwapController::trySwapCookieTo: horzDelta=%d; vertDelta=%d;", horzDelta, vertDelta);
-    auto layer = mGameplayScene->getCookiesLayer();
-    auto swipeFromColumn = layer->getSwipeFromColumn();
-    auto swipeFromRow = layer->getSwipeFromRow();
+    cocos2d::log("SwapController::trySwapCookieTo: direction=%d;", direction);
 
-    int toColumn = swipeFromColumn + horzDelta;
-    int toRow = swipeFromRow + vertDelta;
+    int horzDelta = 0; int vertDelta = 0;
+    Helper::getInstance()->convertDirectionToSwipeDelta(direction, horzDelta, vertDelta);
+    int toColumn = fromCol + horzDelta;
+    int toRow = fromRow + vertDelta;
 
     if (toColumn < 0 || toColumn >= CommonTypes::NumColumns)
         return false;
@@ -191,7 +189,7 @@ bool SwapController::trySwapCookieTo(int horzDelta, int vertDelta)
     if (!toCookie)
         return false;
 
-    CookieObj* fromCookie = objCtrl->cookieAt(swipeFromColumn, swipeFromRow);
+    CookieObj* fromCookie = objCtrl->cookieAt(fromCol, fromRow);
     if (!fromCookie)
         return false;
 

@@ -10,7 +10,9 @@
 
 #include "Controller/ViewController.h"
 #include "Controller/SwapController.h"
-#include "Controller/ObjectController.h"
+#include "Controller/ChainController.h"
+#include "Controller/ObjectController/DudeController.h"
+#include "Controller/ObjectController/ObjectController.h"
 
 #include "Managers/AnimationsManager.h"
 #include "Managers/AudioManager.h"
@@ -20,6 +22,7 @@
 
 #include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/LevelObj.h"
+#include "GameObjects/TileObjects/DudeObj.h"
 #include "GameObjects/Chain/ChainObj.h"
 
 #include "Scenes/GameplayScene.h"
@@ -35,11 +38,61 @@ using namespace CommonTypes;
 ViewController::ViewController()
     : mLevel(nullptr)
     , mGameplayScene(nullptr)
+    , mObjectController(nullptr)
+    , mChainController(nullptr)
     , mSwapController(nullptr)
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::ViewController");
-   CC_SAFE_RETAIN(mSwapController);
+   
+}
+
+//--------------------------------------------------------------------
+ViewController::~ViewController()
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ViewController::~ViewController");
+    CC_SAFE_RELEASE_NULL(mObjectController);
+    CC_SAFE_RELEASE_NULL(mChainController);
+    CC_SAFE_RELEASE_NULL(mSwapController);
+}
+
+//--------------------------------------------------------------------
+ViewController * ViewController::create()
+//--------------------------------------------------------------------
+{
+    ViewController * ret = new (std::nothrow) ViewController();
+    if (ret && ret->init()) {
+        ret->autorelease();
+        CC_SAFE_RETAIN(ret);
+    }
+    else {
+        CC_SAFE_DELETE(ret);
+    }
+    return ret;
+}
+
+//--------------------------------------------------------------------
+bool ViewController::init()
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ViewController::init");
+
+    initGameScene();
+    initObjectController();
+    initChainController();
+    initSwapController();
+    initDudeController();
+
+    mShuffleButtonCallback = std::bind(&ViewController::shuffleButtonCallback, this);
+    GuiManager->setShuffleButtonCallback(mShuffleButtonCallback);
+
+    // Present the scene.
+    Director::getInstance()->runWithScene(mGameplayScene);
+
+    startGame();
+
+    return true;
 }
 
 //--------------------------------------------------------------------
@@ -62,7 +115,7 @@ bool ViewController::initGameScene()
     SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
     
     // Load the level.
-    int levelId = 2;
+    int levelId = 5;
     mLevel = LevelObj::createWithId(levelId);
     mScore = mLevel->getLevelInfo().targetScore;
     mMovesLeft = mLevel->getLevelInfo().moves;
@@ -71,7 +124,72 @@ bool ViewController::initGameScene()
     mLevel->setName("Level");
 
     mGameplayScene->setLevel(mLevel);
+
+    return true;
+}
+
+//--------------------------------------------------------------------
+bool ViewController::initObjectController()
+//--------------------------------------------------------------------
+{
+    mObjectController = ObjectController::create();
+    mObjectController->setLevel(mLevel);
+    mLevel->setObjectController(mObjectController);
+
+    mObjectController->createInitialTiles();
+    mObjectController->createInitialFieldObjects();
+
     mGameplayScene->addTiles();
+
+    return true;
+}
+
+//--------------------------------------------------------------------
+bool ViewController::initChainController()
+//--------------------------------------------------------------------
+{
+    mChainController = ChainController::create();
+    mChainController->setLevel(mLevel);
+    mChainController->setObjectController(mObjectController);
+    mLevel->setChainController(mChainController);
+    return true;
+}
+
+//--------------------------------------------------------------------
+bool ViewController::initDudeController()
+//--------------------------------------------------------------------
+{
+    mDudeController = DudeController::create();
+    mDudeController->setObjectController(mObjectController);
+    mDudeController->setChainController(mChainController);
+    mObjectController->setDudeController(mDudeController);
+    mLevel->setDudeController(mDudeController);
+
+    auto dudeCtrl = mDudeController;
+
+    auto activateDudeCallback = [=](DudeObj* dude, int direction) {
+        auto set = mDudeController->activateDude(dude, direction);
+
+        if (set->count() > 0) {
+            mGameplayScene->userInteractionDisabled();
+
+            mLevel->removeDudeMatches(set);
+            auto removeCallback = CallFunc::create([=]() {
+                mDudeController->removeDude(dude->getColumn(), dude->getRow());
+            });
+
+            AnimationsManager->animateRemoveDude(dude, removeCallback);
+
+            updateScore(set);
+            animateHandleMatches(set);
+        }
+    };
+    mDudeController->setActivateDudeCallback(activateDudeCallback);
+
+    auto dudeActivationCallback = [dudeCtrl](int fromCol, int fromRow, int direction) {
+        return dudeCtrl->canActivateDudeTo(fromCol, fromRow, direction);
+    };
+    mGameplayScene->setDudeActivationCallback(dudeActivationCallback);
 
     return true;
 }
@@ -83,14 +201,13 @@ bool ViewController::initSwapController()
     mSwapController = SwapController::create();
 
     mSwapController->setLevel(mLevel);
-    mSwapController->setGameplayScene(mGameplayScene);
 
     auto swapCallback = std::bind(&ViewController::swapCallback, this, std::placeholders::_1);
     mSwapController->setSwapCallback(swapCallback);
 
     auto swapCtrl = mSwapController;
-    auto tryToSwapCallback = [swapCtrl](int horzDelta, int vertDelta) {
-        return swapCtrl->trySwapCookieTo(horzDelta, vertDelta);
+    auto tryToSwapCallback = [swapCtrl](int fromCol, int fromRow, int direction) {
+        return swapCtrl->trySwapCookieTo(fromCol, fromRow, direction);
     };
     mGameplayScene->setSwapCookieCallback(tryToSwapCallback);
 
@@ -100,49 +217,6 @@ bool ViewController::initSwapController()
     mLevel->setDetectPossibleSwapsCallback(detectPossibleSwapsCallback);
 
     return true;
-}
-
-//--------------------------------------------------------------------
-ViewController::~ViewController()
-//--------------------------------------------------------------------
-{
-   cocos2d::log("ViewController::~ViewController");
-   CC_SAFE_RELEASE_NULL(mSwapController);
-}
-
-//--------------------------------------------------------------------
-ViewController * ViewController::create()
-//--------------------------------------------------------------------
-{
-    ViewController * ret = new (std::nothrow) ViewController();
-    if (ret && ret->init()) {
-        ret->autorelease();
-        CC_SAFE_RETAIN(ret);
-    }
-    else {
-        CC_SAFE_DELETE(ret);
-    }
-    return ret;
-}
-
-//--------------------------------------------------------------------
-bool ViewController::init()
-//--------------------------------------------------------------------
-{
-   cocos2d::log("ViewController::init");
-
-   initGameScene();
-   initSwapController();
-
-   mShuffleButtonCallback = std::bind(&ViewController::shuffleButtonCallback, this);
-   GuiManager->setShuffleButtonCallback(mShuffleButtonCallback); 
-
-   // Present the scene.
-   Director::getInstance()->runWithScene(mGameplayScene);
-
-   startGame();
-
-   return true;
 }
 
 //--------------------------------------------------------------------
@@ -193,6 +267,7 @@ void ViewController::shuffle()
    mLevel->getObjectController()->removeAllCookies();
    mGameplayScene->removeAllCookieSprites();
    mGameplayScene->addSpritesForCookies(mLevel->shuffle());
+   mDudeController->detectDirectionsForDudes();
 }
 
 //--------------------------------------------------------------------
@@ -200,9 +275,12 @@ void ViewController::handleMatches()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ViewController::handleMatches");
-    auto chains = mLevel->removeMatches();
+    auto chains = mChainController->removeMatches();
+    auto dudes = mDudeController->createDudeObectsFromChains(chains);
+    mGameplayScene->addSpritesForObjects(dudes);
 
     if (chains->count() == 0) {
+        mDudeController->detectDirectionsForDudes();
         beginNextTurn();
         return;
     }
@@ -297,13 +375,29 @@ void ViewController::swapCallback(SwapObj * swap)
         AudioManager->playSound(SoundType::InvalidSwapSound);
     }
 }
+// 
+// //--------------------------------------------------------------------
+// void ViewController::activateDudeCallback(DudeObj* obj, int direction)
+// //--------------------------------------------------------------------
+// {
+//     auto set = mDudeController->activateDude(obj, direction);
+// 
+//     mLevel->removeDudeMatches(set);
+// 
+//     if (set->count() > 0) {
+//         mGameplayScene->userInteractionDisabled();
+// 
+//         updateScore(set);
+//         animateHandleMatches(set);
+//     }
+// }
 
 //--------------------------------------------------------------------
 void ViewController::activateChainCallback(CommonTypes::ChainType & type, cocos2d::Vec2 & pos)
 //--------------------------------------------------------------------
 {
     cocos2d::log("ViewController::activateChainCallback");
-    auto chains = mLevel->removeChainAt(type, pos);
+    auto chains = mChainController->removeChainAt(type, pos);
 
     if (chains->count() > 0) {
         mGameplayScene->userInteractionDisabled();

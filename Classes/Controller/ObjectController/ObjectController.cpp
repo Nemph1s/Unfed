@@ -8,7 +8,8 @@
 * @author VMartyniuk
 */
 
-#include "Controller/ObjectController.h"
+#include "Controller/ObjectController/ObjectController.h"
+#include "Controller/ObjectController/DudeController.h"
 
 #include "Common/Factory/SmartFactory.h"
 
@@ -24,6 +25,7 @@ using namespace CommonTypes;
 //--------------------------------------------------------------------
 ObjectController::ObjectController()
     : mLevel(nullptr)
+    , mDudeCtrl(nullptr)
 //--------------------------------------------------------------------
 {
 }
@@ -187,15 +189,15 @@ int ObjectController::getRandomCookieType(int column, int row)
 TileObj* ObjectController::tileAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    bool invalidColumn = column >= 0 && column < NumColumns;
-    bool invalidRow = row >= 0 && row < NumColumns;
-    if (!invalidColumn) {
+    bool validColumn = column >= 0 && column < NumColumns;
+    bool validRow = row >= 0 && row < NumColumns;
+    if (!validColumn) {
         cocos2d::log("ObjectController::tileAt: Invalid column : %d", column);
-        CC_ASSERT(invalidColumn);
+        CC_ASSERT(validColumn);
     }
-    if (!invalidRow) {
+    if (!validRow) {
         cocos2d::log("ObjectController::tileAt: Invalid row: %d", row);
-        CC_ASSERT(invalidRow);
+        CC_ASSERT(validRow);
     }
     return dynamic_cast<TileObj*>(mTiles[column][row]);
 }
@@ -204,9 +206,9 @@ TileObj* ObjectController::tileAt(int column, int row)
 CookieObj* ObjectController::cookieAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    bool invalidColumn = column >= 0 && column < NumColumns;
-    bool invalidRow = row >= 0 && row < NumColumns;
-    if (!invalidColumn || !invalidRow) {
+    bool validColumn = column >= 0 && column < NumColumns;
+    bool validRow = row >= 0 && row < NumColumns;
+    if (!validColumn || !validRow) {
         cocos2d::log("ObjectController::cookieAt: Invalid cookie at column = %d, row = %d", column, row);
         return nullptr;
     }
@@ -256,6 +258,13 @@ BaseObj * ObjectController::fieldObjectAt(int column, int row)
 }
 
 //--------------------------------------------------------------------
+BaseObj* ObjectController::dudeObjectAt(int column, int row)
+//--------------------------------------------------------------------
+{
+    return mDudeCtrl->objectAt(column, row);
+}
+
+//--------------------------------------------------------------------
 bool ObjectController::isEmptyTileAt(int column, int row)
 //--------------------------------------------------------------------
 {
@@ -270,13 +279,17 @@ bool ObjectController::isPossibleToAddCookie(int column, int row)
     auto isEmptyTile = isEmptyTileAt(column, row);
     auto isCookieAt = cookieAt(column, row);
     if (!isEmptyTile && isCookieAt == nullptr) {
-        auto fieldObj = fieldObjectAt(column, row);
-        if (!fieldObj) {
-            return true;
+        auto dudeObj = dudeObjectAt(column, row);
+        if (!dudeObj) {
+            auto fieldObj = fieldObjectAt(column, row);
+            if (!fieldObj) {
+                return true;
+            }
+            if (fieldObj->isContainer()) {
+                return true;
+            }
         }
-        if (fieldObj->isContainer()) {
-            return true;
-        }
+        
     }
     return false;
 }
@@ -344,6 +357,9 @@ void ObjectController::updateObjectAt(int column, int row, BaseObj * obj, BaseOb
 //         }
         mFieldObjects[column][row] = obj;
         break;
+    case BaseObjectType::DudeObj:
+        mDudeCtrl->mDudeObjects[column][row] = obj;
+        break;
     default:
         break;
     }
@@ -360,7 +376,9 @@ void ObjectController::removeCookie(int column, int row)
         return;
     }
     cocos2d::log("ObjectController::removeCookies: remove %s", cookie->description().getCString());
-    cookie->removeFromParent();
+    if (cookie->getParent()) {
+        cookie->removeFromParent();
+    }
     SmartFactory->recycle(cookie);
     mCookies[column][row] = nullptr;
 }
@@ -375,7 +393,9 @@ void ObjectController::removeAllCookies()
             if (cookie) {
                 cookie->clear();
                 if (cookie->getSpriteNode()) {
-                    cookie->getSpriteNode()->removeFromParent();
+                    if (cookie->getSpriteNode()->getParent()) {
+                        cookie->getSpriteNode()->removeFromParent();
+                    }
                     cookie->setSpriteNode(nullptr);
                 }
                     
