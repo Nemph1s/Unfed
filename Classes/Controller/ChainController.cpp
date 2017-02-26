@@ -447,17 +447,17 @@ cocos2d::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow
     int j = fromRow;
     auto chain = ChainObj::createWithType(ChainType::ChainFromAToB);
     do {
-        do {
-            if (mObjCtrl->cookieAt(i, j)) {
-                chain->addCookie(mObjCtrl->cookieAt(i, j));
-            }
-            if (fromRow != toRow) {
-                j = fromRow > toRow ? j - 1 : j + 1;
-            }            
-        } while (j != toRow);
         if (fromCol != toCol) {
             i = fromCol > toCol ? i - 1 : i + 1;
         }
+        do {
+            if (fromRow != toRow) {
+                j = fromRow > toRow ? j - 1 : j + 1;
+            }
+            if (mObjCtrl->cookieAt(i, j)) {
+                chain->addCookie(mObjCtrl->cookieAt(i, j));
+            }                  
+        } while (j != toRow);
     } while (i != toCol);
 
     set->addObject(chain);

@@ -30,6 +30,7 @@ CookiesLayer::CookiesLayer()
     , mLevel(nullptr)
     , mTouchedObj(nullptr)
     , mSelectionSprite(nullptr)
+    , mDudesLayer(nullptr)
 //--------------------------------------------------------------------
 {
 }
@@ -72,6 +73,8 @@ bool CookiesLayer::init()
     mSelectionSprite = Sprite::create();
     CC_SAFE_RETAIN(mSelectionSprite);
 
+    mDudesLayer = Layer::create();
+    this->addChild(mDudesLayer);
     return true;
 }
 
@@ -282,7 +285,15 @@ void CookiesLayer::removeAllCookieSprites()
 //--------------------------------------------------------------------
 {
     //TODO: dont remove dudes!
-    this->removeAllChildren();
+    for (const auto& child : getChildren()) {
+        auto obj = dynamic_cast<BaseObj*>(child);
+        if (!obj) {
+            continue;
+        }
+        if (obj->getType() != BaseObjectType::DudeObj) {
+            this->removeChild(child);
+        }
+    }
 }
 
 //--------------------------------------------------------------------
@@ -335,8 +346,12 @@ void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
         if (cookie) {
             cookie->updateDebugTileLabel();
         }
-        this->addChild(sprite);
-        this->addChild(obj);
-    }
-    
+        if (obj->getType() == BaseObjectType::DudeObj) {
+            mDudesLayer->addChild(sprite);
+            mDudesLayer->addChild(obj);
+        } else {
+            this->addChild(sprite);
+            this->addChild(obj);
+        }
+    }    
 }

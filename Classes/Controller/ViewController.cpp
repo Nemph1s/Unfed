@@ -110,11 +110,12 @@ bool ViewController::initGameScene()
     AnimationsManager->initWithScene(mGameplayScene);
     GuiManager->initWithScene(mGameplayScene);
 
+    SmartFactory->init((NumColumns * NumRows) / 2);
     SmartFactory->initTilesPool(NumColumns * NumRows);
     SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
     
     // Load the level.
-    int levelId = 2;
+    int levelId = 5;
     mLevel = LevelObj::createWithId(levelId);
     mScore = mLevel->getLevelInfo().targetScore;
     mMovesLeft = mLevel->getLevelInfo().moves;
@@ -266,6 +267,7 @@ void ViewController::shuffle()
    mLevel->getObjectController()->removeAllCookies();
    mGameplayScene->removeAllCookieSprites();
    mGameplayScene->addSpritesForCookies(mLevel->shuffle());
+   mDudeController->detectDirectionsForDudes();
 }
 
 //--------------------------------------------------------------------

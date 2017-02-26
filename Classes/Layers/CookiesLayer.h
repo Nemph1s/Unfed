@@ -63,5 +63,6 @@ protected:
     CC_SYNTHESIZE_READONLY(int, mSwipeFromColumn, SwipeFromColumn);
     CC_SYNTHESIZE_READONLY(int, mSwipeFromRow, SwipeFromRow);
 
+    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mDudesLayer, DudesLayer);
     CC_SYNTHESIZE_READONLY(cocos2d::Sprite*, mSelectionSprite, SelectionSprite);
 };

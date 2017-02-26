@@ -147,9 +147,9 @@ bool DudeController::detectDirectionsForDudes()
                     auto leftSet = mChainCtrl->createChainFromPosToPos(column, row, 0, row);
                     auto rightSet = mChainCtrl->createChainFromPosToPos(column, row, NumColumns - 1, row);
                     helper->setTopChain(topSet);
-                    helper->setTopChain(botSet);
-                    helper->setTopChain(leftSet);
-                    helper->setTopChain(rightSet);
+                    helper->setBottomChain(botSet);
+                    helper->setLeftChain(leftSet);
+                    helper->setRightChain(rightSet);
                     isDetected = true;
                 }
             }            
