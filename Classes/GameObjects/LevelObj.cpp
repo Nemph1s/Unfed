@@ -121,11 +121,11 @@ SearchEmptyHoles LevelObj::skipFillTopUpHoles(int column, int row, bool& filledT
         res = SearchEmptyHoles::ObjFounded;
     }
     else {
-        if ((row <= (NumRows / 2) + 1)  && !filledTileFouned) {
+        if ((row <= (NumRows / 2) + 2)  && !filledTileFouned) {
             res = SearchEmptyHoles::ContinueSearch;
         }
         else {
-            res = SearchEmptyHoles::BreakSearch;
+            res = SearchEmptyHoles::ContinueSearch;
         }
     }
     return res;
@@ -215,7 +215,7 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
 
                     if (!mLevelInfo.skipEmptyHoles) {
                         if (mObjCtrl->isEmptyTileAt(column, lookup)) {
-                            break;
+                            continue;
                         }
                     }
                     auto dudeObj = mObjCtrl->dudeObjectAt(column, lookup);
