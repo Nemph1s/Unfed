@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObj.cpp
+* @file GameObjects/TileObjects/TileObj.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -16,6 +16,8 @@
 TileObj::TileObj()
     : BaseObj()
     , mTileType(CommonTypes::TileType::Unknown)
+    , mDebugLabel(nullptr)
+    , mHP(0)
 //--------------------------------------------------------------------
 {
 }
@@ -50,6 +52,28 @@ bool TileObj::init(const CommonTypes::TileInfo & info)
     }
     mTileType = info.tileType;
 
+    if (!mDebugLabel && mType != CommonTypes::BaseObjectType::FieldObj) {
+#ifdef COCOS2D_DEBUG
+        mDebugLabel = cocos2d::Label::create();
+        mDebugLabel->setBMFontSize(16);
+        mDebugLabel->setDimensions(32, 32);
+        mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::RIGHT);
+        mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::BOTTOM);
+        mDebugLabel->setPosition(cocos2d::Vec2(GameResources::TileWidth * 0.8f, GameResources::TileHeight * 0.2f));
+        mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
+        mDebugLabel->setTextColor(cocos2d::Color4B::BLACK);
+        mDebugLabel->setGlobalZOrder(1000);
+        CC_SAFE_RETAIN(mDebugLabel);
+        //mSpriteNode->addChild(mDebugLabel, 10);
+
+        int col = mColumn == -1 ? 0 : mColumn;
+        int row = mRow == -1 ? 0 : mRow;
+
+        auto text = cocos2d::StringUtils::format("[%d,%d]", col, row);
+        mDebugLabel->setString(text);
+#endif //UNFED_ENABLE_DEBUG
+    }
+
     return true;
 }
 
@@ -61,10 +85,39 @@ cocos2d::String& TileObj::spriteName() const
 }
 
 //--------------------------------------------------------------------
+cocos2d::String & TileObj::description() const
+//--------------------------------------------------------------------
+{
+    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
+}
+
+//--------------------------------------------------------------------
+void TileObj::setSpriteNode(cocos2d::Sprite * var)
+//--------------------------------------------------------------------
+{
+    mSpriteNode = var;
+    if (mSpriteNode && mDebugLabel) {
+        if (!mDebugLabel->getParent()) {
+            mSpriteNode->addChild(mDebugLabel, 10);
+        }
+    }
+}
+
+//--------------------------------------------------------------------
 int TileObj::getTypeAsInt() const
 //--------------------------------------------------------------------
 {
     return Helper::getInstance()->to_underlying(mTileType);
+}
+
+//--------------------------------------------------------------------
+void TileObj::match()
+//--------------------------------------------------------------------
+{
+    mHP--;
+    if (mHP > 0) {
+        mTileType = static_cast<CommonTypes::TileType>(getTypeAsInt() - 1);
+    }
 }
 
 //--------------------------------------------------------------------
@@ -73,6 +126,31 @@ void TileObj::clear()
 {
     BaseObj::clear();
     mTileType = CommonTypes::TileType::Unknown;
+    mHP = 0;
+    if (mDebugLabel) {
+        if (mDebugLabel->getParent()) {
+            mDebugLabel->removeFromParent();
+        }        
+        CC_SAFE_RELEASE_NULL(mDebugLabel);
+    }    
+}
+
+//--------------------------------------------------------------------
+bool TileObj::checkMatchingCondition(int column, int row)
+//--------------------------------------------------------------------
+{
+    return false;
+}
+
+//--------------------------------------------------------------------
+bool TileObj::isReadyToRemove() const
+//--------------------------------------------------------------------
+{
+    bool result = false;
+    if (isRemovable()) {
+        result = (mHP <= 0);
+    }
+    return result;
 }
 
 //--------------------------------------------------------------------
@@ -84,4 +162,17 @@ bool TileObj::isEmptyTile()
     } else {
         return false;
     }    
+}
+
+//--------------------------------------------------------------------
+void TileObj::updateDebugTileLabel()
+//--------------------------------------------------------------------
+{
+    if (mDebugLabel) {
+        int col = mColumn == -1 ? 0 : mColumn;
+        int row = mRow == -1 ? 0 : mRow;
+
+        auto text = cocos2d::StringUtils::format("[%d,%d]", col, row);
+        mDebugLabel->setString(text);
+    }
 }

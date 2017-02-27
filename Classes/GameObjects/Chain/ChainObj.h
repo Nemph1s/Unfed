@@ -11,10 +11,10 @@
 #pragma once
 
 #include "cocos2d.h"
-
 #include "Common/CommonTypes.h"
 
 class CookieObj;
+
 class ChainObj : public cocos2d::Node
 {
 CC_CONSTRUCTOR_ACCESS:

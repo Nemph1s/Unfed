@@ -1,9 +1,5 @@
-#include "DirtObject.h"
-
-
-
 /**
-* @file GameObjects/TileObj.cpp
+* @file GameObjects/TileObjects/Obstacles/DirtObject.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -12,7 +8,8 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/Obstacles/DirtObject.h"
+
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
@@ -21,7 +18,6 @@ using CommonTypes::TileType;
 //--------------------------------------------------------------------
 DirtObject::DirtObject()
     : TileObj()
-    , mHP(0)
 //--------------------------------------------------------------------
 {
 }
@@ -55,10 +51,11 @@ bool DirtObject::init(const CommonTypes::TileInfo & info)
         return false;
     }
  
-    if (info.tileType >= TileType::Dirt && info.tileType <= TileType::DirtX3) {
+    if (info.tileType >= TileType::Dirt && info.tileType <= TileType::Dirt_HP3) {
         mHP = (getTypeAsInt() - Helper::to_underlying(TileType::Dirt)) + 1;
     }
     mIsRemovable = true;
+    mIsContainer = true;
 
     return true;
 }
@@ -67,38 +64,28 @@ bool DirtObject::init(const CommonTypes::TileInfo & info)
 cocos2d::String& DirtObject::spriteName() const
 //--------------------------------------------------------------------
 {
-    return GameResources::s_DirtImg;
-}
-
-//--------------------------------------------------------------------
-cocos2d::String& DirtObject::description() const
-//--------------------------------------------------------------------
-{
-    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
-}
-
-//--------------------------------------------------------------------
-void DirtObject::match()
-//--------------------------------------------------------------------
-{
-    mHP--;
-}
-
-//--------------------------------------------------------------------
-bool DirtObject::isReadyToRemove() const
-//--------------------------------------------------------------------
-{
-    bool result = false;
-    if (getIsRemovable()) {
-        result = (mHP <= 0);
+    const int x2State = 2;
+    const int x1State = 1;
+    cocos2d::String* str = nullptr;
+    switch (mHP)
+    {
+    case x1State:
+        str = &GameResources::s_DirtX2Img;
+        break;
+    case x2State:
+    default:
+        str = &GameResources::s_DirtImg;
+        break;
     }
-    return result;
+    return *str;
 }
 
 //--------------------------------------------------------------------
-void DirtObject::clear()
+bool DirtObject::checkMatchingCondition(int column, int row)
 //--------------------------------------------------------------------
 {
-    TileObj::clear();
-    mHP = 0;
+    if (column < 0 || column >= CommonTypes::NumColumns || row < 0 || row >= CommonTypes::NumColumns) {
+        return false;
+    }
+    return (mColumn == column && mRow == row);
 }

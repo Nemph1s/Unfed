@@ -19,13 +19,18 @@
 #include "Utils/Parser/JsonParser.h"
 
 #include "Common/Factory/SmartFactory.h"
-#include "Controller/ObjectController.h"
+#include "Controller/ObjectController/ObjectController.h"
+#include "Controller/ObjectController/DudeController.h"
+#include "Controller/ChainController.h"
+
 
 using namespace CommonTypes;
 
 //--------------------------------------------------------------------
 LevelObj::LevelObj()
     : mObjCtrl(nullptr)
+    , mChainCtrl(nullptr)
+    , mDudeCtrl(nullptr)
 //--------------------------------------------------------------------
 {
 }
@@ -36,6 +41,7 @@ LevelObj::~LevelObj()
 {
     cocos2d::log("LevelObj::~LevelObj: deallocing CookieObj: %p - tag: %i", this, _tag);
     CC_SAFE_RELEASE_NULL(mObjCtrl);
+    CC_SAFE_RELEASE_NULL(mChainCtrl);
 }
 
 //--------------------------------------------------------------------
@@ -68,20 +74,7 @@ bool LevelObj::initWithId(const int16_t& levelId)
     }
     mLevelInfo = JsonParser->getLevelInfo();
 
-    initObjectController();
-
     return true;
-}
-
-//--------------------------------------------------------------------
-void LevelObj::initObjectController()
-//--------------------------------------------------------------------
-{
-    mObjCtrl = ObjectController::create();
-    mObjCtrl->setLevel(this);
-
-    mObjCtrl->createInitialTiles();
-    mObjCtrl->createInitialFieldObjects();
 }
 
 //--------------------------------------------------------------------
@@ -101,277 +94,6 @@ cocos2d::Set* LevelObj::shuffle()
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * LevelObj::removeMatches()
-//--------------------------------------------------------------------
-{
-    cocos2d::log("LevelObj::removeMatches:");
-    auto horizontalChains = detectHorizontalMatches();
-    auto verticalChains = detectVerticalMatches();
-    auto difficultChains = detectDifficultMatches(horizontalChains, verticalChains);
-
-    auto set = cocos2d::Set::create();
-
-    addChainsFromSetToSet(horizontalChains, set);
-    addChainsFromSetToSet(verticalChains, set);
-    addChainsFromSetToSet(difficultChains, set);
-
-#ifdef COCOS2D_DEBUG
-    logDebugChains(horizontalChains, verticalChains, difficultChains);
-#endif //COCOS2D_DEBUG
-
-    calculateScore(horizontalChains);
-    removeCookies(horizontalChains);
-
-    calculateScore(verticalChains);
-    removeCookies(verticalChains);
-
-    calculateScore(difficultChains);
-    removeCookies(difficultChains);
-
-    return set;
-}
-
-//--------------------------------------------------------------------
-cocos2d::Set* LevelObj::removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos)
-//--------------------------------------------------------------------
-{
-    auto set = cocos2d::Set::create();
-
-    int column = -1, row = -1;
-    if (Helper::convertPointToTilePos(pos, column, row)) {
-        cocos2d::Set* chainSet = nullptr;
-        switch (type)
-        {
-        case ChainType::ChainTypeHorizontal:
-            chainSet = createHorizontalChainAt(column);
-            break;
-        case ChainType::ChainTypeVertical:
-            chainSet = createVerticalChainAt(row);
-            break;
-        case ChainType::ChainTypeX:
-            chainSet = createXChainAt(column, row);
-            break;
-        default:
-            break;
-        }
-        if (chainSet) {
-            addChainsFromSetToSet(chainSet, set);
-            calculateScore(chainSet);
-            removeCookies(chainSet);
-        }
-    }
-    return set;
-}
-
-// void LevelObj::removeMatches(cocos2d::Set* matches)
-// //--------------------------------------------------------------------
-// {
-//     calculateScore(matches);
-//     removeCookies(matches);
-// }
-
-//--------------------------------------------------------------------
-cocos2d::Set * LevelObj::detectHorizontalMatches()
-//--------------------------------------------------------------------
-{
-    auto set = new cocos2d::Set();
-    for (int column = 0; column < NumColumns; column++) {
-        for (int row = 0; row < NumRows - 2;) {
-
-            auto cookie = mObjCtrl->cookieAt(column, row);
-            // skip over any gaps in the level design.
-            if (cookie != nullptr) {
-                int matchType = cookie->getTypeAsInt();
-
-                auto other1 = mObjCtrl->cookieAt(column, row + 1);
-                auto other2 = mObjCtrl->cookieAt(column, row + 2);
-                // check whether the next two columns have the same cookie type.
-                if (other1 != nullptr && other2 != nullptr) {
-
-                    if (other1->getTypeAsInt() == matchType
-                        && other2->getTypeAsInt() == matchType) {
-                        //  There is a chain of at least three cookies but potentially there are more. This steps through all the matching cookies 
-                        // until it finds a cookie that breaks the chain or it reaches the end of the grid.
-                        auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
-                        int newMatchType = -1;
-                        do {
-                            cookie = mObjCtrl->cookieAt(column, row);
-                            newMatchType = cookie ? cookie->getTypeAsInt() : -1;
-                            if (cookie != nullptr && newMatchType == matchType) {
-                                chain->addCookie(cookie);
-                                row += 1;
-                            }
-                        } while (row < NumColumns && newMatchType == matchType);
-
-                        set->addObject(chain);
-                        continue;
-                    }
-                }
-            }
-            //  If the next two cookies don’t match the current one or if there is an empty tile, 
-            // then there is no chain, so you skip over the cookie.
-            row += 1;
-        }
-    }
-    return set;
-}
-
-//--------------------------------------------------------------------
-cocos2d::Set * LevelObj::detectVerticalMatches()
-//--------------------------------------------------------------------
-{
-    auto set = new cocos2d::Set();
-    for (int row = 0; row < NumRows; row++) {
-        for (int column = 0; column < NumColumns - 2; ) {
-
-            auto cookie = mObjCtrl->cookieAt(column, row);
-            // skip over any gaps in the level design.
-            if (cookie != nullptr) {
-                int matchType = cookie->getTypeAsInt();
-
-                auto other1 = mObjCtrl->cookieAt(column + 1, row);
-                auto other2 = mObjCtrl->cookieAt(column + 2, row);
-                // check whether the next two columns have the same cookie type.
-                if (other1 != nullptr && other2 != nullptr) {
-
-                    if (other1->getTypeAsInt() == matchType 
-                        && other2->getTypeAsInt() == matchType) {
-                        //  There is a chain of at least three cookies but potentially there are more. This steps through all the matching cookies 
-                        // until it finds a cookie that breaks the chain or it reaches the end of the grid.
-                        auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
-                        int newMatchType = -1;
-                        do {
-                            cookie = mObjCtrl->cookieAt(column, row);
-                            newMatchType = cookie ? cookie->getTypeAsInt() : -1;
-                            if (cookie != nullptr && newMatchType == matchType) {
-                                chain->addCookie(cookie);
-                                column += 1;
-                            }                            
-                        } while (column < NumColumns && newMatchType == matchType);
-
-                        set->addObject(chain);
-                        continue;
-                    }       
-                }
-            }
-            //  If the next two cookies don’t match the current one or if there is an empty tile, 
-            // then there is no chain, so you skip over the cookie.
-            column += 1;
-        }
-    }
-    return set;
-}
-
-//--------------------------------------------------------------------
-cocos2d::Set * LevelObj::detectDifficultMatches(cocos2d::Set * horizontal, cocos2d::Set * vertical)
-//--------------------------------------------------------------------
-{
-    auto set = new cocos2d::Set();
-    ChainObj* chainL = nullptr;
-    ChainObj* chainT = nullptr;
-
-    for (auto horzIt = horizontal->begin(); horzIt != horizontal->end(); ) {
-        auto horzChain = dynamic_cast<ChainObj*>(*horzIt);
-        CC_ASSERT(horzChain);
-
-        for (auto vertIt = vertical->begin(); vertIt != vertical->end(); ) {
-            auto vertChain = dynamic_cast<ChainObj*>(*vertIt);
-            CC_ASSERT(vertChain);
-
-            chainL = detectLChainMatches(horzChain, vertChain);
-            chainT = detectTChainMatches(horzChain, vertChain);
-
-            if (chainL) set->addObject(chainL);
-            if (chainT) set->addObject(chainT);
-   
-            if (chainL || chainT) {
-                vertIt++;
-                vertical->removeObject(vertChain);
-                continue;
-            }
-            vertIt++;          
-        }
-
-        if (chainL || chainT) {
-            horzIt++;
-            horizontal->removeObject(horzChain);
-            chainL = nullptr;
-            chainT = nullptr;
-            continue;
-        }
-        horzIt++;
-    }
-    return set;
-}
-
-//--------------------------------------------------------------------
-ChainObj * LevelObj::detectLChainMatches(ChainObj * horzChain, ChainObj * vertChain)
-//--------------------------------------------------------------------
-{
-    ChainObj* chain = nullptr;
-    auto horzCookies = horzChain->getCookies();
-    CC_ASSERT(horzCookies);
-    auto vertCookies = vertChain->getCookies();
-    CC_ASSERT(vertCookies);
-
-    auto firstHorzCookie = dynamic_cast<CookieObj*>(horzCookies->getObjectAtIndex(0));
-    auto lastHorzCookie = dynamic_cast<CookieObj*>(horzCookies->getLastObject());
-    auto firstVertCookie = dynamic_cast<CookieObj*>(vertCookies->getObjectAtIndex(0));
-    auto lastVertCookie = dynamic_cast<CookieObj*>(vertCookies->getLastObject());
-    
-    if (!firstHorzCookie || !lastHorzCookie || !firstVertCookie || !lastVertCookie) {
-        return chain;
-    }
-    if (firstHorzCookie->getTypeAsInt() != firstVertCookie->getTypeAsInt()) {
-        return chain;
-    }
-
-    if (firstHorzCookie == firstVertCookie || firstHorzCookie == lastVertCookie ||
-        lastHorzCookie == firstVertCookie || lastHorzCookie == lastVertCookie) {
-        chain = ChainObj::createWithType(ChainType::ChainTypeL);
-        chain->addCookiesFromChain(horzChain);
-        chain->addCookiesFromChain(vertChain);
-    }
-    return chain;
-}
-
-//--------------------------------------------------------------------
-ChainObj * LevelObj::detectTChainMatches(ChainObj * horzChain, ChainObj * vertChain)
-//--------------------------------------------------------------------
-{
-    ChainObj* chain = nullptr;
-    auto horzCookies = horzChain->getCookies();
-    CC_ASSERT(horzCookies);
-    auto vertCookies = vertChain->getCookies();
-    CC_ASSERT(vertCookies);
-
-    auto firstHorzCookie = dynamic_cast<CookieObj*>(horzCookies->getObjectAtIndex(0));
-    auto lastHorzCookie = dynamic_cast<CookieObj*>(horzCookies->getLastObject());
-    auto firstVertCookie = dynamic_cast<CookieObj*>(vertCookies->getObjectAtIndex(0));
-    auto lastVertCookie = dynamic_cast<CookieObj*>(vertCookies->getLastObject());
-
-    if (!firstHorzCookie || !lastHorzCookie || !firstVertCookie || !lastVertCookie) {
-        return chain;
-    }
-    if (firstHorzCookie->getTypeAsInt() != firstVertCookie->getTypeAsInt()) {
-        return chain;
-    }
-    
-    int horzMiddlePos = firstHorzCookie->getColumn() + horzCookies->count() / 2;
-    int vertMiddlePos = firstVertCookie->getRow() + vertCookies->count() / 2;
-    auto middleHorzCookie = mObjCtrl->cookieAt(horzMiddlePos, firstHorzCookie->getRow());
-    auto middleVertCookie = mObjCtrl->cookieAt(firstVertCookie->getColumn(), vertMiddlePos);
-
-    if (middleHorzCookie == firstVertCookie || middleHorzCookie == lastVertCookie ||
-        middleVertCookie == firstHorzCookie || middleVertCookie == lastHorzCookie) {
-        chain = ChainObj::createWithType(ChainType::ChainTypeT);
-        chain->addCookiesFromChain(horzChain);
-        chain->addCookiesFromChain(vertChain);
-    }
-    return chain;
-}
-
-//--------------------------------------------------------------------
 void LevelObj::removeCookies(cocos2d::Set * chains)
 //--------------------------------------------------------------------
 {
@@ -380,6 +102,9 @@ void LevelObj::removeCookies(cocos2d::Set * chains)
         CC_ASSERT(chain);
 
         auto cookies = chain->getCookies();
+        if (!cookies) {
+            continue;
+        }
         for (auto it = cookies->begin(); it != cookies->end(); it++) {
             auto cookie = dynamic_cast<CookieObj*>(*it);
             CC_ASSERT(cookie);
@@ -390,10 +115,34 @@ void LevelObj::removeCookies(cocos2d::Set * chains)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set* LevelObj::removeFieldObjects(cocos2d::Set * chains)
+SearchEmptyHoles LevelObj::skipFillTopUpHoles(int column, int row, bool& filledTileFouned)
 //--------------------------------------------------------------------
 {
-    auto set = new cocos2d::Set();
+    SearchEmptyHoles res;
+    if (!mObjCtrl->isEmptyTileAt(column, row)) {
+        filledTileFouned = true;
+        res = SearchEmptyHoles::ObjFounded;
+    }
+    else {
+        if ((row <= (NumRows / 2) + 2)  && !filledTileFouned) {
+            res = SearchEmptyHoles::ContinueSearch;
+        }
+        else {
+            res = SearchEmptyHoles::ContinueSearch;
+        }
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
+bool LevelObj::checkMathicngFieldObjWithChain(cocos2d::Set * chains, BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    auto result = false;
+    auto fieldObj = dynamic_cast<TileObj*>(obj);
+    if (!fieldObj) {
+        return result;
+    }
     for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
@@ -403,15 +152,47 @@ cocos2d::Set* LevelObj::removeFieldObjects(cocos2d::Set * chains)
             auto cookie = dynamic_cast<CookieObj*>(*it);
             CC_ASSERT(cookie);
 
-            auto obj = mObjCtrl->fieldObjectAt(cookie->getColumn(), cookie->getRow());
-            if (!obj) 
-                continue;
+            int col = cookie->getColumn();
+            int row = cookie->getRow();
+            if (fieldObj->checkMatchingCondition(col, row)) {
+                result = true;
+                break;
+            }
+        }
+        if (result)
+            break;
+    }
+    return result;
+}
 
-            // TODO: make observer and remove object via unique method in tileObj aka collect()
-            obj->match();
-            if (obj->isReadyToRemove()) {
-                set->addObject(obj);
-                mObjCtrl->removeFieldObject(cookie->getColumn(), cookie->getRow());
+//--------------------------------------------------------------------
+bool LevelObj::isPossibleToAddCookie(int column, int row)
+//--------------------------------------------------------------------
+{
+    return mObjCtrl->isPossibleToAddCookie(column, row);
+}
+
+//--------------------------------------------------------------------
+cocos2d::Set* LevelObj::detectFieldObjects(cocos2d::Set * chains)
+//--------------------------------------------------------------------
+{
+    auto set = cocos2d::Set::create();
+
+    for (int row = 0; row < NumRows; row++) {
+        for (int column = 0; column < NumColumns; column++) {
+
+            auto obj = mObjCtrl->fieldObjectAt(column, row);
+            if (!obj) {
+                continue;
+            }
+            if (obj->isRemovable()) {
+
+                if (checkMathicngFieldObjWithChain(chains, obj)) {
+                    if (mObjCtrl->matchFieldObject(obj)) {
+                        set->addObject(obj);
+                        continue;
+                    }
+                }
             }
         }
     }
@@ -430,34 +211,80 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
         cocos2d::Array* array = nullptr;
         for (int row = NumRows - 1; row >= 0; row--) {
 
-            // If there’s a tile at a position but no cookie, then there’s a hole.
-            auto isEmptyTile = mObjCtrl->isEmptyTileAt(column, row);
-            auto isCookieAt = mObjCtrl->cookieAt(column, row);
-            if (!isEmptyTile && isCookieAt == nullptr) {
-            
+            if (isPossibleToAddCookie(column, row)) {
+
                 // Scan upward to find the cookie that sits directly above the hole
                 for (int lookup = row - 1; lookup >= 0; lookup--) {
-                    auto cookie = mObjCtrl->cookieAt(column, lookup);
-                    if (cookie == nullptr)
-                        continue;
-                    
-                    if (!cookie->getIsMovable())
-                        continue;
 
-                    // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
-                    mObjCtrl->updateCookieObjectAt(column, lookup, nullptr);
-                    mObjCtrl->updateCookieObjectAt(column, row, cookie);
-                    cookie->setRow(row);
-
-                    // Lazy creation of array
-                    if (array == nullptr) {
-                        array = cocos2d::Array::createWithCapacity(NumRows);
-                        columns->addObject(array);
+                    if (!mLevelInfo.skipEmptyHoles) {
+                        if (mObjCtrl->isEmptyTileAt(column, lookup)) {
+                            continue;
+                        }
                     }
-                    array->addObject(cookie);
+                    auto dudeObj = mObjCtrl->dudeObjectAt(column, lookup);
+                    if (dudeObj) {
 
-                    // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
-                    break;
+                        if (!dudeObj->isMovable() && !dudeObj->isContainer())
+                            break;
+                        else if (dudeObj->isMovable()) {
+                            // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
+                            mObjCtrl->updateObjectAt(column, lookup, nullptr, dudeObj->getType());
+                            mObjCtrl->updateObjectAt(column, row, dudeObj, dudeObj->getType());
+                            dudeObj->setRow(row);
+
+                            // Lazy creation of array
+                            if (array == nullptr) {
+                                array = cocos2d::Array::createWithCapacity(NumRows);
+                                columns->addObject(array);
+                            }
+                            array->addObject(dudeObj);
+
+                            // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
+                            break;
+                        }
+                    }
+                    auto fieldObj = mObjCtrl->fieldObjectAt(column, lookup);
+                    if (fieldObj) {
+                        
+                        if (!fieldObj->isMovable() && !fieldObj->isContainer())
+                            break;
+                        else if (fieldObj->isMovable()) {
+                            // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
+                            mObjCtrl->updateObjectAt(column, lookup, nullptr, fieldObj->getType());
+                            mObjCtrl->updateObjectAt(column, row, fieldObj, fieldObj->getType());
+                            fieldObj->setRow(row);
+
+                            // Lazy creation of array
+                            if (array == nullptr) {
+                                array = cocos2d::Array::createWithCapacity(NumRows);
+                                columns->addObject(array);
+                            }
+                            array->addObject(fieldObj);
+
+                            // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
+                            break;
+                        }
+                    }
+                    auto cookie = mObjCtrl->cookieAt(column, lookup);
+                    if (cookie) {
+                        if (!cookie->isMovable())
+                            break;
+
+                        // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
+                        mObjCtrl->updateObjectAt(column, lookup, nullptr, cookie->getType());
+                        mObjCtrl->updateObjectAt(column, row, cookie, cookie->getType());
+                        cookie->setRow(row);
+
+                        // Lazy creation of array
+                        if (array == nullptr) {
+                            array = cocos2d::Array::createWithCapacity(NumRows);
+                            columns->addObject(array);
+                        }
+                        array->addObject(cookie);
+
+                        // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
+                        break;
+                    }
                 }
             }
         }
@@ -471,18 +298,33 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
 {
     cocos2d::log("LevelObj::fillTopUpHoles:");
     auto columns = cocos2d::Array::createWithCapacity(NumColumns);
-    auto createdString = cocos2d::String("");
+    auto createdString = cocos2d::String::create("");
     int cookieType = -1;
     // loop through the rows, from top to bottom
-    for (int row = 0; row < NumRows; row++) {
+    for (int column = 0; column < NumColumns; column++) {
+
+        bool filledTileFouned = false;
 
         cocos2d::Array* array = nullptr;
-        for (int column = 0; column < NumColumns; column++) {
-
-            // If there’s a tile at a position but no cookie, then there’s a hole.
-            auto isEmptyTile = mObjCtrl->isEmptyTileAt(column, row);
-            auto isCookieAt = mObjCtrl->cookieAt(column, row);
-            if (!isEmptyTile && isCookieAt == nullptr) {
+        for (int row = 0; row < NumRows; row++) {
+                        
+ //--------------------------------------------------------------------       
+            if (!mLevelInfo.skipEmptyHoles) {
+                auto skipRow = skipFillTopUpHoles(column, row, filledTileFouned);
+                if (skipRow == SearchEmptyHoles::ContinueSearch) {
+                    continue;
+                }
+                else if (skipRow == SearchEmptyHoles::BreakSearch) {
+                    break;
+                }
+            }                        
+//--------------------------------------------------------------------
+            auto fieldObj = mObjCtrl->fieldObjectAt(column, row);
+            if (fieldObj) {
+                if (!fieldObj->isMovable() && !fieldObj->isContainer())
+                    break;
+            }
+            if (isPossibleToAddCookie(column, row)) {
 
                 BaseObj* cookie = mObjCtrl->createRandomCookie(column, row);
 
@@ -491,13 +333,13 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
                     columns->addObject(array);
                 }
                 array->addObject(cookie);
-                createdString.appendWithFormat("\t%s\n", cookie->description());
+                createdString->appendWithFormat("\t%s\n", cookie->description());
             }
         }
-        createdString.append("}\n");
+        createdString->append("}\n");
     }
-    cocos2d::log("LevelObj::fillTopUpHoles:  new created cookies: {\n%s", createdString.getCString());
-    return columns;    
+    cocos2d::log("LevelObj::fillTopUpHoles:  new created cookies: {\n%s", createdString->getCString());
+    return columns;
 }
 
 //--------------------------------------------------------------------
@@ -508,23 +350,24 @@ void LevelObj::calculateScore(cocos2d::Set * chains)
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
         auto cookies = chain->getCookies();
+        if (cookies) {
+            //TODO: move to other location
+            int chainValue = 60;
+            switch (chain->getType())
+            {
+            case ChainType::ChainTypeL:
+                chainValue = 70;
+                break;
+            case ChainType::ChainTypeT:
+                chainValue = 80;
+            default:
+                break;
+            }
 
-        //TODO: move to other location
-        int chainValue = 60;
-        switch (chain->getType())
-        {
-        case ChainType::ChainTypeL:
-            chainValue = 70;
-            break;
-        case ChainType::ChainTypeT:
-            chainValue = 80;
-        default:
-            break;
-        }
-
-        //TODO: make more intelligent way to get score value
-        chain->setScore(chainValue * (cookies->count() - 2) * mComboMultiplier);
-        mComboMultiplier++;
+            //TODO: make more intelligent way to get score value
+            chain->setScore(chainValue * (cookies->count() - 2) * mComboMultiplier);
+            mComboMultiplier++;
+        }       
     }
 }
 
@@ -536,112 +379,11 @@ void LevelObj::resetComboMultiplier()
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set* LevelObj::createHorizontalChainAt(int column)
+void LevelObj::removeDudeMatches(cocos2d::Set * set)
 //--------------------------------------------------------------------
 {
-    auto set = new cocos2d::Set();
-    auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
-    for (int row = 0; row < NumRows; row++) {
-        auto cookie = mObjCtrl->cookieAt(row, column);
-        // skip over any gaps in the level design.
-        if (cookie != nullptr) {
-            chain->addCookie(cookie);
-        }
-    }
-    set->addObject(chain);
-    return set;
-}
-
-//--------------------------------------------------------------------
-cocos2d::Set* LevelObj::createVerticalChainAt(int row)
-//--------------------------------------------------------------------
-{
-    auto set = new cocos2d::Set();
-    auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
-    for (int column = 0; column < NumColumns; column++) {
-        auto cookie = mObjCtrl->cookieAt(row, column);
-        // skip over any gaps in the level design.
-        if (cookie != nullptr) {
-            chain->addCookie(cookie);
-        }
-    }
-    set->addObject(chain);
-    return set;
-}
-
-//--------------------------------------------------------------------
-cocos2d::Set* LevelObj::createXChainAt(int column, int row)
-//--------------------------------------------------------------------
-{
-    auto set = new cocos2d::Set();
-    auto chain = ChainObj::createWithType(ChainType::ChainTypeX);
-    for (int i = 0; i < NumColumns; i++) {
-        auto cookieA = mObjCtrl->cookieAt(i, row);
-        auto cookieB = mObjCtrl->cookieAt(column, i);
-        // skip over any gaps in the level design.
-        if (cookieA != nullptr) {
-            chain->addCookie(cookieA);
-        }
-        if (cookieB != nullptr) {
-            chain->addCookie(cookieB);
-        }
-    }
-    set->addObject(chain);
-    return set;
-}
-
-//--------------------------------------------------------------------
-void LevelObj::addChainsFromSetToSet(cocos2d::Set * from, cocos2d::Set * to)
-//--------------------------------------------------------------------
-{
-    for (auto it = from->begin(); it != from->end(); it++) {
-        auto chain = dynamic_cast<ChainObj*>(*it);
-        CC_ASSERT(chain);
-        to->addObject(chain);
+    if (set) {
+        calculateScore(set);
+        removeCookies(set);
     }
 }
-
-#ifdef COCOS2D_DEBUG
-//--------------------------------------------------------------------
-void LevelObj::logDebugChains(cocos2d::Set * horizontal, cocos2d::Set * vertical, cocos2d::Set * difficult)
-//--------------------------------------------------------------------
-{
-    auto strHorizontalChains = cocos2d::String::createWithFormat("Horizontal matches: {\n");
-    auto horzIt = horizontal->begin();
-    for (horzIt; horzIt != horizontal->end(); horzIt++) {
-        auto chain = dynamic_cast<ChainObj*>(*horzIt);
-        CC_ASSERT(chain);
-        strHorizontalChains->appendWithFormat("%s\n", chain->description().c_str());
-    }
-    strHorizontalChains->append("}");
-
-    auto strVerticalChains = cocos2d::String::createWithFormat("Vertical matches: {\n");
-    auto vertIt = vertical->begin();
-    for (vertIt; vertIt != vertical->end(); vertIt++) {
-        auto chain = dynamic_cast<ChainObj*>(*vertIt);
-        CC_ASSERT(chain);
-        strVerticalChains->appendWithFormat("%s\n", chain->description().c_str());
-    }
-    strVerticalChains->append("}");
-
-    auto strtypeLChains = cocos2d::String::createWithFormat("type L matches: {\n");
-    auto strtypeTChains = cocos2d::String::createWithFormat("type T matches: {\n");
-    auto lIt = difficult->begin();
-    for (lIt; lIt != difficult->end(); lIt++) {
-        auto chain = dynamic_cast<ChainObj*>(*lIt);
-        CC_ASSERT(chain);
-        if (chain->getType() == ChainType::ChainTypeL) {
-            strtypeLChains->appendWithFormat("%s\n", chain->description().c_str());
-        } else if (chain->getType() == ChainType::ChainTypeT) {
-            strtypeTChains->appendWithFormat("%s\n", chain->description().c_str());
-        }
-    }
-    strtypeLChains->append("}");
-    strtypeTChains->append("}");
-    
-    cocos2d::log("LevelObj::logDebugChains: %s", strHorizontalChains->getCString());
-    cocos2d::log("LevelObj::logDebugChains: %s", strVerticalChains->getCString());
-    cocos2d::log("LevelObj::logDebugChains: %s", strtypeLChains->getCString());
-    cocos2d::log("LevelObj::logDebugChains: %s", strtypeTChains->getCString());
-}
-#endif // #ifdef COCOS2D_DEBUG

@@ -17,9 +17,13 @@ class BaseObj;
 class TileObj;
 class CookieObj;
 class LevelObj;
+class DudeController;
 
 class ObjectController : public cocos2d::Ref
 {
+
+    friend DudeController;
+
 CC_CONSTRUCTOR_ACCESS:
     virtual ~ObjectController();
 
@@ -35,7 +39,7 @@ public:
     void createInitialTiles();
     void createInitialFieldObjects();
     cocos2d::Set* createInitialCookies();
-
+    
     BaseObj* createRandomCookie(int column, int row);
     int getRandomCookieType(int column, int row);
 
@@ -44,15 +48,19 @@ public:
     bool hasChainAt(int column, int row);
 
     BaseObj* fieldObjectAt(int column, int row);
+    BaseObj* dudeObjectAt(int column, int row);
 
     bool isEmptyTileAt(int column, int row);
+    bool isPossibleToAddCookie(int column, int row);
     bool isSameTypeOfCookieAt(int column, int row, int type);
 
-    void removeFieldObject(int column, int row);
+    bool matchFieldObject(BaseObj* obj);
 
     void updateCookieObjectAt(int column, int row, BaseObj* cookie);
+    void updateObjectAt(int column, int row, BaseObj* obj, CommonTypes::BaseObjectType type);
     void removeCookie(int column, int row);
 
+    void removeAllCookies();
 
 protected:
     // Nodes should be created using create();
@@ -60,11 +68,12 @@ protected:
 
     BaseObj* createTile(int column, int row, int type);
     BaseObj* createCookie(int column, int row, int type);
-
+    
     BaseObj* createFieldObject(int column, int row, int type);
-
+    
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
+    CC_SYNTHESIZE(DudeController*, mDudeCtrl, DudeController);
 
     BaseObj* mTiles[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
     BaseObj* mCookies[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };

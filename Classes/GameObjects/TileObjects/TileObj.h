@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObj.hpp
+* @file GameObjects/TileObjects/TileObj.h
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -10,9 +10,7 @@
 
 #pragma once
 
-#include "cocos2d.h"
 #include "GameObjects/TileObjects/Base/BaseObj.h"
-
 
 class TileObj : public BaseObj
 {
@@ -31,12 +29,20 @@ public:
     bool init(const CommonTypes::TileInfo &info);
 
     virtual cocos2d::String& spriteName() const override;
+    virtual cocos2d::String& description() const override;
 
+    virtual void setSpriteNode(cocos2d::Sprite* var) override;
     virtual int getTypeAsInt() const override;
 
+    //TODO: move to field component
+    virtual void match() override;
     virtual void clear() override;
+    virtual bool checkMatchingCondition(int column, int row);
+    virtual bool isReadyToRemove() const override;
 
     bool isEmptyTile();
+
+    void updateDebugTileLabel();
 
 protected:
     // Nodes should be created using create();
@@ -44,5 +50,7 @@ protected:
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE_READONLY(CommonTypes::TileType, mTileType, TileType);  
+    CC_SYNTHESIZE(int, mHP, HP);
+    CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);
 };
 

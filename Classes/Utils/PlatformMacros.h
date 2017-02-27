@@ -10,6 +10,20 @@
 
 #pragma once
 
+/** @def CC_SYNTHESIZE_BOOL_READONLY
+* It is used to declare a protected variable. We can use getter to read the variable.
+*
+* @param varType     The type of variable.
+* @param varName     Variable name.
+* @param funName     "get + funName" will be the name of the getter.
+* @warning   The getter is a public inline function.
+*            The variables and methods declared after CC_SYNTHESIZE_READONLY are all public.
+*            If you need protected or private, please declare.
+*/
+#define CC_SYNTHESIZE_BOOL_READONLY(varType, varName, funName)\
+protected: varType varName;\
+public: virtual varType is##funName(void) const { return varName; }
+
 /** @def CREATE_SINGLETON(__TYPE__)
 * Define a singleton functions for a specific type
 *

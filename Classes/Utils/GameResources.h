@@ -24,8 +24,25 @@ namespace GameResources {
 
    static cocos2d::String s_ButtonImg = "Images/Button@2x.png";
 
+   static cocos2d::String s_scoreBarBackgroundImg = "Images/ProgressBarBack@2x.png";
+   static cocos2d::String s_scoreBarForegroundImg = "Images/ProgressBarFront@2x.png";
+
    static cocos2d::String s_TileImg = "Sprites.atlas/TileShadow@2x.png";
+
+   static cocos2d::String s_RockImg = "Sprites.atlas/Rock@2x.png";
+
    static cocos2d::String s_DirtImg = "Sprites.atlas/Dirt@2x.png";
+   static cocos2d::String s_DirtX2Img = "Sprites.atlas/DirtX2@2x.png";
+
+   static cocos2d::String s_BushCorruptedImg = "Sprites.atlas/Bush1@2x.png";
+   static cocos2d::String s_BushNormalImg = "Sprites.atlas/Bush2@2x.png";
+
+   static std::vector<cocos2d::String> s_dudeSpriteNames{
+       "Sprites.atlas/MonsterLighthr@2x.png"
+       , "Sprites.atlas/MonsterBulbr@2x.png"
+       , "Sprites.atlas/MonsterOni@2x.png"
+       , "Sprites.atlas/MonsterPina@2x.png"
+   };
 
    static std::vector<cocos2d::String> s_cookieSpriteNames {
       "Sprites.atlas/Croissant@2x.png"

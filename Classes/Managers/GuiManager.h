@@ -28,14 +28,15 @@ public:
 
     void setShuffleButtonCallback(std::function<void()> touchEndedCallback);
 
-    void updateScoreLabel(int value);
-    void updateTargetScoreLabel(int value);
+    void updateScore(uint32_t value, float percentage);
     void updateMovesLabel(int value);
 
 protected:
 
     void crateInfoLayer();
     void createShuffleButton();
+    void createScoreBar();
+
     cocos2d::ui::Text* createLabel(const CommonTypes::TextLabelInfo& info);
     
     CC_SYNTHESIZE(cocos2d::Scene*, mCurrentScene, CurrentScene);
@@ -43,10 +44,11 @@ protected:
     cocos2d::ui::Button* mShuffleButton = nullptr;
 
     cocos2d::ui::Layout* mInfoLayout = nullptr;
-    cocos2d::LayerColor* mLeftGuiLayer = nullptr;
-    cocos2d::LayerColor* mRightGuiLayer = nullptr;
+    cocos2d::LayerColor* mTopGuiLayer = nullptr;
+    cocos2d::LayerColor* mBottomGuiLayer = nullptr;
 
-    cocos2d::ui::Text* mTargetLabel = nullptr;
+    cocos2d::ProgressTimer* mScoreBar = nullptr;
+
     cocos2d::ui::Text* mMovesLabel = nullptr;
     cocos2d::ui::Text* mScoreLabel = nullptr;
 };

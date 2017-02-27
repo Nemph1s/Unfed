@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/Base/BaseObj.cpp
+* @file GameObjects/TileObjects/Base/BaseObj.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -18,10 +18,12 @@ BaseObj::BaseObj()
     , mRow(-1)
     , mType(CommonTypes::BaseObjectType::Unknown)
     , mIsMovable(false)
-    , mIsPossibleSwap(false)
+    , mIsSwappable(false)
     , mIsRemovable(false)
+    , mIsContainer(false)
     , mSpriteNode(nullptr)
     , mDummyString(nullptr)
+    , mScoreValue(40) //TODO: move to global info
 //--------------------------------------------------------------------
 {
 }
@@ -31,6 +33,7 @@ BaseObj::~BaseObj()
 //--------------------------------------------------------------------
 {
     CC_SAFE_RELEASE(mDummyString);
+    clear();
 }
 
 //--------------------------------------------------------------------
@@ -131,7 +134,16 @@ void BaseObj::clear()
     mRow = -1;
     mType = CommonTypes::BaseObjectType::Unknown;
     mIsMovable = false;
-    mIsPossibleSwap = false;
+    mIsSwappable = false;
     mIsRemovable = false;
-    mSpriteNode = nullptr;
+    mIsContainer = false;
+    if (getParent()) {
+        removeFromParent();
+    }
+    if (mSpriteNode) {
+        if (mSpriteNode->getParent()) {
+            mSpriteNode->removeFromParent();
+        }
+        mSpriteNode = nullptr;
+    }
 }

@@ -49,6 +49,18 @@
     <Filter Include="src\GameObjects\TileObjects\Base">
       <UniqueIdentifier>{338c0eac-c3fe-4a5f-9105-e1431e0c8841}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\GameObjects\TileObjects\Obstacles">
+      <UniqueIdentifier>{011dbb72-128a-49c7-8edb-3d4e5b01ffa6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Layers">
+      <UniqueIdentifier>{5d27183b-f496-4c99-aef4-45a088aaf7ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Controller\ObjectController">
+      <UniqueIdentifier>{04c9a7bc-cc17-47a5-b410-4c0f643cdc1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Controller\ObjectController\Dude">
+      <UniqueIdentifier>{4183a7e6-86fc-4278-89f9-14ff605c5441}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -99,9 +111,6 @@
     <ClCompile Include="..\Classes\Common\Factory\SmartFactory.cpp">
       <Filter>src\Common\Factory</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Controller\ObjectController.cpp">
-      <Filter>src\Controller</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\GameObjects\Chain\ChainObj.cpp">
       <Filter>src\GameObjects\Chain</Filter>
     </ClCompile>
@@ -114,8 +123,32 @@
     <ClCompile Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.cpp">
       <Filter>src\GameObjects\TileObjects\Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\GameObjects\TileObjects\DirtObject.cpp">
+    <ClCompile Include="..\Classes\Controller\ChainController.cpp">
+      <Filter>src\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\Obstacles\DirtObject.cpp">
+      <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\Obstacles\BushObj.cpp">
+      <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\Obstacles\RockObj.cpp">
+      <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Layers\CookiesLayer.cpp">
+      <Filter>src\Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\TileObjects\DudeObj.cpp">
       <Filter>src\GameObjects\TileObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController\ObjectController.cpp">
+      <Filter>src\Controller\ObjectController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController\DudeController.cpp">
+      <Filter>src\Controller\ObjectController\Dude</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.cpp">
+      <Filter>src\Controller\ObjectController\Dude</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -179,9 +212,6 @@
     <ClInclude Include="..\Classes\Common\Factory\SmartFactory.h">
       <Filter>src\Common\Factory</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Controller\ObjectController.h">
-      <Filter>src\Controller</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\Chain\ChainObj.h">
       <Filter>src\GameObjects\Chain</Filter>
     </ClInclude>
@@ -194,8 +224,32 @@
     <ClInclude Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.h">
       <Filter>src\GameObjects\TileObjects\Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\GameObjects\TileObjects\DirtObject.h">
+    <ClInclude Include="..\Classes\Controller\ChainController.h">
+      <Filter>src\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\Obstacles\DirtObject.h">
+      <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\Obstacles\BushObj.h">
+      <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\Obstacles\RockObj.h">
+      <Filter>src\GameObjects\TileObjects\Obstacles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Layers\CookiesLayer.h">
+      <Filter>src\Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\TileObjects\DudeObj.h">
       <Filter>src\GameObjects\TileObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController\ObjectController.h">
+      <Filter>src\Controller\ObjectController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController\DudeController.h">
+      <Filter>src\Controller\ObjectController\Dude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.h">
+      <Filter>src\Controller\ObjectController\Dude</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

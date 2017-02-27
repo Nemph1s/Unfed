@@ -13,8 +13,12 @@
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
-#include "GameObjects/TileObjects/DirtObject.h"
+#include "GameObjects/TileObjects/DudeObj.h"
+#include "GameObjects/TileObjects/Obstacles/DirtObject.h"
+#include "GameObjects/TileObjects/Obstacles/BushObj.h"
+#include "GameObjects/TileObjects/Obstacles/RockObj.h"
 
+using namespace CommonTypes;
 
 //--------------------------------------------------------------------
 _SmartFactory * _SmartFactory::getInstance()
@@ -58,8 +62,8 @@ bool _SmartFactory::initCookiesPool(int poolSize)
         CCASSERT(mCookieObjPool, "error while creating mCookieObjPool");
 
         while (poolSize--) {
-            auto info = CommonTypes::BaseObjectInfo(CommonTypes::BaseObjectType::CookieObj);
-            CommonTypes::CookieInfo cookieInfo = { info, CommonTypes::CookieType::Unknown };
+            auto info = BaseObjectInfo(BaseObjectType::CookieObj);
+            CookieInfo cookieInfo = { info, CookieType::Unknown };
             auto baseObject = CookieObj::create(cookieInfo);
             CC_SAFE_RETAIN(baseObject);
             CCASSERT(baseObject, "error while creating CookieObj");
@@ -84,8 +88,8 @@ bool _SmartFactory::initTilesPool(int poolSize)
         CCASSERT(mTileObjPool, "error while creating mTileObjPool");
 
         while (poolSize--) {
-            auto info = CommonTypes::BaseObjectInfo(CommonTypes::BaseObjectType::TileObj);
-            CommonTypes::TileInfo tileInfo = { info, CommonTypes::TileType::Unknown };
+            auto info = BaseObjectInfo(BaseObjectType::TileObj);
+            TileInfo tileInfo = { info, TileType::Unknown };
             auto baseObject = TileObj::create(tileInfo);
             CC_SAFE_RETAIN(baseObject);
             CCASSERT(baseObject, "error while creating TileObj");
@@ -100,25 +104,28 @@ bool _SmartFactory::initTilesPool(int poolSize)
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::create(const CommonTypes::BaseObjectInfo & info)
+BaseObj * _SmartFactory::create(const BaseObjectInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj* baseObject = nullptr;
-    CommonTypes::CookieInfo cookieInfo = { info, CommonTypes::CookieType::Unknown };
-    CommonTypes::TileInfo tileInfo = { info, CommonTypes::TileType::Unknown };
+    CookieInfo cookieInfo = { info, CookieType::Unknown };
+    TileInfo tileInfo = { info, TileType::Unknown };
 
     switch (info.type)
     {
-    case CommonTypes::BaseObjectType::CookieObj:
+    case BaseObjectType::CookieObj:
         baseObject = createCookieObj(cookieInfo);
         break;
-    case CommonTypes::BaseObjectType::TileObj:
+    case BaseObjectType::TileObj:
         baseObject = createTileObj(tileInfo);
         break;
-    case CommonTypes::BaseObjectType::FieldObj:
+    case BaseObjectType::FieldObj:
         baseObject = createFieldObj(tileInfo);
         break;
-    case CommonTypes::BaseObjectType::Unknown:
+    case BaseObjectType::DudeObj:
+        baseObject = createDudeObj(tileInfo);
+        break;
+    case BaseObjectType::Unknown:
     default:
         baseObject = createBaseObj(info);
         break;
@@ -132,27 +139,29 @@ BaseObj * _SmartFactory::create(const CommonTypes::BaseObjectInfo & info)
 void _SmartFactory::recycle(BaseObj * obj)
 //--------------------------------------------------------------------
 {
+    cocos2d::log("SmartFactory::recycle: type=%d", obj->getTypeAsInt());
     switch (obj->getType())
     {
-    case CommonTypes::BaseObjectType::CookieObj:
+    case BaseObjectType::CookieObj:
         mCookieObjPool->push_back(obj);
         break;
-    case CommonTypes::BaseObjectType::TileObj:
+    case BaseObjectType::TileObj:
         mTileObjPool->push_back(obj);
         break;
-    case CommonTypes::BaseObjectType::FieldObj:
+    case BaseObjectType::FieldObj:
+    case BaseObjectType::DudeObj:
+        obj->clear();
         CC_SAFE_RELEASE(obj);
         break;
-    case CommonTypes::BaseObjectType::Unknown:
+    case BaseObjectType::Unknown:
     default:
         mBaseObjPool->push_back(obj);
         break;
     }
-    cocos2d::log("SmartFactory::recycle: type=%d", obj->getTypeAsInt());
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::createBaseObj(const CommonTypes::BaseObjectInfo & info)
+BaseObj * _SmartFactory::createBaseObj(const BaseObjectInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj* baseObject = nullptr;
@@ -172,7 +181,7 @@ BaseObj * _SmartFactory::createBaseObj(const CommonTypes::BaseObjectInfo & info)
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::createTileObj(const CommonTypes::TileInfo & info)
+BaseObj * _SmartFactory::createTileObj(const TileInfo & info)
 //--------------------------------------------------------------------
 {
     TileObj* baseObject = nullptr;
@@ -194,7 +203,7 @@ BaseObj * _SmartFactory::createTileObj(const CommonTypes::TileInfo & info)
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::createCookieObj(const CommonTypes::CookieInfo & info)
+BaseObj * _SmartFactory::createCookieObj(const CookieInfo & info)
 //--------------------------------------------------------------------
 {
     CookieObj* baseObject = nullptr;
@@ -215,18 +224,56 @@ BaseObj * _SmartFactory::createCookieObj(const CommonTypes::CookieInfo & info)
     return baseObject;
 }
 
-BaseObj * _SmartFactory::createFieldObj(const CommonTypes::TileInfo & info)
+//--------------------------------------------------------------------
+BaseObj * _SmartFactory::createFieldObj(const TileInfo & info)
+//--------------------------------------------------------------------
 {
     BaseObj* baseObject = nullptr;
 
     switch (info.tileType)
     {
-    case CommonTypes::TileType::Dirt:
-    case CommonTypes::TileType::DirtX2:
-    case CommonTypes::TileType::DirtX3:
+    case TileType::Dirt:
+    case TileType::Dirt_HP2:
+    case TileType::Dirt_HP3:
         baseObject = DirtObject::create(info);
         CC_SAFE_RETAIN(baseObject);
         CCASSERT(baseObject, "error while creating DirtObject");
+        break;
+    case TileType::Bush:
+    case TileType::Bush_HP2:
+        baseObject = BushObj::create(info);
+        CC_SAFE_RETAIN(baseObject);
+        CCASSERT(baseObject, "error while creating BushObj");
+        break;
+    case TileType::RockWall:
+        baseObject = RockObj::create(info);
+        CC_SAFE_RETAIN(baseObject);
+        CCASSERT(baseObject, "error while creating RockObj");
+        break;
+    default:
+        CC_ASSERT(baseObject);
+        break;
+    }
+    cocos2d::log("SmartFactory::create: created with type=%d", baseObject->getTypeAsInt());
+
+    return baseObject;
+}
+
+//--------------------------------------------------------------------
+BaseObj * _SmartFactory::createDudeObj(const CommonTypes::TileInfo & info)
+//--------------------------------------------------------------------
+{
+    BaseObj* baseObject = nullptr;
+
+    switch (info.tileType)
+    {
+    case TileType::DudeFromAToB:
+    case TileType::DudeFromAToBx3:
+    case TileType::DudeChainX:
+    case TileType::DudeAllOfType:
+        baseObject = DudeObj::create(info);
+        CC_SAFE_RETAIN(baseObject);
+        CCASSERT(baseObject, "error while creating DudeObj");
         break;
     default:
         CC_ASSERT(baseObject);

@@ -47,6 +47,7 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
 	levelInfo.targetScore = getTargetScore();
 	levelInfo.moves = getMoves();
     levelInfo.typesCount = getTypesCount();
+    levelInfo.skipEmptyHoles = getSkipEmptyHoles();
 
 	const Json::Value& node = getTiles();
 
@@ -56,21 +57,21 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
 
 		for (uint16_t j = 0; j < subnode.size(); ++j) {
 			CC_ASSERT(subnode[j].isInt());
-            levelInfo.tiles[i][j] = node[i][j].asInt();
-			levelInfo.tiles[i][j] = node[node.size() - j - 1][i].asInt();
+            levelInfo.tiles[i][j] = node[j][i].asInt();
 		}
 	}
 
-    const Json::Value& fieldObjects = getFieldObjects();
+    if (!mRootNode["fieldObjects"].isNull()) {
+        const Json::Value& fieldObjects = getFieldObjects();
 
-    for (uint16_t i = 0; i < fieldObjects.size(); ++i) {
-        const Json::Value& subnode = fieldObjects[i];
-        CC_ASSERT(subnode.isArray());
+        for (uint16_t i = 0; i < fieldObjects.size(); ++i) {
+            const Json::Value& subnode = fieldObjects[i];
+            CC_ASSERT(subnode.isArray());
 
-        for (uint16_t j = 0; j < subnode.size(); ++j) {
-            CC_ASSERT(subnode[j].isInt());
-            levelInfo.fieldObjects[i][j] = fieldObjects[i][j].asInt();
-            levelInfo.fieldObjects[i][j] = fieldObjects[fieldObjects.size() - j - 1][i].asInt();
+            for (uint16_t j = 0; j < subnode.size(); ++j) {
+                CC_ASSERT(subnode[j].isInt());
+                levelInfo.fieldObjects[i][j] = fieldObjects[j][i].asInt();
+            }
         }
     }
 	return levelInfo;
@@ -100,10 +101,10 @@ const Json::Value & _JsonParser::getFieldObjects()
 
 
 //--------------------------------------------------------------------
-int16_t _JsonParser::getTargetScore()
+uint32_t _JsonParser::getTargetScore()
 //--------------------------------------------------------------------
 {
-	int16_t res = 0;
+	uint32_t res = 0;
 	if (mRootNode["targetScore"].isInt()) {
 		res = mRootNode["targetScore"].asInt();
 	}
@@ -111,10 +112,10 @@ int16_t _JsonParser::getTargetScore()
 }
 
 //--------------------------------------------------------------------
-int16_t _JsonParser::getMoves()
+uint8_t _JsonParser::getMoves()
 //--------------------------------------------------------------------
 {
-	int16_t res = 0;
+	uint8_t res = 0;
 	if (mRootNode["moves"].isInt()) {
 		res = mRootNode["moves"].asInt();
 	}
@@ -122,12 +123,23 @@ int16_t _JsonParser::getMoves()
 }
 
 //--------------------------------------------------------------------
-int16_t _JsonParser::getTypesCount()
+uint8_t _JsonParser::getTypesCount()
 //--------------------------------------------------------------------
 {
-    int16_t res = 0;
+    uint8_t res = 0;
     if (mRootNode["typesCount"].isInt()) {
         res = mRootNode["typesCount"].asInt();
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
+bool _JsonParser::getSkipEmptyHoles()
+//--------------------------------------------------------------------
+{
+    bool res = false;
+    if (mRootNode["skipEmptyHoles"].asBool()) {
+        res = mRootNode["skipEmptyHoles"].asBool();
     }
     return res;
 }

@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "cocos2d.h"
-
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 
 class CookieObj : public BaseObj
@@ -34,6 +32,9 @@ public:
    cocos2d::String& highlightedSpriteName() const;
    cocos2d::String& description() const;
 
+   virtual void setSpriteNode(cocos2d::Sprite* var) override;
+   virtual void setColumn(int var) override;
+   virtual void setRow(int var) override;
    virtual int getTypeAsInt() const override;
 
    virtual void clear() override;
