@@ -78,13 +78,16 @@ namespace CommonTypes {
    */
    struct LevelInfo
    {
-      uint32_t id; /**< current level ID */
-      uint32_t targetScore; /**< Goal score */
-      int moves; /**< available moves */
-	  TilesArray tiles; /**< array of tiles */
-      int typesCount; /**< count of types */
-      bool skipEmptyHoles; /**< availability to skip empty tiles when obj falling */
-      TilesArray fieldObjects; /**< array of tileObjects */
+      uint32_t id = 0; /**< current level ID */
+      uint32_t targetScore = 0; /**< Goal score */
+      int moves = 0; /**< available moves */
+      TilesArray tiles = { 0 }; /**< array of tiles */
+      TilesArray cookies = { 0 }; /**< array of cookies */
+      TilesArray fieldObjects = { 0 }; /**< array of tileObjects */
+      int typesCount = 0; /**< count of types */
+      bool isPredefinedCookies = false; /**< availability to load predefined cookies */
+      bool skipEmptyHoles = false; /**< availability to skip empty tiles when obj falling */
+      
    };
 
    /**

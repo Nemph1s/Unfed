@@ -379,6 +379,15 @@ void LevelObj::resetComboMultiplier()
 }
 
 //--------------------------------------------------------------------
+void LevelObj::disablePredefinedCookies()
+//--------------------------------------------------------------------
+{
+    if (mLevelInfo.isPredefinedCookies) {
+        mLevelInfo.isPredefinedCookies = false;
+    }
+}
+
+//--------------------------------------------------------------------
 void LevelObj::removeDudeMatches(cocos2d::Set * set)
 //--------------------------------------------------------------------
 {

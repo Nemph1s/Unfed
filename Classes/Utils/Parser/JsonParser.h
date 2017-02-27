@@ -27,10 +27,12 @@ public:
    CommonTypes::LevelInfo getLevelInfo();
 
    const Json::Value& getTiles();
+   const Json::Value& getPredefinedCookies();
    const Json::Value& getFieldObjects();
    uint32_t getTargetScore();
    uint8_t getMoves();   
    uint8_t getTypesCount();
+   bool isPredefinedCookies();
    bool getSkipEmptyHoles();
 
 protected:

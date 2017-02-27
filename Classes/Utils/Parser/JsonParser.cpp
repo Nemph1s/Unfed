@@ -48,6 +48,7 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
 	levelInfo.moves = getMoves();
     levelInfo.typesCount = getTypesCount();
     levelInfo.skipEmptyHoles = getSkipEmptyHoles();
+    levelInfo.isPredefinedCookies = isPredefinedCookies();
 
 	const Json::Value& node = getTiles();
 
@@ -60,6 +61,20 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
             levelInfo.tiles[i][j] = node[j][i].asInt();
 		}
 	}
+
+    if (!mRootNode["cookies"].isNull()) {
+        const Json::Value& cookiesObjects = getPredefinedCookies();
+
+        for (uint16_t i = 0; i < cookiesObjects.size(); ++i) {
+            const Json::Value& subnode = cookiesObjects[i];
+            CC_ASSERT(subnode.isArray());
+
+            for (uint16_t j = 0; j < subnode.size(); ++j) {
+                CC_ASSERT(subnode[j].isInt());
+                levelInfo.cookies[i][j] = cookiesObjects[j][i].asInt();
+            }
+        }
+    }
 
     if (!mRootNode["fieldObjects"].isNull()) {
         const Json::Value& fieldObjects = getFieldObjects();
@@ -86,6 +101,17 @@ const Json::Value& _JsonParser::getTiles()
 		throw std::logic_error("bad tiles array");
 
 	return value;
+}
+
+//--------------------------------------------------------------------
+const Json::Value & _JsonParser::getPredefinedCookies()
+//--------------------------------------------------------------------
+{
+    Json::Value& value = mRootNode["cookies"];
+    if (!value.isArray())
+        throw std::logic_error("bad cookies array");
+
+    return value;
 }
 
 //--------------------------------------------------------------------
@@ -129,6 +155,17 @@ uint8_t _JsonParser::getTypesCount()
     uint8_t res = 0;
     if (mRootNode["typesCount"].isInt()) {
         res = mRootNode["typesCount"].asInt();
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
+bool _JsonParser::isPredefinedCookies()
+//--------------------------------------------------------------------
+{
+    bool res = false;
+    if (mRootNode["predefinedCookies"].asBool()) {
+        res = mRootNode["predefinedCookies"].asBool();
     }
     return res;
 }

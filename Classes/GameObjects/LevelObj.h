@@ -45,6 +45,7 @@ public:
     cocos2d::Array* fillTopUpHoles();
 
     void resetComboMultiplier();
+    void disablePredefinedCookies();
 
     //TODO: move to callback
     void removeDudeMatches(cocos2d::Set* set);

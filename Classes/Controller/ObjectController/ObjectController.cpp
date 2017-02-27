@@ -111,6 +111,7 @@ cocos2d::Set * ObjectController::createInitialCookies()
         }
         createdString.append("\n");
     }
+    mLevel->disablePredefinedCookies();
     cocos2d::log("ObjectController::createInitialCookies: created array=%s", createdString.getCString());
     return set;
 }
@@ -163,15 +164,21 @@ BaseObj * ObjectController::createRandomCookie(int column, int row)
 int ObjectController::getRandomCookieType(int column, int row)
 //--------------------------------------------------------------------
 {
-    int cookieMax = Helper::getInstance()->to_underlying(CommonTypes::CookieType::CookieMax);
+    int cookieMax = Helper::getInstance()->to_underlying(CookieType::CookieMax);
     auto levelInfo = mLevel->getLevelInfo();
     if (levelInfo.typesCount < cookieMax) {
         cookieMax = levelInfo.typesCount;
     }
     int type = 0;
+    int randomCounter = 0;
+    static const int randomCounterMax = 42; 
     bool findNextType = false;
     do {
-        type = Helper::getInstance()->random(0, cookieMax - 1);
+        if (levelInfo.isPredefinedCookies) {
+            type = (randomCounter > randomCounterMax) ? getRandomCookieType(column, row) : levelInfo.cookies[column][row];
+        } else {
+            type = Helper::getInstance()->random(0, cookieMax - 1);
+        }
         auto isCookiesToTheLeft = (column >= 2 && // there are already two cookies of this type to the left
             isSameTypeOfCookieAt(column - 1, row, type) &&
             isSameTypeOfCookieAt(column - 2, row, type));
@@ -179,6 +186,7 @@ int ObjectController::getRandomCookieType(int column, int row)
             isSameTypeOfCookieAt(column, row - 1, type) &&
             isSameTypeOfCookieAt(column, row - 2, type));
         findNextType = (isCookiesToTheLeft || isCookiesBelow);
+        randomCounter++;
     } while (findNextType);
 
     return type;
