@@ -127,10 +127,10 @@ namespace CommonTypes {
        , Bush = 20 /**< enum value DirtX3. */
        , Bush_HP2 = 21 /**< enum value DirtX3. */
        , RockWall = 30 /**< enum value RockWall. */
-       , DudeFromAToBx3 = 200 /**< enum value DudeLightr. */
-       , DudeFromAToB = 201 /**< enum value DudeBulbr. */
+       , DudeFromAToB = 200 /**< enum value DudeLightr. */
+       , DudeFromAToBx3 = 201 /**< enum value DudeBulbr. */
        , DudeChainX = 202 /**< enum value DudeOni. */
-       , DudePina = 203 /**< enum value DudePina. */
+       , DudeAllOfType = 203 /**< enum value DudePina. */
        , Unknown /**< enum value unknown. */
    };
 
@@ -152,22 +152,6 @@ namespace CommonTypes {
        , Up = 1 /**< enum value Up. */
        , Left = 2 /**< enum value Left. */
        , Right = 3 /**< enum value Right. */
-       , Unknown /**< enum value unknown. */
-   };
-
-   /**
-   * @brief DudePathType enum.
-   * Type of chain path for dude
-   */
-   enum class DudePathType : int {
-       FromAToB = 0 /**< enum value DudePathFromAToB. */
-       , Horizontal = 1 /**< enum value DudePathHorizontal. */
-       , Vertical = 2 /**< enum value DudePathVertical. */
-       , TypeX = 3 /**< enum value DudePathTypeX. */
-       , FromAToBPowerfull = 4 /**< enum value DudePathFromAToB. */
-       , HorizontalPowerfull = 5 /**< enum value DudePathHorizontal. */
-       , VerticalPowerfull = 6 /**< enum value DudePathVertical. */
-       , AllOfOne = 7 /**< enum value DudePathAllOfOne. */
        , Unknown /**< enum value unknown. */
    };
 

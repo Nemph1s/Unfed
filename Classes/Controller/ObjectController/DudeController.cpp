@@ -64,8 +64,8 @@ DudeController * DudeController::create()
 bool DudeController::init()
 //--------------------------------------------------------------------
 {
-    mDudeTypes[RequiredCountForDudeFromAToB] = TileType::DudeFromAToB;
-    mDudeTypes[RequiredCountForDudeFromAToBx3] = TileType::DudeFromAToBx3;
+    mDudeTypes[RequiredCountForDudeFromAToB] = TileType::DudeFromAToBx3;
+    mDudeTypes[RequiredCountForDudeFromAToBx3] = TileType::DudeFromAToB;
     return true;
 }
 
@@ -156,30 +156,60 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
     int column = obj->getColumn();
     int row = obj->getRow();
 
-    cocos2d::Set* topSet = nullptr;
-    cocos2d::Set* botSet = nullptr;
-    cocos2d::Set* leftSet = nullptr;
-    cocos2d::Set* rightSet = nullptr;
+    auto topSet = cocos2d::Set::create();
+    auto botSet = cocos2d::Set::create();
+    auto leftSet = cocos2d::Set::create();
+    auto rightSet = cocos2d::Set::create();
 
     switch (obj->getTileType())
     {
     case TileType::DudeFromAToBx3:
+    {
         for (int i = -1; i <= 1; i++) {
-            mChainCtrl->addChainsFromSetToSet(mChainCtrl->createChainFromPosToPos(column + i, row, column + i, 0), topSet);
-            mChainCtrl->addChainsFromSetToSet(mChainCtrl->createChainFromPosToPos(column + i, row, column + i, NumRows - 1), botSet);
-            mChainCtrl->addChainsFromSetToSet(mChainCtrl->createChainFromPosToPos(column, row + i, 0, row + i), leftSet);
-            mChainCtrl->addChainsFromSetToSet(mChainCtrl->createChainFromPosToPos(column, row + i, NumColumns - 1, row + i), rightSet);
+            auto newTopSet = mChainCtrl->createChainFromPosToPos(column + i, row, column + i, 0);
+            auto newBotSet = mChainCtrl->createChainFromPosToPos(column + i, row, column + i, NumRows - 1);
+            auto newLeftSet = mChainCtrl->createChainFromPosToPos(column, row + i, 0, row + i);
+            auto newRightSet = mChainCtrl->createChainFromPosToPos(column, row + i, NumColumns - 1, row + i);
+            mChainCtrl->addChainsFromSetToSet(newTopSet, topSet);
+            mChainCtrl->addChainsFromSetToSet(newBotSet, botSet);
+            mChainCtrl->addChainsFromSetToSet(newLeftSet, leftSet);
+            mChainCtrl->addChainsFromSetToSet(newRightSet, rightSet);
         }
+    }
         break;
     case TileType::DudeChainX:
-        topSet = botSet = leftSet = rightSet = mChainCtrl->createXChainAt(column, row);
+    {
+        auto set = mChainCtrl->createXChainAt(column, row);
+        mChainCtrl->addChainsFromSetToSet(set, topSet);
+        mChainCtrl->addChainsFromSetToSet(set, botSet);
+        mChainCtrl->addChainsFromSetToSet(set, leftSet);
+        mChainCtrl->addChainsFromSetToSet(set, rightSet);
+    }
+    break;
+    case TileType::DudeAllOfType:
+    {
+        auto newTopSet = mChainCtrl->createAllOfOneChain(column, row - 1);
+        auto newBotSet = mChainCtrl->createAllOfOneChain(column, row + 1);
+        auto newLeftSet = mChainCtrl->createAllOfOneChain(column - 1, row);
+        auto newRightSet = mChainCtrl->createAllOfOneChain(column + 1, row);
+        mChainCtrl->addChainsFromSetToSet(newTopSet, topSet);
+        mChainCtrl->addChainsFromSetToSet(newBotSet, botSet);
+        mChainCtrl->addChainsFromSetToSet(newLeftSet, leftSet);
+        mChainCtrl->addChainsFromSetToSet(newRightSet, rightSet);
+    }
         break;
     case TileType::DudeFromAToB:
     default:
-        topSet = mChainCtrl->createChainFromPosToPos(column, row, column, 0);
-        botSet = mChainCtrl->createChainFromPosToPos(column, row, column, NumRows - 1);
-        leftSet = mChainCtrl->createChainFromPosToPos(column, row, 0, row);
-        rightSet = mChainCtrl->createChainFromPosToPos(column, row, NumColumns - 1, row);
+    {
+        auto newTopSet = mChainCtrl->createChainFromPosToPos(column, row, column, 0);
+        auto newBotSet = mChainCtrl->createChainFromPosToPos(column, row, column, NumRows - 1);
+        auto newLeftSet = mChainCtrl->createChainFromPosToPos(column, row, 0, row);
+        auto newRightSet = mChainCtrl->createChainFromPosToPos(column, row, NumColumns - 1, row);
+        mChainCtrl->addChainsFromSetToSet(newTopSet, topSet);
+        mChainCtrl->addChainsFromSetToSet(newBotSet, botSet);
+        mChainCtrl->addChainsFromSetToSet(newLeftSet, leftSet);
+        mChainCtrl->addChainsFromSetToSet(newRightSet, rightSet);
+    }
         break;
     }
 
@@ -230,9 +260,10 @@ cocos2d::Set * DudeController::activateDude(DudeObj* obj, int dir)
         cocos2d::log("DudeController::activateDude: empty ptr DudeObj");
         return set;
     }
-
     auto helper = mDudeDirections.at(obj);
     if (helper) {
+        obj->activate();
+
         auto direction = static_cast<Direction>(dir);
         auto chains = helper->getChainByDirection(direction);
 
@@ -279,18 +310,7 @@ void DudeController::removeAllDudes()
 bool DudeController::isEnoughCookiesForDude(int count, int neededCount)
 //--------------------------------------------------------------------
 {
-    return neededCount >= count;
-}
-
-//--------------------------------------------------------------------
-CommonTypes::TileType DudeController::getDudeTypeByMatchedCount(int count)
-//--------------------------------------------------------------------
-{
-    auto type = TileType::Unknown;
-    if (count < RequiredCountForDudeFromAToB || count > RequiredCountForDudeFromAToBx3) {
-        return type;
-    }
-    return mDudeTypes.at(count);
+    return count >= neededCount;
 }
 
 //--------------------------------------------------------------------
@@ -298,15 +318,14 @@ CommonTypes::TileType DudeController::getDudeTypeByChain(ChainObj * chain)
 //--------------------------------------------------------------------
 {
     auto type = TileType::Unknown;
-    auto cookiesCount = chain->getCookies()->count();
+    auto cookiesCount = chain->getCookies() ? chain->getCookies()->count() : 0;
     switch (chain->getType())
     {
     case ChainType::ChainTypeHorizontal:
     case ChainType::ChainTypeVertical:
-        if (isEnoughCookiesForDude(cookiesCount, RequiredCountForDudeFromAToB)) {
+        if (isEnoughCookiesForDude(cookiesCount, RequiredCountForDudeFromAToBx3)) {
             type = TileType::DudeFromAToBx3;
-        }
-        else if (isEnoughCookiesForDude(cookiesCount, RequiredCountForDudeFromAToBx3)) {
+        } else if (isEnoughCookiesForDude(cookiesCount, RequiredCountForDudeFromAToB)) {
             type = TileType::DudeFromAToB;
         }
         break;
@@ -317,7 +336,7 @@ CommonTypes::TileType DudeController::getDudeTypeByChain(ChainObj * chain)
         break;
     case ChainType::ChainTypeT:
         if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForPina)) {
-            type = TileType::DudePina;
+            type = TileType::DudeAllOfType;
         }
         break;
     default:

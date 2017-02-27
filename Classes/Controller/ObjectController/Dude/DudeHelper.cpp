@@ -19,7 +19,6 @@
 
 using CommonTypes::TileType;
 using CommonTypes::Direction;
-using CommonTypes::DudePathType;
 
 //--------------------------------------------------------------------
 DudeHelper::DudeHelper()
@@ -41,7 +40,7 @@ DudeHelper::~DudeHelper()
 }
 
 //--------------------------------------------------------------------
-DudeHelper * DudeHelper::createWithDudeObject(const DudeObj * obj)
+DudeHelper * DudeHelper::createWithDudeObject(DudeObj * obj)
 //--------------------------------------------------------------------
 {
     DudeHelper * ret = new (std::nothrow) DudeHelper();
@@ -55,7 +54,7 @@ DudeHelper * DudeHelper::createWithDudeObject(const DudeObj * obj)
 }
 
 //--------------------------------------------------------------------
-bool DudeHelper::initWithDudeObject(const DudeObj * obj)
+bool DudeHelper::initWithDudeObject(DudeObj * obj)
 //--------------------------------------------------------------------
 {
     if (!obj) {
@@ -63,6 +62,7 @@ bool DudeHelper::initWithDudeObject(const DudeObj * obj)
         return false;
     }
 
+    mDudeObj = obj;
     return true;
 }
 
@@ -108,41 +108,6 @@ cocos2d::Set * DudeHelper::getChainByDirection(CommonTypes::Direction & directio
     }
     return set;
 }
-
-// 
-// //--------------------------------------------------------------------
-// CommonTypes::DudePathType DudeHelper::getPathType(CommonTypes::Direction & direction)
-// //--------------------------------------------------------------------
-// {
-//     DudePathType type = DudePathType::Unknown;
-//     bool isVertical = direction == Direction::Up || direction == Direction::Down;
-//     switch (mDudeObj->getTileType())
-//     {
-//     case TileType::DudeFromAToB:
-//         if (mDudeObj->isActivated()) {
-//             type = DudePathType::FromAToB;
-//         }
-//         else {
-//             type = isVertical ? DudePathType::Vertical : DudePathType::Horizontal;
-//         }
-//         break;
-//     case TileType::DudeFromAToBx3:
-//         if (mDudeObj->isActivated()) {
-//             type = DudePathType::FromAToBPowerfull;
-//         }
-//         else {
-//             type = isVertical ? DudePathType::VerticalPowerfull : DudePathType::HorizontalPowerfull;
-//         }
-//         break;
-//     case TileType::DudeChainX:
-//     case TileType::DudePina:
-//         type = DudePathType::TypeX;
-//         break;
-//     default:
-//        break;
-//     }
-//     return type;
-// }
 
 //--------------------------------------------------------------------
 void DudeHelper::clear()

@@ -102,6 +102,9 @@ void LevelObj::removeCookies(cocos2d::Set * chains)
         CC_ASSERT(chain);
 
         auto cookies = chain->getCookies();
+        if (!cookies) {
+            continue;
+        }
         for (auto it = cookies->begin(); it != cookies->end(); it++) {
             auto cookie = dynamic_cast<CookieObj*>(*it);
             CC_ASSERT(cookie);
@@ -347,23 +350,24 @@ void LevelObj::calculateScore(cocos2d::Set * chains)
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
         auto cookies = chain->getCookies();
+        if (cookies) {
+            //TODO: move to other location
+            int chainValue = 60;
+            switch (chain->getType())
+            {
+            case ChainType::ChainTypeL:
+                chainValue = 70;
+                break;
+            case ChainType::ChainTypeT:
+                chainValue = 80;
+            default:
+                break;
+            }
 
-        //TODO: move to other location
-        int chainValue = 60;
-        switch (chain->getType())
-        {
-        case ChainType::ChainTypeL:
-            chainValue = 70;
-            break;
-        case ChainType::ChainTypeT:
-            chainValue = 80;
-        default:
-            break;
-        }
-
-        //TODO: make more intelligent way to get score value
-        chain->setScore(chainValue * (cookies->count() - 2) * mComboMultiplier);
-        mComboMultiplier++;
+            //TODO: make more intelligent way to get score value
+            chain->setScore(chainValue * (cookies->count() - 2) * mComboMultiplier);
+            mComboMultiplier++;
+        }       
     }
 }
 

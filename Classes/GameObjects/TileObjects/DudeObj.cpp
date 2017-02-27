@@ -13,7 +13,6 @@
 #include "Utils/Helpers/Helper.h"
 
 using CommonTypes::TileType;
-using CommonTypes::DudePathType;
 
 //--------------------------------------------------------------------
 DudeObj::DudeObj()
@@ -64,7 +63,7 @@ bool DudeObj::init(const CommonTypes::TileInfo & info)
 cocos2d::String& DudeObj::spriteName() const
 //--------------------------------------------------------------------
 {
-    return GameResources::s_dudeSpriteNames.at(getTypeAsInt() - Helper::to_underlying(TileType::DudeFromAToBx3));
+    return GameResources::s_dudeSpriteNames.at(getTypeAsInt() - Helper::to_underlying(TileType::DudeFromAToB));
 }
 
 //--------------------------------------------------------------------
