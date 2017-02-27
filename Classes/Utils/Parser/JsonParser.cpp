@@ -76,6 +76,16 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
         }
     }
 
+    if (!mRootNode["allowedCookieTypes"].isNull()) {
+        const Json::Value& allowedCookieTypes = getAllowedCookieTypes();
+
+        for (uint16_t i = 0; i < allowedCookieTypes.size(); ++i) {
+            auto type = allowedCookieTypes[i].asInt();
+            CC_ASSERT(allowedCookieTypes[i].isInt());
+            levelInfo.allowedCookieTypes.push_back(type);
+        }
+    }
+
     if (!mRootNode["fieldObjects"].isNull()) {
         const Json::Value& fieldObjects = getFieldObjects();
 
@@ -110,6 +120,17 @@ const Json::Value & _JsonParser::getPredefinedCookies()
     Json::Value& value = mRootNode["cookies"];
     if (!value.isArray())
         throw std::logic_error("bad cookies array");
+
+    return value;
+}
+
+//--------------------------------------------------------------------
+const Json::Value & _JsonParser::getAllowedCookieTypes()
+//--------------------------------------------------------------------
+{
+    Json::Value& value = mRootNode["allowedCookieTypes"];
+    if (!value.isArray())
+        throw std::logic_error("bad allowedCookieTypes array");
 
     return value;
 }

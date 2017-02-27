@@ -153,6 +153,30 @@ BaseObj * ObjectController::createFieldObject(int column, int row, int type)
 }
 
 //--------------------------------------------------------------------
+int ObjectController::getAllowedRandomCookieType()
+//--------------------------------------------------------------------
+{
+    int cookieMax = Helper::getInstance()->to_underlying(CookieType::CookieMax);
+    if (mLevel->getLevelInfo().typesCount < cookieMax) {
+        cookieMax = mLevel->getLevelInfo().typesCount;
+    }
+    int type = 0;
+    bool findNextType = true;
+    do {
+        type = Helper::getInstance()->random(0, cookieMax - 1);
+
+        for (auto val : mLevel->getLevelInfo().allowedCookieTypes) {
+            if (val == type) {
+                findNextType = false;
+                break;
+            }
+        }
+    } while (findNextType);
+
+    return type;
+}
+
+//--------------------------------------------------------------------
 BaseObj * ObjectController::createRandomCookie(int column, int row)
 //--------------------------------------------------------------------
 {
@@ -164,20 +188,16 @@ BaseObj * ObjectController::createRandomCookie(int column, int row)
 int ObjectController::getRandomCookieType(int column, int row)
 //--------------------------------------------------------------------
 {
-    int cookieMax = Helper::getInstance()->to_underlying(CookieType::CookieMax);
     auto levelInfo = mLevel->getLevelInfo();
-    if (levelInfo.typesCount < cookieMax) {
-        cookieMax = levelInfo.typesCount;
-    }
     int type = 0;
     int randomCounter = 0;
-    static const int randomCounterMax = 42; 
+    static const int randomCounterMax = 3; 
     bool findNextType = false;
     do {
         if (levelInfo.isPredefinedCookies) {
             type = (randomCounter > randomCounterMax) ? getRandomCookieType(column, row) : levelInfo.cookies[column][row];
         } else {
-            type = Helper::getInstance()->random(0, cookieMax - 1);
+            type = getAllowedRandomCookieType();
         }
         auto isCookiesToTheLeft = (column >= 2 && // there are already two cookies of this type to the left
             isSameTypeOfCookieAt(column - 1, row, type) &&

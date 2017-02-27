@@ -28,6 +28,7 @@ public:
 
    const Json::Value& getTiles();
    const Json::Value& getPredefinedCookies();
+   const Json::Value& getAllowedCookieTypes();
    const Json::Value& getFieldObjects();
    uint32_t getTargetScore();
    uint8_t getMoves();   

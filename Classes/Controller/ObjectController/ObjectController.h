@@ -70,6 +70,8 @@ protected:
     BaseObj* createCookie(int column, int row, int type);
     
     BaseObj* createFieldObject(int column, int row, int type);
+
+    int getAllowedRandomCookieType();
     
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);

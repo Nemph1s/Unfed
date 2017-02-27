@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <vector>
 
 namespace CommonTypes {
 
@@ -87,7 +88,7 @@ namespace CommonTypes {
       int typesCount = 0; /**< count of types */
       bool isPredefinedCookies = false; /**< availability to load predefined cookies */
       bool skipEmptyHoles = false; /**< availability to skip empty tiles when obj falling */
-      
+      std::vector<int> allowedCookieTypes;
    };
 
    /**
