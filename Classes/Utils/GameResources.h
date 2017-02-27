@@ -40,6 +40,8 @@ namespace GameResources {
    static std::vector<cocos2d::String> s_dudeSpriteNames{
        "Sprites.atlas/MonsterLighthr@2x.png"
        , "Sprites.atlas/MonsterBulbr@2x.png"
+       , "Sprites.atlas/MonsterOni@2x.png"
+       , "Sprites.atlas/MonsterPina@2x.png"
    };
 
    static std::vector<cocos2d::String> s_cookieSpriteNames {

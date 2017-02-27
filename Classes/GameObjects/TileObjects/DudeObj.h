@@ -11,6 +11,7 @@
 #pragma once
 
 #include "GameObjects/TileObjects/TileObj.h"
+#include "Utils/PlatformMacros.h"
 
 class DudeObj : public TileObj
 {
@@ -28,7 +29,7 @@ public:
 
     cocos2d::String& spriteName() const override;
 
-    CommonTypes::DudePathType getPathType();
+    void activate();
 
 
 protected:
@@ -36,5 +37,11 @@ protected:
     DudeObj();
 
     //---Class Attributes-------------------------------------------------
+
+    /**
+    * @brief A parameter that checks is the dude object was touched
+    * If it doesn't, when next dude was founded in chain, then it will create chain for all horizontal or vertical fields
+    */
+    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsActivated, Activated);
 };
 

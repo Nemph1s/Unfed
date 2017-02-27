@@ -328,6 +328,8 @@ ChainObj * ChainController::detectTChainMatches(ChainObj * horzChain, ChainObj *
 void ChainController::addChainsFromSetToSet(cocos2d::Set * from, cocos2d::Set * to)
 //--------------------------------------------------------------------
 {
+    CC_ASSERT(from);
+    CC_ASSERT(to);
     for (auto it = from->begin(); it != from->end(); it++) {
         auto chain = dynamic_cast<ChainObj*>(*it);
         CC_ASSERT(chain);
@@ -396,7 +398,9 @@ cocos2d::Set* ChainController::createAllOfOneChain(int entryColumn, int entryRow
 {
     auto set = cocos2d::Set::create();
     auto entryCookie = mObjCtrl->cookieAt(entryColumn, entryRow);
-    CC_ASSERT(entryCookie);
+    if (!entryCookie) {
+        return set;
+    }
 
     auto chain = ChainObj::createWithType(ChainType::ChainTypeAllOfOne);
     for (int column = 0; column < NumColumns; column++) {
@@ -440,12 +444,18 @@ cocos2d::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow
 
     if (!(toCol >= 0 && toCol < NumColumns) || !(toRow >= 0 && toRow < NumColumns)) {
         cocos2d::log("ChainController::createChainFromPosToPos: wrong destinationPos at column=%d, row=%d", toCol, toRow);
+        //set->addObject(ChainObj::createWithType(ChainType::ChainFromAToB));
         return set;
     }
  
     int i = fromCol; 
     int j = fromRow;
+
     auto chain = ChainObj::createWithType(ChainType::ChainFromAToB);
+
+    if (mObjCtrl->cookieAt(i, j)) {
+        chain->addCookie(mObjCtrl->cookieAt(i, j));
+    }
     do {
         if (fromCol != toCol) {
             i = fromCol > toCol ? i - 1 : i + 1;
@@ -459,8 +469,9 @@ cocos2d::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow
             }                  
         } while (j != toRow);
     } while (i != toCol);
-
-    set->addObject(chain);
+    if (chain->getCookies()) {
+        set->addObject(chain);
+    }
     return set;
 }
 

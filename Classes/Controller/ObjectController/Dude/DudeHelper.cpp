@@ -17,6 +17,8 @@
 
 #include "Utils/Helpers/Helper.h"
 
+using CommonTypes::TileType;
+using CommonTypes::Direction;
 
 //--------------------------------------------------------------------
 DudeHelper::DudeHelper()
@@ -38,7 +40,7 @@ DudeHelper::~DudeHelper()
 }
 
 //--------------------------------------------------------------------
-DudeHelper * DudeHelper::createWithDudeObject(const DudeObj * obj)
+DudeHelper * DudeHelper::createWithDudeObject(DudeObj * obj)
 //--------------------------------------------------------------------
 {
     DudeHelper * ret = new (std::nothrow) DudeHelper();
@@ -52,7 +54,7 @@ DudeHelper * DudeHelper::createWithDudeObject(const DudeObj * obj)
 }
 
 //--------------------------------------------------------------------
-bool DudeHelper::initWithDudeObject(const DudeObj * obj)
+bool DudeHelper::initWithDudeObject(DudeObj * obj)
 //--------------------------------------------------------------------
 {
     if (!obj) {
@@ -60,6 +62,7 @@ bool DudeHelper::initWithDudeObject(const DudeObj * obj)
         return false;
     }
 
+    mDudeObj = obj;
     return true;
 }
 
@@ -78,15 +81,27 @@ cocos2d::Set * DudeHelper::getChainByDirection(CommonTypes::Direction & directio
     {
     case CommonTypes::Direction::Up:
         chainCtrl->addChainsFromSetToSet(mTopChain, set);
+        if (!mDudeObj->isActivated()) {
+            chainCtrl->addChainsFromSetToSet(mBottomChain, set);
+        }
         break;
     case CommonTypes::Direction::Down:
         chainCtrl->addChainsFromSetToSet(mBottomChain, set);
+        if (!mDudeObj->isActivated()) {
+            chainCtrl->addChainsFromSetToSet(mTopChain, set);
+        }
         break;
     case CommonTypes::Direction::Left:
         chainCtrl->addChainsFromSetToSet(mLeftChain, set);
+        if (!mDudeObj->isActivated()) {
+            chainCtrl->addChainsFromSetToSet(mRightChain, set);
+        }
         break;
     case CommonTypes::Direction::Right:
         chainCtrl->addChainsFromSetToSet(mRightChain, set);
+        if (!mDudeObj->isActivated()) {
+            chainCtrl->addChainsFromSetToSet(mLeftChain, set);
+        }
         break;
     default:
         break;

@@ -26,9 +26,9 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static DudeHelper* createWithDudeObject(const DudeObj* obj);
+    static DudeHelper* createWithDudeObject(DudeObj* obj);
 
-    bool initWithDudeObject(const DudeObj* obj);
+    bool initWithDudeObject(DudeObj* obj);
 
     cocos2d::Set* getChainByDirection(CommonTypes::Direction& direction);
 
@@ -37,6 +37,7 @@ public:
 protected:
     // Nodes should be created using create();
     DudeHelper();
+
 
     //---Class Attributes-------------------------------------------------
 

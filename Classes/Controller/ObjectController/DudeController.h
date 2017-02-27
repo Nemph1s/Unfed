@@ -14,13 +14,16 @@
 #include "Common/CommonTypes.h"
 #include <map>
 
+using cocos2d::Set;
+using CommonTypes::TileType;
+
 class BaseObj;
 class DudeObj;
+class ChainObj;
 class DudeHelper;
 
 class ObjectController;
 class ChainController;
-
 
 class DudeController : public cocos2d::Ref
 {
@@ -36,19 +39,17 @@ public:
 
     bool init();
 
-    cocos2d::Set* createDudeObectsFromChains(cocos2d::Set* chains);
+    Set* createDudeObectsFromChains(Set* chains);
 
     BaseObj* createDudeObject(int column, int row, int type);
 
     BaseObj* objectAt(int column, int row);
     DudeObj* dudeObjectAt(int column, int row);
 
-    //TODO: add to each update field method!!!
-    bool detectDirectionsForDudes();
+    void detectDirectionsForDudes();
 
-    //TODO: use as callback in DudesLayer!
     bool canActivateDudeTo(int fromCol, int fromRow, int direction);
-    cocos2d::Set* activateDude(DudeObj* obj, int direction);
+    Set* activateDude(DudeObj* obj, int direction);
     void activateAllDudes();
 
     void removeDude(int column, int row);
@@ -58,7 +59,12 @@ protected:
     // Nodes should be created using create();
     DudeController();
 
-    CommonTypes::TileType getDudeTypeByMatchedCount(int count);
+    void updateDirectionsForDude(DudeObj* obj, DudeHelper* helper);
+    //Set* createDudeChain(int fromCol, int fromRow, int toCol, int toRow);
+
+    bool isEnoughCookiesForDude(int count, int neededCount);
+
+    TileType getDudeTypeByChain(ChainObj* chain);
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(DudeObj*, int direction)>, mActivateDudeCallback, ActivateDudeCallback);

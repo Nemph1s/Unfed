@@ -30,6 +30,7 @@
 using cocos2d::Director;
 using cocos2d::CallFunc;
 using namespace CommonTypes;
+using namespace std::placeholders;
 
 #define COCOS2D_DEBUG 1
 #define UNFED_ENABLE_DEBUG 1
@@ -115,7 +116,7 @@ bool ViewController::initGameScene()
     SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
     
     // Load the level.
-    int levelId = 5;
+    int levelId = 0;
     mLevel = LevelObj::createWithId(levelId);
     mScore = mLevel->getLevelInfo().targetScore;
     mMovesLeft = mLevel->getLevelInfo().moves;
@@ -165,27 +166,10 @@ bool ViewController::initDudeController()
     mObjectController->setDudeController(mDudeController);
     mLevel->setDudeController(mDudeController);
 
-    auto dudeCtrl = mDudeController;
-
-    auto activateDudeCallback = [=](DudeObj* dude, int direction) {
-        auto set = mDudeController->activateDude(dude, direction);
-
-        if (set->count() > 0) {
-            mGameplayScene->userInteractionDisabled();
-
-            mLevel->removeDudeMatches(set);
-            auto removeCallback = CallFunc::create([=]() {
-                mDudeController->removeDude(dude->getColumn(), dude->getRow());
-            });
-
-            AnimationsManager->animateRemoveDude(dude, removeCallback);
-
-            updateScore(set);
-            animateHandleMatches(set);
-        }
-    };
+    auto activateDudeCallback = std::bind(&ViewController::activateDudeCallback, this, _1, _2);
     mDudeController->setActivateDudeCallback(activateDudeCallback);
 
+    auto dudeCtrl = mDudeController;
     auto dudeActivationCallback = [dudeCtrl](int fromCol, int fromRow, int direction) {
         return dudeCtrl->canActivateDudeTo(fromCol, fromRow, direction);
     };
@@ -202,7 +186,7 @@ bool ViewController::initSwapController()
 
     mSwapController->setLevel(mLevel);
 
-    auto swapCallback = std::bind(&ViewController::swapCallback, this, std::placeholders::_1);
+    auto swapCallback = std::bind(&ViewController::swapCallback, this, _1);
     mSwapController->setSwapCallback(swapCallback);
 
     auto swapCtrl = mSwapController;
@@ -312,7 +296,6 @@ void ViewController::animateHandleMatches(cocos2d::Set* chains)
         });
         AnimationsManager->animateNewCookies(newColumns, enableTouches);
         AnimationsManager->animateFallingObjects(columns, addNewCookies);
-//        AnimationsManager->animateFallingCookies(columns, addNewCookies);
     });
 
     AnimationsManager->animateMatching(chains, completion);
@@ -375,22 +358,29 @@ void ViewController::swapCallback(SwapObj * swap)
         AudioManager->playSound(SoundType::InvalidSwapSound);
     }
 }
-// 
-// //--------------------------------------------------------------------
-// void ViewController::activateDudeCallback(DudeObj* obj, int direction)
-// //--------------------------------------------------------------------
-// {
-//     auto set = mDudeController->activateDude(obj, direction);
-// 
-//     mLevel->removeDudeMatches(set);
-// 
-//     if (set->count() > 0) {
-//         mGameplayScene->userInteractionDisabled();
-// 
-//         updateScore(set);
-//         animateHandleMatches(set);
-//     }
-// }
+
+//--------------------------------------------------------------------
+void ViewController::activateDudeCallback(DudeObj * obj, int direction)
+//--------------------------------------------------------------------
+{
+    auto set = mDudeController->activateDude(obj, direction);
+    auto chains = dynamic_cast<ChainObj*>(set->anyObject());
+    if (chains) {
+        if (chains->getCookies()) {
+            mGameplayScene->userInteractionDisabled();
+
+            mLevel->removeDudeMatches(set);
+            auto removeCallback = CallFunc::create([=]() {
+                mDudeController->removeDude(obj->getColumn(), obj->getRow());
+            });
+
+            AnimationsManager->animateRemoveDude(obj, removeCallback);
+
+            updateScore(set);
+            animateHandleMatches(set);
+        }
+    }
+}
 
 //--------------------------------------------------------------------
 void ViewController::activateChainCallback(CommonTypes::ChainType & type, cocos2d::Vec2 & pos)

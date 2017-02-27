@@ -17,7 +17,8 @@ using CommonTypes::TileType;
 //--------------------------------------------------------------------
 DudeObj::DudeObj()
     : TileObj()
-    //--------------------------------------------------------------------
+    , mIsActivated(false)
+//--------------------------------------------------------------------
 {
 }
 
@@ -62,10 +63,12 @@ bool DudeObj::init(const CommonTypes::TileInfo & info)
 cocos2d::String& DudeObj::spriteName() const
 //--------------------------------------------------------------------
 {
-    return GameResources::s_dudeSpriteNames.at(getTypeAsInt() - Helper::to_underlying(TileType::DudeLightr));
+    return GameResources::s_dudeSpriteNames.at(getTypeAsInt() - Helper::to_underlying(TileType::DudeFromAToB));
 }
 
-CommonTypes::DudePathType DudeObj::getPathType()
+//--------------------------------------------------------------------
+void DudeObj::activate()
+//--------------------------------------------------------------------
 {
-    return CommonTypes::DudePathType();
+    mIsActivated = true;
 }
