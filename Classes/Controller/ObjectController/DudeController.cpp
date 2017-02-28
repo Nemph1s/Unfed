@@ -166,20 +166,20 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
     case TileType::DudeFromAToBx3:
     {
         for (int i = -1; i <= 1; i++) {
-            auto newTopSet = mChainCtrl->createChainFromPosToPos(column + i, row, column + i, 0);
-            auto newBotSet = mChainCtrl->createChainFromPosToPos(column + i, row, column + i, NumRows - 1);
-            auto newLeftSet = mChainCtrl->createChainFromPosToPos(column, row + i, 0, row + i);
-            auto newRightSet = mChainCtrl->createChainFromPosToPos(column, row + i, NumColumns - 1, row + i);
-            mChainCtrl->addChainsFromSetToSet(newTopSet, topSet);
-            mChainCtrl->addChainsFromSetToSet(newBotSet, botSet);
-            mChainCtrl->addChainsFromSetToSet(newLeftSet, leftSet);
-            mChainCtrl->addChainsFromSetToSet(newRightSet, rightSet);
+            auto newTopSet = mChainCtrl->createChainFromPosToPos(column + i, row, column + i, 0, true);
+            auto newBotSet = mChainCtrl->createChainFromPosToPos(column + i, row, column + i, NumRows - 1, true);
+            auto newLeftSet = mChainCtrl->createChainFromPosToPos(column, row + i, 0, row + i, true);
+            auto newRightSet = mChainCtrl->createChainFromPosToPos(column, row + i, NumColumns - 1, row + i, true);
+            mChainCtrl->addCookiesFromChainToChain(newTopSet, topSet);
+            mChainCtrl->addCookiesFromChainToChain(newBotSet, botSet);
+            mChainCtrl->addCookiesFromChainToChain(newLeftSet, leftSet);
+            mChainCtrl->addCookiesFromChainToChain(newRightSet, rightSet);
         }
     }
         break;
     case TileType::DudeChainX:
     {
-        auto set = mChainCtrl->createXChainAt(column, row);
+        auto set = mChainCtrl->createXChainAt(column, row, true);
         mChainCtrl->addChainsFromSetToSet(set, topSet);
         mChainCtrl->addChainsFromSetToSet(set, botSet);
         mChainCtrl->addChainsFromSetToSet(set, leftSet);
@@ -188,10 +188,10 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
     break;
     case TileType::DudeAllOfType:
     {
-        auto newTopSet = mChainCtrl->createAllOfOneChain(column, row - 1);
-        auto newBotSet = mChainCtrl->createAllOfOneChain(column, row + 1);
-        auto newLeftSet = mChainCtrl->createAllOfOneChain(column - 1, row);
-        auto newRightSet = mChainCtrl->createAllOfOneChain(column + 1, row);
+        auto newTopSet = mChainCtrl->createAllOfOneChain(column, row - 1, true);
+        auto newBotSet = mChainCtrl->createAllOfOneChain(column, row + 1, true);
+        auto newLeftSet = mChainCtrl->createAllOfOneChain(column - 1, row, true);
+        auto newRightSet = mChainCtrl->createAllOfOneChain(column + 1, row, true);
         mChainCtrl->addChainsFromSetToSet(newTopSet, topSet);
         mChainCtrl->addChainsFromSetToSet(newBotSet, botSet);
         mChainCtrl->addChainsFromSetToSet(newLeftSet, leftSet);
@@ -201,10 +201,10 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
     case TileType::DudeFromAToB:
     default:
     {
-        auto newTopSet = mChainCtrl->createChainFromPosToPos(column, row, column, 0);
-        auto newBotSet = mChainCtrl->createChainFromPosToPos(column, row, column, NumRows - 1);
-        auto newLeftSet = mChainCtrl->createChainFromPosToPos(column, row, 0, row);
-        auto newRightSet = mChainCtrl->createChainFromPosToPos(column, row, NumColumns - 1, row);
+        auto newTopSet = mChainCtrl->createChainFromPosToPos(column, row, column, 0, true);
+        auto newBotSet = mChainCtrl->createChainFromPosToPos(column, row, column, NumRows - 1, true);
+        auto newLeftSet = mChainCtrl->createChainFromPosToPos(column, row, 0, row, true);
+        auto newRightSet = mChainCtrl->createChainFromPosToPos(column, row, NumColumns - 1, row, true);
         mChainCtrl->addChainsFromSetToSet(newTopSet, topSet);
         mChainCtrl->addChainsFromSetToSet(newBotSet, botSet);
         mChainCtrl->addChainsFromSetToSet(newLeftSet, leftSet);

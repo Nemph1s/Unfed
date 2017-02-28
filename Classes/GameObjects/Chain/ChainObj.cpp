@@ -14,17 +14,11 @@
 #include "Utils/Helpers/Helper.h"
 
 //--------------------------------------------------------------------
-ChainObj * ChainObj::createWithType(const CommonTypes::ChainType &type)
+ChainObj::ChainObj()
+    : mCookies(nullptr)
+    , mIsCreatedByDude(false)
 //--------------------------------------------------------------------
 {
-    ChainObj * ret = new (std::nothrow) ChainObj();
-    if (ret && ret->initWithType(type)) {
-        ret->autorelease();
-    }
-    else {
-        CC_SAFE_DELETE(ret);
-    }
-    return ret;
 }
 
 //--------------------------------------------------------------------
@@ -36,6 +30,20 @@ ChainObj::~ChainObj()
         removeFromParent();
     }
     CC_SAFE_RELEASE_NULL(mCookies);
+}
+
+//--------------------------------------------------------------------
+ChainObj * ChainObj::createWithType(const CommonTypes::ChainType &type)
+//--------------------------------------------------------------------
+{
+    ChainObj * ret = new (std::nothrow) ChainObj();
+    if (ret && ret->initWithType(type)) {
+        ret->autorelease();
+    }
+    else {
+        CC_SAFE_DELETE(ret);
+    }
+    return ret;
 }
 
 //--------------------------------------------------------------------
@@ -127,11 +135,4 @@ void ChainObj::addCookiesFromChain(ChainObj * chain)
         CC_ASSERT(cookie);
         addCookie(cookie);
     }
-}
-
-//--------------------------------------------------------------------
-ChainObj::ChainObj()
-    : mCookies(nullptr)
-//--------------------------------------------------------------------
-{
 }

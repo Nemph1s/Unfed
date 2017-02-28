@@ -36,6 +36,7 @@ public:
     bool init();
 
     void addChainsFromSetToSet(cocos2d::Set* from, cocos2d::Set* to);
+    void addCookiesFromChainToChain(cocos2d::Set* from, cocos2d::Set* to);
 
     cocos2d::Set* removeMatches();
     cocos2d::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
@@ -46,6 +47,7 @@ protected:
     // Nodes should be created using create();
     ChainController();
 
+    void addChainToSet(ChainObj* chain, cocos2d::Set* set);
     cocos2d::Set* detectHorizontalMatches();
     cocos2d::Set* detectVerticalMatches();
     cocos2d::Set* detectDifficultMatches(cocos2d::Set* horizontal, cocos2d::Set* vertical);
@@ -55,10 +57,10 @@ protected:
 
     cocos2d::Set* createHorizontalChainAt(int column);
     cocos2d::Set* createVerticalChainAt(int row);
-    cocos2d::Set* createXChainAt(int column, int row);
-    cocos2d::Set* createAllOfOneChain(int entryColumn, int entryRow);
-    cocos2d::Set* createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to);
-    cocos2d::Set* createChainFromPosToPos(int fromCol, int fromRow, int toCol, int toRow);
+    cocos2d::Set* createXChainAt(int column, int row, bool isCreatedByDude = false);
+    cocos2d::Set* createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude = false);
+    cocos2d::Set* createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to, bool isCreatedByDude = false);
+    cocos2d::Set* createChainFromPosToPos(int fromCol, int fromRow, int toCol, int toRow, bool isCreatedByDude = false);
 
 #ifdef COCOS2D_DEBUG
     void logDebugChains(cocos2d::Set* horizontal, cocos2d::Set* vertical, cocos2d::Set* difficult);
