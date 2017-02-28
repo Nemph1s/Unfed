@@ -122,6 +122,34 @@ cocos2d::Set * ChainController::removeChainAt(CommonTypes::ChainType & type, coc
     return set;
 }
 
+//--------------------------------------------------------------------
+void ChainController::calculateChainScore(ChainObj* chain)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(chain);
+    int chainValue = 0;
+    auto cookies = chain->getCookies();
+    if (cookies) {
+        for (auto itObj = cookies->begin(); itObj != cookies->end(); itObj++) {
+            auto obj = dynamic_cast<BaseObj*>(*itObj);
+            int chainTypeMultiplier = 1;
+            switch (chain->getType())
+            {
+            case ChainType::ChainTypeL:
+                chainTypeMultiplier = 2;
+                break;
+            case ChainType::ChainTypeT:
+                chainTypeMultiplier = 3;
+            default:
+                break;
+            }
+            chainValue = chainValue + obj->getScoreValue();
+        }
+        auto multiplier = cookies->count() > 2 ? cookies->count() - 2 : 1;
+        chain->setScore(chainValue * multiplier);
+    }
+}
+
 
 //--------------------------------------------------------------------
 cocos2d::Set * ChainController::detectVerticalMatches()
@@ -156,7 +184,10 @@ cocos2d::Set * ChainController::detectVerticalMatches()
                             }
                         } while (row < NumColumns && newMatchType == matchType);
 
-                        set->addObject(chain);
+                        if (chain->getCookies()) {
+                            calculateChainScore(chain);
+                            set->addObject(chain);
+                        }
                         continue;
                     }
                 }
@@ -202,7 +233,10 @@ cocos2d::Set * ChainController::detectHorizontalMatches()
                             }
                         } while (column < NumColumns && newMatchType == matchType);
 
-                        set->addObject(chain);
+                        if (chain->getCookies()) {
+                            calculateChainScore(chain);
+                            set->addObject(chain);
+                        }
                         continue;
                     }
                 }
@@ -234,8 +268,18 @@ cocos2d::Set * ChainController::detectDifficultMatches(cocos2d::Set * horizontal
             chainL = detectLChainMatches(horzChain, vertChain);
             chainT = detectTChainMatches(horzChain, vertChain);
 
-            if (chainL) set->addObject(chainL);
-            if (chainT) set->addObject(chainT);
+            if (chainL) {
+                if (chainL->getCookies()) {
+                    calculateChainScore(chainL);
+                    set->addObject(chainL);
+                }
+            }
+            if (chainT) {
+                if (chainT->getCookies()) {
+                    calculateChainScore(chainT);
+                    set->addObject(chainT);
+                }
+            }
 
             if (chainL || chainT) {
                 vertIt++;
@@ -350,7 +394,10 @@ cocos2d::Set* ChainController::createHorizontalChainAt(int column)
             chain->addCookie(cookie);
         }
     }
-    set->addObject(chain);
+    if (chain->getCookies()) {
+        calculateChainScore(chain);
+        set->addObject(chain);
+    }
     return set;
 }
 
@@ -367,7 +414,10 @@ cocos2d::Set* ChainController::createVerticalChainAt(int row)
             chain->addCookie(cookie);
         }
     }
-    set->addObject(chain);
+    if (chain->getCookies()) {
+        calculateChainScore(chain);
+        set->addObject(chain);
+    }
     return set;
 }
 
@@ -388,7 +438,10 @@ cocos2d::Set* ChainController::createXChainAt(int column, int row)
             chain->addCookie(cookieB);
         }
     }
-    set->addObject(chain);
+    if (chain->getCookies()) {
+        calculateChainScore(chain);
+        set->addObject(chain);
+    }
     return set;
 }
 
@@ -415,7 +468,10 @@ cocos2d::Set* ChainController::createAllOfOneChain(int entryColumn, int entryRow
             }
         }
     }
-    set->addObject(chain);
+    if (chain->getCookies()) {
+        calculateChainScore(chain);
+        set->addObject(chain);
+    }
     return set;
 }
 
@@ -470,6 +526,7 @@ cocos2d::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow
         } while (j != toRow);
     } while (i != toCol);
     if (chain->getCookies()) {
+        calculateChainScore(chain);
         set->addObject(chain);
     }
     return set;

@@ -23,7 +23,7 @@ BaseObj::BaseObj()
     , mIsContainer(false)
     , mSpriteNode(nullptr)
     , mDummyString(nullptr)
-    , mScoreValue(40) //TODO: move to global info
+    , mScoreValue(10) //TODO: move to global info
 //--------------------------------------------------------------------
 {
 }

@@ -57,6 +57,7 @@ bool RockObj::init(const CommonTypes::TileInfo & info)
     mIsRemovable = true;
     mIsMovable = true;
     mIsContainer = false;
+    mScoreValue = 30;
 
     return true;
 }

@@ -40,6 +40,8 @@ public:
     cocos2d::Set* removeMatches();
     cocos2d::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
 
+    void calculateChainScore(ChainObj* chain);
+
 protected:
     // Nodes should be created using create();
     ChainController();

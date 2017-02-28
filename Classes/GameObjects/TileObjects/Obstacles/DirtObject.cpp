@@ -56,6 +56,7 @@ bool DirtObject::init(const CommonTypes::TileInfo & info)
     }
     mIsRemovable = true;
     mIsContainer = true;
+    mScoreValue = 30;
 
     return true;
 }

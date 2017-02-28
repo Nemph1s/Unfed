@@ -57,6 +57,7 @@ bool BushObj::init(const CommonTypes::TileInfo & info)
     mIsRemovable = true;
     mIsMovable = false;
     mIsContainer = false;
+    mScoreValue = 30;
 
     return true;
 }

@@ -349,25 +349,12 @@ void LevelObj::calculateScore(cocos2d::Set * chains)
     for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
-        auto cookies = chain->getCookies();
-        if (cookies) {
-            //TODO: move to other location
-            int chainValue = 60;
-            switch (chain->getType())
-            {
-            case ChainType::ChainTypeL:
-                chainValue = 70;
-                break;
-            case ChainType::ChainTypeT:
-                chainValue = 80;
-            default:
-                break;
-            }
 
-            //TODO: make more intelligent way to get score value
-            chain->setScore(chainValue * (cookies->count() - 2) * mComboMultiplier);
+        if (chain->getCookies()) {
+            auto chainScore = chain->getScore();
+            chain->setScore(chainScore * mComboMultiplier);
             mComboMultiplier++;
-        }       
+        }
     }
 }
 
