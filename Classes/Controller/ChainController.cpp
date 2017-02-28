@@ -124,7 +124,7 @@ cocos2d::Set * ChainController::removeChainAt(CommonTypes::ChainType & type, coc
 
 
 //--------------------------------------------------------------------
-cocos2d::Set * ChainController::detectHorizontalMatches()
+cocos2d::Set * ChainController::detectVerticalMatches()
 //--------------------------------------------------------------------
 {
     auto set = cocos2d::Set::create();
@@ -145,7 +145,7 @@ cocos2d::Set * ChainController::detectHorizontalMatches()
                         && other2->getTypeAsInt() == matchType) {
                         //  There is a chain of at least three cookies but potentially there are more. This steps through all the matching cookies 
                         // until it finds a cookie that breaks the chain or it reaches the end of the grid.
-                        auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
+                        auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
                         int newMatchType = -1;
                         do {
                             cookie = mObjCtrl->cookieAt(column, row);
@@ -170,7 +170,7 @@ cocos2d::Set * ChainController::detectHorizontalMatches()
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * ChainController::detectVerticalMatches()
+cocos2d::Set * ChainController::detectHorizontalMatches()
 //--------------------------------------------------------------------
 {
     auto set = cocos2d::Set::create();
@@ -191,7 +191,7 @@ cocos2d::Set * ChainController::detectVerticalMatches()
                         && other2->getTypeAsInt() == matchType) {
                         //  There is a chain of at least three cookies but potentially there are more. This steps through all the matching cookies 
                         // until it finds a cookie that breaks the chain or it reaches the end of the grid.
-                        auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
+                        auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
                         int newMatchType = -1;
                         do {
                             cookie = mObjCtrl->cookieAt(column, row);
