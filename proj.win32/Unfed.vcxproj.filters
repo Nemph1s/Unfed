@@ -251,6 +251,9 @@
     <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.h">
       <Filter>src\Controller\ObjectController\Dude</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Utils\Parser\JsonNames.h">
+      <Filter>src\Utils\Parser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

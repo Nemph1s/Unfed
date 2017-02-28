@@ -9,6 +9,7 @@
 */
 
 #include "Utils/Parser/JsonParser.h"
+#include "Utils/Parser/JsonNames.h"
 #include "Utils/GameResources.h"
 
 //--------------------------------------------------------------------
@@ -31,11 +32,11 @@ void _JsonParser::parseLevelInfo(const int16_t & level)
 bool _JsonParser::checkStatus()
 //--------------------------------------------------------------------
 {
-	Json::Value& status = mRootNode["res"];
+	Json::Value& status = mRootNode[JsonNames::loadResult];
 	if (!status.isString())
 		return false;
 
-	return std::strcmp(mRootNode["res"].asCString(), "OK") == 0;
+	return std::strcmp(mRootNode[JsonNames::loadResult].asCString(), "OK") == 0;
 }
 
 //--------------------------------------------------------------------
@@ -62,7 +63,7 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
 		}
 	}
 
-    if (!mRootNode["cookies"].isNull()) {
+    if (!mRootNode[JsonNames::cookiesArray].isNull()) {
         const Json::Value& cookiesObjects = getPredefinedCookies();
 
         for (uint16_t i = 0; i < cookiesObjects.size(); ++i) {
@@ -76,7 +77,7 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
         }
     }
 
-    if (!mRootNode["allowedCookieTypes"].isNull()) {
+    if (!mRootNode[JsonNames::allowedCookieTypes].isNull()) {
         const Json::Value& allowedCookieTypes = getAllowedCookieTypes();
 
         for (uint16_t i = 0; i < allowedCookieTypes.size(); ++i) {
@@ -86,7 +87,7 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
         }
     }
 
-    if (!mRootNode["fieldObjects"].isNull()) {
+    if (!mRootNode[JsonNames::fieldObjectsArray].isNull()) {
         const Json::Value& fieldObjects = getFieldObjects();
 
         for (uint16_t i = 0; i < fieldObjects.size(); ++i) {
@@ -106,7 +107,7 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
 const Json::Value& _JsonParser::getTiles()
 //--------------------------------------------------------------------
 {
-	Json::Value& value = mRootNode["tiles"];
+	Json::Value& value = mRootNode[JsonNames::tilesArray];
 	if (!value.isArray())
 		throw std::logic_error("bad tiles array");
 
@@ -117,7 +118,7 @@ const Json::Value& _JsonParser::getTiles()
 const Json::Value & _JsonParser::getPredefinedCookies()
 //--------------------------------------------------------------------
 {
-    Json::Value& value = mRootNode["cookies"];
+    Json::Value& value = mRootNode[JsonNames::cookiesArray];
     if (!value.isArray())
         throw std::logic_error("bad cookies array");
 
@@ -128,7 +129,7 @@ const Json::Value & _JsonParser::getPredefinedCookies()
 const Json::Value & _JsonParser::getAllowedCookieTypes()
 //--------------------------------------------------------------------
 {
-    Json::Value& value = mRootNode["allowedCookieTypes"];
+    Json::Value& value = mRootNode[JsonNames::allowedCookieTypes];
     if (!value.isArray())
         throw std::logic_error("bad allowedCookieTypes array");
 
@@ -139,7 +140,7 @@ const Json::Value & _JsonParser::getAllowedCookieTypes()
 const Json::Value & _JsonParser::getFieldObjects()
 //--------------------------------------------------------------------
 {
-    Json::Value& value = mRootNode["fieldObjects"];
+    Json::Value& value = mRootNode[JsonNames::fieldObjectsArray];
     if (!value.isArray())
         throw std::logic_error("bad fieldObjects array");
 
@@ -152,8 +153,8 @@ uint32_t _JsonParser::getTargetScore()
 //--------------------------------------------------------------------
 {
 	uint32_t res = 0;
-	if (mRootNode["targetScore"].isInt()) {
-		res = mRootNode["targetScore"].asInt();
+	if (mRootNode[JsonNames::targetScore].isInt()) {
+		res = mRootNode[JsonNames::targetScore].asInt();
 	}
 	return res;
 }
@@ -163,8 +164,8 @@ uint8_t _JsonParser::getMoves()
 //--------------------------------------------------------------------
 {
 	uint8_t res = 0;
-	if (mRootNode["moves"].isInt()) {
-		res = mRootNode["moves"].asInt();
+	if (mRootNode[JsonNames::movesLeft].isInt()) {
+		res = mRootNode[JsonNames::movesLeft].asInt();
 	}
 	return res;
 }
@@ -174,8 +175,8 @@ uint8_t _JsonParser::getTypesCount()
 //--------------------------------------------------------------------
 {
     uint8_t res = 0;
-    if (mRootNode["typesCount"].isInt()) {
-        res = mRootNode["typesCount"].asInt();
+    if (mRootNode[JsonNames::objTypesCount].isInt()) {
+        res = mRootNode[JsonNames::objTypesCount].asInt();
     }
     return res;
 }
@@ -185,8 +186,8 @@ bool _JsonParser::isPredefinedCookies()
 //--------------------------------------------------------------------
 {
     bool res = false;
-    if (mRootNode["predefinedCookies"].asBool()) {
-        res = mRootNode["predefinedCookies"].asBool();
+    if (mRootNode[JsonNames::predefinedCookies].asBool()) {
+        res = mRootNode[JsonNames::predefinedCookies].asBool();
     }
     return res;
 }
@@ -196,8 +197,8 @@ bool _JsonParser::getSkipEmptyHoles()
 //--------------------------------------------------------------------
 {
     bool res = false;
-    if (mRootNode["skipEmptyHoles"].asBool()) {
-        res = mRootNode["skipEmptyHoles"].asBool();
+    if (mRootNode[JsonNames::skipEmptyHoles].asBool()) {
+        res = mRootNode[JsonNames::skipEmptyHoles].asBool();
     }
     return res;
 }
