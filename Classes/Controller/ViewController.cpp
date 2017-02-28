@@ -307,11 +307,21 @@ void ViewController::beginNextTurn()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ViewController::beginNextTurn");
-    mSwapController->detectPossibleSwaps();
-    mGameplayScene->userInteractionEnabled();
+    
+    float delay = 0.01f;
+    if (mSwapController->detectPossibleSwaps()) {
+        delay = 0.5f;
+        shuffle();
+    }
+
+    auto callback = cocos2d::CallFunc::create([=]() {
+        mGameplayScene->userInteractionEnabled();
+    });
 
     mLevel->resetComboMultiplier();
     decrementMoves();
+  
+    mGameplayScene->runAction(cocos2d::Sequence::create(cocos2d::DelayTime::create(delay), callback, nullptr));
 }
 
 //--------------------------------------------------------------------

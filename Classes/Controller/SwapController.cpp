@@ -215,16 +215,6 @@ void SwapController::clearPossibleSwaps()
     if (!mPossibleSwaps) {
         return;
     }
-    for (auto itr = mPossibleSwaps->begin(); itr != mPossibleSwaps->end(); itr++) {
-        SwapObj* obj = dynamic_cast<SwapObj*>(*itr);
-        if (obj) {
-            if (obj->getParent()) {
-                obj->removeAllChildren();
-                obj->removeFromParent();
-            }
-        }
-        CC_SAFE_RELEASE(obj);
-    }
     mPossibleSwaps->removeAllObjects();
-    CC_SAFE_DELETE(mPossibleSwaps);
+    CC_SAFE_RELEASE_NULL(mPossibleSwaps);
 }
