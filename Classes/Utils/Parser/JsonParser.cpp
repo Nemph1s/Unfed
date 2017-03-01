@@ -202,3 +202,87 @@ bool _JsonParser::getSkipEmptyHoles()
     }
     return res;
 }
+
+//--------------------------------------------------------------------
+CommonTypes::LevelGoals _JsonParser::getLevelGoals()
+//--------------------------------------------------------------------
+{
+    auto levelGoals = CommonTypes::LevelGoals();
+
+    if (mRootNode[JsonNames::levelGoals].isNull()) {
+        return levelGoals;
+    }
+    const Json::Value& levelGoalsNode = mRootNode[JsonNames::levelGoals];
+
+    levelGoals.goalsCount = getGoalsCount(levelGoalsNode);
+
+    const Json::Value& subNode = getGoalTypeCollect(levelGoalsNode);
+
+    for (uint16_t i = 0; i < subNode.size(); ++i) {
+        const Json::Value& goalCollectNode = subNode[i];
+        CC_ASSERT(goalCollectNode.isObject());
+
+        auto goalInfo = CommonTypes::CollectGoalInfo();
+        goalInfo.baseObjectType = getTargetBaseObjType(goalCollectNode);
+        goalInfo.objectType = getTargetObjType(goalCollectNode);
+        goalInfo.count = getTargetObjectCount(goalCollectNode);
+
+        levelGoals.collectGoals.push_back(goalInfo);
+    }
+    return levelGoals;
+}
+
+//--------------------------------------------------------------------
+uint8_t _JsonParser::getGoalsCount(const Json::Value & node)
+//--------------------------------------------------------------------
+{
+    uint8_t res = 0;
+    if (node[JsonNames::goalsCount].isInt()) {
+        res = node[JsonNames::goalsCount].asInt();
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
+const Json::Value & _JsonParser::getGoalTypeCollect(const Json::Value & node)
+//--------------------------------------------------------------------
+{
+    const Json::Value& value = node[JsonNames::collectGoal];
+    if (!value.isArray())
+        throw std::logic_error("bad collect array");
+
+    return value;
+}
+
+//--------------------------------------------------------------------
+uint8_t _JsonParser::getTargetBaseObjType(const Json::Value & node)
+//--------------------------------------------------------------------
+{
+    uint8_t res = 0;
+    if (node[JsonNames::targetBaseObjType].isInt()) {
+        res = node[JsonNames::targetBaseObjType].asInt();
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
+uint8_t _JsonParser::getTargetObjType(const Json::Value & node)
+//--------------------------------------------------------------------
+{
+    uint8_t res = 0;
+    if (node[JsonNames::targetObjType].isInt()) {
+        res = node[JsonNames::targetObjType].asInt();
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
+uint8_t _JsonParser::getTargetObjectCount(const Json::Value & node)
+//--------------------------------------------------------------------
+{
+    uint8_t res = 0;
+    if (node[JsonNames::targetObjectCount].isInt()) {
+        res = node[JsonNames::targetObjectCount].asInt();
+    }
+    return res;
+}

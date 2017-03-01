@@ -35,6 +35,8 @@ using namespace std::placeholders;
 #define COCOS2D_DEBUG 1
 #define UNFED_ENABLE_DEBUG 1
 
+#define CURRENT_LEVEL 1
+
 //--------------------------------------------------------------------
 ViewController::ViewController()
     : mLevel(nullptr)
@@ -116,7 +118,7 @@ bool ViewController::initGameScene()
     SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
     
     // Load the level.
-    int levelId = 666;
+    int levelId = CURRENT_LEVEL;
     mLevel = LevelObj::createWithId(levelId);
     mScore = mLevel->getLevelInfo().targetScore;
     mMovesLeft = mLevel->getLevelInfo().moves;

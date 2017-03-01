@@ -19,6 +19,7 @@ namespace JsonNames {
     static const char* tilesArray = "tiles";
     static const char* movesLeft = "moves";
     static const char* objTypesCount = "typesCount";
+    static const char* targetScore = "targetScore";
 
     //extended level parameters
     static const char* skipEmptyHoles = "skipEmptyHoles";
@@ -28,5 +29,10 @@ namespace JsonNames {
     static const char* allowedCookieTypes = "allowedCookieTypes";
 
     //level goals
-    static const char* targetScore = "targetScore";
+    static const char* levelGoals = "levelGoals";
+    static const char* goalsCount = "goalsCount";
+    static const char* collectGoal = "collect";
+    static const char* targetBaseObjType = "baseObjType";
+    static const char* targetObjType = "objType";
+    static const char* targetObjectCount = "count";
 }

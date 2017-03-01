@@ -161,17 +161,20 @@ int ObjectController::getAllowedRandomCookieType()
         cookieMax = mLevel->getLevelInfo().typesCount;
     }
     int type = 0;
-    bool findNextType = true;
+    auto allowedTypes = mLevel->getLevelInfo().allowedCookieTypes;
+
     do {
         type = Helper::getInstance()->random(0, cookieMax - 1);
 
+        if (allowedTypes.size() == 0) {
+            break;
+        }
         for (auto val : mLevel->getLevelInfo().allowedCookieTypes) {
             if (val == type) {
-                findNextType = false;
                 break;
             }
         }
-    } while (findNextType);
+    } while (true);
 
     return type;
 }

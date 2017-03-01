@@ -36,6 +36,14 @@ public:
    bool isPredefinedCookies();
    bool getSkipEmptyHoles();
 
+   CommonTypes::LevelGoals getLevelGoals();
+
+   uint8_t getGoalsCount(const Json::Value & node);
+   const Json::Value& getGoalTypeCollect(const Json::Value & node);
+   uint8_t getTargetBaseObjType(const Json::Value & node);
+   uint8_t getTargetObjType(const Json::Value & node);
+   uint8_t getTargetObjectCount(const Json::Value & node);
+
 protected:
 
    Json::Value mRootNode;

@@ -92,6 +92,25 @@ namespace CommonTypes {
    };
 
    /**
+   * @brief CollectGoalInfo struct.
+   */
+   struct CollectGoalInfo
+   {
+       int8_t baseObjectType = 0; /**< baseObjectType type of base field object(tile, cookie, field, dude) */
+       int8_t objectType = 0; /**< objectType type of child field obj */
+       int8_t count = 0; /**< count object count goal*/
+   };
+
+   /**
+   * @brief LevelInfo struct.
+   */
+   struct LevelGoals
+   {
+       int8_t goalsCount = 0; /**< goalsCount count current goals*/
+       std::vector<CollectGoalInfo> collectGoals; /**< collectGoal vector of CollectGoalInfo struct*/
+   };
+
+   /**
    * @brief ChainType enum.
    * Type of the sound object
    */
