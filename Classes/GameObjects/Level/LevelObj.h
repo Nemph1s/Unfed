@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/LevelObj.hpp
+* @file GameObjects/Level/LevelObj.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved

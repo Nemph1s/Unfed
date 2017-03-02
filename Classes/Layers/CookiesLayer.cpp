@@ -16,7 +16,7 @@
 #include "Managers/AnimationsManager.h"
 #include "Controller/ObjectController/ObjectController.h"
 
-#include "GameObjects/LevelObj.h"
+#include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/DudeObj.h"
 

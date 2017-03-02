@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/LevelObj.cpp
+* @file GameObjects/Level/LevelObj.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,7 +8,7 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/LevelObj.h"
+#include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"

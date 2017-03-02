@@ -13,7 +13,7 @@
 
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/Chain/ChainObj.h"
-#include "GameObjects/LevelObj.h"
+#include "GameObjects/Level/LevelObj.h"
 
 #include "Utils/Helpers/Helper.h"
 
@@ -70,6 +70,7 @@ cocos2d::Set * ChainController::removeMatches()
     addChainsFromSetToSet(horizontalChains, set);
     addChainsFromSetToSet(verticalChains, set);
     addChainsFromSetToSet(difficultChains, set);
+
 
 #ifdef COCOS2D_DEBUG
     logDebugChains(horizontalChains, verticalChains, difficultChains);

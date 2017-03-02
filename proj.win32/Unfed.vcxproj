@@ -153,7 +153,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Controller\SwapController.cpp" />
     <ClCompile Include="..\Classes\Controller\ViewController.cpp" />
     <ClCompile Include="..\Classes\GameObjects\Chain\ChainObj.cpp" />
-    <ClCompile Include="..\Classes\GameObjects\LevelObj.cpp" />
+    <ClCompile Include="..\Classes\GameObjects\Level\LevelGoalComponent.cpp" />
+    <ClCompile Include="..\Classes\GameObjects\Level\LevelObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\Swap\SwapObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.cpp" />
     <ClCompile Include="..\Classes\GameObjects\TileObjects\CookieObj.cpp" />
@@ -185,7 +186,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Controller\SwapController.h" />
     <ClInclude Include="..\Classes\Controller\ViewController.h" />
     <ClInclude Include="..\Classes\GameObjects\Chain\ChainObj.h" />
-    <ClInclude Include="..\Classes\GameObjects\LevelObj.h" />
+    <ClInclude Include="..\Classes\GameObjects\Level\LevelGoalComponent.h" />
+    <ClInclude Include="..\Classes\GameObjects\Level\LevelObj.h" />
     <ClInclude Include="..\Classes\GameObjects\Swap\SwapObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\CookieObj.h" />

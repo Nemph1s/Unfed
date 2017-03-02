@@ -61,6 +61,9 @@
     <Filter Include="src\Controller\ObjectController\Dude">
       <UniqueIdentifier>{4183a7e6-86fc-4278-89f9-14ff605c5441}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\GameObjects\Level">
+      <UniqueIdentifier>{cedd3553-fa87-499d-9009-b27063f210e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -71,9 +74,6 @@
     </ClCompile>
     <ClCompile Include="..\Classes\Controller\ViewController.cpp">
       <Filter>src\Controller</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\GameObjects\LevelObj.cpp">
-      <Filter>src\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\Scenes\GameplayScene.cpp">
       <Filter>src\Scenes</Filter>
@@ -150,6 +150,12 @@
     <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.cpp">
       <Filter>src\Controller\ObjectController\Dude</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\Level\LevelObj.cpp">
+      <Filter>src\GameObjects\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameObjects\Level\LevelGoalComponent.cpp">
+      <Filter>src\GameObjects\Level</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -163,9 +169,6 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Controller\ViewController.h">
       <Filter>src\Controller</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\GameObjects\LevelObj.h">
-      <Filter>src\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Scenes\GameplayScene.h">
       <Filter>src\Scenes</Filter>
@@ -253,6 +256,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Utils\Parser\JsonNames.h">
       <Filter>src\Utils\Parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\Level\LevelObj.h">
+      <Filter>src\GameObjects\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\Level\LevelGoalComponent.h">
+      <Filter>src\GameObjects\Level</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

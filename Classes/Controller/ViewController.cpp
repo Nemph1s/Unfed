@@ -21,7 +21,7 @@
 #include "Common/Factory/SmartFactory.h"
 
 #include "GameObjects/Swap/SwapObj.h"
-#include "GameObjects/LevelObj.h"
+#include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/DudeObj.h"
 #include "GameObjects/Chain/ChainObj.h"
 

@@ -22,6 +22,27 @@ ChainObj::ChainObj()
 }
 
 //--------------------------------------------------------------------
+void ChainObj::addObjectToGoalMap(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+
+    auto baseType = obj->getType();
+    iterator baseObjInMap = mCollectGoalMap.find(baseType);
+    if (baseObjInMap != mCollectGoalMap->end()) {
+        auto map = static_cast<TFieldObjGoalMap>(*baseObjInMap);
+        auto fieldObjInMap = map.find(obj->getTypeAsInt());
+        if (fieldObjInMap != map->end()) {
+
+        }
+    }
+    else {
+        //TODO: create map with this kind of base object
+    }
+
+}
+
+//--------------------------------------------------------------------
 ChainObj::~ChainObj()
 //--------------------------------------------------------------------
 {
