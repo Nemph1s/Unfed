@@ -34,5 +34,5 @@ namespace JsonNames {
     static const char* collectGoal = "collect";
     static const char* targetBaseObjType = "baseObjType";
     static const char* targetObjType = "objType";
-    static const char* targetObjectCount = "count";
+    static const char* targetObjectCount = "targetCount";
 }

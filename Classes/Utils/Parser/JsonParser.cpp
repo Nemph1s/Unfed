@@ -225,7 +225,7 @@ CommonTypes::LevelGoals _JsonParser::getLevelGoals()
         auto goalInfo = CommonTypes::CollectGoalInfo();
         goalInfo.baseObjectType = getTargetBaseObjType(goalCollectNode);
         goalInfo.objectType = getTargetObjType(goalCollectNode);
-        goalInfo.count = getTargetObjectCount(goalCollectNode);
+        goalInfo.targetCount = getTargetObjectCount(goalCollectNode);
 
         levelGoals.collectGoals.push_back(goalInfo);
     }

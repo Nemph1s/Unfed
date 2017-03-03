@@ -13,6 +13,7 @@
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
 
+class BaseObj;
 class ChainObj;
 class LevelObj;
 class GameplayScene;
@@ -67,6 +68,8 @@ protected:
 #endif // COCOS2D_DEBUG 
 
     //---Class Attributes-------------------------------------------------
+    CC_SYNTHESIZE(std::function<void(BaseObj* obj)>, mUpdateGoalCallback, UpdateGoalCallback);
+
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
     CC_SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController);
 };

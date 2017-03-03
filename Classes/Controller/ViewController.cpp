@@ -22,6 +22,7 @@
 
 #include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/Level/LevelObj.h"
+#include "GameObjects/Level/LevelGoalComponent.h"
 #include "GameObjects/TileObjects/DudeObj.h"
 #include "GameObjects/Chain/ChainObj.h"
 
@@ -82,6 +83,7 @@ bool ViewController::init()
     cocos2d::log("ViewController::init");
 
     initGameScene();
+    initLevel();
     initObjectController();
     initChainController();
     initSwapController();
@@ -116,7 +118,14 @@ bool ViewController::initGameScene()
     SmartFactory->init((NumColumns * NumRows) / 2);
     SmartFactory->initTilesPool(NumColumns * NumRows);
     SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
-    
+
+    return true;
+}
+
+//--------------------------------------------------------------------
+bool ViewController::initLevel()
+//--------------------------------------------------------------------
+{
     // Load the level.
     int levelId = CURRENT_LEVEL;
     mLevel = LevelObj::createWithId(levelId);
@@ -127,6 +136,14 @@ bool ViewController::initGameScene()
     mLevel->setName("Level");
 
     mGameplayScene->setLevel(mLevel);
+
+    mLevelGoals = LevelGoalComponent::create();
+//     auto updateGoalCallback = [=](BaseObj* obj) {
+//         mLevelGoals->updateGoalByObject(obj);
+//     };
+//     mChainController->setUpdateGoalCallback(updateGoalCallback);
+
+    //TODO: add callback to gamescene and GIU to update target score labels
 
     return true;
 }
@@ -155,6 +172,12 @@ bool ViewController::initChainController()
     mChainController->setLevel(mLevel);
     mChainController->setObjectController(mObjectController);
     mLevel->setChainController(mChainController);
+
+    auto updateGoalCallback = [=](BaseObj* obj) {
+        mLevelGoals->updateGoalByObject(obj);
+    };
+    mChainController->setUpdateGoalCallback(updateGoalCallback);
+
     return true;
 }
 

@@ -73,7 +73,6 @@ bool LevelObj::initWithId(const int16_t& levelId)
         return false;
     }
     mLevelInfo = JsonParser->getLevelInfo();
-    auto goals = JsonParser->getLevelGoals();
 
     return true;
 }

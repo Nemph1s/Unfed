@@ -13,7 +13,7 @@
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
 
-class CookieObj;
+class BaseObj;
 
 class LevelGoalComponent : public cocos2d::Node
 {
@@ -29,6 +29,7 @@ public:
 
     virtual bool init();
 
+    void updateGoalByObject(BaseObj* obj);
 
 protected:
     // Nodes should be created using create();
@@ -36,4 +37,5 @@ protected:
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE_READONLY(CommonTypes::LevelGoals, mLevelGoals, LevelGoals);
+
 };

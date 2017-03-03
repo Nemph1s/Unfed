@@ -10,6 +10,9 @@
 
 #include "GameObjects/Level/LevelGoalComponent.h"
 
+#include "GameObjects/TileObjects/Base/BaseObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
+
 #include "Utils/Helpers/Helper.h"
 #include "Utils/Parser/JsonParser.h"
 
@@ -19,7 +22,7 @@ using namespace CommonTypes;
 LevelGoalComponent::LevelGoalComponent()
     : cocos2d::Node()
     , mLevelGoals()
-    //--------------------------------------------------------------------
+//--------------------------------------------------------------------
 {
 }
 
@@ -27,7 +30,7 @@ LevelGoalComponent::LevelGoalComponent()
 LevelGoalComponent::~LevelGoalComponent()
 //--------------------------------------------------------------------
 {
-    cocos2d::log("LevelGoalComponent::~LevelGoalComponent: deallocing CookieObj: %p - tag: %i", this, _tag);
+    cocos2d::log("LevelGoalComponent::~LevelGoalComponent: %p - tag: %i", this, _tag);
 }
 
 //--------------------------------------------------------------------
@@ -54,10 +57,27 @@ bool LevelGoalComponent::init()
     }
 
     if (!JsonParser->checkStatus()) {
-        cocos2d::log("LevelObj::initWithId: can't parse json file");
+        cocos2d::log("LevelGoalComponent::init: can't parse json file");
         return false;
     }
-    auto goals = JsonParser->getLevelGoals();
+    mLevelGoals = JsonParser->getLevelGoals();
 
     return true;
+}
+
+//--------------------------------------------------------------------
+void LevelGoalComponent::updateGoalByObject(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+
+    auto baseType = Helper::to_underlying(obj->getType());
+    auto objType = obj->getTypeAsInt();
+
+    for (CommonTypes::CollectGoalInfo& info : mLevelGoals.collectGoals) {
+        if (baseType == info.baseObjectType && objType == info.objectType) {
+            info.currentCount++;
+            break;
+        }
+    }
 }

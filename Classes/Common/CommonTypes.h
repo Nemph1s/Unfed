@@ -98,7 +98,8 @@ namespace CommonTypes {
    {
        int8_t baseObjectType = 0; /**< baseObjectType type of base field object(tile, cookie, field, dude) */
        int8_t objectType = 0; /**< objectType type of child field obj */
-       int8_t count = 0; /**< count object count goal*/
+       int8_t targetCount = 0; /**< targetCount object count goal*/
+       int8_t currentCount = 0; /**< currentCount object count goal*/
    };
 
    /**

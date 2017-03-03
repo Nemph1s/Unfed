@@ -22,27 +22,6 @@ ChainObj::ChainObj()
 }
 
 //--------------------------------------------------------------------
-void ChainObj::addObjectToGoalMap(BaseObj * obj)
-//--------------------------------------------------------------------
-{
-    CC_ASSERT(obj);
-
-    auto baseType = obj->getType();
-    iterator baseObjInMap = mCollectGoalMap.find(baseType);
-    if (baseObjInMap != mCollectGoalMap->end()) {
-        auto map = static_cast<TFieldObjGoalMap>(*baseObjInMap);
-        auto fieldObjInMap = map.find(obj->getTypeAsInt());
-        if (fieldObjInMap != map->end()) {
-
-        }
-    }
-    else {
-        //TODO: create map with this kind of base object
-    }
-
-}
-
-//--------------------------------------------------------------------
 ChainObj::~ChainObj()
 //--------------------------------------------------------------------
 {
@@ -132,6 +111,21 @@ int ChainObj::getTypeAsInt()
 }
 
 //--------------------------------------------------------------------
+void ChainObj::addObject(BaseObj* obj)
+//--------------------------------------------------------------------
+{
+    if (mCookies == nullptr) {
+        mCookies = cocos2d::Array::createWithCapacity(CommonTypes::NumColumns * CommonTypes::NumRows);
+        CC_SAFE_RETAIN(mCookies);
+    }
+    mCookies->addObject(obj);
+
+    if (mUpdateGoalCallback) {
+        mUpdateGoalCallback(obj);
+    }
+}
+
+//--------------------------------------------------------------------
 void ChainObj::addCookie(CookieObj * cookie)
 //--------------------------------------------------------------------
 {
@@ -152,8 +146,12 @@ void ChainObj::addCookiesFromChain(ChainObj * chain)
     CC_ASSERT(cookies);
 
     for (auto it = cookies->begin(); it != cookies->end(); it++) {
-        auto cookie = dynamic_cast<CookieObj*>(*it);
-        CC_ASSERT(cookie);
-        addCookie(cookie);
+        auto obj = dynamic_cast<BaseObj*>(*it);
+        CC_ASSERT(obj);
+        addObject(obj);
+//         auto cookie = dynamic_cast<CookieObj*>(*it);
+//         CC_ASSERT(cookie);
+//         addCookie(cookie);
+//         addObjectToGoalMap(cookie);
     }
 }

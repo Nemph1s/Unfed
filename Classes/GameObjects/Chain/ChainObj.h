@@ -36,6 +36,8 @@ public:
     std::string typeAsString();
     int getTypeAsInt();
 
+    void addObject(BaseObj* obj);
+
     void addCookie(CookieObj* cookie);
     void addCookiesFromChain(ChainObj* chain);
 
@@ -43,15 +45,13 @@ protected:
     // Nodes should be created using create();
     ChainObj();
 
-    void addObjectToGoalMap(BaseObj* obj);
-
     //---Class Attributes-------------------------------------------------
+    CC_SYNTHESIZE(std::function<void(BaseObj* obj)>, mUpdateGoalCallback, UpdateGoalCallback);
+
     CC_SYNTHESIZE(int, mScore, Score);
     CC_SYNTHESIZE(bool, mIsCreatedByDude, IsCreatedByDude);
 
     CC_SYNTHESIZE_READONLY(CommonTypes::ChainType, mType, Type);
     CC_SYNTHESIZE_READONLY(cocos2d::Array*, mCookies, Cookies);
-
-    CC_SYNTHESIZE(cocos2d::Map<CommonTypes::BaseObjectType, TFieldObjGoalMap>, mCollectGoalMap, CollectGoalMap);
 };
 
