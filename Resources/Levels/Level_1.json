@@ -25,8 +25,9 @@
     "typesCount" : 5,
     "levelGoals": 
     {
-        "goalsCount" : 2,
+        "goalsCount" : 3,
         "collect" : [ { "baseObjType": 1, "objType": 1, "targetCount": 20 }, 
-                     { "baseObjType": 2, "objType": 20, "targetCount": 4 } ],
+                     { "baseObjType": 2, "objType": 20, "targetCount": 4 },
+					{ "baseObjType": 1, "objType": 0, "targetCount": 20 } ],
     }
 }

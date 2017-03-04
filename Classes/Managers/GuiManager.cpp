@@ -10,7 +10,9 @@
 
 #include "Managers/GuiManager.h"
 
+#include "Utils/Helpers/Helper.h"
 #include "Scenes/GameplayScene.h"
+#include "GameObjects/Level/LevelGoalComponent.h"
 #include "Utils/Localization.h"
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/VisibleRect.h"
@@ -30,16 +32,18 @@ using ui::Button;
 using ui::Widget;
 
 //--------------------------------------------------------------------
-bool _GuiManager::initWithScene(cocos2d::Scene* scene)
+bool _GuiManager::initWithScene(cocos2d::Scene* scene, LevelGoalComponent* levelGoal)
 //--------------------------------------------------------------------
 {
     cocos2d::log("GuiManager::initWithScene:");
-    if (scene) {
+    if (scene && levelGoal) {
         mCurrentScene = scene;
+        mLevelGoalComponent = levelGoal;
 
         crateInfoLayer();
         createShuffleButton();
         createScoreBar();
+        createLevelGoals();
 
         return true;
     }
@@ -128,6 +132,42 @@ void _GuiManager::createScoreBar()
 }
 
 //--------------------------------------------------------------------
+void _GuiManager::createLevelGoals()
+//--------------------------------------------------------------------
+{
+    int8_t fontSize = 28;
+    auto widget = cocos2d::ui::Widget::create();
+    widget->setPositionType(Widget::PositionType::PERCENT);
+    widget->setPositionPercent(Vec2(0.5f, 0.75f));
+    widget->setAnchorPoint(Vec2(0, 0));
+    mTopGuiLayer->addChild(widget, 5);// , kBorder);
+
+    auto levelGoals = mLevelGoalComponent->getLevelGoals();
+    auto goalsCount = levelGoals.goalsCount;
+    auto collectGoals = levelGoals.collectGoals;
+
+    for (uint8_t i = 0; i < collectGoals.size(); i++) {
+        auto goal = collectGoals.at(i);
+        auto goalSprite = createSprite(goal.baseObjectType, goal.objectType);
+        auto pos = getPosForGoalSprite(i, goalsCount, goalSprite->getContentSize());
+        goalSprite->setPosition(pos);
+        goalSprite->setAnchorPoint(Vec2(0.5f, 0.5f));
+        widget->addChild(goalSprite, 5);
+
+        auto tmpStr = cocos2d::String::createWithFormat("%d", goal.targetCount)->getCString();
+        TextLabelInfo goalInfo = { tmpStr, fontSize + 4, 0, 0 };
+
+        auto label = createLabel(goalInfo);
+        label->setAnchorPoint(Vec2(0.5f, 1.8f));
+        label->setPositionType(ui::Widget::PositionType::ABSOLUTE);
+        label->setPosition(Vec2(pos.x, pos.y));
+        label->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
+        widget->addChild(label, 10);
+        mGoalsLabels.push_back(label);
+    }
+}
+
+//--------------------------------------------------------------------
 void _GuiManager::setShuffleButtonCallback(std::function<void()> touchEndedCallback)
 //--------------------------------------------------------------------
 {
@@ -168,6 +208,76 @@ void _GuiManager::updateMovesLabel(int value)
 }
 
 //--------------------------------------------------------------------
+void _GuiManager::updateLevelGoals(std::vector<CommonTypes::CollectGoalInfo>& levelGoals)
+//--------------------------------------------------------------------
+{
+    for (uint8_t i = 0; i < mGoalsLabels.size(); i++) {
+        auto goalLabel = mGoalsLabels.at(i);
+        auto goalInfo = levelGoals.at(i);
+        auto targetObjLeft = goalInfo.targetCount - goalInfo.currentCount;
+        if (targetObjLeft < 0) targetObjLeft = 0;
+
+        auto tmpStr = cocos2d::String::createWithFormat("%d", targetObjLeft)->getCString();
+        goalLabel->setString(tmpStr);
+    }
+}
+
+//--------------------------------------------------------------------
+cocos2d::Sprite * _GuiManager::createSprite(int baseType, int objType)
+//--------------------------------------------------------------------
+{
+    cocos2d::Sprite* sprite = nullptr;
+    cocos2d::String* str = nullptr;
+    auto baseObjType = static_cast<CommonTypes::BaseObjectType>(baseType);
+    switch (baseObjType)
+    {
+    case CommonTypes::BaseObjectType::CookieObj:
+        str = &GameResources::s_cookieSpriteNames.at(objType);
+        break;
+    case CommonTypes::BaseObjectType::FieldObj:
+    case CommonTypes::BaseObjectType::DudeObj:
+        str = Helper::getSpriteNameByTileType(objType);
+        break;
+    case CommonTypes::BaseObjectType::TileObj:
+    case CommonTypes::BaseObjectType::Unknown:
+        break;
+    default:
+        break;
+    }
+
+    if (str) {
+        sprite = cocos2d::Sprite::create(str->getCString());
+        sprite->setAnchorPoint(Vec2(0.0, 0.0));
+        sprite->setPosition(Vec2(0.0, 0.0));
+    }
+    return sprite;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Vec2 _GuiManager::getPosForGoalSprite(int currGoal, int goalsCount, const cocos2d::Size& spriteSize)
+//--------------------------------------------------------------------
+{
+    cocos2d::Vec2 pos = cocos2d::Vec2::ZERO;
+    if (goalsCount == 2) {
+        if (currGoal == 0) {
+            pos = cocos2d::Vec2( -spriteSize.width * 0.75f, 0);
+        }
+        else if (currGoal == 1) {
+            pos = cocos2d::Vec2(spriteSize.width * 0.75f, 0);
+        }
+    }
+    else if (goalsCount == 3) {
+        if (currGoal == 0) {
+            pos = cocos2d::Vec2(-spriteSize.width * 1.1f, 0);
+        }
+        else if (currGoal == 2) {
+            pos = cocos2d::Vec2(spriteSize.width * 1.1f, 0);
+        }
+    }
+    return pos;
+}
+
+ //--------------------------------------------------------------------
 cocos2d::ui::Text * _GuiManager::createLabel(const CommonTypes::TextLabelInfo& info)
 //--------------------------------------------------------------------
 {

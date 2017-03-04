@@ -44,6 +44,52 @@ CookieType Helper::randomCookieType(int fromRange, int toRange)
 }
 
 //--------------------------------------------------------------------
+cocos2d::String* Helper::getSpriteNameByTileType(int tileType)
+//--------------------------------------------------------------------
+{
+    cocos2d::String* str = nullptr;
+    auto type = static_cast<CommonTypes::TileType>(tileType);
+    int firstDudeType = Helper::to_underlying(CommonTypes::TileType::DudeFromAToB);
+    switch (type)
+    {
+    case CommonTypes::TileType::Empty:
+    case CommonTypes::TileType::Normal:
+        str = &GameResources::s_TileImg;
+        break;
+    case CommonTypes::TileType::Water:
+        str = &GameResources::s_TileImg;
+        break;
+    case CommonTypes::TileType::Dirt:
+        str = &GameResources::s_DirtImg;
+        break;
+    case CommonTypes::TileType::Dirt_HP2:
+    case CommonTypes::TileType::Dirt_HP3:
+        str = &GameResources::s_DirtX2Img;
+        break;
+    case CommonTypes::TileType::Bush:
+        str = &GameResources::s_BushCorruptedImg;
+        break;
+    case CommonTypes::TileType::Bush_HP2:
+        str = &GameResources::s_BushNormalImg;
+        break;
+    case CommonTypes::TileType::RockWall:
+        str = &GameResources::s_RockImg;
+        break;
+    case CommonTypes::TileType::DudeFromAToB:
+    case CommonTypes::TileType::DudeFromAToBx3:
+    case CommonTypes::TileType::DudeChainX:
+    case CommonTypes::TileType::DudeAllOfType:
+        str = &GameResources::s_dudeSpriteNames.at(tileType - firstDudeType);
+        break;
+    case CommonTypes::TileType::Unknown:
+        break;
+    default:
+        break;
+    }
+    return str;
+}
+
+//--------------------------------------------------------------------
 cocos2d::Vec2 Helper::pointForColumnAndRow(int column, int row)
 //--------------------------------------------------------------------
 {

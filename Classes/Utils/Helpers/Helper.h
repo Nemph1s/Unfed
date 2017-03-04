@@ -32,6 +32,8 @@ public:
     static int random(int fromRange, int toRange);
     static CommonTypes::CookieType randomCookieType(int fromRange, int toRange);
 
+    static cocos2d::String* getSpriteNameByTileType(int tileType);
+
     static cocos2d::Vec2 pointForColumnAndRow(int column, int row);
     static cocos2d::Vec2 pointForTile(BaseObj* obj);
 

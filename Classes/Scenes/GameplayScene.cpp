@@ -192,6 +192,7 @@ void GameplayScene::removeAllCookieSprites()
 void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int row)
 //--------------------------------------------------------------------
 {
+    //TODO: use sprites factory
     mCookiesLayer->createSpriteWithObj(cookie, column, row);
 }
 
@@ -199,6 +200,7 @@ void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int r
 void GameplayScene::createSpriteWithDude(BaseObj * dudeObj)
 //--------------------------------------------------------------------
 {
+    //TODO: use sprites factory
     mCookiesLayer->createSpriteWithObj(dudeObj, dudeObj->getColumn(), dudeObj->getRow());
 }
 
@@ -206,6 +208,7 @@ void GameplayScene::createSpriteWithDude(BaseObj * dudeObj)
 void GameplayScene::createSpriteWithFieldObj(BaseObj * fieldObj)
 //--------------------------------------------------------------------
 {
+    //TODO: use sprites factory
     auto sprite = Sprite::create(fieldObj->spriteName().getCString());
     sprite->setPosition(Helper::pointForColumnAndRow(fieldObj->getColumn(), fieldObj->getRow()));
     sprite->setScale(1.1f);

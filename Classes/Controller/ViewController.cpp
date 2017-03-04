@@ -113,7 +113,6 @@ bool ViewController::initGameScene()
 
     AudioManager->init();
     AnimationsManager->initWithScene(mGameplayScene);
-    GuiManager->initWithScene(mGameplayScene);
 
     SmartFactory->init((NumColumns * NumRows) / 2);
     SmartFactory->initTilesPool(NumColumns * NumRows);
@@ -138,6 +137,8 @@ bool ViewController::initLevel()
     mGameplayScene->setLevel(mLevel);
 
     mLevelGoals = LevelGoalComponent::create();
+
+    GuiManager->initWithScene(mGameplayScene, mLevelGoals);
 //     auto updateGoalCallback = [=](BaseObj* obj) {
 //         mLevelGoals->updateGoalByObject(obj);
 //     };
@@ -175,6 +176,7 @@ bool ViewController::initChainController()
 
     auto updateGoalCallback = [=](BaseObj* obj) {
         mLevelGoals->updateGoalByObject(obj);
+        GuiManager->updateLevelGoals(mLevelGoals->getLevelGoals().collectGoals);
     };
     mChainController->setUpdateGoalCallback(updateGoalCallback);
 

@@ -338,6 +338,7 @@ int CookiesLayer::getSwipeDirection(int column, int row)
 void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
 //--------------------------------------------------------------------
 {
+    //TODO: use sprites factory
     if (obj) {
         auto sprite = Sprite::create(obj->spriteName().getCString());
         sprite->setPosition(Helper::pointForColumnAndRow(column, row));
