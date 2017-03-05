@@ -22,6 +22,7 @@
 #include "Common/Factory/SmartFactory.h"
 
 #include "Scenes/GameplayScene.h"
+#include "Layers/CookiesLayer.h"
 
 #include "cocos2d/cocos/ui/UIText.h"
 
@@ -143,63 +144,6 @@ void _AnimationsManager::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateFallingCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion)
-//--------------------------------------------------------------------
-{
-    CC_ASSERT(colums);
-    CC_ASSERT(completion);
-
-    float longestDuration = 0;
-    for (auto it = colums->begin(); it != colums->end(); it++) {
-
-        auto array = dynamic_cast<cocos2d::Array*>(*it);
-        CC_ASSERT(array);
-
-        float colDelay = Helper::randomFloatBetween(0.055f, 0.07f) * 1;
-        for (auto itArr = array->begin(); itArr != array->end(); itArr++) {
-
-            auto cookie = dynamic_cast<CookieObj*>(*itArr);
-            CC_ASSERT(cookie);
-
-            auto newPos = Helper::pointForTile(cookie);
-            // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
-            // This calculation works because fillHoles guarantees that lower cookies are first in the array.
-
-            float delay = (0.05f + 0.15f * colDelay);
-
-            // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
-            // You can tweak these numbers to change the feel of the animation.
-            float timeToTile = (cookie->getSpriteNode()->getPositionY() - newPos.y) / GameResources::TileHeight;
-            float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
-
-            // Calculate which animation is the longest. This is the time the game has to wait before it may continue.
-            longestDuration = MAX(longestDuration, duration + delay);
-
-            // Perform the animation, which consists of a delay, a movement and a sound effect.
-            auto callback = CallFunc::create([=]() {
-
-                cookie->updateDebugTileLabel();
-
-                auto sprite = cookie->getSpriteNode();
-                auto delta = newPos - sprite->getPosition();
-
-                auto moveAction = MoveBy::create(duration, delta);
-                auto easeAction = EaseOut::create(moveAction, duration);
-                sprite->runAction(easeAction);
-
-                AudioManager->playSound(CommonTypes::SoundType::FallingCookieSound);
-            });
-
-            cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
-        }
-    }
-    
-    CC_ASSERT(mCurrentScene);
-    // You wait until all the cookies have fallen down before allowing the gameplay to continue.
-    mCurrentScene->runAction(Sequence::create(DelayTime::create(longestDuration), completion, nullptr));
-}
-
-//--------------------------------------------------------------------
 void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d::CallFunc * completion)
 //--------------------------------------------------------------------
 {
@@ -212,7 +156,7 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
         auto array = dynamic_cast<cocos2d::Array*>(*it);
         CC_ASSERT(array);
 
-        float colDelay = Helper::randomFloatBetween(0.055f, 0.07f) * 1;
+        float colDelay = Helper::randomFloatBetween(0.06f, 0.07f);
         for (auto itArr = array->begin(); itArr != array->end(); itArr++) {
 
             auto obj = dynamic_cast<BaseObj*>(*itArr);
@@ -230,7 +174,8 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
             float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
 
             // Calculate which animation is the longest. This is the time the game has to wait before it may continue.
-            longestDuration = MAX(longestDuration, duration + delay);
+            auto animateBouncingObjDelay = 0.25f;
+            longestDuration = MAX(longestDuration, duration + delay + animateBouncingObjDelay);
 
             // Perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
@@ -239,15 +184,26 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
                     auto cookie = dynamic_cast<CookieObj*>(obj);
                     cookie->updateDebugTileLabel();
                 }
+
+                if (obj->getType() == BaseObjectType::TileObj 
+                    || obj->getType() == BaseObjectType::DudeObj 
+                    || obj->getType() == BaseObjectType::FieldObj) {
+                    auto tile = dynamic_cast<TileObj*>(obj);
+                    tile->updateDebugTileLabel();
+                }
+
+                auto moveCallback = CallFunc::create([=]() {
+                    AnimationsManager->animateBouncingObj(obj);
+                    AudioManager->playSound(CommonTypes::SoundType::FallingCookieSound);
+                });
                 
                 auto sprite = obj->getSpriteNode();
                 auto delta = newPos - sprite->getPosition();
 
                 auto moveAction = MoveBy::create(duration, delta);
                 auto easeAction = EaseOut::create(moveAction, duration);
-                sprite->runAction(easeAction);
 
-                AudioManager->playSound(CommonTypes::SoundType::FallingCookieSound);
+                sprite->runAction(Sequence::create(easeAction, moveCallback, nullptr));
             });
 
             obj->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
@@ -271,16 +227,14 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
     auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
     CC_ASSERT(scene);
 
-    int columnIdx = 0;
-    for (auto it = colums->begin(); it != colums->end(); it++, columnIdx++) {
+    for (auto it = colums->begin(); it != colums->end(); it++) {
 
         auto array = dynamic_cast<cocos2d::Array*>(*it);
         CC_ASSERT(array);
 
         int startRow = -1;
-        float colDelay = Helper::randomFloatBetween(0.055f, 0.07f) * 1;
-
-        for (auto itArr = array->begin(); itArr != array->end(); itArr++) {
+        int rowIdx = 0;
+        for (auto itArr = array->begin(); itArr != array->end(); itArr++, rowIdx++) {
             auto cookie = dynamic_cast<CookieObj*>(*itArr);
             CC_ASSERT(cookie);
             scene->createSpriteWithCookie(cookie, cookie->getColumn(), startRow);
@@ -290,29 +244,34 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
 
             // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
             // This calculation works because fillHoles guarantees that lower cookies are first in the array.
-            float delay = 0.1f + 0.175f * (colums->count() - columnIdx - 1);
+            float delay = 0.1f + 0.175f * (array->count() - rowIdx - 1);
 
             // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
             // You can tweak these numbers to change the feel of the animation.
             float timeToTile = fabs(startRow - cookie->getRow());
-            float duration = (timeToTile * 0.1f) + colDelay;
+            float duration = (timeToTile * 0.1f) + 0.125f;            
 
             // You calculate which animation is the longest. This is the time the game has to wait before it may continue.
-            longestDuration = MAX(longestDuration, duration + delay);
+            auto animateBouncingObjDelay = 0.25f;
+            longestDuration = MAX(longestDuration, duration + delay + animateBouncingObjDelay);
 
             // You perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
 
                 cookie->updateDebugTileLabel();
 
+                auto moveCallback = CallFunc::create([=]() {
+                    AnimationsManager->animateBouncingObj(cookie);
+                    AudioManager->playSound(CommonTypes::SoundType::AddCookieSound);
+                });
+
                 auto moveAction = MoveTo::create(duration, newPos);
                 auto easeAction = EaseOut::create(moveAction, duration);
                 auto fadeIn = FadeIn::create(0.0125f);
+                auto delayAction = DelayTime::create(0.15f);
 
-                cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(0.175f), fadeIn, nullptr));
-                cookie->getSpriteNode()->runAction(easeAction);
-                
-                AudioManager->playSound(CommonTypes::SoundType::AddCookieSound);
+                cookie->getSpriteNode()->runAction(Sequence::create(delayAction, fadeIn, nullptr));
+                cookie->getSpriteNode()->runAction(Sequence::create(easeAction, moveCallback, nullptr));
             });
 
             cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
@@ -352,47 +311,59 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
     auto cookies = chain->getCookies();
     CC_ASSERT(cookies);
 
-    auto firstCookie = dynamic_cast<CookieObj*>(cookies->getObjectAtIndex(0));
-    auto lastCookie = dynamic_cast<CookieObj*>(cookies->getLastObject());
-    CC_ASSERT(firstCookie);
-    CC_ASSERT(lastCookie);
+    for (auto itObj = cookies->begin(); itObj != cookies->end(); itObj++) {
+        auto obj = dynamic_cast<BaseObj*>(*itObj);
 
-    auto firstSpritePos = firstCookie->getSpriteNode()->getPosition();
-    auto lastSpritePos = lastCookie->getSpriteNode()->getPosition();
+        auto spritePos = obj->getSpriteNode()->getPosition();
+        Vec2 centerPosition = Vec2(spritePos.x, spritePos.y);// - 8);
 
-    Vec2 centerPosition = Vec2((firstSpritePos.x + lastSpritePos.x) / 2,
-        (firstSpritePos.y + lastSpritePos.y) / 2);// - 8);
+        auto color = Helper::getScoreColorByObj(obj);
 
-    //TODO: move to helper
-    auto color = Color4B::WHITE;
-    switch (lastCookie->getCookieType())
-    {
-    case CookieType::Croissant:
-        color = Color4B::ORANGE;
-        break;
-    case CookieType::Cupcake:
-        color = Color4B::RED;
-        break;
-    case CookieType::Danish:
-        color = Color4B::BLUE;
-        break;
-    case CookieType::Donut:
-        color = Color4B::MAGENTA;
-        break;
-    case CookieType::Macaron:
-        color = Color4B::GREEN;
-        break;
-    case CookieType::SugarCookie:
-        color = Color4B::YELLOW;
-        break;
-    default:
-        break;
+        // Add a label for the score that slowly floats up.
+        auto fontSize = 80;
+        auto str = StringUtils::format("%d", chain->getScore() / cookies->count());
+        Text* scoreLabel = Text::create(str, GameResources::s_fontYellow.getCString(), fontSize);
+        scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
+        scoreLabel->setPosition(centerPosition);
+        scoreLabel->setZOrder(300);
+        scoreLabel->setTextColor(Color4B::WHITE);
+        scoreLabel->enableOutline(color, 2);
+        scoreLabel->setScale(0.5f);
+
+        auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
+        CC_ASSERT(scene);
+
+        scene->getCookiesLayer()->addChild(scoreLabel);
+
+        auto duration = 1.15f;
+        //auto scaleAction = ScaleTo::create(duration, 2.0f);
+        auto moveAction = MoveBy::create(duration, Vec2(0.0f, 10.0f));
+        auto easeOut = EaseOut::create(moveAction, duration);
+        auto fadeOut = FadeOut::create(0.5f);
+
+        auto callback = CallFunc::create([scoreLabel]() {
+            if (scoreLabel) {
+                scoreLabel->removeFromParent();
+            }
+        });
+        scoreLabel->runAction(Sequence::create(DelayTime::create(duration / 2), fadeOut, nullptr));
+        scoreLabel->runAction(Sequence::create(easeOut, callback, nullptr));
     }
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+
+    Vec2 centerPosition = obj->getSpriteNode()->getPosition();
+
+    auto color = Helper::getScoreColorByObj(obj);
 
     // Add a label for the score that slowly floats up.
-
     auto fontSize = 80;
-    auto str = StringUtils::format("+%d", chain->getScore());
+    auto str = StringUtils::format("%d", obj->getScoreValue());
     Text* scoreLabel = Text::create(str, GameResources::s_fontYellow.getCString(), fontSize);
     scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
     scoreLabel->setPosition(centerPosition);
@@ -417,8 +388,52 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
             scoreLabel->removeFromParent();
         }
     });
-    scoreLabel->runAction(Sequence::create(DelayTime::create(duration/2), fadeOut, nullptr));
+    scoreLabel->runAction(Sequence::create(DelayTime::create(duration / 2), fadeOut, nullptr));
     scoreLabel->runAction(Sequence::create(easeOut, callback, nullptr));
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateBouncingObj(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+
+    float duration = 0.2f;
+    auto moveAction = MoveBy::create(duration, Vec2(0.0f, -10.0f));
+    auto easeMoveOut = EaseOut::create(moveAction, duration);
+    auto scaleXAction = ScaleTo::create(duration, 1.2f, 0.8f);
+    auto easeScaleXOut = EaseOut::create(scaleXAction, duration);
+
+    auto reverseScaleXCallback = CallFunc::create([obj]() {
+        float duration = 0.2f;
+        auto reverseScaleXAction = ScaleTo::create(duration, 1.0f, 1.0f);
+        auto reverseEaseScaleXOut = EaseOut::create(reverseScaleXAction, duration);
+        auto reverseMoveAction = MoveBy::create(duration, Vec2(0.0f, 10.0f));
+        auto reverseEaseMoveOut = EaseOut::create(reverseMoveAction, duration);
+        if (obj) {
+            auto sprite = obj->getSpriteNode();
+            if (sprite) {
+                sprite->runAction(reverseEaseScaleXOut);
+                sprite->runAction(reverseEaseMoveOut);
+            }
+        }
+    });
+
+    duration = 0.2f;
+    auto scaleYAction = ScaleTo::create(duration, 0.8f, 1.2f);
+    auto easeScaleYOut = EaseOut::create(scaleYAction, duration);
+
+    auto reverseScaleYAction = ScaleTo::create(duration*2, 1.0f, 1.0f);
+    auto reverseEaseScaleYOut = EaseOut::create(reverseScaleYAction, duration);
+
+    auto speed = 2.0f;
+    auto sprite = obj->getSpriteNode();
+    sprite->runAction(Speed::create(easeMoveOut, speed));
+    sprite->runAction(Speed::create(easeScaleXOut, speed));
+    auto seq1 = Sequence::create(DelayTime::create(0.2f), reverseScaleXCallback, nullptr);
+    sprite->runAction(Speed::create(seq1, speed));
+    auto seq2 = Sequence::create(DelayTime::create(0.4f), easeScaleYOut, reverseEaseScaleYOut, nullptr);
+    sprite->runAction(Speed::create(seq2, speed));
 }
 
 //--------------------------------------------------------------------
@@ -439,7 +454,10 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
         const float scaleFactor = 0.1f;
 
         auto scaleAction = ScaleTo::create(duration, scaleFactor);
-        auto easeOut = EaseOut::create(scaleAction, duration);
+        auto fadeOut = FadeOut::create(duration);
+        auto easeOut = EaseOut::create(fadeOut, duration);
+
+        animateScoreForFieldObj(obj);
 
         auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
         CC_ASSERT(scene);
@@ -455,7 +473,6 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
                 scene->createSpriteWithFieldObj(obj);
             } else if (obj->isReadyToRemove()) {
                 SmartFactory->recycle(obj);
-                obj->removeFromParent();
             }
             
         });
@@ -463,5 +480,32 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
     }
     CC_ASSERT(mCurrentScene);
 
+    mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateRemoveDude(BaseObj * obj, cocos2d::CallFunc * completion)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+    CC_ASSERT(completion);
+
+    const float duration = 0.3f;
+
+    const float scaleFactor = 0.1f;
+
+    auto scaleAction = ScaleTo::create(duration, scaleFactor);
+    auto easeOut = EaseOut::create(scaleAction, duration);
+
+    auto sprite = obj->getSpriteNode();
+    auto callback = CallFunc::create([sprite, obj]() {
+        if (sprite) {
+            sprite->removeFromParent();
+            obj->setSpriteNode(nullptr);
+        }
+    });
+    sprite->runAction(Sequence::create(easeOut, callback, nullptr));
+
+    CC_ASSERT(mCurrentScene);
     mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
 }

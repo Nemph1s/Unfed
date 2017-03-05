@@ -12,6 +12,7 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
+#include "Utils/PlatformMacros.h"
 
 class BaseObj : public cocos2d::Node
 {
@@ -44,10 +45,13 @@ protected:
     BaseObj();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE_READONLY(bool, mIsMovable, IsMovable);
-    CC_SYNTHESIZE_READONLY(bool, mIsRemovable, IsRemovable);
-    CC_SYNTHESIZE_READONLY(bool, mIsPossibleSwap, IsPossibleSwap);
-    CC_SYNTHESIZE_READONLY(bool, mIsContainer, IsContainer);
+
+    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsMovable, Movable);
+    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsRemovable, Removable);
+    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsSwappable, Swappable);
+    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsContainer, Container);
+
+    CC_SYNTHESIZE_READONLY(uint8_t, mScoreValue, ScoreValue);
 
     cocos2d::String* mDummyString;
 

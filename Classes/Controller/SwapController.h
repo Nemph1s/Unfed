@@ -14,7 +14,18 @@
 
 class SwapObj;
 class LevelObj;
-class GameplayScene;
+class CookieObj;
+
+struct SwapChecker : public cocos2d::Ref
+{
+    cocos2d::Set* set;
+    int curCol;
+    int curRow;
+    int nextCol;
+    int nextRow;
+    SwapChecker(cocos2d::Set* _set, int _curCol, int _curRow, int _nextCol, int _nextRow)
+        : set(_set), curCol(_curCol), curRow(_curRow), nextCol(_nextCol), nextRow(_nextRow) {}
+};
 
 class SwapController : public cocos2d::Ref
 {
@@ -42,17 +53,20 @@ public:
     bool isPossibleSwap(SwapObj* swap);
     void performSwap(SwapObj* swap);
 
-    bool trySwapCookieTo(int horzDelta, int vertDelta);
+    bool trySwapCookieTo(int fromCol, int fromRow, int direction);
+
+    void clearPossibleSwaps();
                           
 protected:
     // Nodes should be created using create();
     SwapController();
+
+    void detectSwap(SwapChecker* checker);
  
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(SwapObj* swap)>, mSwapCallback, SwapCallback);
 
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
-    CC_SYNTHESIZE(GameplayScene*, mGameplayScene, GameplayScene);
     CC_SYNTHESIZE_READONLY(cocos2d::Set*, mPossibleSwaps, PossibleSwaps);
 };
 

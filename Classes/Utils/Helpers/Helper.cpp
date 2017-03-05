@@ -11,6 +11,7 @@
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
 #include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
 #include <random>
 
 using namespace GameResources;
@@ -43,6 +44,52 @@ CookieType Helper::randomCookieType(int fromRange, int toRange)
 }
 
 //--------------------------------------------------------------------
+cocos2d::String* Helper::getSpriteNameByTileType(int tileType)
+//--------------------------------------------------------------------
+{
+    cocos2d::String* str = nullptr;
+    auto type = static_cast<CommonTypes::TileType>(tileType);
+    int firstDudeType = Helper::to_underlying(CommonTypes::TileType::DudeFromAToB);
+    switch (type)
+    {
+    case CommonTypes::TileType::Empty:
+    case CommonTypes::TileType::Normal:
+        str = &GameResources::s_TileImg;
+        break;
+    case CommonTypes::TileType::Water:
+        str = &GameResources::s_TileImg;
+        break;
+    case CommonTypes::TileType::Dirt:
+        str = &GameResources::s_DirtImg;
+        break;
+    case CommonTypes::TileType::Dirt_HP2:
+    case CommonTypes::TileType::Dirt_HP3:
+        str = &GameResources::s_DirtX2Img;
+        break;
+    case CommonTypes::TileType::Bush:
+        str = &GameResources::s_BushCorruptedImg;
+        break;
+    case CommonTypes::TileType::Bush_HP2:
+        str = &GameResources::s_BushNormalImg;
+        break;
+    case CommonTypes::TileType::RockWall:
+        str = &GameResources::s_RockImg;
+        break;
+    case CommonTypes::TileType::DudeFromAToB:
+    case CommonTypes::TileType::DudeFromAToBx3:
+    case CommonTypes::TileType::DudeChainX:
+    case CommonTypes::TileType::DudeAllOfType:
+        str = &GameResources::s_dudeSpriteNames.at(tileType - firstDudeType);
+        break;
+    case CommonTypes::TileType::Unknown:
+        break;
+    default:
+        break;
+    }
+    return str;
+}
+
+//--------------------------------------------------------------------
 cocos2d::Vec2 Helper::pointForColumnAndRow(int column, int row)
 //--------------------------------------------------------------------
 {
@@ -68,4 +115,113 @@ bool Helper::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
         return true;
     }
     return false;
+}
+
+//--------------------------------------------------------------------
+bool Helper::convertDirectionToSwipeDelta(int dir, int & horzDelta, int & vertDelta)
+//--------------------------------------------------------------------
+{
+    bool result = true;
+    auto direction = static_cast<CommonTypes::Direction>(dir);
+    switch (direction)
+    {
+    case Direction::Up:
+        vertDelta = -1;
+        break;
+    case Direction::Down:
+        vertDelta = 1;
+        break;
+    case Direction::Left:
+        horzDelta = -1;
+        break;
+    case Direction::Right:
+        horzDelta = 1;
+        break;
+    default:
+        result = false;
+        break;
+    }
+    return result;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Color4B Helper::getScoreColorByObj(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    auto color = cocos2d::Color4B::WHITE;
+
+    if (!obj) {
+        return color;
+    }
+
+    if (obj->getType() == BaseObjectType::CookieObj) {
+        auto cookie = dynamic_cast<CookieObj*>(obj);
+        if (cookie) {
+            color = getScoreColorByCookieType(cookie->getCookieType());
+        }
+    }
+    else if (obj->getType() == BaseObjectType::FieldObj) {
+        auto tileObj = dynamic_cast<TileObj*>(obj);
+        if (tileObj) {
+            color = getScoreColorByTileType(tileObj->getTileType());
+        }
+    }
+
+    return color;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Color4B Helper::getScoreColorByCookieType(CommonTypes::CookieType type)
+//--------------------------------------------------------------------
+{
+    auto color = cocos2d::Color4B::WHITE;
+    switch (type)
+    {
+    case CookieType::Croissant:
+        color = cocos2d::Color4B::ORANGE;
+        break;
+    case CookieType::Cupcake:
+        color = cocos2d::Color4B::RED;
+        break;
+    case CookieType::Danish:
+        color = cocos2d::Color4B::BLUE;
+        break;
+    case CookieType::Donut:
+        color = cocos2d::Color4B::MAGENTA;
+        break;
+    case CookieType::Macaron:
+        color = cocos2d::Color4B::GREEN;
+        break;
+    case CookieType::SugarCookie:
+        color = cocos2d::Color4B::YELLOW;
+        break;
+    default:
+        break;
+    }
+    return color;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Color4B Helper::getScoreColorByTileType(CommonTypes::TileType type)
+//--------------------------------------------------------------------
+{
+    auto color = cocos2d::Color4B::WHITE;
+    switch (type)
+    {
+    case TileType::Dirt:
+    case TileType::Dirt_HP2:
+    case TileType::Dirt_HP3:
+        color = cocos2d::Color4B(156, 102, 31, 255);
+        break;
+    case TileType::Bush:
+    case TileType::Bush_HP2:
+        color = cocos2d::Color4B::GREEN;
+        break;
+    case TileType::RockWall:
+        color = cocos2d::Color4B::BLACK;
+        break;
+    default:
+        break;
+    }
+    return color;
 }

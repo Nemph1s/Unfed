@@ -9,7 +9,7 @@
 */
 
 #include "GameObjects/TileObjects/Obstacles/BushObj.h"
-#include "GameObjects/TileObjects/TileObj.h"
+
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
@@ -57,6 +57,7 @@ bool BushObj::init(const CommonTypes::TileInfo & info)
     mIsRemovable = true;
     mIsMovable = false;
     mIsContainer = false;
+    mScoreValue = 100;
 
     return true;
 }
@@ -79,13 +80,6 @@ cocos2d::String& BushObj::spriteName() const
         break;
     }
     return *str;
-}
-
-//--------------------------------------------------------------------
-cocos2d::String& BushObj::description() const
-//--------------------------------------------------------------------
-{
-    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
 }
 
 //--------------------------------------------------------------------

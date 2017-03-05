@@ -85,6 +85,13 @@ cocos2d::String& TileObj::spriteName() const
 }
 
 //--------------------------------------------------------------------
+cocos2d::String & TileObj::description() const
+//--------------------------------------------------------------------
+{
+    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
+}
+
+//--------------------------------------------------------------------
 void TileObj::setSpriteNode(cocos2d::Sprite * var)
 //--------------------------------------------------------------------
 {
@@ -111,9 +118,6 @@ void TileObj::match()
     if (mHP > 0) {
         mTileType = static_cast<CommonTypes::TileType>(getTypeAsInt() - 1);
     }
-    else {
-        mTileType = CommonTypes::TileType::Unknown;
-    }
 }
 
 //--------------------------------------------------------------------
@@ -123,6 +127,12 @@ void TileObj::clear()
     BaseObj::clear();
     mTileType = CommonTypes::TileType::Unknown;
     mHP = 0;
+    if (mDebugLabel) {
+        if (mDebugLabel->getParent()) {
+            mDebugLabel->removeFromParent();
+        }        
+        CC_SAFE_RELEASE_NULL(mDebugLabel);
+    }    
 }
 
 //--------------------------------------------------------------------
@@ -137,7 +147,7 @@ bool TileObj::isReadyToRemove() const
 //--------------------------------------------------------------------
 {
     bool result = false;
-    if (getIsRemovable()) {
+    if (isRemovable()) {
         result = (mHP <= 0);
     }
     return result;

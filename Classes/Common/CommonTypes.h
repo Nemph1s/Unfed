@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <vector>
 
 namespace CommonTypes {
 
@@ -30,6 +31,7 @@ namespace CommonTypes {
         TileObj = 0 /**< enum value TileObj. */
         , CookieObj = 1 /**< enum value CookieObj. */
         , FieldObj = 2 /**< enum value FieldObj. */
+        , DudeObj = 3 /**< enum value DudeObj. */
         , Unknown /**< enum value unknown. */
     };
 
@@ -77,12 +79,47 @@ namespace CommonTypes {
    */
    struct LevelInfo
    {
-      int16_t id; /**< current level ID */
-      int16_t targetScore; /**< Goal score */
-      int moves; /**< available moves */
-	  TilesArray tiles; /**< array of tiles */
-      int typesCount; /**< count of types */
-      TilesArray fieldObjects; /**< array of tileObjects */
+      uint32_t id = 0; /**< current level ID */
+      uint32_t targetScore = 0; /**< Goal score */
+      int moves = 0; /**< available moves */
+      TilesArray tiles = { 0 }; /**< array of tiles */
+      TilesArray cookies = { 0 }; /**< array of cookies */
+      TilesArray fieldObjects = { 0 }; /**< array of tileObjects */
+      int typesCount = 0; /**< count of types */
+      bool isPredefinedCookies = false; /**< availability to load predefined cookies */
+      bool skipEmptyHoles = false; /**< availability to skip empty tiles when obj falling */
+      std::vector<int> allowedCookieTypes;
+   };
+
+   /**
+   * @brief CollectGoalInfo struct.
+   */
+   struct CollectGoalInfo
+   {
+       int8_t baseObjectType = 0; /**< baseObjectType type of base field object(tile, cookie, field, dude) */
+       int8_t objectType = 0; /**< objectType type of child field obj */
+       int8_t targetCount = 0; /**< targetCount object count goal*/
+       int8_t currentCount = 0; /**< currentCount object count goal*/
+   };
+
+   /**
+   * @brief LevelInfo struct.
+   */
+   struct LevelGoals
+   {
+       int8_t goalsCount = 0; /**< goalsCount count current goals*/
+       std::vector<CollectGoalInfo> collectGoals; /**< collectGoal vector of CollectGoalInfo struct*/
+   };
+
+   /**
+   * @brief ChainType enum.
+   * Type of the sound object
+   */
+   enum class SearchEmptyHoles : int {
+       ObjFounded = 0 /**< enum value ObjFounded. */
+       , ContinueSearch = 1 /**< enum value ContinueSearch. */
+       , BreakSearch = 2 /**< enum value BreakSearch. */
+       , Unknown /**< enum value unknown. */
    };
 
    /**
@@ -96,6 +133,7 @@ namespace CommonTypes {
        , ChainTypeT = 3 /**< enum value ChainTypeT. */
        , ChainTypeX = 4 /**< enum value ChainTypeX. */
        , ChainTypeAllOfOne = 5 /**< enum value ChainTypeAllOfOne. */
+       , ChainFromAToB = 6 /**< enum value ChainTypeAllOfOne. */
        , Unknown /**< enum value unknown. */
    };
 
@@ -107,12 +145,16 @@ namespace CommonTypes {
        Empty = 0 /**< enum value Empty. */
        , Normal = 1 /**< enum value Normal. */
        , Water = 2 /**< enum value Water. */
-       , SandWall = 10 /**< enum value SandWall. */
-       , Dirt = 11 /**< enum value Dirt. */
-       , Dirt_HP2 = 12 /**< enum value DirtX2. */
-       , Dirt_HP3 = 13 /**< enum value DirtX3. */
-       , Bush = 21 /**< enum value DirtX3. */
-       , Bush_HP2 = 22 /**< enum value DirtX3. */
+       , Dirt = 10 /**< enum value Dirt. */
+       , Dirt_HP2 = 11 /**< enum value DirtX2. */
+       , Dirt_HP3 = 12 /**< enum value DirtX3. */
+       , Bush = 20 /**< enum value DirtX3. */
+       , Bush_HP2 = 21 /**< enum value DirtX3. */
+       , RockWall = 30 /**< enum value RockWall. */
+       , DudeFromAToB = 200 /**< enum value DudeLightr. */
+       , DudeFromAToBx3 = 201 /**< enum value DudeBulbr. */
+       , DudeChainX = 202 /**< enum value DudeOni. */
+       , DudeAllOfType = 203 /**< enum value DudePina. */
        , Unknown /**< enum value unknown. */
    };
 
@@ -123,6 +165,18 @@ namespace CommonTypes {
    {
        BaseObjectInfo baseInfo; /**< type of GaneInfoObject struct */
        TileType tileType; /**< type of Tile object */
+   };
+
+   /**
+   * @brief Direction enum.
+   * Type of direction
+   */
+   enum class Direction : int {
+       Down = 0 /**< enum value Down. */
+       , Up = 1 /**< enum value Up. */
+       , Left = 2 /**< enum value Left. */
+       , Right = 3 /**< enum value Right. */
+       , Unknown /**< enum value unknown. */
    };
 
    /**

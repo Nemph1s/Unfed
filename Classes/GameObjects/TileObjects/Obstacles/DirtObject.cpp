@@ -9,7 +9,7 @@
 */
 
 #include "GameObjects/TileObjects/Obstacles/DirtObject.h"
-#include "GameObjects/TileObjects/TileObj.h"
+
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
@@ -56,6 +56,7 @@ bool DirtObject::init(const CommonTypes::TileInfo & info)
     }
     mIsRemovable = true;
     mIsContainer = true;
+    mScoreValue = 100;
 
     return true;
 }
@@ -78,22 +79,6 @@ cocos2d::String& DirtObject::spriteName() const
         break;
     }
     return *str;
-}
-
-//--------------------------------------------------------------------
-cocos2d::String& DirtObject::description() const
-//--------------------------------------------------------------------
-{
-    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
-}
-
-
-//--------------------------------------------------------------------
-void DirtObject::clear()
-//--------------------------------------------------------------------
-{
-    TileObj::clear();
-    
 }
 
 //--------------------------------------------------------------------

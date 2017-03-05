@@ -27,10 +27,22 @@ public:
    CommonTypes::LevelInfo getLevelInfo();
 
    const Json::Value& getTiles();
+   const Json::Value& getPredefinedCookies();
+   const Json::Value& getAllowedCookieTypes();
    const Json::Value& getFieldObjects();
-   int16_t getTargetScore();
-   int16_t getMoves();   
-   int16_t getTypesCount();
+   uint32_t getTargetScore();
+   uint8_t getMoves();   
+   uint8_t getTypesCount();
+   bool isPredefinedCookies();
+   bool getSkipEmptyHoles();
+
+   CommonTypes::LevelGoals getLevelGoals();
+
+   uint8_t getGoalsCount(const Json::Value & node);
+   const Json::Value& getGoalTypeCollect(const Json::Value & node);
+   uint8_t getTargetBaseObjType(const Json::Value & node);
+   uint8_t getTargetObjType(const Json::Value & node);
+   uint8_t getTargetObjectCount(const Json::Value & node);
 
 protected:
 

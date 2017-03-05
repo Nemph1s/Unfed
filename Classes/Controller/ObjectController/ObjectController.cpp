@@ -8,7 +8,8 @@
 * @author VMartyniuk
 */
 
-#include "Controller/ObjectController.h"
+#include "Controller/ObjectController/ObjectController.h"
+#include "Controller/ObjectController/DudeController.h"
 
 #include "Common/Factory/SmartFactory.h"
 
@@ -16,7 +17,7 @@
 #include "Utils/Helpers/Helper.h"
 
 #include "GameObjects/TileObjects/TileObj.h"
-#include "GameObjects/LevelObj.h"
+#include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 
 using namespace CommonTypes;
@@ -24,6 +25,7 @@ using namespace CommonTypes;
 //--------------------------------------------------------------------
 ObjectController::ObjectController()
     : mLevel(nullptr)
+    , mDudeCtrl(nullptr)
 //--------------------------------------------------------------------
 {
 }
@@ -91,23 +93,11 @@ void ObjectController::createInitialFieldObjects()
 }
 
 //--------------------------------------------------------------------
-BaseObj * ObjectController::createTile(int column, int row, int type)
-//--------------------------------------------------------------------
-{
-    BaseObjectInfo baseInfo = { BaseObjectType::TileObj, column, row };
-    TileInfo info = { baseInfo, static_cast<TileType>(type) };
-    BaseObj* tile = SmartFactory->createTileObj(info);
-    CC_ASSERT(tile);
-    mTiles[column][row] = tile;
-    return tile;
-}
-
-//--------------------------------------------------------------------
 cocos2d::Set * ObjectController::createInitialCookies()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ObjectController::createInitialCookies:");
-    cocos2d::Set* set = new cocos2d::Set();
+    cocos2d::Set* set = cocos2d::Set::create();
     auto createdString = cocos2d::String("");
 
     for (int row = 0; row < NumRows; row++) {
@@ -121,8 +111,21 @@ cocos2d::Set * ObjectController::createInitialCookies()
         }
         createdString.append("\n");
     }
+    mLevel->disablePredefinedCookies();
     cocos2d::log("ObjectController::createInitialCookies: created array=%s", createdString.getCString());
     return set;
+}
+
+//--------------------------------------------------------------------
+BaseObj * ObjectController::createTile(int column, int row, int type)
+//--------------------------------------------------------------------
+{
+    BaseObjectInfo baseInfo = { BaseObjectType::TileObj, column, row };
+    TileInfo info = { baseInfo, static_cast<TileType>(type) };
+    BaseObj* tile = SmartFactory->createTileObj(info);
+    CC_ASSERT(tile);
+    mTiles[column][row] = tile;
+    return tile;
 }
 
 //--------------------------------------------------------------------
@@ -150,6 +153,35 @@ BaseObj * ObjectController::createFieldObject(int column, int row, int type)
 }
 
 //--------------------------------------------------------------------
+int ObjectController::getAllowedRandomCookieType()
+//--------------------------------------------------------------------
+{
+    int cookieMax = Helper::getInstance()->to_underlying(CookieType::CookieMax);
+    if (mLevel->getLevelInfo().typesCount < cookieMax) {
+        cookieMax = mLevel->getLevelInfo().typesCount;
+    }
+    int type = 0;
+    bool findNextType = true;
+    auto allowedTypes = mLevel->getLevelInfo().allowedCookieTypes;
+
+    do {
+        type = Helper::getInstance()->random(0, cookieMax - 1);
+
+        if (allowedTypes.size() == 0) {
+            break;
+        }
+        for (auto val : mLevel->getLevelInfo().allowedCookieTypes) {
+            if (val == type) {
+                findNextType = false;
+                break;
+            }
+        }
+    } while (findNextType);
+
+    return type;
+}
+
+//--------------------------------------------------------------------
 BaseObj * ObjectController::createRandomCookie(int column, int row)
 //--------------------------------------------------------------------
 {
@@ -161,15 +193,17 @@ BaseObj * ObjectController::createRandomCookie(int column, int row)
 int ObjectController::getRandomCookieType(int column, int row)
 //--------------------------------------------------------------------
 {
-    int cookieMax = Helper::getInstance()->to_underlying(CommonTypes::CookieType::CookieMax);
     auto levelInfo = mLevel->getLevelInfo();
-    if (levelInfo.typesCount < cookieMax) {
-        cookieMax = levelInfo.typesCount;
-    }
     int type = 0;
+    int randomCounter = 0;
+    static const int randomCounterMax = 3; 
     bool findNextType = false;
     do {
-        type = Helper::getInstance()->random(0, cookieMax - 1);
+        if (levelInfo.isPredefinedCookies) {
+            type = (randomCounter > randomCounterMax) ? getRandomCookieType(column, row) : levelInfo.cookies[column][row];
+        } else {
+            type = getAllowedRandomCookieType();
+        }
         auto isCookiesToTheLeft = (column >= 2 && // there are already two cookies of this type to the left
             isSameTypeOfCookieAt(column - 1, row, type) &&
             isSameTypeOfCookieAt(column - 2, row, type));
@@ -177,6 +211,7 @@ int ObjectController::getRandomCookieType(int column, int row)
             isSameTypeOfCookieAt(column, row - 1, type) &&
             isSameTypeOfCookieAt(column, row - 2, type));
         findNextType = (isCookiesToTheLeft || isCookiesBelow);
+        randomCounter++;
     } while (findNextType);
 
     return type;
@@ -187,15 +222,15 @@ int ObjectController::getRandomCookieType(int column, int row)
 TileObj* ObjectController::tileAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    bool invalidColumn = column >= 0 && column < NumColumns;
-    bool invalidRow = row >= 0 && row < NumColumns;
-    if (!invalidColumn) {
+    bool validColumn = column >= 0 && column < NumColumns;
+    bool validRow = row >= 0 && row < NumColumns;
+    if (!validColumn) {
         cocos2d::log("ObjectController::tileAt: Invalid column : %d", column);
-        CC_ASSERT(invalidColumn);
+        CC_ASSERT(validColumn);
     }
-    if (!invalidRow) {
+    if (!validRow) {
         cocos2d::log("ObjectController::tileAt: Invalid row: %d", row);
-        CC_ASSERT(invalidRow);
+        CC_ASSERT(validRow);
     }
     return dynamic_cast<TileObj*>(mTiles[column][row]);
 }
@@ -204,9 +239,9 @@ TileObj* ObjectController::tileAt(int column, int row)
 CookieObj* ObjectController::cookieAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    bool invalidColumn = column >= 0 && column < NumColumns;
-    bool invalidRow = row >= 0 && row < NumColumns;
-    if (!invalidColumn || !invalidRow) {
+    bool validColumn = column >= 0 && column < NumColumns;
+    bool validRow = row >= 0 && row < NumColumns;
+    if (!validColumn || !validRow) {
         cocos2d::log("ObjectController::cookieAt: Invalid cookie at column = %d, row = %d", column, row);
         return nullptr;
     }
@@ -256,6 +291,13 @@ BaseObj * ObjectController::fieldObjectAt(int column, int row)
 }
 
 //--------------------------------------------------------------------
+BaseObj* ObjectController::dudeObjectAt(int column, int row)
+//--------------------------------------------------------------------
+{
+    return mDudeCtrl->objectAt(column, row);
+}
+
+//--------------------------------------------------------------------
 bool ObjectController::isEmptyTileAt(int column, int row)
 //--------------------------------------------------------------------
 {
@@ -270,13 +312,17 @@ bool ObjectController::isPossibleToAddCookie(int column, int row)
     auto isEmptyTile = isEmptyTileAt(column, row);
     auto isCookieAt = cookieAt(column, row);
     if (!isEmptyTile && isCookieAt == nullptr) {
-        auto fieldObj = fieldObjectAt(column, row);
-        if (!fieldObj) {
-            return true;
+        auto dudeObj = dudeObjectAt(column, row);
+        if (!dudeObj) {
+            auto fieldObj = fieldObjectAt(column, row);
+            if (!fieldObj) {
+                return true;
+            }
+            if (fieldObj->isContainer()) {
+                return true;
+            }
         }
-        if (fieldObj->getIsContainer()) {
-            return true;
-        }
+        
     }
     return false;
 }
@@ -295,7 +341,9 @@ bool ObjectController::isSameTypeOfCookieAt(int column, int row, int type)
     return true;
 }
 
+//--------------------------------------------------------------------
 bool ObjectController::matchFieldObject(BaseObj * obj)
+//--------------------------------------------------------------------
 {
     obj->match();
 
@@ -342,6 +390,9 @@ void ObjectController::updateObjectAt(int column, int row, BaseObj * obj, BaseOb
 //         }
         mFieldObjects[column][row] = obj;
         break;
+    case BaseObjectType::DudeObj:
+        mDudeCtrl->mDudeObjects[column][row] = obj;
+        break;
     default:
         break;
     }
@@ -358,8 +409,32 @@ void ObjectController::removeCookie(int column, int row)
         return;
     }
     cocos2d::log("ObjectController::removeCookies: remove %s", cookie->description().getCString());
-    cookie->removeFromParent();
+    if (cookie->getParent()) {
+        cookie->removeFromParent();
+    }
     SmartFactory->recycle(cookie);
     mCookies[column][row] = nullptr;
+}
+
+//--------------------------------------------------------------------
+void ObjectController::removeAllCookies()
+//--------------------------------------------------------------------
+{
+    for (int row = 0; row < NumRows; row++) {
+        for (int column = 0; column < NumColumns; column++) {
+            auto cookie = cookieAt(column, row);
+            if (cookie) {
+                cookie->clear();
+                if (cookie->getSpriteNode()) {
+                    if (cookie->getSpriteNode()->getParent()) {
+                        cookie->getSpriteNode()->removeFromParent();
+                    }
+                    cookie->setSpriteNode(nullptr);
+                }
+                    
+            }
+            removeCookie(column, row);
+        }
+    }
 }
 
