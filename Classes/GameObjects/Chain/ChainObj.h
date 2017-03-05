@@ -41,6 +41,8 @@ public:
     void addCookie(CookieObj* cookie);
     void addCookiesFromChain(ChainObj* chain);
 
+    void executeCollectGoalCallback();
+
 protected:
     // Nodes should be created using create();
     ChainObj();

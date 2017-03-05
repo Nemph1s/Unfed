@@ -36,7 +36,7 @@ using namespace std::placeholders;
 #define COCOS2D_DEBUG 1
 #define UNFED_ENABLE_DEBUG 1
 
-#define CURRENT_LEVEL 1
+#define CURRENT_LEVEL 666
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
@@ -306,6 +306,8 @@ void ViewController::animateHandleMatches(cocos2d::Set* chains)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
+
+    mChainController->executeCollectGoalCallback(chains);
 
     auto fieldObjects = mLevel->detectFieldObjects(chains);
     AnimationsManager->animateRemovingFieldObjects(fieldObjects, CallFunc::create([](){}));

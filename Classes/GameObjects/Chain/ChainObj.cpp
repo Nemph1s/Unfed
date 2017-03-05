@@ -119,10 +119,6 @@ void ChainObj::addObject(BaseObj* obj)
         CC_SAFE_RETAIN(mCookies);
     }
     mCookies->addObject(obj);
-
-    if (mUpdateGoalCallback) {
-        mUpdateGoalCallback(obj);
-    }
 }
 
 //--------------------------------------------------------------------
@@ -153,5 +149,18 @@ void ChainObj::addCookiesFromChain(ChainObj * chain)
 //         CC_ASSERT(cookie);
 //         addCookie(cookie);
 //         addObjectToGoalMap(cookie);
+    }
+}
+
+//--------------------------------------------------------------------
+void ChainObj::executeCollectGoalCallback()
+//--------------------------------------------------------------------
+{
+    for (auto it = mCookies->begin(); it != mCookies->end(); it++) {
+        auto obj = dynamic_cast<BaseObj*>(*it);
+        CC_ASSERT(obj);
+        if (mUpdateGoalCallback) {
+            mUpdateGoalCallback(obj);
+        }
     }
 }

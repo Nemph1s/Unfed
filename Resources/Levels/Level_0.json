@@ -10,7 +10,14 @@
               [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
               [1, 1, 1, 1, 1, 1, 1, 1, 1 ] ],
 
-  "targetScore" : 1000,
-  "moves" : 15,
+  "targetScore" : 50000,
+  "moves" : 30,
   "typesCount" : 6,
+  "levelGoals": 
+    {
+        "goalsCount" : 3,
+        "collect" : [ { "baseObjType": 1, "objType": 1, "targetCount": 20 }, 
+                     { "baseObjType": 1, "objType": 3, "targetCount": 20 },
+					{ "baseObjType": 1, "objType": 0, "targetCount": 20 } ],
+    }
 }

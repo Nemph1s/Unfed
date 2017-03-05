@@ -151,6 +151,16 @@ void ChainController::calculateChainScore(ChainObj* chain)
     }
 }
 
+//--------------------------------------------------------------------
+void ChainController::executeCollectGoalCallback(cocos2d::Set * chains)
+//--------------------------------------------------------------------
+{
+    for (auto it = chains->begin(); it != chains->end(); it++) {
+        auto chain = dynamic_cast<ChainObj*>(*it);
+        if (chain)
+            chain->executeCollectGoalCallback();
+    }
+}
 
 //--------------------------------------------------------------------
 cocos2d::Set * ChainController::detectVerticalMatches()
