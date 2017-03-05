@@ -72,16 +72,18 @@ void _GuiManager::crateInfoLayer()
     mCurrentScene->addChild(mBottomGuiLayer);
 
     TextLabelInfo scoreTitleInfo = { Localization::scoreTitle.c_str(), fontSize, 0.1f, 0.35f };
-    TextLabelInfo movesTitleInfo = { Localization::movesTitle.c_str(), fontSize, 0.85f, 0.75f };
+    TextLabelInfo movesTitleInfo = { Localization::movesTitle.c_str(), fontSize, 0.5f, 0.75f };
     mTopGuiLayer->addChild(createLabel(scoreTitleInfo));
     mTopGuiLayer->addChild(createLabel(movesTitleInfo));    
 
     const char* tmpStr = "999999999";
     TextLabelInfo scoreInfo = { tmpStr, fontSize + 4, 0.335f, 0.35f };
-    TextLabelInfo movesInfo = { tmpStr, fontSize + 4, 1.05f, 0.75f };
+    TextLabelInfo movesInfo = { tmpStr, fontSize + 8, 0.5f, 0.35f };
     
     mScoreLabel = createLabel(scoreInfo);
     mMovesLabel = createLabel(movesInfo);
+    mMovesLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
+
 
     mTopGuiLayer->addChild(mScoreLabel);
     mTopGuiLayer->addChild(mMovesLabel);
@@ -138,8 +140,9 @@ void _GuiManager::createLevelGoals()
     int8_t fontSize = 28;
     auto widget = cocos2d::ui::Widget::create();
     widget->setPositionType(Widget::PositionType::PERCENT);
-    widget->setPositionPercent(Vec2(0.5f, 0.75f));
+    widget->setPositionPercent(Vec2(0.85f, 0.65f));
     widget->setAnchorPoint(Vec2(0, 0));
+    widget->setScale(0.9f);
     mTopGuiLayer->addChild(widget, 5);// , kBorder);
 
     auto levelGoals = mLevelGoalComponent->getLevelGoals();
@@ -158,7 +161,7 @@ void _GuiManager::createLevelGoals()
         TextLabelInfo goalInfo = { tmpStr, fontSize + 4, 0, 0 };
 
         auto label = createLabel(goalInfo);
-        label->setAnchorPoint(Vec2(0.5f, 1.8f));
+        label->setAnchorPoint(Vec2(0.5f, 1.9f));
         label->setPositionType(ui::Widget::PositionType::ABSOLUTE);
         label->setPosition(Vec2(pos.x, pos.y));
         label->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
