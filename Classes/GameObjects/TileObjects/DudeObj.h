@@ -10,10 +10,10 @@
 
 #pragma once
 
-#include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include "Utils/PlatformMacros.h"
 
-class DudeObj : public TileObj
+class DudeObj : public FieldObj
 {
 CC_CONSTRUCTOR_ACCESS:
     virtual ~DudeObj();
@@ -23,9 +23,9 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static DudeObj * create(const CommonTypes::TileInfo &info);
+    static DudeObj * create(const ObjTypes::FieldInfo &info);
 
-    bool init(const CommonTypes::TileInfo &info);
+    bool init(const ObjTypes::FieldInfo &info);
 
     cocos2d::String& spriteName() const override;
 

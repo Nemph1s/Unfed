@@ -125,7 +125,7 @@ void GameplayScene::addTiles()
             tile->setSpriteNode(tileSprite);
 			mTilesLayer->addChild(tileSprite);
 
-            tile->updateDebugTileLabel();
+            tile->updateDebugLabel();
 
             // Create Field objects
             auto fieldObj = objCtrl->fieldObjectAt(column, row);

@@ -12,6 +12,7 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldTypes.h"
 #include <list>
 
 class BaseObj;
@@ -31,9 +32,8 @@ public:
     BaseObj* createBaseObj(const CommonTypes::BaseObjectInfo &info);
     BaseObj* createTileObj(const CommonTypes::TileInfo &info);
     BaseObj* createCookieObj(const CommonTypes::CookieInfo &info);
-    BaseObj* createFieldObj(const CommonTypes::TileInfo &info);
-    //TODO: maybe use other typeInfo
-    BaseObj* createDudeObj(const CommonTypes::TileInfo &info);
+    BaseObj* createFieldObj(const ObjTypes::FieldInfo &info);
+    BaseObj* createDudeObj(const ObjTypes::FieldInfo &info);
 
     bool init(int poolSize);
     bool initCookiesPool(int poolSize);

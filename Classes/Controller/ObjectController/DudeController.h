@@ -12,10 +12,11 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldTypes.h"
 #include <map>
 
 using cocos2d::Set;
-using CommonTypes::TileType;
+using ObjTypes::FieldType;
 
 class BaseObj;
 class DudeObj;
@@ -64,7 +65,7 @@ protected:
 
     bool isEnoughCookiesForDude(int count, int neededCount);
 
-    TileType getDudeTypeByChain(ChainObj* chain);
+    FieldType getDudeTypeByChain(ChainObj* chain);
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(DudeObj*, int direction)>, mActivateDudeCallback, ActivateDudeCallback);
@@ -73,7 +74,7 @@ protected:
     CC_SYNTHESIZE(ChainController*, mChainCtrl, ChainController);
     
     cocos2d::Map<DudeObj*, DudeHelper*> mDudeDirections;
-    std::map<int, CommonTypes::TileType> mDudeTypes;
+    std::map<int, FieldType> mDudeTypes;
 
     // Dude object array 
     BaseObj* mDudeObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };

@@ -21,6 +21,7 @@
 #include "GameObjects/TileObjects/CookieObj.h"
 
 using namespace CommonTypes;
+using namespace ObjTypes;
 
 //--------------------------------------------------------------------
 ObjectController::ObjectController()
@@ -145,7 +146,7 @@ BaseObj * ObjectController::createFieldObject(int column, int row, int type)
 //--------------------------------------------------------------------
 {
     BaseObjectInfo baseInfo = { BaseObjectType::FieldObj, column, row };
-    TileInfo info = { baseInfo, static_cast<TileType>(type) };
+    FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
     BaseObj* obj = SmartFactory->createFieldObj(info);
     CC_ASSERT(obj);
     mFieldObjects[column][row] = obj;

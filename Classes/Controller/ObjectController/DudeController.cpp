@@ -28,6 +28,7 @@
 #define RequiredAmountForPina 5
 
 using namespace CommonTypes;
+using namespace ObjTypes;
 
 //--------------------------------------------------------------------
 DudeController::DudeController()
@@ -64,8 +65,8 @@ DudeController * DudeController::create()
 bool DudeController::init()
 //--------------------------------------------------------------------
 {
-    mDudeTypes[RequiredCountForDudeFromAToB] = TileType::DudeFromAToBx3;
-    mDudeTypes[RequiredCountForDudeFromAToBx3] = TileType::DudeFromAToB;
+    mDudeTypes[RequiredCountForDudeFromAToB] = FieldType::DudeFromAToBx3;
+    mDudeTypes[RequiredCountForDudeFromAToBx3] = FieldType::DudeFromAToB;
     return true;
 }
 
@@ -79,7 +80,7 @@ cocos2d::Set* DudeController::createDudeObectsFromChains(cocos2d::Set * chains)
         CC_ASSERT(chain);
 
         auto dudeType = getDudeTypeByChain(chain);
-        if (dudeType != TileType::Unknown) {
+        if (dudeType != FieldType::Unknown) {
             auto cookies = chain->getCookies();
             auto cookie = dynamic_cast<CookieObj*>(cookies->getRandomObject());
             if (!cookie) {
@@ -98,7 +99,7 @@ BaseObj * DudeController::createDudeObject(int column, int row, int type)
 //--------------------------------------------------------------------
 {
     BaseObjectInfo baseInfo = { BaseObjectType::DudeObj, column, row };
-    TileInfo info = { baseInfo, static_cast<TileType>(type) };
+    FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
     auto obj = dynamic_cast<DudeObj*>(SmartFactory->createDudeObj(info));
     CC_ASSERT(obj);
     mDudeObjects[column][row] = obj;
@@ -161,9 +162,9 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
     auto leftSet = cocos2d::Set::create();
     auto rightSet = cocos2d::Set::create();
 
-    switch (obj->getTileType())
+    switch (obj->getFieldType())
     {
-    case TileType::DudeFromAToBx3:
+    case FieldType::DudeFromAToBx3:
     {
         for (int i = -1; i <= 1; i++) {
             auto newTopSet = mChainCtrl->createChainFromPosToPos(column + i, row, column + i, 0, true);
@@ -177,7 +178,7 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
         }
     }
         break;
-    case TileType::DudeChainX:
+    case FieldType::DudeChainX:
     {
         auto set = mChainCtrl->createXChainAt(column, row, true);
         mChainCtrl->addChainsFromSetToSet(set, topSet);
@@ -186,7 +187,7 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
         mChainCtrl->addChainsFromSetToSet(set, rightSet);
     }
     break;
-    case TileType::DudeAllOfType:
+    case FieldType::DudeAllOfType:
     {
         auto newTopSet = mChainCtrl->createAllOfOneChain(column, row - 1, true);
         auto newBotSet = mChainCtrl->createAllOfOneChain(column, row + 1, true);
@@ -198,7 +199,7 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
         mChainCtrl->addChainsFromSetToSet(newRightSet, rightSet);
     }
         break;
-    case TileType::DudeFromAToB:
+    case FieldType::DudeFromAToB:
     default:
     {
         auto newTopSet = mChainCtrl->createChainFromPosToPos(column, row, column, 0, true);
@@ -314,29 +315,29 @@ bool DudeController::isEnoughCookiesForDude(int count, int neededCount)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::TileType DudeController::getDudeTypeByChain(ChainObj * chain)
+FieldType DudeController::getDudeTypeByChain(ChainObj * chain)
 //--------------------------------------------------------------------
 {
-    auto type = TileType::Unknown;
+    auto type = FieldType::Unknown;
     auto cookiesCount = chain->getCookies() ? chain->getCookies()->count() : 0;
     switch (chain->getType())
     {
     case ChainType::ChainTypeHorizontal:
     case ChainType::ChainTypeVertical:
         if (isEnoughCookiesForDude(cookiesCount, RequiredCountForDudeFromAToBx3)) {
-            type = TileType::DudeFromAToBx3;
+            type = FieldType::DudeFromAToBx3;
         } else if (isEnoughCookiesForDude(cookiesCount, RequiredCountForDudeFromAToB)) {
-            type = TileType::DudeFromAToB;
+            type = FieldType::DudeFromAToB;
         }
         break;
     case ChainType::ChainTypeL:
         if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForOni)) {
-            type = TileType::DudeChainX;
+            type = FieldType::DudeChainX;
         }
         break;
     case ChainType::ChainTypeT:
         if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForPina)) {
-            type = TileType::DudeAllOfType;
+            type = FieldType::DudeAllOfType;
         }
         break;
     default:

@@ -345,7 +345,7 @@ void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
         obj->setSpriteNode(sprite);
         auto cookie = dynamic_cast<CookieObj*>(obj);
         if (cookie) {
-            cookie->updateDebugTileLabel();
+            cookie->updateDebugLabel();
         }
         if (obj->getType() == BaseObjectType::DudeObj) {
             mDudesLayer->addChild(sprite);

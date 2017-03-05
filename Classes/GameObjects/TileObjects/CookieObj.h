@@ -39,7 +39,7 @@ public:
 
    virtual void clear() override;
 
-   void updateDebugTileLabel();
+   virtual void updateDebugLabel();
 
 protected: 
     // Nodes should be created using create();

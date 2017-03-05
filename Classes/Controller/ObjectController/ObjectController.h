@@ -12,6 +12,7 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldTypes.h"
 
 class BaseObj;
 class TileObj;

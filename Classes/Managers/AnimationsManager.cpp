@@ -15,6 +15,7 @@
 #include "GameObjects/Chain/ChainObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
@@ -65,8 +66,8 @@ void _AnimationsManager::animateSwap(SwapObj* swap, cocos2d::CallFunc* completio
     auto easeB = EaseOut::create(moveB, duration);
     cookieB->runAction(easeB);
     
-    swap->getCookieA()->updateDebugTileLabel();
-    swap->getCookieB()->updateDebugTileLabel();
+    swap->getCookieA()->updateDebugLabel();
+    swap->getCookieB()->updateDebugLabel();
 }
 
 //--------------------------------------------------------------------
@@ -180,17 +181,7 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
             // Perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
 
-                if (obj->getType() == BaseObjectType::CookieObj) {
-                    auto cookie = dynamic_cast<CookieObj*>(obj);
-                    cookie->updateDebugTileLabel();
-                }
-
-                if (obj->getType() == BaseObjectType::TileObj 
-                    || obj->getType() == BaseObjectType::DudeObj 
-                    || obj->getType() == BaseObjectType::FieldObj) {
-                    auto tile = dynamic_cast<TileObj*>(obj);
-                    tile->updateDebugTileLabel();
-                }
+                obj->updateDebugLabel();
 
                 auto moveCallback = CallFunc::create([=]() {
                     AnimationsManager->animateBouncingObj(obj);
@@ -258,7 +249,7 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
             // You perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
 
-                cookie->updateDebugTileLabel();
+                cookie->updateDebugLabel();
 
                 auto moveCallback = CallFunc::create([=]() {
                     AnimationsManager->animateBouncingObj(cookie);
@@ -447,7 +438,7 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
 
     for (auto it = fieldObjects->begin(); it != fieldObjects->end(); it++) {
 
-        auto obj = dynamic_cast<TileObj*>(*it);
+        auto obj = dynamic_cast<FieldObj*>(*it);
         if (!obj)
             continue;
 

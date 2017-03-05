@@ -261,9 +261,12 @@ cocos2d::Vec2 _GuiManager::getPosForGoalSprite(int currGoal, int goalsCount, con
 //--------------------------------------------------------------------
 {
     cocos2d::Vec2 pos = cocos2d::Vec2::ZERO;
+    if (goalsCount == 1) {
+        pos = cocos2d::Vec2(-spriteSize.width * 0.25f, 0);
+    }
     if (goalsCount == 2) {
         if (currGoal == 0) {
-            pos = cocos2d::Vec2( -spriteSize.width * 0.75f, 0);
+            pos = cocos2d::Vec2(-spriteSize.width * 0.75f, 0);
         }
         else if (currGoal == 1) {
             pos = cocos2d::Vec2(spriteSize.width * 0.75f, 0);

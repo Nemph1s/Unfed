@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/CookieObj.cpp
+* @file GameObjects/TileObjects/FieldObjects/Base/FieldObj.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,30 +8,32 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
-using std::string;
-using cocos2d::Node;
-using cocos2d::Sprite;
-using namespace CommonTypes;
-
 //--------------------------------------------------------------------
-CookieObj::CookieObj()
+FieldObj::FieldObj()
     : BaseObj()
-    , mCookieType(CookieType::Unknown)
+    , mFieldType(ObjTypes::FieldType::Unknown)
     , mDebugLabel(nullptr)
+    , mHP(0)
 //--------------------------------------------------------------------
 {
 }
 
 //--------------------------------------------------------------------
-CookieObj * CookieObj::create(const CookieInfo & cookieInfo)
+FieldObj::~FieldObj()
 //--------------------------------------------------------------------
 {
-    CookieObj * ret = new (std::nothrow) CookieObj();
-    if (ret && ret->init(cookieInfo)) {
+}
+
+//--------------------------------------------------------------------
+FieldObj * FieldObj::create(const ObjTypes::FieldInfo &info)
+//--------------------------------------------------------------------
+{
+    FieldObj * ret = new (std::nothrow) FieldObj();
+    if (ret && ret->init(info)) {
         ret->autorelease();
     }
     else {
@@ -41,37 +43,34 @@ CookieObj * CookieObj::create(const CookieInfo & cookieInfo)
 }
 
 //--------------------------------------------------------------------
-CookieObj::~CookieObj()
+bool FieldObj::init(const ObjTypes::FieldInfo &info)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("CookieObj::~CookieObj: deallocing CookieObj: %p - tag: %i", this, _tag);
-}
-
-//--------------------------------------------------------------------
-bool CookieObj::init(const CookieInfo & cookieInfo)
-//--------------------------------------------------------------------
-{
-    if (!BaseObj::init(cookieInfo.baseInfo)) {
-        cocos2d::log("CookieObj::init: can't init Node inctance");
+    if (!BaseObj::init(info.baseInfo)) {
+        cocos2d::log("FieldObj::init: can't init Node inctance");
         return false;
     }
+    mFieldType = info.fieldType;
 
-    mCookieType = cookieInfo.cookieType;
-    mIsMovable = true;
-    mIsSwappable = true;
-    mIsRemovable = true;
-
-    if (!mDebugLabel) {
+    if (!mDebugLabel && mType != CommonTypes::BaseObjectType::FieldObj) {
 #ifdef COCOS2D_DEBUG
         mDebugLabel = cocos2d::Label::create();
         mDebugLabel->setBMFontSize(16);
         mDebugLabel->setDimensions(32, 32);
-        mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::LEFT);
-        mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::TOP);
-        mDebugLabel->setPosition(cocos2d::Vec2(GameResources::TileWidth / 4, (GameResources::TileHeight / 1.25f)));
+        mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::RIGHT);
+        mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::BOTTOM);
+        mDebugLabel->setPosition(cocos2d::Vec2(GameResources::TileWidth * 0.8f, GameResources::TileHeight * 0.2f));
         mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
+        mDebugLabel->setTextColor(cocos2d::Color4B::MAGENTA);
+        mDebugLabel->setGlobalZOrder(1000);
         CC_SAFE_RETAIN(mDebugLabel);
         //mSpriteNode->addChild(mDebugLabel, 10);
+
+        int col = mColumn == -1 ? 0 : mColumn;
+        int row = mRow == -1 ? 0 : mRow;
+
+        auto text = cocos2d::StringUtils::format("[%d,%d]", col, row);
+        mDebugLabel->setString(text);
 #endif //UNFED_ENABLE_DEBUG
     }
 
@@ -79,79 +78,82 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
 }
 
 //--------------------------------------------------------------------
-cocos2d::String& CookieObj::spriteName() const
+cocos2d::String & FieldObj::description() const
 //--------------------------------------------------------------------
 {
-    return GameResources::s_cookieSpriteNames.at(getTypeAsInt());
+    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
 }
 
 //--------------------------------------------------------------------
-cocos2d::String& CookieObj::highlightedSpriteName() const
-//--------------------------------------------------------------------
-{
-    return GameResources::s_cookieHighlightedSpriteNames.at(getTypeAsInt());
-}
-
-//--------------------------------------------------------------------
-cocos2d::String& CookieObj::description() const
-//--------------------------------------------------------------------
-{
-    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", mCookieType, mColumn, mRow);
-}
-
-//--------------------------------------------------------------------
-void CookieObj::setSpriteNode(cocos2d::Sprite * var)
+void FieldObj::setSpriteNode(cocos2d::Sprite * var)
 //--------------------------------------------------------------------
 {
     mSpriteNode = var;
-    if (mSpriteNode && !mDebugLabel->getParent()) {
-        mSpriteNode->addChild(mDebugLabel, 10);
+    if (mSpriteNode && mDebugLabel) {
+        if (!mDebugLabel->getParent()) {
+            mSpriteNode->addChild(mDebugLabel, 10);
+        }
     }
 }
 
 //--------------------------------------------------------------------
-void CookieObj::setColumn(int var)
+int FieldObj::getTypeAsInt() const
 //--------------------------------------------------------------------
 {
-    BaseObj::setColumn(var);
-    updateDebugLabel();
+    return Helper::getInstance()->to_underlying(mFieldType);
 }
 
 //--------------------------------------------------------------------
-void CookieObj::setRow(int var)
+void FieldObj::match()
 //--------------------------------------------------------------------
 {
-    BaseObj::setRow(var);
-    updateDebugLabel();
+    mHP--;
+    if (mHP > 0) {
+        mFieldType = static_cast<ObjTypes::FieldType>(getTypeAsInt() - 1);
+    }
 }
 
 //--------------------------------------------------------------------
-int CookieObj::getTypeAsInt() const
-//--------------------------------------------------------------------
-{
-    return Helper::getInstance()->to_underlying(mCookieType);
-}
-
-//--------------------------------------------------------------------
-void CookieObj::clear()
+void FieldObj::clear()
 //--------------------------------------------------------------------
 {
     BaseObj::clear();
-    mCookieType = CommonTypes::CookieType::Unknown;
+    mFieldType = ObjTypes::FieldType::Unknown;
+    mHP = 0;
     if (mDebugLabel) {
-        mDebugLabel->removeFromParent();
+        if (mDebugLabel->getParent()) {
+            mDebugLabel->removeFromParent();
+        }        
         CC_SAFE_RELEASE_NULL(mDebugLabel);
-    }
+    }    
 }
 
 //--------------------------------------------------------------------
-void CookieObj::updateDebugLabel()
+bool FieldObj::checkMatchingCondition(int column, int row)
+//--------------------------------------------------------------------
+{
+    return false;
+}
+
+//--------------------------------------------------------------------
+bool FieldObj::isReadyToRemove() const
+//--------------------------------------------------------------------
+{
+    bool result = false;
+    if (isRemovable()) {
+        result = (mHP <= 0);
+    }
+    return result;
+}
+
+//--------------------------------------------------------------------
+void FieldObj::updateDebugLabel()
 //--------------------------------------------------------------------
 {
     if (mDebugLabel) {
         int col = mColumn == -1 ? 0 : mColumn;
         int row = mRow == -1 ? 0 : mRow;
-     
+
         auto text = cocos2d::StringUtils::format("[%d,%d]", col, row);
         mDebugLabel->setString(text);
     }

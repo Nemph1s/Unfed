@@ -10,6 +10,7 @@
 
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/Chain/ChainObj.h"
@@ -139,7 +140,7 @@ bool LevelObj::checkMathicngFieldObjWithChain(cocos2d::Set * chains, BaseObj * o
 //--------------------------------------------------------------------
 {
     auto result = false;
-    auto fieldObj = dynamic_cast<TileObj*>(obj);
+    auto fieldObj = dynamic_cast<FieldObj*>(obj);
     if (!fieldObj) {
         return result;
     }

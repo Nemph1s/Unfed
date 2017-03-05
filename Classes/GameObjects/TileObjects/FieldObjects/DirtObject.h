@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObjects/Obstacles/BushObj.hpp
+* @file GameObjects/TileObjects/FieldObjects/DirtObject.h
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -10,21 +10,21 @@
 
 #pragma once
 
-#include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
-class BushObj : public TileObj
+class DirtObject : public FieldObj
 {
 CC_CONSTRUCTOR_ACCESS:
-    virtual ~BushObj();
+    virtual ~DirtObject();
 
 public:
     /**
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static BushObj * create(const CommonTypes::TileInfo &info);
+    static DirtObject * create(const ObjTypes::FieldInfo &info);
 
-    bool init(const CommonTypes::TileInfo &info);
+    bool init(const ObjTypes::FieldInfo &info);
 
     cocos2d::String& spriteName() const override;
 
@@ -32,8 +32,7 @@ public:
 
 protected:
     // Nodes should be created using create();
-    BushObj();
+    DirtObject();
 
     //---Class Attributes-------------------------------------------------
 };
-
