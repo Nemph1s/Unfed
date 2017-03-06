@@ -275,6 +275,9 @@
     <ClInclude Include="..\Classes\GameObjects\TileObjects\FieldObjects\Base\FieldTypes.h">
       <Filter>src\GameObjects\TileObjects\FieldObjects\Base</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\GameObjects\Level\LevelTypes.h">
+      <Filter>src\GameObjects\Level</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

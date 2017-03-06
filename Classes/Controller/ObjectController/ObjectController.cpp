@@ -81,14 +81,13 @@ void ObjectController::createInitialFieldObjects()
 {
     auto levelInfo = mLevel->getLevelInfo();
 
-    for (int column = 0; column < NumColumns; column++) {
-        for (int row = 0; row < NumRows; row++) {
-
-            int tileType = levelInfo.fieldObjects[column][row];
-            if (tileType > 0) {
-                auto tile = createFieldObject(column, row, tileType);
+    for (auto obj : levelInfo.fieldObjects) {
+        for (int i = 0; i < obj.fieldType.size(); i++) {
+            auto type = obj.fieldType.at(i);
+            if (type > 0) {
+                auto tile = createFieldObject(obj.baseInfo.column, obj.baseInfo.row, type, i);
                 mLevel->addChild(tile);
-            }            
+            }
         }
     }
 }
@@ -142,14 +141,21 @@ BaseObj * ObjectController::createCookie(int column, int row, int type)
 }
 
 //--------------------------------------------------------------------
-BaseObj * ObjectController::createFieldObject(int column, int row, int type)
+BaseObj * ObjectController::createFieldObject(int column, int row, int type, int priority)
 //--------------------------------------------------------------------
 {
     BaseObjectInfo baseInfo = { BaseObjectType::FieldObj, column, row };
-    FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
+    FieldInfo info = { baseInfo, static_cast<FieldType>(type), priority };
     BaseObj* obj = SmartFactory->createFieldObj(info);
     CC_ASSERT(obj);
-    mFieldObjects[column][row] = obj;
+    if (!mFieldObjects[column][row]) {
+        auto arr = cocos2d::Array::create();
+        arr->addObject(obj);
+        mFieldObjects[column][row] = arr;
+    }
+    else {
+        mFieldObjects[column][row]->addObject(obj);
+    }
     return obj;
 }
 
@@ -288,7 +294,11 @@ BaseObj * ObjectController::fieldObjectAt(int column, int row)
         cocos2d::log("ObjectController::fieldObjectAt: Invalid row: %d", row);
         CC_ASSERT(invalidRow);
     }
-    return mFieldObjects[column][row];
+    auto fieldsArray = mFieldObjects[column][row];
+    if (fieldsArray == nullptr || fieldsArray->count() < 1) {
+        return nullptr;
+    } 
+    return dynamic_cast<BaseObj*>(fieldsArray->getObjectAtIndex(0));
 }
 
 //--------------------------------------------------------------------
@@ -379,7 +389,7 @@ void ObjectController::updateObjectAt(int column, int row, BaseObj * obj, BaseOb
     case BaseObjectType::CookieObj:
         mCookies[column][row] = obj;
         break;
-    case BaseObjectType::FieldObj:
+    case BaseObjectType::FieldObj: // fieldObj cant be moved by gravity!
         //TODO: uncomment when mFieldObjects will be an array
 //         cocos2d::Array* arr = mFieldObjects[column][row];
 //         if (arr) {
@@ -389,7 +399,7 @@ void ObjectController::updateObjectAt(int column, int row, BaseObj * obj, BaseOb
 //             newArr->addObject(obj);
 //             mFieldObjects[column][row] = newArr;
 //         }
-        mFieldObjects[column][row] = obj;
+//        mFieldObjects[column][row] = obj;
         break;
     case BaseObjectType::DudeObj:
         mDudeCtrl->mDudeObjects[column][row] = obj;

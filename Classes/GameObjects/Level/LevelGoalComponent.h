@@ -11,7 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "GameObjects/Level/LevelTypes.h"
 
 class BaseObj;
 

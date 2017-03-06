@@ -189,6 +189,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\GameObjects\Chain\ChainObj.h" />
     <ClInclude Include="..\Classes\GameObjects\Level\LevelGoalComponent.h" />
     <ClInclude Include="..\Classes\GameObjects\Level\LevelObj.h" />
+    <ClInclude Include="..\Classes\GameObjects\Level\LevelTypes.h" />
     <ClInclude Include="..\Classes\GameObjects\Swap\SwapObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\CookieObj.h" />

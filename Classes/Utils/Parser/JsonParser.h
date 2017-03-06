@@ -11,7 +11,8 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "GameObjects/Level/LevelTypes.h"
+
 #include "Utils/PlatformMacros.h"
 
 #include "libs/jsoncpp/include/json/json.h"

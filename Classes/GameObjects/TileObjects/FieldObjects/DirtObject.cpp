@@ -29,7 +29,7 @@ DirtObject::~DirtObject()
 }
 
 //--------------------------------------------------------------------
-DirtObject * DirtObject::create(const ObjTypes::FieldInfo & info)
+DirtObject * DirtObject::create(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     DirtObject * ret = new (std::nothrow) DirtObject();
@@ -43,7 +43,7 @@ DirtObject * DirtObject::create(const ObjTypes::FieldInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool DirtObject::init(const ObjTypes::FieldInfo & info)
+bool DirtObject::init(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     if (!FieldObj::init(info)) {

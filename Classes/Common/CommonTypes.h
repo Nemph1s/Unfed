@@ -22,7 +22,7 @@ namespace CommonTypes {
     static const int NumColumns = 9;
     static const int NumRows = 9;
 
-    typedef int TilesArray[CommonTypes::NumColumns][CommonTypes::NumRows];
+    
 
     /**
     * @brief GameObjectType enum.
@@ -76,40 +76,22 @@ namespace CommonTypes {
    };
 
    /**
-   * @brief LevelInfo struct.
+   * @brief FieldInfo struct.
    */
-   struct LevelInfo
+   struct FieldInfo
    {
-      uint32_t id = 0; /**< current level ID */
-      uint32_t targetScore = 0; /**< Goal score */
-      int moves = 0; /**< available moves */
-      TilesArray tiles = { 0 }; /**< array of tiles */
-      TilesArray cookies = { 0 }; /**< array of cookies */
-      std::vector<ObjTypes::FieldJsonInfo> fieldObjects; /**< array of tileObjects */
-      int typesCount = 0; /**< count of types */
-      bool isPredefinedCookies = false; /**< availability to load predefined cookies */
-      bool skipEmptyHoles = false; /**< availability to skip empty tiles when obj falling */
-      std::vector<int> allowedCookieTypes;
+       BaseObjectInfo baseInfo; /**< type of BaseObjectInfo struct */
+       ObjTypes::FieldType fieldType; /**< type of Field object */
+       int priority; /**< priority for z level of Field object. 0 - low priority; 3 - high priority */
    };
 
    /**
-   * @brief CollectGoalInfo struct.
+   * @brief FieldInfo struct.
    */
-   struct CollectGoalInfo
+   struct FieldJsonInfo
    {
-       int8_t baseObjectType = 0; /**< baseObjectType type of base field object(tile, cookie, field, dude) */
-       int8_t objectType = 0; /**< objectType type of child field obj */
-       int8_t targetCount = 0; /**< targetCount object count goal*/
-       int8_t currentCount = 0; /**< currentCount object count goal*/
-   };
-
-   /**
-   * @brief LevelInfo struct.
-   */
-   struct LevelGoals
-   {
-       int8_t goalsCount = 0; /**< goalsCount count current goals*/
-       std::vector<CollectGoalInfo> collectGoals; /**< collectGoal vector of CollectGoalInfo struct*/
+       BaseObjectInfo baseInfo = BaseObjectInfo(BaseObjectType::FieldObj); /**< type of BaseObjectInfo struct */
+       std::vector<int> fieldType; /**< type of Field object */
    };
 
    /**

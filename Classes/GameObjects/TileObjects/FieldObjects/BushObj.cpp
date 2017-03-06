@@ -29,7 +29,7 @@ BushObj::~BushObj()
 }
 
 //--------------------------------------------------------------------
-BushObj * BushObj::create(const ObjTypes::FieldInfo & info)
+BushObj * BushObj::create(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     BushObj * ret = new (std::nothrow) BushObj();
@@ -43,7 +43,7 @@ BushObj * BushObj::create(const ObjTypes::FieldInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool BushObj::init(const ObjTypes::FieldInfo & info)
+bool BushObj::init(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     if (!FieldObj::init(info)) {

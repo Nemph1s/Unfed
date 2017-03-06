@@ -23,9 +23,9 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static FieldObj * create(const ObjTypes::FieldInfo &info);
+    static FieldObj * create(const CommonTypes::FieldInfo &info);
 
-    bool init(const ObjTypes::FieldInfo &info);
+    bool init(const CommonTypes::FieldInfo &info);
 
     virtual cocos2d::String& description() const override;
 
@@ -45,6 +45,7 @@ protected:
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE_READONLY(ObjTypes::FieldType, mFieldType, FieldType);
+    CC_SYNTHESIZE_READONLY(int, mPriority, Priority);
     CC_SYNTHESIZE(int, mHP, HP);
     CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);
 };

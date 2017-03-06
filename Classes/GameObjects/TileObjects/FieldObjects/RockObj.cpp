@@ -29,7 +29,7 @@ RockObj::~RockObj()
 }
 
 //--------------------------------------------------------------------
-RockObj* RockObj::create(const ObjTypes::FieldInfo & info)
+RockObj* RockObj::create(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     RockObj* ret = new (std::nothrow) RockObj();
@@ -43,7 +43,7 @@ RockObj* RockObj::create(const ObjTypes::FieldInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool RockObj::init(const ObjTypes::FieldInfo & info)
+bool RockObj::init(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     if (!FieldObj::init(info)) {
@@ -55,7 +55,7 @@ bool RockObj::init(const ObjTypes::FieldInfo & info)
         mHP = (getTypeAsInt() - Helper::to_underlying(FieldType::RockWall)) + 1;
     }
     mIsRemovable = true;
-    mIsMovable = true;
+    mIsMovable = false;
     mIsContainer = false;
     mScoreValue = 100;
 

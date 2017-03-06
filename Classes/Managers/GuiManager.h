@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "Common/CommonTypes.h"
+#include "GameObjects/Level/LevelTypes.h"
 #include "Utils/PlatformMacros.h"
 
 #include "cocos2d.h"

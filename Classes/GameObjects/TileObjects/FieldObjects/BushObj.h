@@ -22,9 +22,9 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static BushObj * create(const ObjTypes::FieldInfo &info);
+    static BushObj * create(const CommonTypes::FieldInfo &info);
 
-    bool init(const ObjTypes::FieldInfo &info);
+    bool init(const CommonTypes::FieldInfo &info);
 
     cocos2d::String& spriteName() const override;
 

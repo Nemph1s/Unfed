@@ -295,7 +295,7 @@ void _JsonParser::updateFieldObjects(CommonTypes::LevelInfo & levelInfo)
         const Json::Value& fieldObjectNode = subNode[i];
         CC_ASSERT(fieldObjectNode.isObject());
 
-        auto fieldInfo = ObjTypes::FieldJsonInfo();
+        auto fieldInfo = CommonTypes::FieldJsonInfo();
         fieldInfo.baseInfo.column = getFieldObjectCol(fieldObjectNode);
         fieldInfo.baseInfo.row = getFieldObjectCol(fieldObjectNode);
 
@@ -315,7 +315,7 @@ void _JsonParser::updateFieldObjects(CommonTypes::LevelInfo & levelInfo)
 const Json::Value & _JsonParser::getFieldObjects(const Json::Value & node)
 //--------------------------------------------------------------------
 {
-    Json::Value& value = node[JsonNames::fieldObject_objects];
+    const Json::Value& value = node[JsonNames::fieldObject_objects];
     if (!value.isArray())
         throw std::logic_error("bad fieldObjects array");
 
@@ -348,7 +348,7 @@ uint8_t _JsonParser::getFieldObjectRow(const Json::Value & node)
 const Json::Value & _JsonParser::getFieldObjectTypes(const Json::Value & node)
 //--------------------------------------------------------------------
 {
-    Json::Value& value = node[JsonNames::fieldObject_types];
+    const Json::Value& value = node[JsonNames::fieldObject_types];
     if (!value.isArray())
         throw std::logic_error("bad fieldObject_types array");
 

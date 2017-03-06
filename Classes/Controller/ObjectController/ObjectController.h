@@ -70,7 +70,7 @@ protected:
     BaseObj* createTile(int column, int row, int type);
     BaseObj* createCookie(int column, int row, int type);
     
-    BaseObj* createFieldObject(int column, int row, int type);
+    BaseObj* createFieldObject(int column, int row, int type, int priority);
 
     int getAllowedRandomCookieType();
     
@@ -81,5 +81,5 @@ protected:
     BaseObj* mTiles[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
     BaseObj* mCookies[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
     // Tile object array (Dirt etc)
-    BaseObj* mFieldObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
+    cocos2d::Array* mFieldObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
 };

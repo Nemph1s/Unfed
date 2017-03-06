@@ -32,8 +32,8 @@ public:
     BaseObj* createBaseObj(const CommonTypes::BaseObjectInfo &info);
     BaseObj* createTileObj(const CommonTypes::TileInfo &info);
     BaseObj* createCookieObj(const CommonTypes::CookieInfo &info);
-    BaseObj* createFieldObj(const ObjTypes::FieldInfo &info);
-    BaseObj* createDudeObj(const ObjTypes::FieldInfo &info);
+    BaseObj* createFieldObj(const CommonTypes::FieldInfo &info);
+    BaseObj* createDudeObj(const CommonTypes::FieldInfo &info);
 
     bool init(int poolSize);
     bool initCookiesPool(int poolSize);

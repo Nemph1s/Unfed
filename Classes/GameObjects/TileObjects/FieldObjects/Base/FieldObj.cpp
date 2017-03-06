@@ -16,6 +16,7 @@
 FieldObj::FieldObj()
     : BaseObj()
     , mFieldType(ObjTypes::FieldType::Unknown)
+    , mPriority(0)
     , mDebugLabel(nullptr)
     , mHP(0)
 //--------------------------------------------------------------------
@@ -29,7 +30,7 @@ FieldObj::~FieldObj()
 }
 
 //--------------------------------------------------------------------
-FieldObj * FieldObj::create(const ObjTypes::FieldInfo &info)
+FieldObj * FieldObj::create(const CommonTypes::FieldInfo &info)
 //--------------------------------------------------------------------
 {
     FieldObj * ret = new (std::nothrow) FieldObj();
@@ -43,7 +44,7 @@ FieldObj * FieldObj::create(const ObjTypes::FieldInfo &info)
 }
 
 //--------------------------------------------------------------------
-bool FieldObj::init(const ObjTypes::FieldInfo &info)
+bool FieldObj::init(const CommonTypes::FieldInfo &info)
 //--------------------------------------------------------------------
 {
     if (!BaseObj::init(info.baseInfo)) {
@@ -51,6 +52,7 @@ bool FieldObj::init(const ObjTypes::FieldInfo &info)
         return false;
     }
     mFieldType = info.fieldType;
+    mPriority = info.priority;
 
     if (!mDebugLabel && mType != CommonTypes::BaseObjectType::FieldObj) {
 #ifdef COCOS2D_DEBUG

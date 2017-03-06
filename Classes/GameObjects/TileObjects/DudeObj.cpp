@@ -29,7 +29,7 @@ DudeObj::~DudeObj()
 }
 
 //--------------------------------------------------------------------
-DudeObj * DudeObj::create(const ObjTypes::FieldInfo & info)
+DudeObj * DudeObj::create(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     DudeObj * ret = new (std::nothrow) DudeObj();
@@ -43,7 +43,7 @@ DudeObj * DudeObj::create(const ObjTypes::FieldInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool DudeObj::init(const ObjTypes::FieldInfo & info)
+bool DudeObj::init(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     if (!FieldObj::init(info)) {
