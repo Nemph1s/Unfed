@@ -51,56 +51,41 @@ CommonTypes::LevelInfo _JsonParser::getLevelInfo()
     levelInfo.skipEmptyHoles = getSkipEmptyHoles();
     levelInfo.isPredefinedCookies = isPredefinedCookies();
 
-	const Json::Value& node = getTiles();
+    updateTiles(levelInfo);
+    updatePredefinedCookies(levelInfo);
+    updateAllowedCookieTypes(levelInfo);
+    updateFieldObjects(levelInfo);
 
-	for (uint16_t i = 0; i < node.size(); ++i) {
-		const Json::Value& subnode = node[i];
-		CC_ASSERT(subnode.isArray());
-
-		for (uint16_t j = 0; j < subnode.size(); ++j) {
-			CC_ASSERT(subnode[j].isInt());
-            levelInfo.tiles[i][j] = node[j][i].asInt();
-		}
-	}
-
-    if (!mRootNode[JsonNames::cookiesArray].isNull()) {
-        const Json::Value& cookiesObjects = getPredefinedCookies();
-
-        for (uint16_t i = 0; i < cookiesObjects.size(); ++i) {
-            const Json::Value& subnode = cookiesObjects[i];
-            CC_ASSERT(subnode.isArray());
-
-            for (uint16_t j = 0; j < subnode.size(); ++j) {
-                CC_ASSERT(subnode[j].isInt());
-                levelInfo.cookies[i][j] = cookiesObjects[j][i].asInt();
-            }
-        }
-    }
-
-    if (!mRootNode[JsonNames::allowedCookieTypes].isNull()) {
-        const Json::Value& allowedCookieTypes = getAllowedCookieTypes();
-
-        for (uint16_t i = 0; i < allowedCookieTypes.size(); ++i) {
-            auto type = allowedCookieTypes[i].asInt();
-            CC_ASSERT(allowedCookieTypes[i].isInt());
-            levelInfo.allowedCookieTypes.push_back(type);
-        }
-    }
-
-    if (!mRootNode[JsonNames::fieldObjectsArray].isNull()) {
-        const Json::Value& fieldObjects = getFieldObjects();
-
-        for (uint16_t i = 0; i < fieldObjects.size(); ++i) {
-            const Json::Value& subnode = fieldObjects[i];
-            CC_ASSERT(subnode.isArray());
-
-            for (uint16_t j = 0; j < subnode.size(); ++j) {
-                CC_ASSERT(subnode[j].isInt());
-                levelInfo.fieldObjects[i][j] = fieldObjects[j][i].asInt();
-            }
-        }
-    }
 	return levelInfo;
+}
+
+//--------------------------------------------------------------------
+CommonTypes::LevelGoals _JsonParser::getLevelGoals()
+//--------------------------------------------------------------------
+{
+    auto levelGoals = CommonTypes::LevelGoals();
+
+    if (mRootNode[JsonNames::levelGoals].isNull()) {
+        return levelGoals;
+    }
+    const Json::Value& levelGoalsNode = mRootNode[JsonNames::levelGoals];
+
+    levelGoals.goalsCount = getGoalsCount(levelGoalsNode);
+
+    const Json::Value& subNode = getGoalTypeCollect(levelGoalsNode);
+
+    for (uint16_t i = 0; i < subNode.size(); ++i) {
+        const Json::Value& goalCollectNode = subNode[i];
+        CC_ASSERT(goalCollectNode.isObject());
+
+        auto goalInfo = CommonTypes::CollectGoalInfo();
+        goalInfo.baseObjectType = getTargetBaseObjType(goalCollectNode);
+        goalInfo.objectType = getTargetObjType(goalCollectNode);
+        goalInfo.targetCount = getTargetObjectCount(goalCollectNode);
+
+        levelGoals.collectGoals.push_back(goalInfo);
+    }
+    return levelGoals;
 }
 
 //--------------------------------------------------------------------
@@ -135,18 +120,6 @@ const Json::Value & _JsonParser::getAllowedCookieTypes()
 
     return value;
 }
-
-//--------------------------------------------------------------------
-const Json::Value & _JsonParser::getFieldObjects()
-//--------------------------------------------------------------------
-{
-    Json::Value& value = mRootNode[JsonNames::fieldObjectsArray];
-    if (!value.isArray())
-        throw std::logic_error("bad fieldObjects array");
-
-    return value;
-}
-
 
 //--------------------------------------------------------------------
 uint32_t _JsonParser::getTargetScore()
@@ -204,35 +177,6 @@ bool _JsonParser::getSkipEmptyHoles()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::LevelGoals _JsonParser::getLevelGoals()
-//--------------------------------------------------------------------
-{
-    auto levelGoals = CommonTypes::LevelGoals();
-
-    if (mRootNode[JsonNames::levelGoals].isNull()) {
-        return levelGoals;
-    }
-    const Json::Value& levelGoalsNode = mRootNode[JsonNames::levelGoals];
-
-    levelGoals.goalsCount = getGoalsCount(levelGoalsNode);
-
-    const Json::Value& subNode = getGoalTypeCollect(levelGoalsNode);
-
-    for (uint16_t i = 0; i < subNode.size(); ++i) {
-        const Json::Value& goalCollectNode = subNode[i];
-        CC_ASSERT(goalCollectNode.isObject());
-
-        auto goalInfo = CommonTypes::CollectGoalInfo();
-        goalInfo.baseObjectType = getTargetBaseObjType(goalCollectNode);
-        goalInfo.objectType = getTargetObjType(goalCollectNode);
-        goalInfo.targetCount = getTargetObjectCount(goalCollectNode);
-
-        levelGoals.collectGoals.push_back(goalInfo);
-    }
-    return levelGoals;
-}
-
-//--------------------------------------------------------------------
 uint8_t _JsonParser::getGoalsCount(const Json::Value & node)
 //--------------------------------------------------------------------
 {
@@ -285,4 +229,128 @@ uint8_t _JsonParser::getTargetObjectCount(const Json::Value & node)
         res = node[JsonNames::targetObjectCount].asInt();
     }
     return res;
+}
+
+//--------------------------------------------------------------------
+void _JsonParser::updateTiles(CommonTypes::LevelInfo & levelInfo)
+//--------------------------------------------------------------------
+{
+    const Json::Value& node = getTiles();
+
+    for (uint16_t i = 0; i < node.size(); ++i) {
+        const Json::Value& subnode = node[i];
+        CC_ASSERT(subnode.isArray());
+
+        for (uint16_t j = 0; j < subnode.size(); ++j) {
+            CC_ASSERT(subnode[j].isInt());
+            levelInfo.tiles[i][j] = node[j][i].asInt();
+        }
+    }
+}
+
+//--------------------------------------------------------------------
+void _JsonParser::updatePredefinedCookies(CommonTypes::LevelInfo & levelInfo)
+//--------------------------------------------------------------------
+{
+    if (!mRootNode[JsonNames::cookiesArray].isNull()) {
+        const Json::Value& cookiesObjects = getPredefinedCookies();
+
+        for (uint16_t i = 0; i < cookiesObjects.size(); ++i) {
+            const Json::Value& subnode = cookiesObjects[i];
+            CC_ASSERT(subnode.isArray());
+
+            for (uint16_t j = 0; j < subnode.size(); ++j) {
+                CC_ASSERT(subnode[j].isInt());
+                levelInfo.cookies[i][j] = cookiesObjects[j][i].asInt();
+            }
+        }
+    }
+}
+
+//--------------------------------------------------------------------
+void _JsonParser::updateAllowedCookieTypes(CommonTypes::LevelInfo & levelInfo)
+//--------------------------------------------------------------------
+{
+    if (!mRootNode[JsonNames::allowedCookieTypes].isNull()) {
+        const Json::Value& allowedCookieTypes = getAllowedCookieTypes();
+
+        for (uint16_t i = 0; i < allowedCookieTypes.size(); ++i) {
+            auto type = allowedCookieTypes[i].asInt();
+            CC_ASSERT(allowedCookieTypes[i].isInt());
+            levelInfo.allowedCookieTypes.push_back(type);
+        }
+    }
+}
+
+//--------------------------------------------------------------------
+void _JsonParser::updateFieldObjects(CommonTypes::LevelInfo & levelInfo)
+//--------------------------------------------------------------------
+{
+    if (mRootNode[JsonNames::fieldObjectsArray].isNull()) {
+        return;
+    }
+    const Json::Value& subNode = getFieldObjects(mRootNode[JsonNames::fieldObjectsArray]);
+
+    for (uint16_t i = 0; i < subNode.size(); ++i) {
+        const Json::Value& fieldObjectNode = subNode[i];
+        CC_ASSERT(fieldObjectNode.isObject());
+
+        auto fieldInfo = ObjTypes::FieldJsonInfo();
+        fieldInfo.baseInfo.column = getFieldObjectCol(fieldObjectNode);
+        fieldInfo.baseInfo.row = getFieldObjectCol(fieldObjectNode);
+
+        const Json::Value& typesNode = getFieldObjectTypes(fieldObjectNode);
+        CC_ASSERT(typesNode.isArray());
+
+        for (uint16_t i = 0; i < typesNode.size(); ++i) {
+            CC_ASSERT(typesNode[i].isInt());
+            fieldInfo.fieldType.push_back(typesNode[i].asInt());
+        }
+
+        levelInfo.fieldObjects.push_back(fieldInfo);
+    }
+}
+
+//--------------------------------------------------------------------
+const Json::Value & _JsonParser::getFieldObjects(const Json::Value & node)
+//--------------------------------------------------------------------
+{
+    Json::Value& value = node[JsonNames::fieldObject_objects];
+    if (!value.isArray())
+        throw std::logic_error("bad fieldObjects array");
+
+    return value;
+}
+
+//--------------------------------------------------------------------
+uint8_t _JsonParser::getFieldObjectCol(const Json::Value & node)
+//--------------------------------------------------------------------
+{
+    uint8_t res = 0;
+    if (node[JsonNames::fieldObject_col].isInt()) {
+        res = node[JsonNames::fieldObject_col].asInt();
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
+uint8_t _JsonParser::getFieldObjectRow(const Json::Value & node)
+//--------------------------------------------------------------------
+{
+    uint8_t res = 0;
+    if (node[JsonNames::fieldObject_row].isInt()) {
+        res = node[JsonNames::fieldObject_row].asInt();
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
+const Json::Value & _JsonParser::getFieldObjectTypes(const Json::Value & node)
+//--------------------------------------------------------------------
+{
+    Json::Value& value = node[JsonNames::fieldObject_types];
+    if (!value.isArray())
+        throw std::logic_error("bad fieldObject_types array");
+
+    return value;
 }

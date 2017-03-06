@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <vector>
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldTypes.h"
 
 namespace CommonTypes {
 
@@ -84,7 +85,7 @@ namespace CommonTypes {
       int moves = 0; /**< available moves */
       TilesArray tiles = { 0 }; /**< array of tiles */
       TilesArray cookies = { 0 }; /**< array of cookies */
-      TilesArray fieldObjects = { 0 }; /**< array of tileObjects */
+      std::vector<ObjTypes::FieldJsonInfo> fieldObjects; /**< array of tileObjects */
       int typesCount = 0; /**< count of types */
       bool isPredefinedCookies = false; /**< availability to load predefined cookies */
       bool skipEmptyHoles = false; /**< availability to skip empty tiles when obj falling */

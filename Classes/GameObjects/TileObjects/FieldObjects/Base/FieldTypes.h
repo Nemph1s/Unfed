@@ -41,4 +41,13 @@ namespace ObjTypes {
         CommonTypes::BaseObjectInfo baseInfo; /**< type of BaseObjectInfo struct */
         FieldType fieldType; /**< type of Field object */
     };
+
+    /**
+    * @brief FieldInfo struct.
+    */
+    struct FieldJsonInfo
+    {
+        CommonTypes::BaseObjectInfo baseInfo = CommonTypes::BaseObjectInfo(BaseObjectType::FieldObj); /**< type of BaseObjectInfo struct */
+        std::vector<int> fieldType; /**< type of Field object */
+    };
 }

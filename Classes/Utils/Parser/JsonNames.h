@@ -25,8 +25,14 @@ namespace JsonNames {
     static const char* skipEmptyHoles = "skipEmptyHoles";
     static const char* predefinedCookies = "predefinedCookies";
     static const char* cookiesArray = "cookies";
-    static const char* fieldObjectsArray = "fieldObjects";
     static const char* allowedCookieTypes = "allowedCookieTypes";
+
+    //field objects
+    static const char* fieldObjectsArray = "fieldObjects";
+    static const char* fieldObject_objects = "objects";
+    static const char* fieldObject_col = "col";
+    static const char* fieldObject_row = "row";
+    static const char* fieldObject_types = "types";
 
     //level goals
     static const char* levelGoals = "levelGoals";
