@@ -272,9 +272,6 @@
     <ClInclude Include="..\Classes\GameObjects\TileObjects\FieldObjects\Base\FieldObj.h">
       <Filter>src\GameObjects\TileObjects\FieldObjects\Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\GameObjects\TileObjects\FieldObjects\Base\FieldTypes.h">
-      <Filter>src\GameObjects\TileObjects\FieldObjects\Base</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\Level\LevelTypes.h">
       <Filter>src\GameObjects\Level</Filter>
     </ClInclude>

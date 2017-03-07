@@ -12,9 +12,11 @@
 
 #include "cocos2d.h"
 
-class LevelObj;
-class CookieObj;
 class BaseObj;
+class CookieObj;
+class FieldObj;
+
+class LevelObj;
 class CookiesLayer;
 
 class GameplayScene : public cocos2d::Scene
@@ -28,12 +30,13 @@ public:
     virtual bool initWithSize(const cocos2d::Size& size);
 
 	void addTiles();
+    void addFieldObjectsAt(int column, int row);
     void addSpritesForCookies(cocos2d::Set* cookies);
     void addSpritesForObjects(cocos2d::Set* set);
 
     void createSpriteWithCookie(CookieObj* cookie, int column, int row);
     void createSpriteWithDude(BaseObj* dudeObj);
-    void createSpriteWithFieldObj(BaseObj* fieldObj);
+    void createSpriteWithFieldObj(FieldObj* fieldObj);
 
     void userInteractionEnabled();
     void userInteractionDisabled();

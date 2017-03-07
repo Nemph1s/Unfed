@@ -16,11 +16,11 @@
     "skipEmptyHoles" : true,
     "fieldObjects": 
     {
-        "objects" : [ { "col": 5, "row": 4, "types": [ 30, 21 ] },
-                    { "col": 4, "row": 5, "types": [ 30, 21 ] },
-                    { "col": 5, "row": 5, "types": [ 30, 21 ] },
-                    { "col": 6, "row": 5, "types": [ 30, 21 ] },
-                    { "col": 5, "row": 6, "types": [ 30, 21 ] } ],
+        "objects" : [ { "col": 4, "row": 3, "types": [ 30, 21 ] },
+                    { "col": 3, "row": 4, "types": [ 30, 21 ] },
+                    { "col": 4, "row": 4, "types": [ 30, 21 ] },
+                    { "col": 5, "row": 4, "types": [ 30, 21 ] },
+                    { "col": 4, "row": 5, "types": [ 30, 21 ] } ],
     }
     "levelGoals": 
     {

@@ -36,7 +36,7 @@ using namespace std::placeholders;
 #define COCOS2D_DEBUG 1
 #define UNFED_ENABLE_DEBUG 1
 
-#define CURRENT_LEVEL 2
+#define CURRENT_LEVEL 666
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
@@ -309,9 +309,6 @@ void ViewController::animateHandleMatches(cocos2d::Set* chains)
 
     mChainController->executeCollectGoalCallback(chains);
 
-    auto fieldObjects = mLevel->detectFieldObjects(chains);
-    AnimationsManager->animateRemovingFieldObjects(fieldObjects, CallFunc::create([](){}));
-
     auto completion = CallFunc::create([=]() {
 
         auto columns = mLevel->useGravityToFillHoles();
@@ -327,6 +324,8 @@ void ViewController::animateHandleMatches(cocos2d::Set* chains)
         AnimationsManager->animateFallingObjects(columns, addNewCookies);
     });
 
+    auto fieldObjects = mLevel->detectFieldObjects(chains);
+    AnimationsManager->animateRemovingFieldObjects(fieldObjects);
     AnimationsManager->animateMatching(chains, completion);
     AudioManager->playSound(SoundType::MatchSound);
 }

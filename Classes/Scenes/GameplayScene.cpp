@@ -13,6 +13,7 @@
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 #include "Utils/Helpers/VisibleRect.h"
 #include "Utils/Helpers/Helper.h"
@@ -125,16 +126,26 @@ void GameplayScene::addTiles()
             tile->setSpriteNode(tileSprite);
 			mTilesLayer->addChild(tileSprite);
 
-            tile->updateDebugLabel();
-
-            // Create Field objects
-            auto fieldObj = objCtrl->fieldObjectAt(column, row);
-            if (!fieldObj) {
-                continue;
-            }
-            createSpriteWithFieldObj(fieldObj);
+            addFieldObjectsAt(column, row);
 		}
 	}
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::addFieldObjectsAt(int column, int row)
+//--------------------------------------------------------------------
+{
+    // Create Field objects
+    auto objCtrl = mLevel->getObjectController();
+    auto fieldObjects = objCtrl->fieldObjectsAt(column, row);
+    if (fieldObjects.size() == 0) {
+        return;
+    }
+    for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
+        auto fieldObj = dynamic_cast<FieldObj*>(*it);    
+        createSpriteWithFieldObj(fieldObj);
+        fieldObj->updateDebugLabel();
+    }
 }
 
 //--------------------------------------------------------------------
@@ -205,14 +216,20 @@ void GameplayScene::createSpriteWithDude(BaseObj * dudeObj)
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::createSpriteWithFieldObj(BaseObj * fieldObj)
+void GameplayScene::createSpriteWithFieldObj(FieldObj * obj)
 //--------------------------------------------------------------------
 {
     //TODO: use sprites factory
-    auto sprite = Sprite::create(fieldObj->spriteName().getCString());
-    sprite->setPosition(Helper::pointForColumnAndRow(fieldObj->getColumn(), fieldObj->getRow()));
+    auto sprite = Sprite::create(obj->spriteName().getCString());
+
+    auto col = obj->getColumn();
+    auto row = obj->getRow();
+    auto priority = obj->getPriority();
+    auto pos = Helper::pointForColumnAndRowWithPriority(col, row, priority);
+
+    sprite->setPosition(pos);
     sprite->setScale(1.1f);
-    fieldObj->setSpriteNode(sprite);
+    obj->setSpriteNode(sprite);
     mTilesLayer->addChild(sprite);
 }
 

@@ -13,7 +13,7 @@
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
-using ObjTypes::FieldType;
+using CommonTypes::FieldType;
 
 //--------------------------------------------------------------------
 BushObj::BushObj()

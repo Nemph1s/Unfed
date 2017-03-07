@@ -11,7 +11,6 @@
 #pragma once
 
 #include "GameObjects/TileObjects/Base/BaseObj.h"
-#include "GameObjects/TileObjects/FieldObjects/Base/FieldTypes.h"
 
 class FieldObj : public BaseObj
 {
@@ -44,8 +43,9 @@ protected:
     FieldObj();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE_READONLY(ObjTypes::FieldType, mFieldType, FieldType);
+    CC_SYNTHESIZE_READONLY(CommonTypes::FieldType, mFieldType, FieldType);
     CC_SYNTHESIZE_READONLY(int, mPriority, Priority);
+    CC_SYNTHESIZE(bool, mReadyToUpdatePriority, ReadyToUpdatePriority);
     CC_SYNTHESIZE(int, mHP, HP);
     CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);
 };

@@ -20,7 +20,7 @@
 #include "GameObjects/TileObjects/FieldObjects/RockObj.h"
 
 using namespace CommonTypes;
-using namespace ObjTypes;
+using namespace CommonTypes;
 
 //--------------------------------------------------------------------
 _SmartFactory * _SmartFactory::getInstance()

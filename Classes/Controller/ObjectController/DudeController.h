@@ -12,11 +12,11 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
-#include "GameObjects/TileObjects/FieldObjects/Base/FieldTypes.h"
+ 
 #include <map>
 
 using cocos2d::Set;
-using ObjTypes::FieldType;
+using CommonTypes::FieldType;
 
 class BaseObj;
 class DudeObj;

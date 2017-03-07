@@ -244,6 +244,21 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
                             break;
                         }
                     }
+
+                    auto fieldObjects = mObjCtrl->fieldObjectsAt(column, lookup);
+                    for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
+                        auto obj = dynamic_cast<FieldObj*>(*it);
+                        if (obj->getReadyToUpdatePriority()) {
+                            // Lazy creation of array
+                            if (array == nullptr) {
+                                array = cocos2d::Array::createWithCapacity(NumRows);
+                                columns->addObject(array);
+                            }
+                            array->addObject(fieldObj);
+                            obj->setReadyToUpdatePriority(false);
+                        }
+                    }
+
                     auto fieldObj = mObjCtrl->fieldObjectAt(column, lookup);
                     if (fieldObj) {
                         

@@ -13,7 +13,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <vector>
-#include "GameObjects/TileObjects/FieldObjects/Base/FieldTypes.h"
 
 namespace CommonTypes {
 
@@ -21,8 +20,6 @@ namespace CommonTypes {
     //TODO: move to globalInfo or to json file
     static const int NumColumns = 9;
     static const int NumRows = 9;
-
-    
 
     /**
     * @brief GameObjectType enum.
@@ -75,13 +72,28 @@ namespace CommonTypes {
        CookieType cookieType; /**< type of Cookie object */
    };
 
+   enum class FieldType : int {
+         Dirt = 10 /**< enum value Dirt. */
+       , Dirt_HP2 = 11 /**< enum value DirtX2. */
+       , Dirt_HP3 = 12 /**< enum value DirtX3. */
+       , Bush = 20 /**< enum value DirtX3. */
+       , Bush_HP2 = 21 /**< enum value DirtX3. */
+       , RockWall = 30 /**< enum value RockWall. */
+       , DudeFromAToB = 200 /**< enum value DudeLightr. */
+       , DudeFromAToBx3 = 201 /**< enum value DudeBulbr. */
+       , DudeChainX = 202 /**< enum value DudeOni. */
+       , DudeAllOfType = 203 /**< enum value DudePina. */
+       , Unknown /**< enum value unknown. */
+   };
+
+
    /**
    * @brief FieldInfo struct.
    */
    struct FieldInfo
    {
        BaseObjectInfo baseInfo; /**< type of BaseObjectInfo struct */
-       ObjTypes::FieldType fieldType; /**< type of Field object */
+       FieldType fieldType; /**< type of Field object */
        int priority; /**< priority for z level of Field object. 0 - low priority; 3 - high priority */
    };
 

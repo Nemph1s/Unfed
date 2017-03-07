@@ -35,6 +35,7 @@ public:
     static cocos2d::String* getSpriteNameByTileType(int tileType);
 
     static cocos2d::Vec2 pointForColumnAndRow(int column, int row);
+    static cocos2d::Vec2 pointForColumnAndRowWithPriority(int column, int row, int priority);
     static cocos2d::Vec2 pointForTile(BaseObj* obj);
 
     static bool convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row);
@@ -45,5 +46,5 @@ public:
 
 private:
     static cocos2d::Color4B getScoreColorByCookieType(CommonTypes::CookieType type);
-    static cocos2d::Color4B getScoreColorByTileType(CommonTypes::TileType type);
+    static cocos2d::Color4B getScoreColorByFieldType(CommonTypes::FieldType type);
 };

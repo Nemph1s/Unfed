@@ -10,9 +10,10 @@
 
 #pragma once
 
+#include <queue>
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
-#include "GameObjects/TileObjects/FieldObjects/Base/FieldTypes.h"
+ 
 
 class BaseObj;
 class TileObj;
@@ -49,6 +50,7 @@ public:
     bool hasChainAt(int column, int row);
 
     BaseObj* fieldObjectAt(int column, int row);
+    std::list<BaseObj*>& fieldObjectsAt(int column, int row);
     BaseObj* dudeObjectAt(int column, int row);
 
     bool isEmptyTileAt(int column, int row);
@@ -56,6 +58,7 @@ public:
     bool isSameTypeOfCookieAt(int column, int row, int type);
 
     bool matchFieldObject(BaseObj* obj);
+    void removeFieldObject(int column, int row);
 
     void updateCookieObjectAt(int column, int row, BaseObj* cookie);
     void updateObjectAt(int column, int row, BaseObj* obj, CommonTypes::BaseObjectType type);
@@ -81,5 +84,5 @@ protected:
     BaseObj* mTiles[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
     BaseObj* mCookies[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
     // Tile object array (Dirt etc)
-    cocos2d::Array* mFieldObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
+    std::list<BaseObj*> mFieldObjects[CommonTypes::NumColumns][CommonTypes::NumRows];
 };

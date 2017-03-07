@@ -428,7 +428,7 @@ void _AnimationsManager::animateBouncingObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects, cocos2d::CallFunc * completion)
+void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(fieldObjects);
@@ -471,7 +471,7 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
     }
     CC_ASSERT(mCurrentScene);
 
-    mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
+    mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), nullptr));
 }
 
 //--------------------------------------------------------------------

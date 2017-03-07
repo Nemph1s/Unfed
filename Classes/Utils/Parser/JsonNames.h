@@ -18,7 +18,7 @@ namespace JsonNames {
     static const char* loadResult = "res";
     static const char* tilesArray = "tiles";
     static const char* movesLeft = "moves";
-    static const char* objTypesCount = "typesCount";
+    static const char* CommonTypesCount = "typesCount";
     static const char* targetScore = "targetScore";
 
     //extended level parameters

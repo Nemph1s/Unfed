@@ -15,10 +15,11 @@
 //--------------------------------------------------------------------
 FieldObj::FieldObj()
     : BaseObj()
-    , mFieldType(ObjTypes::FieldType::Unknown)
+    , mFieldType(CommonTypes::FieldType::Unknown)
     , mPriority(0)
     , mDebugLabel(nullptr)
     , mHP(0)
+    , mReadyToUpdatePriority(false)
 //--------------------------------------------------------------------
 {
 }
@@ -111,7 +112,9 @@ void FieldObj::match()
 {
     mHP--;
     if (mHP > 0) {
-        mFieldType = static_cast<ObjTypes::FieldType>(getTypeAsInt() - 1);
+        mFieldType = static_cast<CommonTypes::FieldType>(getTypeAsInt() - 1);
+    } else if (mHP == 0) {
+        mPriority--;
     }
 }
 
@@ -120,7 +123,7 @@ void FieldObj::clear()
 //--------------------------------------------------------------------
 {
     BaseObj::clear();
-    mFieldType = ObjTypes::FieldType::Unknown;
+    mFieldType = CommonTypes::FieldType::Unknown;
     mHP = 0;
     if (mDebugLabel) {
         if (mDebugLabel->getParent()) {

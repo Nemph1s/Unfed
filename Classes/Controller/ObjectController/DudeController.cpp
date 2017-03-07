@@ -28,7 +28,7 @@
 #define RequiredAmountForPina 5
 
 using namespace CommonTypes;
-using namespace ObjTypes;
+using namespace CommonTypes;
 
 //--------------------------------------------------------------------
 DudeController::DudeController()

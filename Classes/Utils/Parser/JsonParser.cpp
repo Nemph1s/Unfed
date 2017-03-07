@@ -148,8 +148,8 @@ uint8_t _JsonParser::getTypesCount()
 //--------------------------------------------------------------------
 {
     uint8_t res = 0;
-    if (mRootNode[JsonNames::objTypesCount].isInt()) {
-        res = mRootNode[JsonNames::objTypesCount].asInt();
+    if (mRootNode[JsonNames::CommonTypesCount].isInt()) {
+        res = mRootNode[JsonNames::CommonTypesCount].asInt();
     }
     return res;
 }
@@ -297,7 +297,7 @@ void _JsonParser::updateFieldObjects(CommonTypes::LevelInfo & levelInfo)
 
         auto fieldInfo = CommonTypes::FieldJsonInfo();
         fieldInfo.baseInfo.column = getFieldObjectCol(fieldObjectNode);
-        fieldInfo.baseInfo.row = getFieldObjectCol(fieldObjectNode);
+        fieldInfo.baseInfo.row = getFieldObjectRow(fieldObjectNode);
 
         const Json::Value& typesNode = getFieldObjectTypes(fieldObjectNode);
         CC_ASSERT(typesNode.isArray());

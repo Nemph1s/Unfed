@@ -195,7 +195,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\GameObjects\TileObjects\CookieObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\DudeObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\FieldObjects\Base\FieldObj.h" />
-    <ClInclude Include="..\Classes\GameObjects\TileObjects\FieldObjects\Base\FieldTypes.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\FieldObjects\BushObj.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\FieldObjects\DirtObject.h" />
     <ClInclude Include="..\Classes\GameObjects\TileObjects\FieldObjects\RockObj.h" />
