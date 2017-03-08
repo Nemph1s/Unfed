@@ -432,7 +432,6 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
 //--------------------------------------------------------------------
 {
     CC_ASSERT(fieldObjects);
-    CC_ASSERT(completion);
 
     const float duration = 0.3f;
 

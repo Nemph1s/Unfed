@@ -387,6 +387,8 @@ void ObjectController::removeFieldObject(int column, int row)
 
     for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
         auto obj = dynamic_cast<FieldObj*>(*it);
+        auto prio = obj->getPriority() - 1;
+        obj->setPriority(prio);
         obj->setReadyToUpdatePriority(true);
     }
 }

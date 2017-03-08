@@ -119,7 +119,7 @@ cocos2d::Vec2 Helper::pointForTile(BaseObj * obj)
     if (obj->getType() == BaseObjectType::FieldObj) {
         auto tileObj = dynamic_cast<FieldObj*>(obj);
         if (tileObj) {
-            pos = pointForColumnAndRow(obj->getColumn(), obj->getRow(), obj->getPriority());
+            pos = pointForColumnAndRowWithPriority(obj->getColumn(), obj->getRow(), tileObj->getPriority());
         }
     } else {
         pos = pointForColumnAndRow(obj->getColumn(), obj->getRow());

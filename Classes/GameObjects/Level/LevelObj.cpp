@@ -212,6 +212,20 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
         cocos2d::Array* array = nullptr;
         for (int row = NumRows - 1; row >= 0; row--) {
 
+            auto fieldObjects = mObjCtrl->fieldObjectsAt(column, row);
+            for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
+                auto obj = dynamic_cast<FieldObj*>(*it);
+                if (obj->getReadyToUpdatePriority()) {
+                    // Lazy creation of array
+                    if (array == nullptr) {
+                        array = cocos2d::Array::createWithCapacity(NumRows);
+                        columns->addObject(array);
+                    }
+                    array->addObject(obj);
+                    obj->setReadyToUpdatePriority(false);
+                }
+            }
+
             if (isPossibleToAddCookie(column, row)) {
 
                 // Scan upward to find the cookie that sits directly above the hole
@@ -242,20 +256,6 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
 
                             // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
                             break;
-                        }
-                    }
-
-                    auto fieldObjects = mObjCtrl->fieldObjectsAt(column, lookup);
-                    for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
-                        auto obj = dynamic_cast<FieldObj*>(*it);
-                        if (obj->getReadyToUpdatePriority()) {
-                            // Lazy creation of array
-                            if (array == nullptr) {
-                                array = cocos2d::Array::createWithCapacity(NumRows);
-                                columns->addObject(array);
-                            }
-                            array->addObject(fieldObj);
-                            obj->setReadyToUpdatePriority(false);
                         }
                     }
 
