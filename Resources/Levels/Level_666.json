@@ -23,15 +23,13 @@
     "moves" : 15,
     "typesCount" : 4,
     "allowedCookieTypes" : [0, 2, 3, 4 ],
-    "fieldObjects": 
-    {
-        "objects" : [ { "col": 4, "row": 3, "types": [ 30, 21 ] } ],
-    }
-    "levelGoals": 
-    {
+    "fieldObjects": {
+        "objects" : [ { "col": 4, "row": 3, "types": [ 30, 21 ] } ]
+    },
+    "levelGoals": {
         "goalsCount" : 3,
         "collect" : [ { "baseObjType": 1, "objType": 1, "targetCount": 9 }, 
                      { "baseObjType": 1, "objType": 3, "targetCount": 10 },
-					{ "baseObjType": 1, "objType": 0, "targetCount": 10 } ],
+					{ "baseObjType": 1, "objType": 0, "targetCount": 10 } ]
     }
 }

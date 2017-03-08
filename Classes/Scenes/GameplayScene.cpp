@@ -228,7 +228,7 @@ void GameplayScene::createSpriteWithFieldObj(FieldObj * obj)
     auto pos = Helper::pointForColumnAndRowWithPriority(col, row, priority);
 
     sprite->setPosition(pos);
-    sprite->setScale(1.1f);
+    sprite->setScale(1);
     obj->setSpriteNode(sprite);
     mTilesLayer->addChild(sprite);
 }

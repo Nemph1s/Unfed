@@ -141,7 +141,7 @@ void _AnimationsManager::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc
     }
     CC_ASSERT(mCurrentScene);
 
-    mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
+    mCurrentScene->runAction(Sequence::create(DelayTime::create(duration/1.5f), completion, nullptr));
 }
 
 //--------------------------------------------------------------------
