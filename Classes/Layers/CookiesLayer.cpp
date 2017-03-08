@@ -118,6 +118,7 @@ void CookiesLayer::addSpritesForCookies(Set* cookies)
         CC_ASSERT(cookie);
 
         createSpriteWithObj(cookie, cookie->getColumn(), cookie->getRow());
+        cookie->updateDebugLabel();
 
         auto sprite = cookie->getSpriteNode();
         AnimationsManager->animateNewCookieSprite(sprite);
@@ -135,6 +136,7 @@ void CookiesLayer::addSpritesForObjects(cocos2d::Set * set)
         CC_ASSERT(obj);
 
         createSpriteWithObj(obj, obj->getColumn(), obj->getRow());
+        obj->updateDebugLabel();
 
         auto sprite = obj->getSpriteNode();
         AnimationsManager->animateNewCookieSprite(sprite);
@@ -343,16 +345,17 @@ void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
         auto sprite = Sprite::create(obj->spriteName().getCString());
         sprite->setPosition(Helper::pointForColumnAndRow(column, row));
         obj->setSpriteNode(sprite);
-        auto cookie = dynamic_cast<CookieObj*>(obj);
-        if (cookie) {
-            cookie->updateDebugLabel();
-        }
+
+        auto zOrder = (row * 10);
         if (obj->getType() == BaseObjectType::DudeObj) {
-            mDudesLayer->addChild(sprite);
-            mDudesLayer->addChild(obj);
+            mDudesLayer->addChild(sprite, zOrder);
+            mDudesLayer->addChild(obj, zOrder);
         } else {
-            this->addChild(sprite);
-            this->addChild(obj);
+            this->addChild(sprite, zOrder);
+            this->addChild(obj, zOrder);
+        }
+        if (obj->getType() != BaseObjectType::TileObj) {
+            obj->updateDebugLabel();
         }
     }    
 }

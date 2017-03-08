@@ -1,0 +1,25 @@
+{
+    "res" : "OK",
+    "tiles" : [ [0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+              [0, 0, 0, 1, 1, 1, 0, 0, 0 ],
+              [0, 0, 0, 1, 1, 1, 0, 0, 0 ],
+              [0, 0, 0, 1, 1, 1, 0, 0, 0 ],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0 ],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0 ] ],
+
+    "targetScore" : 3000,
+    "moves" : 15,
+    "typesCount" : 2,
+    "fieldObjects": {
+        "objects" : [ { "col": 4, "row": 4, "types": [ 30, 21 ] } ]
+    },
+    "levelGoals": {
+        "goalsCount" : 3,
+        "collect" : [ { "baseObjType": 1, "objType": 1, "targetCount": 9 }, 
+                     { "baseObjType": 1, "objType": 3, "targetCount": 10 },
+					{ "baseObjType": 1, "objType": 0, "targetCount": 10 } ]
+    }
+}

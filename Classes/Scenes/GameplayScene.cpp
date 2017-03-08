@@ -103,6 +103,10 @@ bool GameplayScene::initWithSize(const Size& size)
     mCookiesLayer->setPosition(layerPos);
     mGameLayer->addChild(mCookiesLayer);
 
+    mFieldObjectsLayer = Layer::create();
+    mFieldObjectsLayer->setPosition(layerPos);
+    mGameLayer->addChild(mFieldObjectsLayer);
+
     AudioManager->playBGMusic();
 
     return true;
@@ -224,13 +228,14 @@ void GameplayScene::createSpriteWithFieldObj(FieldObj * obj)
 
     auto col = obj->getColumn();
     auto row = obj->getRow();
+    auto zOrder = (row * 10);
     auto priority = obj->getPriority();
     auto pos = Helper::pointForColumnAndRowWithPriority(col, row, priority);
 
     sprite->setPosition(pos);
     sprite->setScale(1);
     obj->setSpriteNode(sprite);
-    mTilesLayer->addChild(sprite);
+    mFieldObjectsLayer->addChild(sprite, zOrder);
 }
 
 //--------------------------------------------------------------------

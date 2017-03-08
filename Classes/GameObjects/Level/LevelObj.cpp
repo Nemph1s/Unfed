@@ -87,6 +87,7 @@ cocos2d::Set* LevelObj::shuffle()
     bool isSwapsDetected = mDetectPossibleSwapsCallback();
 
     while (!isSwapsDetected) {
+        mObjCtrl->removeAllCookies();
         set = mObjCtrl->createInitialCookies();
         isSwapsDetected = mDetectPossibleSwapsCallback();
     }
