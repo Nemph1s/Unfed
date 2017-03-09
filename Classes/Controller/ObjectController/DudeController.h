@@ -53,7 +53,7 @@ public:
     Set* activateDude(DudeObj* obj, int direction);
     void activateAllDudes();
 
-    void removeDude(int column, int row);
+    void removeDude(int column, int row, bool removeWithCleanup = true);
     void removeAllDudes();
 
 protected:

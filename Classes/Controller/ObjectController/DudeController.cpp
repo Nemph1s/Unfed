@@ -280,19 +280,23 @@ void DudeController::activateAllDudes()
 
 
 //--------------------------------------------------------------------
-void DudeController::removeDude(int column, int row)
+void DudeController::removeDude(int column, int row, bool removeWithCleanup)
 //--------------------------------------------------------------------
 {
-    auto dude = dudeObjectAt(column, row);
+    if (removeWithCleanup)
+    {
+        auto dude = dudeObjectAt(column, row);
 
-    if (!dude) {
-        cocos2d::log("DudeController::removeDude: dude at (%d,%d) already removed", column, row);
-        return;
+        if (!dude) {
+            cocos2d::log("DudeController::removeDude: dude at (%d,%d) already removed", column, row);
+            return;
+        }
+        cocos2d::log("DudeController::removeDude: remove %s", dude->description().getCString());
+
+        SmartFactory->recycle(dude);
+        mDudeDirections.erase(dude);
     }
-    cocos2d::log("DudeController::removeDude: remove %s", dude->description().getCString());
     
-    SmartFactory->recycle(dude);
-    mDudeDirections.erase(dude);
     mDudeObjects[column][row] = nullptr;
 }
 

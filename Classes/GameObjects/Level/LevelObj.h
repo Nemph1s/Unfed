@@ -62,6 +62,8 @@ protected:
     bool checkMathicngFieldObjWithChain(cocos2d::Set* chains, BaseObj* obj);
 
     bool isPossibleToAddCookie(int column, int row);
+    bool useGravityOnObject(cocos2d::Array* colArr, cocos2d::Array* rowArr, BaseObj* obj, int destinationRow);
+
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<bool()>, mDetectPossibleSwapsCallback, DetectPossibleSwapsCallback);
