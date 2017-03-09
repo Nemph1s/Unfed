@@ -11,6 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
+#include "Common/CommonTypes.h"
 
 class LevelObj;
 class BaseObj;
@@ -29,7 +30,7 @@ public:
 
     virtual void onEnter() override;
     virtual void onExit() override;
-    void addSpritesForObjects(cocos2d::Set* set);
+    void addSpritesForObjects(CommonTypes::Set* set);
 
     void createSpriteWithObj(BaseObj* obj, int column, int row);
     void createSpriteWithFieldObj(FieldObj* fieldObj, int column, int row);

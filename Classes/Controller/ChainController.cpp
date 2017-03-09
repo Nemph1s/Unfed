@@ -57,7 +57,7 @@ bool ChainController::init()
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * ChainController::removeMatches()
+CommonTypes::Set * ChainController::removeMatches()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ChainController::removeMatches:");
@@ -65,7 +65,7 @@ cocos2d::Set * ChainController::removeMatches()
     auto verticalChains = detectVerticalMatches();
     auto difficultChains = detectDifficultMatches(horizontalChains, verticalChains);
 
-    auto set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
 
     addChainsFromSetToSet(horizontalChains, set);
     addChainsFromSetToSet(verticalChains, set);
@@ -89,14 +89,14 @@ cocos2d::Set * ChainController::removeMatches()
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * ChainController::removeChainAt(CommonTypes::ChainType & type, cocos2d::Vec2 & pos)
+CommonTypes::Set * ChainController::removeChainAt(CommonTypes::ChainType & type, cocos2d::Vec2 & pos)
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
 
     int column = -1, row = -1;
     if (Helper::convertPointToTilePos(pos, column, row)) {
-        cocos2d::Set* chainSet = nullptr;
+        CommonTypes::Set* chainSet = nullptr;
         switch (type)
         {
         case ChainType::ChainTypeHorizontal:
@@ -152,7 +152,7 @@ void ChainController::calculateChainScore(ChainObj* chain)
 }
 
 //--------------------------------------------------------------------
-void ChainController::executeCollectGoalCallback(cocos2d::Set * chains)
+void ChainController::executeCollectGoalCallback(CommonTypes::Set * chains)
 //--------------------------------------------------------------------
 {
     for (auto it = chains->begin(); it != chains->end(); it++) {
@@ -163,10 +163,10 @@ void ChainController::executeCollectGoalCallback(cocos2d::Set * chains)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * ChainController::detectVerticalMatches()
+CommonTypes::Set * ChainController::detectVerticalMatches()
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
     for (int column = 0; column < NumColumns; column++) {
         for (int row = 0; row < NumRows - 2;) {
 
@@ -209,7 +209,7 @@ cocos2d::Set * ChainController::detectVerticalMatches()
 }
 
 //--------------------------------------------------------------------
-void ChainController::addChainToSet(ChainObj* chain, cocos2d::Set* set)
+void ChainController::addChainToSet(ChainObj* chain, CommonTypes::Set* set)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(set);
@@ -222,10 +222,10 @@ void ChainController::addChainToSet(ChainObj* chain, cocos2d::Set* set)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * ChainController::detectHorizontalMatches()
+CommonTypes::Set * ChainController::detectHorizontalMatches()
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
     for (int row = 0; row < NumRows; row++) {
         for (int column = 0; column < NumColumns - 2; ) {
 
@@ -268,10 +268,10 @@ cocos2d::Set * ChainController::detectHorizontalMatches()
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * ChainController::detectDifficultMatches(cocos2d::Set * horizontal, cocos2d::Set * vertical)
+CommonTypes::Set * ChainController::detectDifficultMatches(CommonTypes::Set * horizontal, CommonTypes::Set * vertical)
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
     ChainObj* chainL = nullptr;
     ChainObj* chainT = nullptr;
 
@@ -383,7 +383,7 @@ ChainObj * ChainController::detectTChainMatches(ChainObj * horzChain, ChainObj *
 }
 
 //--------------------------------------------------------------------
-void ChainController::addChainsFromSetToSet(cocos2d::Set* from, cocos2d::Set* to)
+void ChainController::addChainsFromSetToSet(CommonTypes::Set* from, CommonTypes::Set* to)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(from);
@@ -396,7 +396,7 @@ void ChainController::addChainsFromSetToSet(cocos2d::Set* from, cocos2d::Set* to
 }
 
 //--------------------------------------------------------------------
-void ChainController::addCookiesFromChainToChain(cocos2d::Set * from, cocos2d::Set * to)
+void ChainController::addCookiesFromChainToChain(CommonTypes::Set * from, CommonTypes::Set * to)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(from);
@@ -417,10 +417,10 @@ void ChainController::addCookiesFromChainToChain(cocos2d::Set * from, cocos2d::S
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set* ChainController::createHorizontalChainAt(int column)
+CommonTypes::Set* ChainController::createHorizontalChainAt(int column)
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
     auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
     for (int row = 0; row < NumRows; row++) {
@@ -435,10 +435,10 @@ cocos2d::Set* ChainController::createHorizontalChainAt(int column)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set* ChainController::createVerticalChainAt(int row)
+CommonTypes::Set* ChainController::createVerticalChainAt(int row)
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
     auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
     for (int column = 0; column < NumColumns; column++) {
@@ -453,10 +453,10 @@ cocos2d::Set* ChainController::createVerticalChainAt(int row)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set* ChainController::createXChainAt(int column, int row, bool isCreatedByDude)
+CommonTypes::Set* ChainController::createXChainAt(int column, int row, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
     auto chain = ChainObj::createWithType(ChainType::ChainTypeX);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
     for (int i = 0; i < NumColumns; i++) {
@@ -476,10 +476,10 @@ cocos2d::Set* ChainController::createXChainAt(int column, int row, bool isCreate
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set* ChainController::createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude)
+CommonTypes::Set* ChainController::createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
     auto entryCookie = mObjCtrl->cookieAt(entryColumn, entryRow);
     if (!entryCookie) {
         return set;
@@ -505,12 +505,12 @@ cocos2d::Set* ChainController::createAllOfOneChain(int entryColumn, int entryRow
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * ChainController::createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to, bool isCreatedByDude)
+CommonTypes::Set * ChainController::createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
     int fromCol = -1; int fromRow = -1;
     int toCol = -1; int toRow = -1;
-    auto set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
     if (!Helper::convertPointToTilePos(from, fromCol, fromRow)) {
         return set;
     }
@@ -522,10 +522,10 @@ cocos2d::Set * ChainController::createChainFromPosToPos(cocos2d::Vec2 from, coco
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow, int toCol, int toRow, bool isCreatedByDude)
+CommonTypes::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow, int toCol, int toRow, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
 
     if (!(toCol >= 0 && toCol < NumColumns) || !(toRow >= 0 && toRow < NumColumns)) {
         cocos2d::log("ChainController::createChainFromPosToPos: wrong destinationPos at column=%d, row=%d", toCol, toRow);
@@ -563,7 +563,7 @@ cocos2d::Set * ChainController::createChainFromPosToPos(int fromCol, int fromRow
 
 #ifdef COCOS2D_DEBUG
 //--------------------------------------------------------------------
-void ChainController::logDebugChains(cocos2d::Set * horizontal, cocos2d::Set * vertical, cocos2d::Set * difficult)
+void ChainController::logDebugChains(CommonTypes::Set * horizontal, CommonTypes::Set * vertical, CommonTypes::Set * difficult)
 //--------------------------------------------------------------------
 {
     auto strHorizontalChains = cocos2d::String::createWithFormat("Horizontal matches: {\n");

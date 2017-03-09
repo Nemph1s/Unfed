@@ -1,5 +1,5 @@
 /**
-* @file Scenes/ObjectController.cpp
+* @file Controller/ObjectController/ObjectController.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -9,7 +9,7 @@
 */
 
 #include "Controller/ObjectController/ObjectController.h"
-#include "Controller/ObjectController/DudeController.h"
+#include "Controller/ObjectController/Dude/DudeController.h"
 
 #include "Common/Factory/SmartFactory.h"
 
@@ -76,18 +76,17 @@ void ObjectController::createInitialTiles()
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set* ObjectController::createInitialFieldObjects()
+CommonTypes::Set* ObjectController::createInitialFieldObjects()
 //--------------------------------------------------------------------
 {
     auto levelInfo = mLevel->getLevelInfo();
-    cocos2d::Set* set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
     for (auto obj : levelInfo.fieldObjects) {
         for (uint8_t i = 0; i < obj.fieldType.size(); i++) {
             auto type = obj.fieldType.at(i);
             if (type > 0) {
                 auto fieldObj = createFieldObject(obj.baseInfo.column, obj.baseInfo.row, type, i);
                 set->addObject(fieldObj);
-                //mLevel->addChild(fieldObj);
             }
         }
     }
@@ -95,18 +94,18 @@ cocos2d::Set* ObjectController::createInitialFieldObjects()
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * ObjectController::createInitialCookies()
+CommonTypes::Set * ObjectController::createInitialCookies()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ObjectController::createInitialCookies:");
-    cocos2d::Set* set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
     auto createdString = cocos2d::String::create("");
 
     for (int row = 0; row < NumRows; row++) {
         for (int column = 0; column < NumColumns; column++) {
             if (isPossibleToAddCookie(column, row)) {
                 int cookieType = getRandomCookieType(column, row);
-                BaseObj* cookie = createCookie(column, row, cookieType);
+                auto cookie = createCookie(column, row, cookieType);
                 set->addObject(cookie);
                 createdString->appendWithFormat("%d ", cookieType);
             }
@@ -124,7 +123,7 @@ BaseObj * ObjectController::createTile(int column, int row, int type)
 {
     BaseObjectInfo baseInfo = { BaseObjectType::TileObj, column, row };
     TileInfo info = { baseInfo, static_cast<TileType>(type) };
-    BaseObj* tile = SmartFactory->createTileObj(info);
+    auto tile = SmartFactory->createTileObj(info);
     CC_ASSERT(tile);
     mTiles[column][row] = tile;
     return tile;
@@ -136,7 +135,7 @@ BaseObj * ObjectController::createCookie(int column, int row, int type)
 {
     BaseObjectInfo baseInfo = { BaseObjectType::CookieObj, column, row };
     CookieInfo info = { baseInfo, static_cast<CookieType>(type) };
-    BaseObj* cookie = SmartFactory->createCookieObj(info);
+    auto cookie = SmartFactory->createCookieObj(info);
     CC_ASSERT(cookie);
     mCookies[column][row] = cookie;
     return cookie;
@@ -148,7 +147,7 @@ BaseObj * ObjectController::createFieldObject(int column, int row, int type, int
 {
     BaseObjectInfo baseInfo = { BaseObjectType::FieldObj, column, row };
     FieldInfo info = { baseInfo, static_cast<FieldType>(type), priority };
-    BaseObj* obj = SmartFactory->createFieldObj(info);
+    auto obj = SmartFactory->createFieldObj(info);
     CC_ASSERT(obj);
     mFieldObjects[column][row].push_back(obj);
     return obj;
@@ -368,7 +367,7 @@ bool ObjectController::matchFieldObject(BaseObj * obj)
 {
     obj->match();
 
-    if (obj->isReadyToRemove()) {
+    if (obj->isHpEnded()) {
         removeFieldObject(obj->getColumn(), obj->getRow());
     }
     return true;

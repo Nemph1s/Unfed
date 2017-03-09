@@ -11,7 +11,7 @@
 #include "Controller/ViewController.h"
 #include "Controller/SwapController.h"
 #include "Controller/ChainController.h"
-#include "Controller/ObjectController/DudeController.h"
+#include "Controller/ObjectController/Dude/DudeController.h"
 #include "Controller/ObjectController/ObjectController.h"
 
 #include "Managers/AnimationsManager.h"
@@ -244,7 +244,7 @@ void ViewController::startGame()
 }
 
 //--------------------------------------------------------------------
-void ViewController::updateScore(cocos2d::Set * chains)
+void ViewController::updateScore(CommonTypes::Set * chains)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -301,7 +301,7 @@ void ViewController::handleMatches()
 
 
 //--------------------------------------------------------------------
-void ViewController::animateHandleMatches(cocos2d::Set* chains)
+void ViewController::animateHandleMatches(CommonTypes::Set* chains)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);

@@ -34,7 +34,7 @@ public:
     virtual void match() override;
     virtual void clear() override;
     virtual bool checkMatchingCondition(int column, int row);
-    virtual bool isReadyToRemove() const override;
+    virtual bool isHpEnded() const override;
 
     virtual void updateDebugLabel() override;
 
@@ -46,6 +46,8 @@ protected:
     CC_SYNTHESIZE_READONLY(CommonTypes::FieldType, mFieldType, FieldType);
     CC_SYNTHESIZE(int, mPriority, Priority);
     CC_SYNTHESIZE(bool, mReadyToUpdatePriority, ReadyToUpdatePriority);
+    CC_SYNTHESIZE(bool, mReadyToChangeState, ReadyToChangeState);
+
     CC_SYNTHESIZE(int, mHP, HP);
     CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);
 };

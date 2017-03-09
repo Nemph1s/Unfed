@@ -10,7 +10,7 @@
 
 #include "Controller/ObjectController/Dude/DudeHelper.h"
 
-#include "Controller/ObjectController/DudeController.h"
+#include "Controller/ObjectController/Dude/DudeController.h"
 #include "Controller/ChainController.h"
 
 #include "GameObjects/TileObjects/DudeObj.h"
@@ -67,10 +67,10 @@ bool DudeHelper::initWithDudeObject(DudeObj * obj)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * DudeHelper::getChainByDirection(CommonTypes::Direction & direction)
+CommonTypes::Set * DudeHelper::getChainByDirection(CommonTypes::Direction & direction)
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = CommonTypes::Set::create();
     auto chainCtrl = mDudeCtrl->getChainController();
     if (!chainCtrl) {
         cocos2d::log("DudeHelper::getChainByDirection: empty pointer ChainController");
@@ -122,35 +122,35 @@ void DudeHelper::clear()
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set* DudeHelper::getTopChain() const
+CommonTypes::Set* DudeHelper::getTopChain() const
 //--------------------------------------------------------------------
 {
     return mTopChain;
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set* DudeHelper::getBottomChain() const
+CommonTypes::Set* DudeHelper::getBottomChain() const
 //--------------------------------------------------------------------
 {
     return mBottomChain;
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set* DudeHelper::getLeftChain() const
+CommonTypes::Set* DudeHelper::getLeftChain() const
 //--------------------------------------------------------------------
 {
     return mLeftChain;
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set* DudeHelper::getRightChain() const
+CommonTypes::Set* DudeHelper::getRightChain() const
 //--------------------------------------------------------------------
 {
     return mRightChain;
 }
 
 //--------------------------------------------------------------------
-void DudeHelper::setTopChain(cocos2d::Set* var)
+void DudeHelper::setTopChain(CommonTypes::Set* var)
 //--------------------------------------------------------------------
 {
     if (mTopChain) {
@@ -161,7 +161,7 @@ void DudeHelper::setTopChain(cocos2d::Set* var)
 }
 
 //--------------------------------------------------------------------
-void DudeHelper::setBottomChain(cocos2d::Set* var)
+void DudeHelper::setBottomChain(CommonTypes::Set* var)
 //--------------------------------------------------------------------
 {
     if (mBottomChain) {
@@ -172,7 +172,7 @@ void DudeHelper::setBottomChain(cocos2d::Set* var)
 }
 
 //--------------------------------------------------------------------
-void DudeHelper::setLeftChain(cocos2d::Set* var)
+void DudeHelper::setLeftChain(CommonTypes::Set* var)
 //--------------------------------------------------------------------
 {
     if (mLeftChain) {
@@ -183,7 +183,7 @@ void DudeHelper::setLeftChain(cocos2d::Set* var)
 }
 
 //--------------------------------------------------------------------
-void DudeHelper::setRightChain(cocos2d::Set* var)
+void DudeHelper::setRightChain(CommonTypes::Set* var)
 //--------------------------------------------------------------------
 {
     if (mRightChain) {

@@ -108,7 +108,7 @@ void CookiesLayer::onExit()
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::addSpritesForObjects(cocos2d::Set * set)
+void CookiesLayer::addSpritesForObjects(CommonTypes::Set * set)
 //--------------------------------------------------------------------
 {
     cocos2d::log("CookiesLayer::addSpritesForDudes:");

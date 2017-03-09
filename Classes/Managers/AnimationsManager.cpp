@@ -53,8 +53,8 @@ void _AnimationsManager::animateSwap(SwapObj* swap, cocos2d::CallFunc* completio
     auto cookieA = swap->getCookieA()->getSpriteNode();
     auto cookieB = swap->getCookieB()->getSpriteNode();
 
-    cookieA->setZOrder(100);
-    cookieB->setZOrder(90);
+    cookieA->setLocalZOrder(100);
+    cookieB->setLocalZOrder(90);
 
     const float duration = 0.3f;
 
@@ -81,8 +81,8 @@ void _AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* co
     auto cookieA = swap->getCookieA()->getSpriteNode();
     auto cookieB = swap->getCookieB()->getSpriteNode();
 
-    cookieA->setZOrder(100);
-    cookieB->setZOrder(90);
+    cookieA->setLocalZOrder(100);
+    cookieB->setLocalZOrder(90);
 
     const float duration = 0.3f;
     auto deltaA = cookieB->getPosition() - cookieA->getPosition();
@@ -101,7 +101,7 @@ void _AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* co
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateMatching(CommonTypes::Set* chains, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -316,7 +316,7 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
         Text* scoreLabel = Text::create(str, GameResources::s_fontYellow.getCString(), fontSize);
         scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
         scoreLabel->setPosition(centerPosition);
-        scoreLabel->setZOrder(300);
+        scoreLabel->setLocalZOrder(300);
         scoreLabel->setTextColor(Color4B::WHITE);
         scoreLabel->enableOutline(color, 2);
         scoreLabel->setScale(0.5f);
@@ -358,7 +358,7 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
     Text* scoreLabel = Text::create(str, GameResources::s_fontYellow.getCString(), fontSize);
     scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
     scoreLabel->setPosition(centerPosition);
-    scoreLabel->setZOrder(300);
+    scoreLabel->setLocalZOrder(300);
     scoreLabel->setTextColor(Color4B::WHITE);
     scoreLabel->enableOutline(color, 2);
     scoreLabel->setScale(0.5f);
@@ -428,7 +428,7 @@ void _AnimationsManager::animateBouncingObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects)
+void _AnimationsManager::animateRemovingFieldObjects(CommonTypes::Set * fieldObjects)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(fieldObjects);
@@ -461,7 +461,7 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
             //TODO: move this to another place
             if (obj->getHP() > 0) {
                 scene->createSpriteWithFieldObj(obj);
-            } else if (obj->isReadyToRemove()) {
+            } else if (obj->isHpEnded()) {
                 SmartFactory->recycle(obj);
             }
             

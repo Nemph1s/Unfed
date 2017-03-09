@@ -138,9 +138,6 @@
     <ClCompile Include="..\Classes\Controller\ObjectController\ObjectController.cpp">
       <Filter>src\Controller\ObjectController</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Controller\ObjectController\DudeController.cpp">
-      <Filter>src\Controller\ObjectController\Dude</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.cpp">
       <Filter>src\Controller\ObjectController\Dude</Filter>
     </ClCompile>
@@ -161,6 +158,12 @@
     </ClCompile>
     <ClCompile Include="..\Classes\GameObjects\TileObjects\FieldObjects\Base\FieldObj.cpp">
       <Filter>src\GameObjects\TileObjects\FieldObjects\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController\ObjContainer.cpp">
+      <Filter>src\Controller\ObjectController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeController.cpp">
+      <Filter>src\Controller\ObjectController\Dude</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -245,9 +248,6 @@
     <ClInclude Include="..\Classes\Controller\ObjectController\ObjectController.h">
       <Filter>src\Controller\ObjectController</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Controller\ObjectController\DudeController.h">
-      <Filter>src\Controller\ObjectController\Dude</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.h">
       <Filter>src\Controller\ObjectController\Dude</Filter>
     </ClInclude>
@@ -274,6 +274,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\Level\LevelTypes.h">
       <Filter>src\GameObjects\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController\ObjContainer.h">
+      <Filter>src\Controller\ObjectController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeController.h">
+      <Filter>src\Controller\ObjectController\Dude</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

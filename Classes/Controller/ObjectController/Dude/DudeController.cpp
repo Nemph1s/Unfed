@@ -1,5 +1,5 @@
 /**
-* @file Scenes/ObjectController/DudeController.cpp
+* @file Scenes/ObjectController/Dude/DudeController.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,7 +8,7 @@
 * @author VMartyniuk
 */
 
-#include "Controller/ObjectController/DudeController.h"
+#include "Controller/ObjectController/Dude/DudeController.h"
 #include "Controller/ObjectController/Dude/DudeHelper.h"
 #include "Controller/ObjectController/ObjectController.h"
 #include "Controller/ChainController.h"
@@ -28,14 +28,12 @@
 #define RequiredAmountForPina 5
 
 using namespace CommonTypes;
-using namespace CommonTypes;
 
 //--------------------------------------------------------------------
 DudeController::DudeController()
     : mObjCtrl(nullptr)
     , mChainCtrl(nullptr)
     , mDudeDirections()
-    , mDudeTypes()
 //--------------------------------------------------------------------
 {
 }
@@ -65,16 +63,14 @@ DudeController * DudeController::create()
 bool DudeController::init()
 //--------------------------------------------------------------------
 {
-    mDudeTypes[RequiredCountForDudeFromAToB] = FieldType::DudeFromAToBx3;
-    mDudeTypes[RequiredCountForDudeFromAToBx3] = FieldType::DudeFromAToB;
     return true;
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set* DudeController::createDudeObectsFromChains(cocos2d::Set * chains)
+Set* DudeController::createDudeObectsFromChains(Set * chains)
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = Set::create();
     for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
@@ -157,10 +153,10 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
     int column = obj->getColumn();
     int row = obj->getRow();
 
-    auto topSet = cocos2d::Set::create();
-    auto botSet = cocos2d::Set::create();
-    auto leftSet = cocos2d::Set::create();
-    auto rightSet = cocos2d::Set::create();
+    auto topSet = Set::create();
+    auto botSet = Set::create();
+    auto leftSet = Set::create();
+    auto rightSet = Set::create();
 
     switch (obj->getFieldType())
     {
@@ -253,10 +249,10 @@ bool DudeController::canActivateDudeTo(int fromCol, int fromRow, int direction)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * DudeController::activateDude(DudeObj* obj, int dir)
+Set * DudeController::activateDude(DudeObj* obj, int dir)
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = Set::create();
     if (!obj) {
         cocos2d::log("DudeController::activateDude: empty ptr DudeObj");
         return set;

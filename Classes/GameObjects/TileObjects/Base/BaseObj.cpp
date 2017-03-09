@@ -120,7 +120,7 @@ void BaseObj::match()
 }
 
 //--------------------------------------------------------------------
-bool BaseObj::isReadyToRemove() const
+bool BaseObj::isHpEnded() const
 //--------------------------------------------------------------------
 {
     return false;

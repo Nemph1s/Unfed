@@ -1,5 +1,5 @@
 /**
-* @file Controller/ObjectController.hpp
+* @file Controller/ObjectController/ObjectController.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -20,6 +20,7 @@ class TileObj;
 class CookieObj;
 class LevelObj;
 class DudeController;
+class ObjContainer;
 
 class ObjectController : public cocos2d::Ref
 {
@@ -39,8 +40,8 @@ public:
     bool init();
 
     void createInitialTiles();
-    cocos2d::Set* createInitialFieldObjects();
-    cocos2d::Set* createInitialCookies();
+    CommonTypes::Set* createInitialFieldObjects();
+    CommonTypes::Set* createInitialCookies();
     
     BaseObj* createRandomCookie(int column, int row);
     int getRandomCookieType(int column, int row);
@@ -80,6 +81,8 @@ protected:
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
     CC_SYNTHESIZE(DudeController*, mDudeCtrl, DudeController);
+
+    ObjContainer* mObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
 
     BaseObj* mTiles[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
     BaseObj* mCookies[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };

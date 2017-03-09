@@ -63,7 +63,7 @@ bool SwapController::detectPossibleSwaps()
     cocos2d::log("SwapController::detectPossibleSwaps:");
 
     clearPossibleSwaps();
-    cocos2d::Set* set = cocos2d::Set::create();
+    CommonTypes::Set* set = CommonTypes::Set::create();
 
     for (int row = 0; row < CommonTypes::NumRows; row++) {
         for (int column = 0; column < CommonTypes::NumColumns; column++) {

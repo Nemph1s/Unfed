@@ -49,12 +49,12 @@ protected:
     bool initChainController();
     bool initDudeController();
 
-    void updateScore(cocos2d::Set* chains);
+    void updateScore(CommonTypes::Set* chains);
     void updateInfoLabels();
 
     void shuffle();
     void handleMatches();
-    void animateHandleMatches(cocos2d::Set* chains);
+    void animateHandleMatches(CommonTypes::Set* chains);
 
     void beginNextTurn();
     void decrementMoves();

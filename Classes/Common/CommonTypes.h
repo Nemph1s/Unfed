@@ -14,12 +14,16 @@
 #include <string.h>
 #include <vector>
 
+namespace cocos2d { class __Set; }
+
 namespace CommonTypes {
 
     //temporary variables
     //TODO: move to globalInfo or to json file
     static const int NumColumns = 9;
     static const int NumRows = 9;
+
+    typedef cocos2d::__Set Set;
 
     /**
     * @brief GameObjectType enum.

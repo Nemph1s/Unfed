@@ -11,6 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
+#include "Common/CommonTypes.h"
 
 class SwapObj;
 class LevelObj;
@@ -18,12 +19,12 @@ class CookieObj;
 
 struct SwapChecker : public cocos2d::Ref
 {
-    cocos2d::Set* set;
+    CommonTypes::Set* set;
     int curCol;
     int curRow;
     int nextCol;
     int nextRow;
-    SwapChecker(cocos2d::Set* _set, int _curCol, int _curRow, int _nextCol, int _nextRow)
+    SwapChecker(CommonTypes::Set* _set, int _curCol, int _curRow, int _nextCol, int _nextRow)
         : set(_set), curCol(_curCol), curRow(_curRow), nextCol(_nextCol), nextRow(_nextRow) {}
 };
 
@@ -67,7 +68,7 @@ protected:
     CC_SYNTHESIZE(std::function<void(SwapObj* swap)>, mSwapCallback, SwapCallback);
 
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
-    CC_SYNTHESIZE_READONLY(cocos2d::Set*, mPossibleSwaps, PossibleSwaps);
+    CC_SYNTHESIZE_READONLY(CommonTypes::Set*, mPossibleSwaps, PossibleSwaps);
 };
 
 

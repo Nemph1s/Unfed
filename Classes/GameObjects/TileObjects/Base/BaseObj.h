@@ -36,7 +36,7 @@ public:
     virtual int getTypeAsInt() const;
 
     virtual void match();
-    virtual bool isReadyToRemove() const;
+    virtual bool isHpEnded() const;
 
     virtual void clear();
 
