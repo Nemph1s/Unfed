@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObjects/DudeObj.hpp
+* @file GameObjects/TileObjects/FieldObjects/DirtObject.h
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -11,37 +11,28 @@
 #pragma once
 
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
-#include "Utils/PlatformMacros.h"
 
-class DudeObj : public FieldObj
+class DirtObject : public FieldObj
 {
 CC_CONSTRUCTOR_ACCESS:
-    virtual ~DudeObj();
+    virtual ~DirtObject();
 
 public:
     /**
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static DudeObj * create(const CommonTypes::FieldInfo &info);
+    static DirtObject * create(const CommonTypes::FieldInfo &info);
 
     bool init(const CommonTypes::FieldInfo &info);
 
     cocos2d::String& spriteName() const override;
 
-    void activate();
-
+    virtual bool checkMatchingCondition(int column, int row) override;
 
 protected:
     // Nodes should be created using create();
-    DudeObj();
+    DirtObject();
 
     //---Class Attributes-------------------------------------------------
-
-    /**
-    * @brief A parameter that checks is the dude object was touched
-    * If it doesn't, when next dude was founded in chain, then it will create chain for all horizontal or vertical fields
-    */
-    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsActivated, Activated);
 };
-

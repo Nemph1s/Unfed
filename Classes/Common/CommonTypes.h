@@ -21,8 +21,6 @@ namespace CommonTypes {
     static const int NumColumns = 9;
     static const int NumRows = 9;
 
-    typedef int TilesArray[CommonTypes::NumColumns][CommonTypes::NumRows];
-
     /**
     * @brief GameObjectType enum.
     * Type of the cookie object
@@ -74,21 +72,38 @@ namespace CommonTypes {
        CookieType cookieType; /**< type of Cookie object */
    };
 
+   enum class FieldType : int {
+         Dirt = 10 /**< enum value Dirt. */
+       , Dirt_HP2 = 11 /**< enum value DirtX2. */
+       , Dirt_HP3 = 12 /**< enum value DirtX3. */
+       , Bush = 20 /**< enum value DirtX3. */
+       , Bush_HP2 = 21 /**< enum value DirtX3. */
+       , RockWall = 30 /**< enum value RockWall. */
+       , DudeFromAToB = 200 /**< enum value DudeLightr. */
+       , DudeFromAToBx3 = 201 /**< enum value DudeBulbr. */
+       , DudeChainX = 202 /**< enum value DudeOni. */
+       , DudeAllOfType = 203 /**< enum value DudePina. */
+       , Unknown /**< enum value unknown. */
+   };
+
+
    /**
-   * @brief LevelInfo struct.
+   * @brief FieldInfo struct.
    */
-   struct LevelInfo
+   struct FieldInfo
    {
-      uint32_t id = 0; /**< current level ID */
-      uint32_t targetScore = 0; /**< Goal score */
-      int moves = 0; /**< available moves */
-      TilesArray tiles = { 0 }; /**< array of tiles */
-      TilesArray cookies = { 0 }; /**< array of cookies */
-      TilesArray fieldObjects = { 0 }; /**< array of tileObjects */
-      int typesCount = 0; /**< count of types */
-      bool isPredefinedCookies = false; /**< availability to load predefined cookies */
-      bool skipEmptyHoles = false; /**< availability to skip empty tiles when obj falling */
-      std::vector<int> allowedCookieTypes;
+       BaseObjectInfo baseInfo; /**< type of BaseObjectInfo struct */
+       FieldType fieldType; /**< type of Field object */
+       int priority; /**< priority for z level of Field object. 0 - low priority; 3 - high priority */
+   };
+
+   /**
+   * @brief FieldInfo struct.
+   */
+   struct FieldJsonInfo
+   {
+       BaseObjectInfo baseInfo = BaseObjectInfo(BaseObjectType::FieldObj); /**< type of BaseObjectInfo struct */
+       std::vector<int> fieldType; /**< type of Field object */
    };
 
    /**

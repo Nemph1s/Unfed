@@ -14,10 +14,12 @@
 #include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/DudeObj.h"
-#include "GameObjects/TileObjects/Obstacles/DirtObject.h"
-#include "GameObjects/TileObjects/Obstacles/BushObj.h"
-#include "GameObjects/TileObjects/Obstacles/RockObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
+#include "GameObjects/TileObjects/FieldObjects/DirtObject.h"
+#include "GameObjects/TileObjects/FieldObjects/BushObj.h"
+#include "GameObjects/TileObjects/FieldObjects/RockObj.h"
 
+using namespace CommonTypes;
 using namespace CommonTypes;
 
 //--------------------------------------------------------------------
@@ -110,6 +112,7 @@ BaseObj * _SmartFactory::create(const BaseObjectInfo & info)
     BaseObj* baseObject = nullptr;
     CookieInfo cookieInfo = { info, CookieType::Unknown };
     TileInfo tileInfo = { info, TileType::Unknown };
+    FieldInfo fieldInfo = { info, FieldType::Unknown };
 
     switch (info.type)
     {
@@ -120,10 +123,10 @@ BaseObj * _SmartFactory::create(const BaseObjectInfo & info)
         baseObject = createTileObj(tileInfo);
         break;
     case BaseObjectType::FieldObj:
-        baseObject = createFieldObj(tileInfo);
+        baseObject = createFieldObj(fieldInfo);
         break;
     case BaseObjectType::DudeObj:
-        baseObject = createDudeObj(tileInfo);
+        baseObject = createDudeObj(fieldInfo);
         break;
     case BaseObjectType::Unknown:
     default:
@@ -225,27 +228,27 @@ BaseObj * _SmartFactory::createCookieObj(const CookieInfo & info)
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::createFieldObj(const TileInfo & info)
+BaseObj * _SmartFactory::createFieldObj(const FieldInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj* baseObject = nullptr;
 
-    switch (info.tileType)
+    switch (info.fieldType)
     {
-    case TileType::Dirt:
-    case TileType::Dirt_HP2:
-    case TileType::Dirt_HP3:
+    case FieldType::Dirt:
+    case FieldType::Dirt_HP2:
+    case FieldType::Dirt_HP3:
         baseObject = DirtObject::create(info);
         CC_SAFE_RETAIN(baseObject);
         CCASSERT(baseObject, "error while creating DirtObject");
         break;
-    case TileType::Bush:
-    case TileType::Bush_HP2:
+    case FieldType::Bush:
+    case FieldType::Bush_HP2:
         baseObject = BushObj::create(info);
         CC_SAFE_RETAIN(baseObject);
         CCASSERT(baseObject, "error while creating BushObj");
         break;
-    case TileType::RockWall:
+    case FieldType::RockWall:
         baseObject = RockObj::create(info);
         CC_SAFE_RETAIN(baseObject);
         CCASSERT(baseObject, "error while creating RockObj");
@@ -260,17 +263,17 @@ BaseObj * _SmartFactory::createFieldObj(const TileInfo & info)
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::createDudeObj(const CommonTypes::TileInfo & info)
+BaseObj * _SmartFactory::createDudeObj(const FieldInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj* baseObject = nullptr;
 
-    switch (info.tileType)
+    switch (info.fieldType)
     {
-    case TileType::DudeFromAToB:
-    case TileType::DudeFromAToBx3:
-    case TileType::DudeChainX:
-    case TileType::DudeAllOfType:
+    case FieldType::DudeFromAToB:
+    case FieldType::DudeFromAToBx3:
+    case FieldType::DudeChainX:
+    case FieldType::DudeAllOfType:
         baseObject = DudeObj::create(info);
         CC_SAFE_RETAIN(baseObject);
         CCASSERT(baseObject, "error while creating DudeObj");

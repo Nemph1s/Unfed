@@ -13,6 +13,7 @@
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
 
+class BaseObj;
 class ChainObj;
 class LevelObj;
 class GameplayScene;
@@ -42,6 +43,7 @@ public:
     cocos2d::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
 
     void calculateChainScore(ChainObj* chain);
+    void executeCollectGoalCallback(cocos2d::Set* chains);
 
 protected:
     // Nodes should be created using create();
@@ -67,6 +69,8 @@ protected:
 #endif // COCOS2D_DEBUG 
 
     //---Class Attributes-------------------------------------------------
+    CC_SYNTHESIZE(std::function<void(BaseObj* obj)>, mUpdateGoalCallback, UpdateGoalCallback);
+
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
     CC_SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController);
 };

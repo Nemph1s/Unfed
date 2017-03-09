@@ -114,7 +114,7 @@ void CookieObj::setColumn(int var)
 //--------------------------------------------------------------------
 {
     BaseObj::setColumn(var);
-    updateDebugTileLabel();
+    updateDebugLabel();
 }
 
 //--------------------------------------------------------------------
@@ -122,7 +122,7 @@ void CookieObj::setRow(int var)
 //--------------------------------------------------------------------
 {
     BaseObj::setRow(var);
-    updateDebugTileLabel();
+    updateDebugLabel();
 }
 
 //--------------------------------------------------------------------
@@ -145,7 +145,7 @@ void CookieObj::clear()
 }
 
 //--------------------------------------------------------------------
-void CookieObj::updateDebugTileLabel()
+void CookieObj::updateDebugLabel()
 //--------------------------------------------------------------------
 {
     if (mDebugLabel) {

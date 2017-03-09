@@ -21,7 +21,8 @@
 #include "Common/Factory/SmartFactory.h"
 
 #include "GameObjects/Swap/SwapObj.h"
-#include "GameObjects/LevelObj.h"
+#include "GameObjects/Level/LevelObj.h"
+#include "GameObjects/Level/LevelGoalComponent.h"
 #include "GameObjects/TileObjects/DudeObj.h"
 #include "GameObjects/Chain/ChainObj.h"
 
@@ -35,6 +36,8 @@ using namespace std::placeholders;
 #define COCOS2D_DEBUG 1
 #define UNFED_ENABLE_DEBUG 1
 
+#define CURRENT_LEVEL 666
+
 //--------------------------------------------------------------------
 ViewController::ViewController()
     : mLevel(nullptr)
@@ -45,7 +48,6 @@ ViewController::ViewController()
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::ViewController");
-   
 }
 
 //--------------------------------------------------------------------
@@ -80,6 +82,7 @@ bool ViewController::init()
     cocos2d::log("ViewController::init");
 
     initGameScene();
+    initLevel();
     initObjectController();
     initChainController();
     initSwapController();
@@ -109,14 +112,20 @@ bool ViewController::initGameScene()
 
     AudioManager->init();
     AnimationsManager->initWithScene(mGameplayScene);
-    GuiManager->initWithScene(mGameplayScene);
 
     SmartFactory->init((NumColumns * NumRows) / 2);
     SmartFactory->initTilesPool(NumColumns * NumRows);
     SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
-    
+
+    return true;
+}
+
+//--------------------------------------------------------------------
+bool ViewController::initLevel()
+//--------------------------------------------------------------------
+{
     // Load the level.
-    int levelId = 666;
+    int levelId = CURRENT_LEVEL;
     mLevel = LevelObj::createWithId(levelId);
     mScore = mLevel->getLevelInfo().targetScore;
     mMovesLeft = mLevel->getLevelInfo().moves;
@@ -125,6 +134,16 @@ bool ViewController::initGameScene()
     mLevel->setName("Level");
 
     mGameplayScene->setLevel(mLevel);
+
+    mLevelGoals = LevelGoalComponent::create();
+
+    GuiManager->initWithScene(mGameplayScene, mLevelGoals);
+//     auto updateGoalCallback = [=](BaseObj* obj) {
+//         mLevelGoals->updateGoalByObject(obj);
+//     };
+//     mChainController->setUpdateGoalCallback(updateGoalCallback);
+
+    //TODO: add callback to gamescene and GIU to update target score labels
 
     return true;
 }
@@ -138,9 +157,9 @@ bool ViewController::initObjectController()
     mLevel->setObjectController(mObjectController);
 
     mObjectController->createInitialTiles();
-    mObjectController->createInitialFieldObjects();
-
+    auto fieldObjecs = mObjectController->createInitialFieldObjects();
     mGameplayScene->addTiles();
+    mGameplayScene->addSpritesForObjects(fieldObjecs);
 
     return true;
 }
@@ -153,6 +172,13 @@ bool ViewController::initChainController()
     mChainController->setLevel(mLevel);
     mChainController->setObjectController(mObjectController);
     mLevel->setChainController(mChainController);
+
+    auto updateGoalCallback = [=](BaseObj* obj) {
+        mLevelGoals->updateGoalByObject(obj);
+        GuiManager->updateLevelGoals(mLevelGoals->getLevelGoals().collectGoals);
+    };
+    mChainController->setUpdateGoalCallback(updateGoalCallback);
+
     return true;
 }
 
@@ -250,7 +276,7 @@ void ViewController::shuffle()
    cocos2d::log("ViewController::shuffle");
    mLevel->getObjectController()->removeAllCookies();
    mGameplayScene->removeAllCookieSprites();
-   mGameplayScene->addSpritesForCookies(mLevel->shuffle());
+   mGameplayScene->addSpritesForObjects(mLevel->shuffle());
    mDudeController->detectDirectionsForDudes();
 }
 
@@ -280,8 +306,7 @@ void ViewController::animateHandleMatches(cocos2d::Set* chains)
 {
     CC_ASSERT(chains);
 
-    auto fieldObjects = mLevel->detectFieldObjects(chains);
-    AnimationsManager->animateRemovingFieldObjects(fieldObjects, CallFunc::create([](){}));
+    mChainController->executeCollectGoalCallback(chains);
 
     auto completion = CallFunc::create([=]() {
 
@@ -298,6 +323,8 @@ void ViewController::animateHandleMatches(cocos2d::Set* chains)
         AnimationsManager->animateFallingObjects(columns, addNewCookies);
     });
 
+    auto fieldObjects = mLevel->detectFieldObjects(chains);
+    AnimationsManager->animateRemovingFieldObjects(fieldObjects);
     AnimationsManager->animateMatching(chains, completion);
     AudioManager->playSound(SoundType::MatchSound);
 }
@@ -380,12 +407,13 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
             mGameplayScene->userInteractionDisabled();
 
             mLevel->removeDudeMatches(set);
+            mDudeController->removeDude(obj->getColumn(), obj->getRow(), false);
             auto removeCallback = CallFunc::create([=]() {
                 mDudeController->removeDude(obj->getColumn(), obj->getRow());
             });
 
             AnimationsManager->animateRemoveDude(obj, removeCallback);
-
+            
             updateScore(set);
             animateHandleMatches(set);
         }

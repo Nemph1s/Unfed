@@ -21,6 +21,7 @@ class ObjectController;
 class ChainController;
 class SwapController;
 class DudeController;
+class LevelGoalComponent;
 
 class ViewController : public cocos2d::Ref
 {
@@ -42,6 +43,7 @@ protected:
     ViewController();
 
     bool initGameScene();
+    bool initLevel();
     bool initObjectController();
     bool initSwapController();
     bool initChainController();
@@ -74,6 +76,8 @@ protected:
     CC_SYNTHESIZE_READONLY(LevelObj*, mLevel, Level)
     
     CC_SYNTHESIZE_READONLY(GameplayScene*, mGameplayScene, GameplayScene)
+
+    CC_SYNTHESIZE_READONLY(LevelGoalComponent*, mLevelGoals, LevelGoalComponent)
     
     CC_SYNTHESIZE_READONLY(ObjectController*, mObjectController, ObjectController)
     CC_SYNTHESIZE_READONLY(ChainController*, mChainController, ChainController)

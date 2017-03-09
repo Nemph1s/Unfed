@@ -38,7 +38,6 @@ protected:
     // Nodes should be created using create();
     DudeHelper();
 
-
     //---Class Attributes-------------------------------------------------
 
     CC_SYNTHESIZE(DudeObj*, mDudeObj, DudeObj);

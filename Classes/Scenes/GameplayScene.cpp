@@ -10,9 +10,10 @@
 
 #include "Scenes/GameplayScene.h"
 
-#include "GameObjects/LevelObj.h"
+#include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 #include "Utils/Helpers/VisibleRect.h"
 #include "Utils/Helpers/Helper.h"
@@ -102,6 +103,10 @@ bool GameplayScene::initWithSize(const Size& size)
     mCookiesLayer->setPosition(layerPos);
     mGameLayer->addChild(mCookiesLayer);
 
+    mFieldObjectsLayer = Layer::create();
+    mFieldObjectsLayer->setPosition(layerPos);
+    mGameLayer->addChild(mFieldObjectsLayer);
+
     AudioManager->playBGMusic();
 
     return true;
@@ -125,31 +130,32 @@ void GameplayScene::addTiles()
             tile->setSpriteNode(tileSprite);
 			mTilesLayer->addChild(tileSprite);
 
-            tile->updateDebugTileLabel();
-
-            // Create Field objects
-            auto fieldObj = objCtrl->fieldObjectAt(column, row);
-            if (!fieldObj) {
-                continue;
-            }
-            createSpriteWithFieldObj(fieldObj);
 		}
 	}
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::addSpritesForCookies(Set* cookies)
+void GameplayScene::addFieldObjectsAt(int column, int row)
 //--------------------------------------------------------------------
 {
-	cocos2d::log("GameplayScene::addSpritesForCookies:");
-    mCookiesLayer->addSpritesForCookies(cookies);
+    // Create Field objects
+    auto objCtrl = mLevel->getObjectController();
+    auto fieldObjects = objCtrl->fieldObjectsAt(column, row);
+    if (fieldObjects.size() == 0) {
+        return;
+    }
+    for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
+        auto fieldObj = dynamic_cast<FieldObj*>(*it);    
+        createSpriteWithFieldObj(fieldObj);
+        fieldObj->updateDebugLabel();
+    }
 }
 
 //--------------------------------------------------------------------
 void GameplayScene::addSpritesForObjects(cocos2d::Set* set)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("GameplayScene::addSpritesForCookies:");
+    cocos2d::log("GameplayScene::addSpritesForObjects:");
     mCookiesLayer->addSpritesForObjects(set);
 }
 
@@ -192,6 +198,7 @@ void GameplayScene::removeAllCookieSprites()
 void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int row)
 //--------------------------------------------------------------------
 {
+    //TODO: use sprites factory
     mCookiesLayer->createSpriteWithObj(cookie, column, row);
 }
 
@@ -199,18 +206,27 @@ void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int r
 void GameplayScene::createSpriteWithDude(BaseObj * dudeObj)
 //--------------------------------------------------------------------
 {
+    //TODO: use sprites factory
     mCookiesLayer->createSpriteWithObj(dudeObj, dudeObj->getColumn(), dudeObj->getRow());
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::createSpriteWithFieldObj(BaseObj * fieldObj)
+void GameplayScene::createSpriteWithFieldObj(FieldObj * obj)
 //--------------------------------------------------------------------
 {
-    auto sprite = Sprite::create(fieldObj->spriteName().getCString());
-    sprite->setPosition(Helper::pointForColumnAndRow(fieldObj->getColumn(), fieldObj->getRow()));
-    sprite->setScale(1.1f);
-    fieldObj->setSpriteNode(sprite);
-    mTilesLayer->addChild(sprite);
+    //TODO: use sprites factory
+    auto sprite = Sprite::create(obj->spriteName().getCString());
+
+    auto col = obj->getColumn();
+    auto row = obj->getRow();
+    auto zOrder = (row * 10);
+    auto priority = obj->getPriority();
+    auto pos = Helper::pointForColumnAndRowWithPriority(col, row, priority);
+
+    sprite->setPosition(pos);
+    sprite->setScale(1);
+    obj->setSpriteNode(sprite);
+    mFieldObjectsLayer->addChild(sprite, zOrder);
 }
 
 //--------------------------------------------------------------------

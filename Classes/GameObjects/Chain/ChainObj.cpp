@@ -111,6 +111,17 @@ int ChainObj::getTypeAsInt()
 }
 
 //--------------------------------------------------------------------
+void ChainObj::addObject(BaseObj* obj)
+//--------------------------------------------------------------------
+{
+    if (mCookies == nullptr) {
+        mCookies = cocos2d::Array::createWithCapacity(CommonTypes::NumColumns * CommonTypes::NumRows);
+        CC_SAFE_RETAIN(mCookies);
+    }
+    mCookies->addObject(obj);
+}
+
+//--------------------------------------------------------------------
 void ChainObj::addCookie(CookieObj * cookie)
 //--------------------------------------------------------------------
 {
@@ -131,8 +142,25 @@ void ChainObj::addCookiesFromChain(ChainObj * chain)
     CC_ASSERT(cookies);
 
     for (auto it = cookies->begin(); it != cookies->end(); it++) {
-        auto cookie = dynamic_cast<CookieObj*>(*it);
-        CC_ASSERT(cookie);
-        addCookie(cookie);
+        auto obj = dynamic_cast<BaseObj*>(*it);
+        CC_ASSERT(obj);
+        addObject(obj);
+//         auto cookie = dynamic_cast<CookieObj*>(*it);
+//         CC_ASSERT(cookie);
+//         addCookie(cookie);
+//         addObjectToGoalMap(cookie);
+    }
+}
+
+//--------------------------------------------------------------------
+void ChainObj::executeCollectGoalCallback()
+//--------------------------------------------------------------------
+{
+    for (auto it = mCookies->begin(); it != mCookies->end(); it++) {
+        auto obj = dynamic_cast<BaseObj*>(*it);
+        CC_ASSERT(obj);
+        if (mUpdateGoalCallback) {
+            mUpdateGoalCallback(obj);
+        }
     }
 }

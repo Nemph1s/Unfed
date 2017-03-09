@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObjects/Obstacles/BushObj.cpp
+* @file GameObjects/TileObjects/FieldObjects/DirtObject.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,31 +8,31 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/TileObjects/Obstacles/RockObj.h"
+#include "GameObjects/TileObjects/FieldObjects/DirtObject.h"
 
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
-using CommonTypes::TileType;
+using CommonTypes::FieldType;
 
 //--------------------------------------------------------------------
-RockObj::RockObj()
-    : TileObj()
+DirtObject::DirtObject()
+    : FieldObj()
 //--------------------------------------------------------------------
 {
 }
 
 //--------------------------------------------------------------------
-RockObj::~RockObj()
+DirtObject::~DirtObject()
 //--------------------------------------------------------------------
 {
 }
 
 //--------------------------------------------------------------------
-RockObj* RockObj::create(const CommonTypes::TileInfo & info)
+DirtObject * DirtObject::create(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
-    RockObj* ret = new (std::nothrow) RockObj();
+    DirtObject * ret = new (std::nothrow) DirtObject();
     if (ret && ret->init(info)) {
         ret->autorelease();
     }
@@ -43,51 +43,50 @@ RockObj* RockObj::create(const CommonTypes::TileInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool RockObj::init(const CommonTypes::TileInfo & info)
+bool DirtObject::init(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
-    if (!TileObj::init(info)) {
-        cocos2d::log("RockObj::init: can't init TileObj inctance");
+    if (!FieldObj::init(info)) {
+        cocos2d::log("DirtObject::init: can't init FieldObj inctance");
         return false;
     }
-
-    if (info.tileType >= TileType::RockWall && info.tileType <= TileType::RockWall) {
-        mHP = (getTypeAsInt() - Helper::to_underlying(TileType::RockWall)) + 1;
+ 
+    if (info.fieldType >= FieldType::Dirt && info.fieldType <= FieldType::Dirt_HP3) {
+        mHP = (getTypeAsInt() - Helper::to_underlying(FieldType::Dirt)) + 1;
     }
     mIsRemovable = true;
-    mIsMovable = true;
-    mIsContainer = false;
-    mScoreValue = 30;
+    mIsContainer = true;
+    mScoreValue = 100;
 
     return true;
 }
 
 //--------------------------------------------------------------------
-cocos2d::String& RockObj::spriteName() const
+cocos2d::String& DirtObject::spriteName() const
 //--------------------------------------------------------------------
 {
-    const int weakState = 1;
+    const int x2State = 2;
+    const int x1State = 1;
     cocos2d::String* str = nullptr;
     switch (mHP)
     {
-    case weakState:
+    case x1State:
+        str = &GameResources::s_DirtX2Img;
+        break;
+    case x2State:
     default:
-        str = &GameResources::s_RockImg;
+        str = &GameResources::s_DirtImg;
         break;
     }
     return *str;
 }
 
 //--------------------------------------------------------------------
-bool RockObj::checkMatchingCondition(int column, int row)
+bool DirtObject::checkMatchingCondition(int column, int row)
 //--------------------------------------------------------------------
 {
     if (column < 0 || column >= CommonTypes::NumColumns || row < 0 || row >= CommonTypes::NumColumns) {
         return false;
     }
-    bool objectOnTop = (mColumn == column && mRow == row - 1);
-    bool objectOnBot = (mColumn == column && mRow == row + 1);
-    bool objectOnLeft = (mColumn == column - 1 && mRow == row);
-    bool objectOnRight = (mColumn == column + 1 && mRow == row);
-    return objectOnTop || objectOnBot || objectOnLeft || objectOnRight;
+    return (mColumn == column && mRow == row);
 }

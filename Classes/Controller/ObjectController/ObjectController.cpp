@@ -17,8 +17,9 @@
 #include "Utils/Helpers/Helper.h"
 
 #include "GameObjects/TileObjects/TileObj.h"
-#include "GameObjects/LevelObj.h"
+#include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 using namespace CommonTypes;
 
@@ -75,21 +76,22 @@ void ObjectController::createInitialTiles()
 }
 
 //--------------------------------------------------------------------
-void ObjectController::createInitialFieldObjects()
+cocos2d::Set* ObjectController::createInitialFieldObjects()
 //--------------------------------------------------------------------
 {
     auto levelInfo = mLevel->getLevelInfo();
-
-    for (int column = 0; column < NumColumns; column++) {
-        for (int row = 0; row < NumRows; row++) {
-
-            int tileType = levelInfo.fieldObjects[column][row];
-            if (tileType > 0) {
-                auto tile = createFieldObject(column, row, tileType);
-                mLevel->addChild(tile);
-            }            
+    cocos2d::Set* set = cocos2d::Set::create();
+    for (auto obj : levelInfo.fieldObjects) {
+        for (uint8_t i = 0; i < obj.fieldType.size(); i++) {
+            auto type = obj.fieldType.at(i);
+            if (type > 0) {
+                auto fieldObj = createFieldObject(obj.baseInfo.column, obj.baseInfo.row, type, i);
+                set->addObject(fieldObj);
+                //mLevel->addChild(fieldObj);
+            }
         }
     }
+    return set;
 }
 
 //--------------------------------------------------------------------
@@ -98,7 +100,7 @@ cocos2d::Set * ObjectController::createInitialCookies()
 {
     cocos2d::log("ObjectController::createInitialCookies:");
     cocos2d::Set* set = cocos2d::Set::create();
-    auto createdString = cocos2d::String("");
+    auto createdString = cocos2d::String::create("");
 
     for (int row = 0; row < NumRows; row++) {
         for (int column = 0; column < NumColumns; column++) {
@@ -106,13 +108,13 @@ cocos2d::Set * ObjectController::createInitialCookies()
                 int cookieType = getRandomCookieType(column, row);
                 BaseObj* cookie = createCookie(column, row, cookieType);
                 set->addObject(cookie);
-                createdString.appendWithFormat("%d ", cookieType);
+                createdString->appendWithFormat("%d ", cookieType);
             }
         }
-        createdString.append("\n");
+        createdString->append("\n");
     }
     mLevel->disablePredefinedCookies();
-    cocos2d::log("ObjectController::createInitialCookies: created array=%s", createdString.getCString());
+    cocos2d::log("ObjectController::createInitialCookies: created array=%s", createdString->getCString());
     return set;
 }
 
@@ -141,14 +143,14 @@ BaseObj * ObjectController::createCookie(int column, int row, int type)
 }
 
 //--------------------------------------------------------------------
-BaseObj * ObjectController::createFieldObject(int column, int row, int type)
+BaseObj * ObjectController::createFieldObject(int column, int row, int type, int priority)
 //--------------------------------------------------------------------
 {
     BaseObjectInfo baseInfo = { BaseObjectType::FieldObj, column, row };
-    TileInfo info = { baseInfo, static_cast<TileType>(type) };
+    FieldInfo info = { baseInfo, static_cast<FieldType>(type), priority };
     BaseObj* obj = SmartFactory->createFieldObj(info);
     CC_ASSERT(obj);
-    mFieldObjects[column][row] = obj;
+    mFieldObjects[column][row].push_back(obj);
     return obj;
 }
 
@@ -162,9 +164,14 @@ int ObjectController::getAllowedRandomCookieType()
     }
     int type = 0;
     bool findNextType = true;
+    auto allowedTypes = mLevel->getLevelInfo().allowedCookieTypes;
+
     do {
         type = Helper::getInstance()->random(0, cookieMax - 1);
 
+        if (allowedTypes.size() == 0) {
+            break;
+        }
         for (auto val : mLevel->getLevelInfo().allowedCookieTypes) {
             if (val == type) {
                 findNextType = false;
@@ -282,6 +289,25 @@ BaseObj * ObjectController::fieldObjectAt(int column, int row)
         cocos2d::log("ObjectController::fieldObjectAt: Invalid row: %d", row);
         CC_ASSERT(invalidRow);
     }
+    auto fieldsList = mFieldObjects[column][row];
+    if (fieldsList.size() == 0) return nullptr;
+    return fieldsList.front();
+}
+
+//--------------------------------------------------------------------
+std::list<BaseObj*>& ObjectController::fieldObjectsAt(int column, int row)
+//--------------------------------------------------------------------
+{
+    bool invalidColumn = column >= 0 && column < NumColumns;
+    bool invalidRow = row >= 0 && row < NumColumns;
+    if (!invalidColumn) {
+        cocos2d::log("ObjectController::fieldObjectsAt: Invalid column : %d", column);
+        CC_ASSERT(invalidColumn);
+    }
+    if (!invalidRow) {
+        cocos2d::log("ObjectController::fieldObjectsAt: Invalid row: %d", row);
+        CC_ASSERT(invalidRow);
+    }
     return mFieldObjects[column][row];
 }
 
@@ -343,15 +369,30 @@ bool ObjectController::matchFieldObject(BaseObj * obj)
     obj->match();
 
     if (obj->isReadyToRemove()) {
-        mFieldObjects[obj->getColumn()][obj->getRow()] = nullptr;
-
-         cocos2d::log("ObjectController::removeCookies: remove %s", obj->description().getCString());
-//        
-//         SmartFactory->recycle(obj);
-//         obj->removeFromParent();
-        
+        removeFieldObject(obj->getColumn(), obj->getRow());
     }
     return true;
+}
+
+//--------------------------------------------------------------------
+void ObjectController::removeFieldObject(int column, int row)
+//--------------------------------------------------------------------
+{
+    std::list<BaseObj*>& fieldObjects = fieldObjectsAt(column, row);
+
+    if (fieldObjects.size() == 0) {
+        cocos2d::log("ObjectController::removeFieldObject: fieldObject at (%d,%d) already removed", column, row);
+        return;
+    }
+
+    fieldObjects.pop_front();
+
+    for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
+        auto obj = dynamic_cast<FieldObj*>(*it);
+        auto prio = obj->getPriority() - 1;
+        obj->setPriority(prio);
+        obj->setReadyToUpdatePriority(true);
+    }
 }
 
 //--------------------------------------------------------------------
@@ -373,7 +414,7 @@ void ObjectController::updateObjectAt(int column, int row, BaseObj * obj, BaseOb
     case BaseObjectType::CookieObj:
         mCookies[column][row] = obj;
         break;
-    case BaseObjectType::FieldObj:
+    case BaseObjectType::FieldObj: // fieldObj cant be moved by gravity!
         //TODO: uncomment when mFieldObjects will be an array
 //         cocos2d::Array* arr = mFieldObjects[column][row];
 //         if (arr) {
@@ -383,7 +424,7 @@ void ObjectController::updateObjectAt(int column, int row, BaseObj * obj, BaseOb
 //             newArr->addObject(obj);
 //             mFieldObjects[column][row] = newArr;
 //         }
-        mFieldObjects[column][row] = obj;
+//        mFieldObjects[column][row] = obj;
         break;
     case BaseObjectType::DudeObj:
         mDudeCtrl->mDudeObjects[column][row] = obj;

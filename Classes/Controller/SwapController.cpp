@@ -12,7 +12,7 @@
 #include "Controller/ObjectController/ObjectController.h"
 
 #include "GameObjects/Swap/SwapObj.h"
-#include "GameObjects/LevelObj.h"
+#include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 
 #include "Common/CommonTypes.h"

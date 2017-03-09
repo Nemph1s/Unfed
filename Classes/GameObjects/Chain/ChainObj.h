@@ -13,7 +13,10 @@
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
 
+class BaseObj;
 class CookieObj;
+
+typedef cocos2d::Map<int8_t, int16_t> TFieldObjGoalMap;
 
 class ChainObj : public cocos2d::Node
 {
@@ -33,14 +36,20 @@ public:
     std::string typeAsString();
     int getTypeAsInt();
 
+    void addObject(BaseObj* obj);
+
     void addCookie(CookieObj* cookie);
     void addCookiesFromChain(ChainObj* chain);
+
+    void executeCollectGoalCallback();
 
 protected:
     // Nodes should be created using create();
     ChainObj();
 
     //---Class Attributes-------------------------------------------------
+    CC_SYNTHESIZE(std::function<void(BaseObj* obj)>, mUpdateGoalCallback, UpdateGoalCallback);
+
     CC_SYNTHESIZE(int, mScore, Score);
     CC_SYNTHESIZE(bool, mIsCreatedByDude, IsCreatedByDude);
 

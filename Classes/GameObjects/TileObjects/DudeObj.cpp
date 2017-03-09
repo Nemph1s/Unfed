@@ -12,11 +12,11 @@
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
-using CommonTypes::TileType;
+using CommonTypes::FieldType;
 
 //--------------------------------------------------------------------
 DudeObj::DudeObj()
-    : TileObj()
+    : FieldObj()
     , mIsActivated(false)
 //--------------------------------------------------------------------
 {
@@ -29,7 +29,7 @@ DudeObj::~DudeObj()
 }
 
 //--------------------------------------------------------------------
-DudeObj * DudeObj::create(const CommonTypes::TileInfo & info)
+DudeObj * DudeObj::create(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     DudeObj * ret = new (std::nothrow) DudeObj();
@@ -43,11 +43,11 @@ DudeObj * DudeObj::create(const CommonTypes::TileInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool DudeObj::init(const CommonTypes::TileInfo & info)
+bool DudeObj::init(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
-    if (!TileObj::init(info)) {
-        cocos2d::log("DudeObj::init: can't init TileObj inctance");
+    if (!FieldObj::init(info)) {
+        cocos2d::log("DudeObj::init: can't init FieldObj inctance");
         return false;
     }
 
@@ -63,7 +63,7 @@ bool DudeObj::init(const CommonTypes::TileInfo & info)
 cocos2d::String& DudeObj::spriteName() const
 //--------------------------------------------------------------------
 {
-    return GameResources::s_dudeSpriteNames.at(getTypeAsInt() - Helper::to_underlying(TileType::DudeFromAToB));
+    return GameResources::s_dudeSpriteNames.at(getTypeAsInt() - Helper::to_underlying(FieldType::DudeFromAToB));
 }
 
 //--------------------------------------------------------------------

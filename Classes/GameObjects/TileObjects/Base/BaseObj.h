@@ -40,6 +40,8 @@ public:
 
     virtual void clear();
 
+    virtual void updateDebugLabel();
+
 protected:
     // Nodes should be created using create();
     BaseObj();

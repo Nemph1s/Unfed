@@ -1,5 +1,5 @@
-/**
-* @file GameObjects/LevelObj.cpp
+ï»¿/**
+* @file GameObjects/Level/LevelObj.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,8 +8,9 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/LevelObj.h"
+#include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/Chain/ChainObj.h"
@@ -86,6 +87,7 @@ cocos2d::Set* LevelObj::shuffle()
     bool isSwapsDetected = mDetectPossibleSwapsCallback();
 
     while (!isSwapsDetected) {
+        mObjCtrl->removeAllCookies();
         set = mObjCtrl->createInitialCookies();
         isSwapsDetected = mDetectPossibleSwapsCallback();
     }
@@ -139,7 +141,7 @@ bool LevelObj::checkMathicngFieldObjWithChain(cocos2d::Set * chains, BaseObj * o
 //--------------------------------------------------------------------
 {
     auto result = false;
-    auto fieldObj = dynamic_cast<TileObj*>(obj);
+    auto fieldObj = dynamic_cast<FieldObj*>(obj);
     if (!fieldObj) {
         return result;
     }
@@ -170,6 +172,39 @@ bool LevelObj::isPossibleToAddCookie(int column, int row)
 //--------------------------------------------------------------------
 {
     return mObjCtrl->isPossibleToAddCookie(column, row);
+}
+
+//--------------------------------------------------------------------
+bool LevelObj::useGravityOnObject(cocos2d::Array * colArr, cocos2d::Array * rowArr, BaseObj * obj, int destinationRow)
+//--------------------------------------------------------------------
+{
+    if (!colArr || !obj) {
+        return false;
+    }
+    if (obj->getType() == BaseObjectType::DudeObj || obj->getType() == BaseObjectType::FieldObj) {
+        if (!obj->isMovable() && !obj->isContainer())
+            return true;
+    }
+
+    if (obj->isMovable()) {
+        int column = obj->getColumn();
+        int lookup = obj->getRow();
+        // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
+        mObjCtrl->updateObjectAt(column, lookup, nullptr, obj->getType());
+        mObjCtrl->updateObjectAt(column, destinationRow, obj, obj->getType());
+        obj->setRow(destinationRow);
+
+        // Lazy creation of array
+        if (rowArr == nullptr) {
+            rowArr = cocos2d::Array::createWithCapacity(NumRows);
+            colArr->addObject(rowArr);
+        }
+        rowArr->addObject(obj);
+
+        // Once you found a cookie, you donï¿½t need to scan up any farther so you break out of the inner loop.
+        return true;
+    }
+    return false;
 }
 
 //--------------------------------------------------------------------
@@ -211,78 +246,38 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
         cocos2d::Array* array = nullptr;
         for (int row = NumRows - 1; row >= 0; row--) {
 
+            auto fieldObjects = mObjCtrl->fieldObjectsAt(column, row);
+            for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
+                auto obj = dynamic_cast<FieldObj*>(*it);
+                if (obj->getReadyToUpdatePriority()) {
+                    // Lazy creation of array
+                    if (array == nullptr) {
+                        array = cocos2d::Array::createWithCapacity(NumRows);
+                        columns->addObject(array);
+                    }
+                    array->addObject(obj);
+                    obj->setReadyToUpdatePriority(false);
+                }
+            }
+
             if (isPossibleToAddCookie(column, row)) {
 
                 // Scan upward to find the cookie that sits directly above the hole
                 for (int lookup = row - 1; lookup >= 0; lookup--) {
 
-                    if (!mLevelInfo.skipEmptyHoles) {
-                        if (mObjCtrl->isEmptyTileAt(column, lookup)) {
-                            continue;
-                        }
+                    if (!mLevelInfo.skipEmptyHoles && mObjCtrl->isEmptyTileAt(column, lookup)) {
+                        continue;
                     }
                     auto dudeObj = mObjCtrl->dudeObjectAt(column, lookup);
-                    if (dudeObj) {
-
-                        if (!dudeObj->isMovable() && !dudeObj->isContainer())
-                            break;
-                        else if (dudeObj->isMovable()) {
-                            // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
-                            mObjCtrl->updateObjectAt(column, lookup, nullptr, dudeObj->getType());
-                            mObjCtrl->updateObjectAt(column, row, dudeObj, dudeObj->getType());
-                            dudeObj->setRow(row);
-
-                            // Lazy creation of array
-                            if (array == nullptr) {
-                                array = cocos2d::Array::createWithCapacity(NumRows);
-                                columns->addObject(array);
-                            }
-                            array->addObject(dudeObj);
-
-                            // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
-                            break;
-                        }
+                    if (useGravityOnObject(columns, array, dudeObj, row)) {
+                        break;
                     }
                     auto fieldObj = mObjCtrl->fieldObjectAt(column, lookup);
-                    if (fieldObj) {
-                        
-                        if (!fieldObj->isMovable() && !fieldObj->isContainer())
-                            break;
-                        else if (fieldObj->isMovable()) {
-                            // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
-                            mObjCtrl->updateObjectAt(column, lookup, nullptr, fieldObj->getType());
-                            mObjCtrl->updateObjectAt(column, row, fieldObj, fieldObj->getType());
-                            fieldObj->setRow(row);
-
-                            // Lazy creation of array
-                            if (array == nullptr) {
-                                array = cocos2d::Array::createWithCapacity(NumRows);
-                                columns->addObject(array);
-                            }
-                            array->addObject(fieldObj);
-
-                            // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
-                            break;
-                        }
+                    if (useGravityOnObject(columns, array, fieldObj, row)) {
+                        break;
                     }
                     auto cookie = mObjCtrl->cookieAt(column, lookup);
-                    if (cookie) {
-                        if (!cookie->isMovable())
-                            break;
-
-                        // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
-                        mObjCtrl->updateObjectAt(column, lookup, nullptr, cookie->getType());
-                        mObjCtrl->updateObjectAt(column, row, cookie, cookie->getType());
-                        cookie->setRow(row);
-
-                        // Lazy creation of array
-                        if (array == nullptr) {
-                            array = cocos2d::Array::createWithCapacity(NumRows);
-                            columns->addObject(array);
-                        }
-                        array->addObject(cookie);
-
-                        // Once you’ve found a cookie, you don’t need to scan up any farther so you break out of the inner loop.
+                    if (useGravityOnObject(columns, array, cookie, row)) {
                         break;
                     }
                 }
