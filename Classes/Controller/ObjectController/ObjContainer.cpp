@@ -160,7 +160,7 @@ bool ObjContainer::addFieldObject(BaseObj* obj)
     auto fieldObj = dynamic_cast<FieldObj*>(obj);
     if (fieldObj) {
         fieldObj->setPriority(mFieldObjects.size() + 1);
-        mFieldObjects.push_back(obj);
+        mFieldObjects.push_back(fieldObj);
         return true;
     }
     return false;
@@ -194,7 +194,7 @@ bool ObjContainer::removeFieldObject(bool removeWithCleanup) // execute this met
             fieldObj->setSpriteNode(nullptr);
         }
 
-        if (obj->getHP() > 0) {
+        if (fieldObj->getHP() > 0) {
             //scene->createSpriteWithFieldObj(obj); use callback to scene
         }
         else if (fieldObj->isHpEnded()) {
