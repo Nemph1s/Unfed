@@ -9,6 +9,7 @@
 */
 
 #include "Controller/ObjectController/ObjectController.h"
+#include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/Dude/DudeController.h"
 
 #include "Common/Factory/SmartFactory.h"
@@ -19,9 +20,11 @@
 #include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/DudeObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 using namespace CommonTypes;
+using namespace std::placeholders;
 
 //--------------------------------------------------------------------
 ObjectController::ObjectController()
@@ -35,6 +38,11 @@ ObjectController::ObjectController()
 ObjectController::~ObjectController()
 //--------------------------------------------------------------------
 {
+    for (int column = 0; column < NumColumns; column++) {
+        for (int row = 0; row < NumRows; row++) {
+            CC_SAFE_RELEASE_NULL(mObjects[column][row]);
+        }
+    }
 }
 
 //--------------------------------------------------------------------
@@ -60,19 +68,26 @@ bool ObjectController::init()
 }
 
 //--------------------------------------------------------------------
-void ObjectController::createInitialTiles()
+void ObjectController::createObjects()
 //--------------------------------------------------------------------
 {
     auto levelInfo = mLevel->getLevelInfo();
-
     for (int column = 0; column < NumColumns; column++) {
         for (int row = 0; row < NumRows; row++) {
 
-            int tileType = levelInfo.tiles[column][row];
-            auto tile = createTile(column, row, tileType);
+            mObjects[column][row] = ObjContainer::create();
+
+            auto tile = createTile(column, row, levelInfo.tiles[column][row]);
             mLevel->addChild(tile);
         }
     }
+}
+
+//--------------------------------------------------------------------
+ObjContainer* ObjectController::getObject(int column, int row)
+//--------------------------------------------------------------------
+{
+    return mObjects[column][row];
 }
 
 //--------------------------------------------------------------------
@@ -125,7 +140,8 @@ BaseObj * ObjectController::createTile(int column, int row, int type)
     TileInfo info = { baseInfo, static_cast<TileType>(type) };
     auto tile = SmartFactory->createTileObj(info);
     CC_ASSERT(tile);
-    mTiles[column][row] = tile;
+    //mTiles[column][row] = tile;
+    getObject(column, row)->addObject(tile);
     return tile;
 }
 
@@ -137,7 +153,8 @@ BaseObj * ObjectController::createCookie(int column, int row, int type)
     CookieInfo info = { baseInfo, static_cast<CookieType>(type) };
     auto cookie = SmartFactory->createCookieObj(info);
     CC_ASSERT(cookie);
-    mCookies[column][row] = cookie;
+    //mCookies[column][row] = cookie;
+    getObject(column, row)->addObject(cookie);
     return cookie;
 }
 
@@ -149,7 +166,8 @@ BaseObj * ObjectController::createFieldObject(int column, int row, int type, int
     FieldInfo info = { baseInfo, static_cast<FieldType>(type), priority };
     auto obj = SmartFactory->createFieldObj(info);
     CC_ASSERT(obj);
-    mFieldObjects[column][row].push_back(obj);
+    //mFieldObjects[column][row].push_back(obj);
+    getObject(column, row)->addObject(obj);
     return obj;
 }
 
@@ -233,7 +251,8 @@ TileObj* ObjectController::tileAt(int column, int row)
         cocos2d::log("ObjectController::tileAt: Invalid row: %d", row);
         CC_ASSERT(validRow);
     }
-    return dynamic_cast<TileObj*>(mTiles[column][row]);
+    return getObject(column, row)->getTileObj();
+//    return dynamic_cast<TileObj*>(mTiles[column][row]);
 }
 
 //--------------------------------------------------------------------
@@ -246,7 +265,8 @@ CookieObj* ObjectController::cookieAt(int column, int row)
         cocos2d::log("ObjectController::cookieAt: Invalid cookie at column = %d, row = %d", column, row);
         return nullptr;
     }
-    return dynamic_cast<CookieObj*>(mCookies[column][row]);
+    return getObject(column, row)->getCookieObj();
+//    return dynamic_cast<CookieObj*>(mCookies[column][row]);
 }
 
 //--------------------------------------------------------------------
@@ -288,13 +308,14 @@ BaseObj * ObjectController::fieldObjectAt(int column, int row)
         cocos2d::log("ObjectController::fieldObjectAt: Invalid row: %d", row);
         CC_ASSERT(invalidRow);
     }
-    auto fieldsList = mFieldObjects[column][row];
-    if (fieldsList.size() == 0) return nullptr;
-    return fieldsList.front();
+//     auto fieldsList = mFieldObjects[column][row];
+//     if (fieldsList.size() == 0) return nullptr;
+//     return fieldsList.front();
+    return getObject(column, row)->getObject(BaseObjectType::FieldObj);
 }
 
 //--------------------------------------------------------------------
-std::list<BaseObj*>& ObjectController::fieldObjectsAt(int column, int row)
+std::list<FieldObj*>& ObjectController::fieldObjectsAt(int column, int row)
 //--------------------------------------------------------------------
 {
     bool invalidColumn = column >= 0 && column < NumColumns;
@@ -307,58 +328,35 @@ std::list<BaseObj*>& ObjectController::fieldObjectsAt(int column, int row)
         cocos2d::log("ObjectController::fieldObjectsAt: Invalid row: %d", row);
         CC_ASSERT(invalidRow);
     }
-    return mFieldObjects[column][row];
+    return getObject(column, row)->getFieldObjects();
 }
 
 //--------------------------------------------------------------------
-BaseObj* ObjectController::dudeObjectAt(int column, int row)
+DudeObj* ObjectController::dudeObjectAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    return mDudeCtrl->objectAt(column, row);
+    return getObject(column, row)->getDudeObj();
 }
 
 //--------------------------------------------------------------------
 bool ObjectController::isEmptyTileAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    return tileAt(column, row) ? tileAt(column, row)->isEmptyTile() : false;
+    return getObject(column, row)->isEmptyTileAt();
 }
 
 //--------------------------------------------------------------------
 bool ObjectController::isPossibleToAddCookie(int column, int row)
 //--------------------------------------------------------------------
 {
-    // If there's a tile at a position but no cookie, then there's a hole.
-    auto isEmptyTile = isEmptyTileAt(column, row);
-    auto isCookieAt = cookieAt(column, row);
-    if (!isEmptyTile && isCookieAt == nullptr) {
-        auto dudeObj = dudeObjectAt(column, row);
-        if (!dudeObj) {
-            auto fieldObj = fieldObjectAt(column, row);
-            if (!fieldObj) {
-                return true;
-            }
-            if (fieldObj->isContainer()) {
-                return true;
-            }
-        }
-        
-    }
-    return false;
+    return getObject(column, row)->isPossibleToAddCookie();
 }
 
 //--------------------------------------------------------------------
 bool ObjectController::isSameTypeOfCookieAt(int column, int row, int type)
 //--------------------------------------------------------------------
 {
-    auto cookie = cookieAt(column, row);
-    if (!cookie)
-        return false;
-
-    if (cookie->getTypeAsInt() != type)
-        return false;
-
-    return true;
+    return getObject(column, row)->isSameTypeOfCookieAt(type);
 }
 
 //--------------------------------------------------------------------
@@ -367,70 +365,37 @@ bool ObjectController::matchFieldObject(BaseObj * obj)
 {
     obj->match();
 
-    if (obj->isHpEnded()) {
-        removeFieldObject(obj->getColumn(), obj->getRow());
-    }
+    auto objContainer = getObject(obj->getColumn(), obj->getRow());
+    auto fieldObj = objContainer->getFieldObject();
+    if (obj == fieldObj) {
+        std::function<void(BaseObj*, std::function<void(FieldObj*)>)> onFieldObjChangeStateCallback;
+        onFieldObjChangeStateCallback = std::bind(&ObjContainer::onFieldObjChangeState, objContainer, _1, _2);
+        fieldObj->setFieldObjChangeState(onFieldObjChangeStateCallback);
+    }   
+
     return true;
-}
-
-//--------------------------------------------------------------------
-void ObjectController::removeFieldObject(int column, int row)
-//--------------------------------------------------------------------
-{
-    std::list<BaseObj*>& fieldObjects = fieldObjectsAt(column, row);
-
-    if (fieldObjects.size() == 0) {
-        cocos2d::log("ObjectController::removeFieldObject: fieldObject at (%d,%d) already removed", column, row);
-        return;
-    }
-
-    fieldObjects.pop_front();
-
-    for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
-        auto obj = dynamic_cast<FieldObj*>(*it);
-        auto prio = obj->getPriority() - 1;
-        obj->setPriority(prio);
-        obj->setReadyToUpdatePriority(true);
-    }
 }
 
 //--------------------------------------------------------------------
 void ObjectController::updateCookieObjectAt(int column, int row, BaseObj* cookie)
 //--------------------------------------------------------------------
 {
-    mCookies[column][row] = cookie;
+    getObject(column, row)->addObject(cookie);
+//    mCookies[column][row] = cookie;
 }
 
 //--------------------------------------------------------------------
-void ObjectController::updateObjectAt(int column, int row, BaseObj * obj, BaseObjectType type)
+void ObjectController::updateObjectAt(int column, int row, BaseObj * obj)
 //--------------------------------------------------------------------
 {
-    switch (type)
-    {
-    case BaseObjectType::TileObj:
-        mTiles[column][row] = obj;
-        break;
-    case BaseObjectType::CookieObj:
-        mCookies[column][row] = obj;
-        break;
-    case BaseObjectType::FieldObj: // fieldObj cant be moved by gravity!
-        //TODO: uncomment when mFieldObjects will be an array
-//         cocos2d::Array* arr = mFieldObjects[column][row];
-//         if (arr) {
-//             arr->addObject(obj);
-//         } else {
-//             auto newArr = cocos2d::Array::createWithCapacity(NumColumns);
-//             newArr->addObject(obj);
-//             mFieldObjects[column][row] = newArr;
-//         }
-//        mFieldObjects[column][row] = obj;
-        break;
-    case BaseObjectType::DudeObj:
-        mDudeCtrl->mDudeObjects[column][row] = obj;
-        break;
-    default:
-        break;
-    }
+    getObject(column, row)->addObject(obj);
+}
+
+//--------------------------------------------------------------------
+void ObjectController::removeObjectAt(int column, int row, CommonTypes::BaseObjectType type)
+//--------------------------------------------------------------------
+{
+    getObject(column, row)->removeObject(type);
 }
 
 //--------------------------------------------------------------------
@@ -448,7 +413,7 @@ void ObjectController::removeCookie(int column, int row)
         cookie->removeFromParent();
     }
     SmartFactory->recycle(cookie);
-    mCookies[column][row] = nullptr;
+    getObject(column, row)->removeObject(BaseObjectType::CookieObj);
 }
 
 //--------------------------------------------------------------------

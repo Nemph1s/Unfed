@@ -156,7 +156,7 @@ bool ViewController::initObjectController()
     mObjectController->setLevel(mLevel);
     mLevel->setObjectController(mObjectController);
 
-    mObjectController->createInitialTiles();
+    mObjectController->createObjects();
     auto fieldObjecs = mObjectController->createInitialFieldObjects();
     mGameplayScene->addTiles();
     mGameplayScene->addSpritesForObjects(fieldObjecs);
@@ -308,15 +308,16 @@ void ViewController::animateHandleMatches(CommonTypes::Set* chains)
 
     mChainController->executeCollectGoalCallback(chains);
 
-    auto completion = CallFunc::create([=]() {
+
+    auto completion = CallFunc::create([&]() {
 
         auto columns = mLevel->useGravityToFillHoles();
         auto newColumns = mLevel->fillTopUpHoles();
-        auto enableTouches = CallFunc::create([=]() {
+        auto enableTouches = CallFunc::create([&]() {
             handleMatches();
         });
 
-        auto addNewCookies = CallFunc::create([=]() {
+        auto addNewCookies = CallFunc::create([&]() {
             updateInfoLabels();
         });
         AnimationsManager->animateNewCookies(newColumns, enableTouches);
@@ -324,8 +325,8 @@ void ViewController::animateHandleMatches(CommonTypes::Set* chains)
     });
 
     auto fieldObjects = mLevel->detectFieldObjects(chains);
-    AnimationsManager->animateRemovingFieldObjects(fieldObjects);
-    AnimationsManager->animateMatching(chains, completion);
+    AnimationsManager->animateRemovingFieldObjects(fieldObjects, completion);
+    AnimationsManager->animateMatching(chains, CallFunc::create([](){}));
     AudioManager->playSound(SoundType::MatchSound);
 }
 

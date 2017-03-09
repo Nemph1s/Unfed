@@ -22,9 +22,9 @@
 
 //--------------------------------------------------------------------
 SwapController::SwapController()
-//--------------------------------------------------------------------
     : mLevel(nullptr)
     , mPossibleSwaps(nullptr)
+//--------------------------------------------------------------------
 {
 }
 
@@ -110,8 +110,8 @@ void SwapController::detectSwap(SwapChecker * checker)
     auto other = objCtrl->cookieAt(checker->nextCol, checker->nextRow);
     if (cookie && other) {
         // Swap them
-        objCtrl->updateCookieObjectAt(checker->curCol, checker->curRow, other);
-        objCtrl->updateCookieObjectAt(checker->nextCol, checker->nextRow, cookie);
+        objCtrl->updateObjectAt(checker->curCol, checker->curRow, other);
+        objCtrl->updateObjectAt(checker->nextCol, checker->nextRow, cookie);
 
         // Is either cookie now part of a chain?
         if (objCtrl->hasChainAt(checker->nextCol, checker->nextRow) || objCtrl->hasChainAt(checker->curCol, checker->curRow)) {
@@ -120,8 +120,8 @@ void SwapController::detectSwap(SwapChecker * checker)
             checker->set->addObject(swap);
         }
         // Swap them back
-        objCtrl->updateCookieObjectAt(checker->curCol, checker->curRow, cookie);
-        objCtrl->updateCookieObjectAt(checker->nextCol, checker->nextRow, other);
+        objCtrl->updateObjectAt(checker->curCol, checker->curRow, cookie);
+        objCtrl->updateObjectAt(checker->nextCol, checker->nextRow, other);
     }
 }
 
@@ -159,11 +159,11 @@ void SwapController::performSwap(SwapObj * swap)
     int rowB = swap->getCookieB()->getRow();
 
     auto objCtrl = mLevel->getObjectController();
-    objCtrl->updateCookieObjectAt(columnA, rowA, swap->getCookieB());
+    objCtrl->updateObjectAt(columnA, rowA, swap->getCookieB());
     swap->getCookieB()->setColumn(columnA);
     swap->getCookieB()->setRow(rowA);
 
-    objCtrl->updateCookieObjectAt(columnB, rowB, swap->getCookieA());
+    objCtrl->updateObjectAt(columnB, rowB, swap->getCookieA());
     swap->getCookieA()->setColumn(columnB);
     swap->getCookieA()->setRow(rowB);
 }

@@ -9,10 +9,13 @@
 */
 
 #include "GameObjects/Level/LevelObj.h"
-#include "GameObjects/TileObjects/TileObj.h"
-#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
+
 #include "GameObjects/TileObjects/Base/BaseObj.h"
+#include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/DudeObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
+
 #include "GameObjects/Chain/ChainObj.h"
 #include "GameObjects/Swap/SwapObj.h"
 
@@ -190,8 +193,8 @@ bool LevelObj::useGravityOnObject(cocos2d::Array * colArr, cocos2d::Array * rowA
         int column = obj->getColumn();
         int lookup = obj->getRow();
         // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
-        mObjCtrl->updateObjectAt(column, lookup, nullptr, obj->getType());
-        mObjCtrl->updateObjectAt(column, destinationRow, obj, obj->getType());
+        mObjCtrl->removeObjectAt(column, lookup, obj->getType());
+        mObjCtrl->updateObjectAt(column, destinationRow, obj);
         obj->setRow(destinationRow);
 
         // Lazy creation of array

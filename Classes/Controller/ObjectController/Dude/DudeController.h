@@ -75,6 +75,6 @@ protected:
     
     cocos2d::Map<DudeObj*, DudeHelper*> mDudeDirections;
 
-    // Dude object array 
-    BaseObj* mDudeObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
+//     // Dude object array 
+//     BaseObj* mDudeObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
 };

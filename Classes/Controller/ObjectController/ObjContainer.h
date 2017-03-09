@@ -18,6 +18,7 @@ class TileObj;
 class CookieObj;
 class FieldObj;
 class DudeObj;
+class GameplayScene;
 
 class ObjContainer : public cocos2d::Ref
 {
@@ -29,13 +30,23 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static ObjContainer* createWithObject(BaseObj* obj);
+    static ObjContainer* create();
 
-    virtual bool initWithObject(BaseObj* obj);
+    virtual bool init();
 
     bool addObject(BaseObj* obj);
-    BaseObj* getObject(CommonTypes::BaseObjectType& type) const;
-    bool removeObject(BaseObj* obj);
+    bool removeObject(const CommonTypes::BaseObjectType& type);
+
+    BaseObj* getObject(const CommonTypes::BaseObjectType& type) const;
+    FieldObj* getFieldObject() const;
+    std::list<FieldObj*>& getFieldObjects();
+
+    bool isEmptyTileAt();
+    bool isPossibleToAddCookie();
+    bool isSameTypeOfCookieAt(int type);
+
+    //---Callbacks-------------------------------------------------
+    void onFieldObjChangeState(BaseObj* obj, std::function<void(FieldObj*)> createSpriteFunc);
 
 protected:
     // Nodes should be created using create();
@@ -46,11 +57,10 @@ protected:
     bool addFieldObject(BaseObj* obj);
     bool addCookieObject(BaseObj* obj);
 
-    bool removeFieldObject(bool removeWithCleanup = true);
-
     //---Class Attributes-------------------------------------------------
+    std::list<FieldObj*> mFieldObjects;
+
     CC_SYNTHESIZE_READONLY(DudeObj*, mDudeObj, DudeObj);
     CC_SYNTHESIZE_READONLY(TileObj*, mTileObj, TileObj);
-    CC_SYNTHESIZE_READONLY(std::list<FieldObj*>, mFieldObjects, FieldObjects);
     CC_SYNTHESIZE_READONLY(CookieObj*, mCookieObj, CookieObj);
 };

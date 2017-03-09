@@ -38,7 +38,7 @@ public:
 
     void animateBouncingObj(BaseObj* obj);
 
-    void animateRemovingFieldObjects(CommonTypes::Set* fieldObjects);
+    void animateRemovingFieldObjects(CommonTypes::Set* fieldObjects, cocos2d::CallFunc* completion);
 
 
     void animateRemoveDude(BaseObj* obj, cocos2d::CallFunc* completion);

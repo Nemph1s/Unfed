@@ -20,7 +20,6 @@ FieldObj::FieldObj()
     , mDebugLabel(nullptr)
     , mHP(0)
     , mReadyToUpdatePriority(false)
-    , mReadyToChangeState(false)
 //--------------------------------------------------------------------
 {
 }
@@ -127,7 +126,6 @@ void FieldObj::clear()
     mFieldType = CommonTypes::FieldType::Unknown;
     mHP = 0;
     mPriority = 0;
-    mReadyToChangeState = false;
     mReadyToUpdatePriority = false;
     if (mDebugLabel) {
         if (mDebugLabel->getParent()) {

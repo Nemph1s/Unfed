@@ -43,14 +43,18 @@ ObjContainer::ObjContainer()
 ObjContainer::~ObjContainer()
 //--------------------------------------------------------------------
 {
+    mTileObj = nullptr;
+    mCookieObj = nullptr;
+    mDudeObj = nullptr;
+    mFieldObjects.clear();
 }
 
 //--------------------------------------------------------------------
-ObjContainer* ObjContainer::createWithObject(BaseObj * obj)
+ObjContainer* ObjContainer::create()
 //--------------------------------------------------------------------
 {
     ObjContainer * ret = new (std::nothrow) ObjContainer();
-    if (ret && ret->initWithObject(obj)) {
+    if (ret && ret->init()) {
         ret->autorelease();
         CC_SAFE_RETAIN(ret);
     }
@@ -61,13 +65,10 @@ ObjContainer* ObjContainer::createWithObject(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-bool ObjContainer::initWithObject(BaseObj* obj)
+bool ObjContainer::init()
 //--------------------------------------------------------------------
 {
-    bool result = true;
-    result = addObject(obj);
-
-    return result;
+    return true;
 }
 
 //--------------------------------------------------------------------
@@ -98,7 +99,7 @@ bool ObjContainer::addObject(BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
-BaseObj * ObjContainer::getObject(CommonTypes::BaseObjectType& type) const
+BaseObj * ObjContainer::getObject(const CommonTypes::BaseObjectType& type) const
 //--------------------------------------------------------------------
 {
     BaseObj* obj = nullptr;
@@ -108,7 +109,7 @@ BaseObj * ObjContainer::getObject(CommonTypes::BaseObjectType& type) const
         obj = mTileObj;
         break;
     case BaseObjectType::FieldObj:
-        obj = mFieldObjects.front();
+        obj = getFieldObject();
         break;
     case BaseObjectType::CookieObj:
         obj = mCookieObj;
@@ -123,10 +124,92 @@ BaseObj * ObjContainer::getObject(CommonTypes::BaseObjectType& type) const
 }
 
 //--------------------------------------------------------------------
-bool ObjContainer::removeObject(BaseObj* obj)
+FieldObj* ObjContainer::getFieldObject() const
 //--------------------------------------------------------------------
 {
+    FieldObj* obj = nullptr;
+    if (mFieldObjects.size() > 0)
+        obj = mFieldObjects.front();
+    return obj;
+}
+
+//--------------------------------------------------------------------
+std::list<FieldObj*>& ObjContainer::getFieldObjects()
+//--------------------------------------------------------------------
+{
+    return mFieldObjects;
+}
+
+//--------------------------------------------------------------------
+bool ObjContainer::removeObject(const CommonTypes::BaseObjectType& type)
+//--------------------------------------------------------------------
+{
+    bool result = false;
+    switch (type)
+    {
+    case BaseObjectType::TileObj:
+        mTileObj = nullptr;
+        break;
+    case BaseObjectType::FieldObj:
+        mFieldObjects.pop_front();
+        break;
+    case BaseObjectType::CookieObj:
+        mCookieObj = nullptr;
+        break;
+    case BaseObjectType::DudeObj:
+        mDudeObj = nullptr;
+        break;
+    default:
+        break;
+    }
+    return result;
+}
+
+
+//--------------------------------------------------------------------
+bool ObjContainer::isEmptyTileAt()
+//--------------------------------------------------------------------
+{
+    return mTileObj ? mTileObj->isEmptyTile() : false;
+}
+
+//--------------------------------------------------------------------
+bool ObjContainer::isPossibleToAddCookie()
+//--------------------------------------------------------------------
+{
+    // If there's a tile at a position but no cookie, then there's a hole.
+    auto isEmptyTile = isEmptyTileAt();
+    
+    if (!isEmptyTile && mCookieObj == nullptr) {
+        auto dudeObj = mDudeObj;
+        if (!dudeObj) {
+            auto fieldObj = getFieldObject();
+            if (!fieldObj) {
+                return true;
+            }
+            if (fieldObj->isContainer()) {
+                return true;
+            }
+            if (fieldObj->isHpEnded() && fieldObj->getFieldObjChangeState()) {
+                return true;
+            }
+        }
+
+    }
     return false;
+}
+
+//--------------------------------------------------------------------
+bool ObjContainer::isSameTypeOfCookieAt(int type)
+//--------------------------------------------------------------------
+{
+    if (!mCookieObj)
+        return false;
+
+    if (mCookieObj->getTypeAsInt() != type)
+        return false;
+
+    return true;
 }
 
 //--------------------------------------------------------------------
@@ -159,7 +242,7 @@ bool ObjContainer::addFieldObject(BaseObj* obj)
 {
     auto fieldObj = dynamic_cast<FieldObj*>(obj);
     if (fieldObj) {
-        fieldObj->setPriority(mFieldObjects.size() + 1);
+        //fieldObj->setPriority(mFieldObjects.size() + 1);
         mFieldObjects.push_back(fieldObj);
         return true;
     }
@@ -179,30 +262,32 @@ bool ObjContainer::addCookieObject(BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
-bool ObjContainer::removeFieldObject(bool removeWithCleanup) // execute this method with false before start animation and with true after animation
+void ObjContainer::onFieldObjChangeState(BaseObj* obj, std::function<void(FieldObj*)> createSpriteFunc)
 //--------------------------------------------------------------------
 {
-    FieldObj* fieldObj = mFieldObjects.size() > 0 ? mFieldObjects.front() : nullptr;
-    if (!fieldObj) {
-        return false;
-    }
-    if (removeWithCleanup) {
-        mFieldObjects.remove(fieldObj);
-
+    auto fieldObj = getFieldObject();
+    if (fieldObj == obj) {
         if (fieldObj->getSpriteNode()) {
             fieldObj->getSpriteNode()->removeFromParent();
             fieldObj->setSpriteNode(nullptr);
         }
 
         if (fieldObj->getHP() > 0) {
-            //scene->createSpriteWithFieldObj(obj); use callback to scene
+            createSpriteFunc(fieldObj);
+            //scene->createSpriteWithFieldObj(fieldObj); use callback instead of
         }
         else if (fieldObj->isHpEnded()) {
+            removeObject(BaseObjectType::FieldObj);
+
             SmartFactory->recycle(fieldObj);
+
+            for (auto it = mFieldObjects.begin(); it != mFieldObjects.end(); ++it) {
+                auto obj = dynamic_cast<FieldObj*>(*it);
+                auto prio = obj->getPriority() - 1;
+                obj->setPriority(prio);
+                obj->setReadyToUpdatePriority(true);
+            }
         }
-    } else {
-        // this flag is used to check after complete animation to remove obj 
-        fieldObj->setReadyToChangeState(true); 
     }
-    return true;
+    
 }

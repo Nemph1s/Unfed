@@ -46,7 +46,7 @@ protected:
     CC_SYNTHESIZE_READONLY(CommonTypes::FieldType, mFieldType, FieldType);
     CC_SYNTHESIZE(int, mPriority, Priority);
     CC_SYNTHESIZE(bool, mReadyToUpdatePriority, ReadyToUpdatePriority);
-    CC_SYNTHESIZE(bool, mReadyToChangeState, ReadyToChangeState);
+    CC_SYNTHESIZE(std::function<void(BaseObj*, std::function<void(FieldObj*)>)>, mFieldObjChangeState, FieldObjChangeState);
 
     CC_SYNTHESIZE(int, mHP, HP);
     CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);

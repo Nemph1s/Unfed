@@ -11,6 +11,8 @@
 #include "Controller/ObjectController/Dude/DudeController.h"
 #include "Controller/ObjectController/Dude/DudeHelper.h"
 #include "Controller/ObjectController/ObjectController.h"
+#include "Controller/ObjectController/ObjContainer.h"
+
 #include "Controller/ChainController.h"
 
 #include "Common/Factory/SmartFactory.h"
@@ -98,7 +100,8 @@ BaseObj * DudeController::createDudeObject(int column, int row, int type)
     FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
     auto obj = dynamic_cast<DudeObj*>(SmartFactory->createDudeObj(info));
     CC_ASSERT(obj);
-    mDudeObjects[column][row] = obj;
+    mObjCtrl->getObject(column, row)->addObject(obj);
+    //mDudeObjects[column][row] = obj;
 
     auto helper = DudeHelper::createWithDudeObject(obj);
     helper->setDudeController(this);
@@ -112,17 +115,19 @@ BaseObj* DudeController::objectAt(int column, int row)
 //--------------------------------------------------------------------
 {
     if (!(column >= 0 && column < NumColumns) || !(row >= 0 && row < NumColumns)) {
-        cocos2d::log("ChainController::createChainFromPosToPos: wrong destinationPos at column=%d, row=%d", column, row);
+        cocos2d::log("DudeController::objectAt: wrong pos at column=%d, row=%d", column, row);
         return nullptr;
     }
-    return mDudeObjects[column][row];
+    auto container = mObjCtrl->getObject(column, row);
+    return container->getObject(BaseObjectType::DudeObj);
 }
 
 //--------------------------------------------------------------------
 DudeObj* DudeController::dudeObjectAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    return dynamic_cast<DudeObj*>(objectAt(column,row));
+    auto container = mObjCtrl->getObject(column, row);
+    return container->getDudeObj();
 }
 
 //--------------------------------------------------------------------
@@ -293,7 +298,8 @@ void DudeController::removeDude(int column, int row, bool removeWithCleanup)
         mDudeDirections.erase(dude);
     }
     
-    mDudeObjects[column][row] = nullptr;
+    auto container = mObjCtrl->getObject(column, row);
+    container->removeObject(BaseObjectType::DudeObj);
 }
 
 //--------------------------------------------------------------------
