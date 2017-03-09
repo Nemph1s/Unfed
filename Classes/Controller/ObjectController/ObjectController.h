@@ -39,7 +39,7 @@ public:
     bool init();
 
     void createInitialTiles();
-    void createInitialFieldObjects();
+    cocos2d::Set* createInitialFieldObjects();
     cocos2d::Set* createInitialCookies();
     
     BaseObj* createRandomCookie(int column, int row);

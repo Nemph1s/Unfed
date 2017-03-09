@@ -108,24 +108,6 @@ void CookiesLayer::onExit()
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::addSpritesForCookies(Set* cookies)
-//--------------------------------------------------------------------
-{
-    cocos2d::log("CookiesLayer::addSpritesForCookies:");
-    auto it = cookies->begin();
-    for (it; it != cookies->end(); it++) {
-        auto cookie = dynamic_cast<CookieObj*>(*it);
-        CC_ASSERT(cookie);
-
-        createSpriteWithObj(cookie, cookie->getColumn(), cookie->getRow());
-        cookie->updateDebugLabel();
-
-        auto sprite = cookie->getSpriteNode();
-        AnimationsManager->animateNewCookieSprite(sprite);
-    }
-}
-
-//--------------------------------------------------------------------
 void CookiesLayer::addSpritesForObjects(cocos2d::Set * set)
 //--------------------------------------------------------------------
 {
@@ -135,7 +117,13 @@ void CookiesLayer::addSpritesForObjects(cocos2d::Set * set)
         auto obj = dynamic_cast<BaseObj*>(*it);
         CC_ASSERT(obj);
 
-        createSpriteWithObj(obj, obj->getColumn(), obj->getRow());
+        if (obj->getType() == BaseObjectType::FieldObj) {
+            auto fieldObj = dynamic_cast<FieldObj*>(*it);
+            createSpriteWithFieldObj(fieldObj, fieldObj->getColumn(), fieldObj->getRow());
+        } else {
+            createSpriteWithObj(obj, obj->getColumn(), obj->getRow());
+        }
+
         obj->updateDebugLabel();
 
         auto sprite = obj->getSpriteNode();
@@ -292,7 +280,7 @@ void CookiesLayer::removeAllCookieSprites()
         if (!obj) {
             continue;
         }
-        if (obj->getType() != BaseObjectType::DudeObj) {
+        if (obj->getType() != BaseObjectType::DudeObj && obj->getType() != BaseObjectType::FieldObj) {
             this->removeChild(child);
         }
     }
@@ -358,4 +346,25 @@ void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
             obj->updateDebugLabel();
         }
     }    
+}
+
+//--------------------------------------------------------------------
+void CookiesLayer::createSpriteWithFieldObj(FieldObj * obj, int column, int row)
+//--------------------------------------------------------------------
+{
+    //TODO: use sprites factory
+    if (obj) {
+        auto sprite = Sprite::create(obj->spriteName().getCString());
+        obj->setSpriteNode(sprite);
+
+        auto priority = obj->getPriority();
+        auto zOrder = (row * 10) + priority;
+        auto pos = Helper::pointForColumnAndRowWithPriority(column, row, priority);
+
+        sprite->setPosition(pos);
+        sprite->setScale(1);
+
+        this->addChild(sprite, zOrder);
+        this->addChild(obj, zOrder);
+    }
 }

@@ -76,20 +76,22 @@ void ObjectController::createInitialTiles()
 }
 
 //--------------------------------------------------------------------
-void ObjectController::createInitialFieldObjects()
+cocos2d::Set* ObjectController::createInitialFieldObjects()
 //--------------------------------------------------------------------
 {
     auto levelInfo = mLevel->getLevelInfo();
-
+    cocos2d::Set* set = cocos2d::Set::create();
     for (auto obj : levelInfo.fieldObjects) {
         for (uint8_t i = 0; i < obj.fieldType.size(); i++) {
             auto type = obj.fieldType.at(i);
             if (type > 0) {
                 auto fieldObj = createFieldObject(obj.baseInfo.column, obj.baseInfo.row, type, i);
-                mLevel->addChild(fieldObj);
+                set->addObject(fieldObj);
+                //mLevel->addChild(fieldObj);
             }
         }
     }
+    return set;
 }
 
 //--------------------------------------------------------------------
@@ -98,7 +100,7 @@ cocos2d::Set * ObjectController::createInitialCookies()
 {
     cocos2d::log("ObjectController::createInitialCookies:");
     cocos2d::Set* set = cocos2d::Set::create();
-    auto createdString = cocos2d::String("");
+    auto createdString = cocos2d::String::create("");
 
     for (int row = 0; row < NumRows; row++) {
         for (int column = 0; column < NumColumns; column++) {
@@ -106,13 +108,13 @@ cocos2d::Set * ObjectController::createInitialCookies()
                 int cookieType = getRandomCookieType(column, row);
                 BaseObj* cookie = createCookie(column, row, cookieType);
                 set->addObject(cookie);
-                createdString.appendWithFormat("%d ", cookieType);
+                createdString->appendWithFormat("%d ", cookieType);
             }
         }
-        createdString.append("\n");
+        createdString->append("\n");
     }
     mLevel->disablePredefinedCookies();
-    cocos2d::log("ObjectController::createInitialCookies: created array=%s", createdString.getCString());
+    cocos2d::log("ObjectController::createInitialCookies: created array=%s", createdString->getCString());
     return set;
 }
 

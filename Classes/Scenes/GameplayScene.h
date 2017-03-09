@@ -31,7 +31,6 @@ public:
 
 	void addTiles();
     void addFieldObjectsAt(int column, int row);
-    void addSpritesForCookies(cocos2d::Set* cookies);
     void addSpritesForObjects(cocos2d::Set* set);
 
     void createSpriteWithCookie(CookieObj* cookie, int column, int row);

@@ -157,9 +157,9 @@ bool ViewController::initObjectController()
     mLevel->setObjectController(mObjectController);
 
     mObjectController->createInitialTiles();
-    mObjectController->createInitialFieldObjects();
-
+    auto fieldObjecs = mObjectController->createInitialFieldObjects();
     mGameplayScene->addTiles();
+    mGameplayScene->addSpritesForObjects(fieldObjecs);
 
     return true;
 }
@@ -276,7 +276,7 @@ void ViewController::shuffle()
    cocos2d::log("ViewController::shuffle");
    mLevel->getObjectController()->removeAllCookies();
    mGameplayScene->removeAllCookieSprites();
-   mGameplayScene->addSpritesForCookies(mLevel->shuffle());
+   mGameplayScene->addSpritesForObjects(mLevel->shuffle());
    mDudeController->detectDirectionsForDudes();
 }
 

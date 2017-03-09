@@ -130,7 +130,6 @@ void GameplayScene::addTiles()
             tile->setSpriteNode(tileSprite);
 			mTilesLayer->addChild(tileSprite);
 
-            addFieldObjectsAt(column, row);
 		}
 	}
 }
@@ -153,18 +152,10 @@ void GameplayScene::addFieldObjectsAt(int column, int row)
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::addSpritesForCookies(Set* cookies)
-//--------------------------------------------------------------------
-{
-	cocos2d::log("GameplayScene::addSpritesForCookies:");
-    mCookiesLayer->addSpritesForCookies(cookies);
-}
-
-//--------------------------------------------------------------------
 void GameplayScene::addSpritesForObjects(cocos2d::Set* set)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("GameplayScene::addSpritesForCookies:");
+    cocos2d::log("GameplayScene::addSpritesForObjects:");
     mCookiesLayer->addSpritesForObjects(set);
 }
 
