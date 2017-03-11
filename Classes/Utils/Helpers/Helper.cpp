@@ -116,7 +116,7 @@ cocos2d::Vec2 Helper::pointForTile(BaseObj * obj)
 //--------------------------------------------------------------------
 {
     auto pos = cocos2d::Vec2::ZERO;
-    if (obj->getType() == BaseObjectType::FieldObj) {
+    if (obj->getType() == BaseObjType::Field) {
         auto tileObj = dynamic_cast<FieldObj*>(obj);
         if (tileObj) {
             pos = pointForColumnAndRowWithPriority(obj->getColumn(), obj->getRow(), tileObj->getPriority());
@@ -176,13 +176,13 @@ cocos2d::Color4B Helper::getScoreColorByObj(BaseObj * obj)
         return color;
     }
 
-    if (obj->getType() == BaseObjectType::CookieObj) {
+    if (obj->getType() == BaseObjType::Cookie) {
         auto cookie = dynamic_cast<CookieObj*>(obj);
         if (cookie) {
             color = getScoreColorByCookieType(cookie->getCookieType());
         }
     }
-    else if (obj->getType() == BaseObjectType::FieldObj) {
+    else if (obj->getType() == BaseObjType::Field) {
         auto tileObj = dynamic_cast<FieldObj*>(obj);
         if (tileObj) {
             color = getScoreColorByFieldType(tileObj->getFieldType());

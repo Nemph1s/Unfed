@@ -35,9 +35,9 @@ public:
     virtual bool init();
 
     bool addObject(BaseObj* obj);
-    bool removeObject(const CommonTypes::BaseObjectType& type);
+    bool removeObject(const CommonTypes::BaseObjType& type);
 
-    BaseObj* getObject(const CommonTypes::BaseObjectType& type) const;
+    BaseObj* getObject(const CommonTypes::BaseObjType& type) const;
     FieldObj* getFieldObject() const;
     std::list<FieldObj*>& getFieldObjects();
 

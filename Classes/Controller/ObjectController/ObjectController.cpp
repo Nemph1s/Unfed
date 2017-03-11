@@ -136,7 +136,7 @@ CommonTypes::Set * ObjectController::createInitialCookies()
 BaseObj * ObjectController::createTile(int column, int row, int type)
 //--------------------------------------------------------------------
 {
-    BaseObjectInfo baseInfo = { BaseObjectType::TileObj, column, row };
+    BaseObjInfo baseInfo = { BaseObjType::Tile, column, row };
     TileInfo info = { baseInfo, static_cast<TileType>(type) };
     auto tile = SmartFactory->createTileObj(info);
     CC_ASSERT(tile);
@@ -149,7 +149,7 @@ BaseObj * ObjectController::createTile(int column, int row, int type)
 BaseObj * ObjectController::createCookie(int column, int row, int type)
 //--------------------------------------------------------------------
 {
-    BaseObjectInfo baseInfo = { BaseObjectType::CookieObj, column, row };
+    BaseObjInfo baseInfo = { BaseObjType::Cookie, column, row };
     CookieInfo info = { baseInfo, static_cast<CookieType>(type) };
     auto cookie = SmartFactory->createCookieObj(info);
     CC_ASSERT(cookie);
@@ -162,7 +162,7 @@ BaseObj * ObjectController::createCookie(int column, int row, int type)
 BaseObj * ObjectController::createFieldObject(int column, int row, int type, int priority)
 //--------------------------------------------------------------------
 {
-    BaseObjectInfo baseInfo = { BaseObjectType::FieldObj, column, row };
+    BaseObjInfo baseInfo = { BaseObjType::Field, column, row };
     FieldInfo info = { baseInfo, static_cast<FieldType>(type), priority };
     auto obj = SmartFactory->createFieldObj(info);
     CC_ASSERT(obj);
@@ -311,7 +311,7 @@ BaseObj * ObjectController::fieldObjectAt(int column, int row)
 //     auto fieldsList = mFieldObjects[column][row];
 //     if (fieldsList.size() == 0) return nullptr;
 //     return fieldsList.front();
-    return getObject(column, row)->getObject(BaseObjectType::FieldObj);
+    return getObject(column, row)->getObject(BaseObjType::Field);
 }
 
 //--------------------------------------------------------------------
@@ -392,7 +392,7 @@ void ObjectController::updateObjectAt(int column, int row, BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-void ObjectController::removeObjectAt(int column, int row, CommonTypes::BaseObjectType type)
+void ObjectController::removeObjectAt(int column, int row, CommonTypes::BaseObjType type)
 //--------------------------------------------------------------------
 {
     getObject(column, row)->removeObject(type);
@@ -413,7 +413,7 @@ void ObjectController::removeCookie(int column, int row)
         cookie->removeFromParent();
     }
     SmartFactory->recycle(cookie);
-    getObject(column, row)->removeObject(BaseObjectType::CookieObj);
+    getObject(column, row)->removeObject(BaseObjType::Cookie);
 }
 
 //--------------------------------------------------------------------

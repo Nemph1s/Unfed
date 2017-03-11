@@ -96,7 +96,7 @@ Set* DudeController::createDudeObectsFromChains(Set * chains)
 BaseObj * DudeController::createDudeObject(int column, int row, int type)
 //--------------------------------------------------------------------
 {
-    BaseObjectInfo baseInfo = { BaseObjectType::DudeObj, column, row };
+    BaseObjInfo baseInfo = { BaseObjType::Dude, column, row };
     FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
     auto obj = dynamic_cast<DudeObj*>(SmartFactory->createDudeObj(info));
     CC_ASSERT(obj);
@@ -119,7 +119,7 @@ BaseObj* DudeController::objectAt(int column, int row)
         return nullptr;
     }
     auto container = mObjCtrl->getObject(column, row);
-    return container->getObject(BaseObjectType::DudeObj);
+    return container->getObject(BaseObjType::Dude);
 }
 
 //--------------------------------------------------------------------
@@ -299,7 +299,7 @@ void DudeController::removeDude(int column, int row, bool removeWithCleanup)
     }
     
     auto container = mObjCtrl->getObject(column, row);
-    container->removeObject(BaseObjectType::DudeObj);
+    container->removeObject(BaseObjType::Dude);
 }
 
 //--------------------------------------------------------------------

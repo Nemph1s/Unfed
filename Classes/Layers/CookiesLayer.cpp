@@ -117,7 +117,7 @@ void CookiesLayer::addSpritesForObjects(CommonTypes::Set * set)
         auto obj = dynamic_cast<BaseObj*>(*it);
         CC_ASSERT(obj);
 
-        if (obj->getType() == BaseObjectType::FieldObj) {
+        if (obj->getType() == BaseObjType::Field) {
             auto fieldObj = dynamic_cast<FieldObj*>(*it);
             createSpriteWithFieldObj(fieldObj, fieldObj->getColumn(), fieldObj->getRow());
         } else {
@@ -166,7 +166,7 @@ void CookiesLayer::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
         return;
 
     if (mTouchedObj) {
-        if (mTouchedObj->getType() == BaseObjectType::DudeObj) {
+        if (mTouchedObj->getType() == BaseObjType::Dude) {
             return;
         }
     }
@@ -196,7 +196,7 @@ void CookiesLayer::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 //--------------------------------------------------------------------
 {
     if (mTouchedObj && mCanActivateDudeCallback) {
-        if (mTouchedObj->getType() == BaseObjectType::DudeObj) {
+        if (mTouchedObj->getType() == BaseObjType::Dude) {
             Vec2 locationInNode = this->convertToNodeSpace(touch->getLocation());
 
             int column = -1, row = -1;
@@ -280,7 +280,7 @@ void CookiesLayer::removeAllCookieSprites()
         if (!obj) {
             continue;
         }
-        if (obj->getType() != BaseObjectType::DudeObj && obj->getType() != BaseObjectType::FieldObj) {
+        if (obj->getType() != BaseObjType::Dude && obj->getType() != BaseObjType::Field) {
             this->removeChild(child);
         }
     }
@@ -335,14 +335,14 @@ void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
         obj->setSpriteNode(sprite);
 
         auto zOrder = (row * 10);
-        if (obj->getType() == BaseObjectType::DudeObj) {
+        if (obj->getType() == BaseObjType::Dude) {
             mDudesLayer->addChild(sprite, zOrder);
             mDudesLayer->addChild(obj, zOrder);
         } else {
             this->addChild(sprite, zOrder);
             this->addChild(obj, zOrder);
         }
-        if (obj->getType() != BaseObjectType::TileObj) {
+        if (obj->getType() != BaseObjType::Tile) {
             obj->updateDebugLabel();
         }
     }    

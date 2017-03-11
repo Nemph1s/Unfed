@@ -79,16 +79,16 @@ bool ObjContainer::addObject(BaseObj* obj)
     if (obj) {
         switch (obj->getType())
         {
-        case BaseObjectType::TileObj:
+        case BaseObjType::Tile:
             result = addTileObject(obj);
             break;
-        case BaseObjectType::FieldObj:
+        case BaseObjType::Field:
             result = addFieldObject(obj);
             break;
-        case BaseObjectType::CookieObj:
+        case BaseObjType::Cookie:
             result = addCookieObject(obj);
             break;
-        case BaseObjectType::DudeObj:
+        case BaseObjType::Dude:
             result = addDudeObject(obj);
             break;
         default:
@@ -99,22 +99,22 @@ bool ObjContainer::addObject(BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
-BaseObj * ObjContainer::getObject(const CommonTypes::BaseObjectType& type) const
+BaseObj * ObjContainer::getObject(const CommonTypes::BaseObjType& type) const
 //--------------------------------------------------------------------
 {
     BaseObj* obj = nullptr;
     switch (type)
     {
-    case BaseObjectType::TileObj:
+    case BaseObjType::Tile:
         obj = mTileObj;
         break;
-    case BaseObjectType::FieldObj:
+    case BaseObjType::Field:
         obj = getFieldObject();
         break;
-    case BaseObjectType::CookieObj:
+    case BaseObjType::Cookie:
         obj = mCookieObj;
         break;
-    case BaseObjectType::DudeObj:
+    case BaseObjType::Dude:
         obj = mDudeObj;
         break;
     default:
@@ -141,22 +141,22 @@ std::list<FieldObj*>& ObjContainer::getFieldObjects()
 }
 
 //--------------------------------------------------------------------
-bool ObjContainer::removeObject(const CommonTypes::BaseObjectType& type)
+bool ObjContainer::removeObject(const CommonTypes::BaseObjType& type)
 //--------------------------------------------------------------------
 {
     bool result = false;
     switch (type)
     {
-    case BaseObjectType::TileObj:
+    case BaseObjType::Tile:
         mTileObj = nullptr;
         break;
-    case BaseObjectType::FieldObj:
+    case BaseObjType::Field:
         mFieldObjects.pop_front();
         break;
-    case BaseObjectType::CookieObj:
+    case BaseObjType::Cookie:
         mCookieObj = nullptr;
         break;
-    case BaseObjectType::DudeObj:
+    case BaseObjType::Dude:
         mDudeObj = nullptr;
         break;
     default:
@@ -277,7 +277,7 @@ void ObjContainer::onFieldObjChangeState(BaseObj* obj, std::function<void(FieldO
             //scene->createSpriteWithFieldObj(fieldObj); use callback instead of
         }
         else if (fieldObj->isHpEnded()) {
-            removeObject(BaseObjectType::FieldObj);
+            removeObject(BaseObjType::Field);
 
             SmartFactory->recycle(fieldObj);
 

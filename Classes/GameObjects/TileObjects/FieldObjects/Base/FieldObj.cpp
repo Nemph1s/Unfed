@@ -55,7 +55,7 @@ bool FieldObj::init(const CommonTypes::FieldInfo &info)
     mFieldType = info.fieldType;
     mPriority = info.priority;
 
-    if (!mDebugLabel && mType != CommonTypes::BaseObjectType::FieldObj) {
+    if (!mDebugLabel && mType != CommonTypes::BaseObjType::Field) {
 #ifdef COCOS2D_DEBUG
         mDebugLabel = cocos2d::Label::create();
         mDebugLabel->setBMFontSize(16);

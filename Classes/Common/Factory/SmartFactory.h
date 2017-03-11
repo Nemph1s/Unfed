@@ -27,9 +27,9 @@ public:
     }
     static _SmartFactory* getInstance();
 
-    BaseObj* create(const CommonTypes::BaseObjectInfo &info);
+    BaseObj* create(const CommonTypes::BaseObjInfo &info);
 
-    BaseObj* createBaseObj(const CommonTypes::BaseObjectInfo &info);
+    BaseObj* createBaseObj(const CommonTypes::BaseObjInfo &info);
     BaseObj* createTileObj(const CommonTypes::TileInfo &info);
     BaseObj* createCookieObj(const CommonTypes::CookieInfo &info);
     BaseObj* createFieldObj(const CommonTypes::FieldInfo &info);

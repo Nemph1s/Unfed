@@ -66,7 +66,7 @@ public:
 
     void updateCookieObjectAt(int column, int row, BaseObj* cookie);
     void updateObjectAt(int column, int row, BaseObj* obj);
-    void removeObjectAt(int column, int row, CommonTypes::BaseObjectType type);
+    void removeObjectAt(int column, int row, CommonTypes::BaseObjType type);
 
     void removeCookie(int column, int row);
 

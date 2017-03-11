@@ -231,18 +231,18 @@ cocos2d::Sprite * _GuiManager::createSprite(int baseType, int objType)
 {
     cocos2d::Sprite* sprite = nullptr;
     cocos2d::String* str = nullptr;
-    auto baseObjType = static_cast<CommonTypes::BaseObjectType>(baseType);
+    auto baseObjType = static_cast<CommonTypes::BaseObjType>(baseType);
     switch (baseObjType)
     {
-    case CommonTypes::BaseObjectType::CookieObj:
+    case CommonTypes::BaseObjType::Cookie:
         str = &GameResources::s_cookieSpriteNames.at(objType);
         break;
-    case CommonTypes::BaseObjectType::FieldObj:
-    case CommonTypes::BaseObjectType::DudeObj:
+    case CommonTypes::BaseObjType::Field:
+    case CommonTypes::BaseObjType::Dude:
         str = Helper::getSpriteNameByTileType(objType);
         break;
-    case CommonTypes::BaseObjectType::TileObj:
-    case CommonTypes::BaseObjectType::Unknown:
+    case CommonTypes::BaseObjType::Tile:
+    case CommonTypes::BaseObjType::Unknown:
         break;
     default:
         break;

@@ -64,7 +64,7 @@ bool _SmartFactory::initCookiesPool(int poolSize)
         CCASSERT(mCookieObjPool, "error while creating mCookieObjPool");
 
         while (poolSize--) {
-            auto info = BaseObjectInfo(BaseObjectType::CookieObj);
+            auto info = BaseObjInfo(BaseObjType::Cookie);
             CookieInfo cookieInfo = { info, CookieType::Unknown };
             auto baseObject = CookieObj::create(cookieInfo);
             CC_SAFE_RETAIN(baseObject);
@@ -90,7 +90,7 @@ bool _SmartFactory::initTilesPool(int poolSize)
         CCASSERT(mTileObjPool, "error while creating mTileObjPool");
 
         while (poolSize--) {
-            auto info = BaseObjectInfo(BaseObjectType::TileObj);
+            auto info = BaseObjInfo(BaseObjType::Tile);
             TileInfo tileInfo = { info, TileType::Unknown };
             auto baseObject = TileObj::create(tileInfo);
             CC_SAFE_RETAIN(baseObject);
@@ -106,7 +106,7 @@ bool _SmartFactory::initTilesPool(int poolSize)
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::create(const BaseObjectInfo & info)
+BaseObj * _SmartFactory::create(const BaseObjInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj* baseObject = nullptr;
@@ -116,19 +116,19 @@ BaseObj * _SmartFactory::create(const BaseObjectInfo & info)
 
     switch (info.type)
     {
-    case BaseObjectType::CookieObj:
+    case BaseObjType::Cookie:
         baseObject = createCookieObj(cookieInfo);
         break;
-    case BaseObjectType::TileObj:
+    case BaseObjType::Tile:
         baseObject = createTileObj(tileInfo);
         break;
-    case BaseObjectType::FieldObj:
+    case BaseObjType::Field:
         baseObject = createFieldObj(fieldInfo);
         break;
-    case BaseObjectType::DudeObj:
+    case BaseObjType::Dude:
         baseObject = createDudeObj(fieldInfo);
         break;
-    case BaseObjectType::Unknown:
+    case BaseObjType::Unknown:
     default:
         baseObject = createBaseObj(info);
         break;
@@ -145,18 +145,18 @@ void _SmartFactory::recycle(BaseObj * obj)
     cocos2d::log("SmartFactory::recycle: type=%d", obj->getTypeAsInt());
     switch (obj->getType())
     {
-    case BaseObjectType::CookieObj:
+    case BaseObjType::Cookie:
         mCookieObjPool->push_back(obj);
         break;
-    case BaseObjectType::TileObj:
+    case BaseObjType::Tile:
         mTileObjPool->push_back(obj);
         break;
-    case BaseObjectType::FieldObj:
-    case BaseObjectType::DudeObj:
+    case BaseObjType::Field:
+    case BaseObjType::Dude:
         obj->clear();
         CC_SAFE_RELEASE(obj);
         break;
-    case BaseObjectType::Unknown:
+    case BaseObjType::Unknown:
     default:
         mBaseObjPool->push_back(obj);
         break;
@@ -164,7 +164,7 @@ void _SmartFactory::recycle(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::createBaseObj(const BaseObjectInfo & info)
+BaseObj * _SmartFactory::createBaseObj(const BaseObjInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj* baseObject = nullptr;

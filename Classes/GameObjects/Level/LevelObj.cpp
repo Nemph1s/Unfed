@@ -184,7 +184,7 @@ bool LevelObj::useGravityOnObject(cocos2d::Array * colArr, cocos2d::Array * rowA
     if (!colArr || !obj) {
         return false;
     }
-    if (obj->getType() == BaseObjectType::DudeObj || obj->getType() == BaseObjectType::FieldObj) {
+    if (obj->getType() == BaseObjType::Dude || obj->getType() == BaseObjType::Field) {
         if (!obj->isMovable() && !obj->isContainer())
             return true;
     }
