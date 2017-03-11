@@ -324,9 +324,9 @@ void ViewController::animateHandleMatches(CommonTypes::Set* chains)
         AnimationsManager->animateFallingObjects(columns, addNewCookies);
     });
 
-    auto fieldObjects = mLevel->detectFieldObjects(chains);
-    AnimationsManager->animateRemovingFieldObjects(fieldObjects, completion);
-    AnimationsManager->animateMatching(chains, CallFunc::create([](){}));
+//     auto fieldObjects = mLevel->detectFieldObjects(chains);
+//     AnimationsManager->animateRemovingFieldObjects(fieldObjects, completion);
+    AnimationsManager->animateMatching(chains, completion);
     AudioManager->playSound(SoundType::MatchSound);
 }
 
@@ -404,7 +404,7 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
     auto set = mDudeController->activateDude(obj, direction);
     auto chains = dynamic_cast<ChainObj*>(set->anyObject());
     if (chains) {
-        if (chains->getCookies()) {
+        if (chains->getChainObjects()) {
             mGameplayScene->userInteractionDisabled();
 
             mLevel->removeDudeMatches(set);

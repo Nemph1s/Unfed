@@ -55,10 +55,12 @@ protected:
     LevelObj();
 
     void calculateScore(CommonTypes::Set* chains);
+    //TODO: FIX THIS!!!
     void removeCookies(CommonTypes::Set* chains);   
 
     CommonTypes::SearchEmptyHoles skipFillTopUpHoles(int column, int row, bool& filledTileFouned);
 
+    //TODO: FIX THIS!!!
     bool checkMathicngFieldObjWithChain(CommonTypes::Set* chains, BaseObj* obj);
 
     bool isPossibleToAddCookie(int column, int row);

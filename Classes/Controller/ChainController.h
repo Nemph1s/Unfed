@@ -49,7 +49,10 @@ protected:
     // Nodes should be created using create();
     ChainController();
 
+    bool isPossibleToAddObjToChain(int col, int row, int& prevType, int& nextType);
+    void addObjToChain(ChainObj* chain, int col, int row);
     void addChainToSet(ChainObj* chain, CommonTypes::Set* set);
+
     CommonTypes::Set* detectHorizontalMatches();
     CommonTypes::Set* detectVerticalMatches();
     CommonTypes::Set* detectDifficultMatches(CommonTypes::Set* horizontal, CommonTypes::Set* vertical);

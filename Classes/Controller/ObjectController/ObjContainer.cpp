@@ -31,7 +31,8 @@ using namespace CommonTypes;
 
 //--------------------------------------------------------------------
 ObjContainer::ObjContainer()
-    : mTileObj(nullptr)
+    : cocos2d::Node()
+    , mTileObj(nullptr)
     , mCookieObj(nullptr)
     , mDudeObj(nullptr)
     , mFieldObjects()
@@ -68,6 +69,9 @@ ObjContainer* ObjContainer::create()
 bool ObjContainer::init()
 //--------------------------------------------------------------------
 {
+    if (!cocos2d::Node::init()) {
+        return false;
+    }
     return true;
 }
 
@@ -141,6 +145,34 @@ std::list<FieldObj*>& ObjContainer::getFieldObjects()
 }
 
 //--------------------------------------------------------------------
+bool ObjContainer::isContainObjForChain()
+//--------------------------------------------------------------------
+{
+    if (mCookieObj || mDudeObj || getFieldObject()) {
+        return true;
+    }
+    return false;
+}
+
+//--------------------------------------------------------------------
+BaseObj* ObjContainer::getObjectForChain()
+//--------------------------------------------------------------------
+{
+    BaseObj* obj = nullptr;
+    auto fieldObj = getFieldObject();
+    if (mCookieObj) {
+        obj = mCookieObj;
+    }
+    else if (fieldObj) {
+        obj = fieldObj;
+    }
+    else if (mDudeObj) {
+        //obj = mDudeObj;
+    }
+    return obj;
+}
+
+//--------------------------------------------------------------------
 bool ObjContainer::removeObject(const CommonTypes::BaseObjType& type)
 //--------------------------------------------------------------------
 {
@@ -148,16 +180,17 @@ bool ObjContainer::removeObject(const CommonTypes::BaseObjType& type)
     switch (type)
     {
     case BaseObjType::Tile:
-        mTileObj = nullptr;
+        CC_SAFE_RELEASE_NULL(mTileObj);
         break;
     case BaseObjType::Field:
+        CC_SAFE_RELEASE(mFieldObjects.front());
         mFieldObjects.pop_front();
         break;
     case BaseObjType::Cookie:
-        mCookieObj = nullptr;
+        CC_SAFE_RELEASE_NULL(mCookieObj);
         break;
     case BaseObjType::Dude:
-        mDudeObj = nullptr;
+        CC_SAFE_RELEASE_NULL(mDudeObj);
         break;
     default:
         break;
@@ -219,6 +252,7 @@ bool ObjContainer::addDudeObject(BaseObj* obj)
     auto dudeObj = dynamic_cast<DudeObj*>(obj);
     if (dudeObj) {
         mDudeObj = dudeObj;
+        CC_SAFE_RETAIN(mDudeObj);
         return true;
     }
     return false;
@@ -231,6 +265,7 @@ bool ObjContainer::addTileObject(BaseObj* obj)
     auto tileObj = dynamic_cast<TileObj*>(obj);
     if (tileObj) {
         mTileObj = tileObj;
+        CC_SAFE_RETAIN(mTileObj);
         return true;
     }
     return false;
@@ -242,8 +277,8 @@ bool ObjContainer::addFieldObject(BaseObj* obj)
 {
     auto fieldObj = dynamic_cast<FieldObj*>(obj);
     if (fieldObj) {
-        //fieldObj->setPriority(mFieldObjects.size() + 1);
         mFieldObjects.push_back(fieldObj);
+        CC_SAFE_RETAIN(fieldObj);
         return true;
     }
     return false;
@@ -256,6 +291,7 @@ bool ObjContainer::addCookieObject(BaseObj* obj)
     auto cookieObj = dynamic_cast<CookieObj*>(obj);
     if (cookieObj) {
         mCookieObj = cookieObj;
+        CC_SAFE_RETAIN(mCookieObj);
         return true;
     }
     return false;

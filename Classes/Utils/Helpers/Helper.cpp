@@ -12,11 +12,11 @@
 #include "Utils/GameResources.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/DudeObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include <random>
 
 using namespace GameResources;
-using namespace CommonTypes;
 using namespace CommonTypes;
 
 //--------------------------------------------------------------------
@@ -186,6 +186,12 @@ cocos2d::Color4B Helper::getScoreColorByObj(BaseObj * obj)
         auto tileObj = dynamic_cast<FieldObj*>(obj);
         if (tileObj) {
             color = getScoreColorByFieldType(tileObj->getFieldType());
+        }
+    }
+    else if (obj->getType() == BaseObjType::Dude) {
+        auto dudeObj = dynamic_cast<DudeObj*>(obj);
+        if (dudeObj) {
+            color = cocos2d::Color4B::MAGENTA;
         }
     }
 

@@ -69,7 +69,7 @@ bool DudeController::init()
 }
 
 //--------------------------------------------------------------------
-Set* DudeController::createDudeObectsFromChains(Set * chains)
+Set* DudeController::createDudeObectsFromChains(Set* chains)
 //--------------------------------------------------------------------
 {
     auto set = Set::create();
@@ -79,13 +79,13 @@ Set* DudeController::createDudeObectsFromChains(Set * chains)
 
         auto dudeType = getDudeTypeByChain(chain);
         if (dudeType != FieldType::Unknown) {
-            auto cookies = chain->getCookies();
-            auto cookie = dynamic_cast<CookieObj*>(cookies->getRandomObject());
-            if (!cookie) {
+            auto objects = chain->getChainObjects();
+            auto obj = dynamic_cast<BaseObj*>(objects->getRandomObject());
+            if (!obj) {
                 continue;
             }
             int type = Helper::to_underlying(dudeType);
-            auto dude = createDudeObject(cookie->getColumn(), cookie->getRow(), type);
+            auto dude = createDudeObject(obj->getColumn(), obj->getRow(), type);
             set->addObject(dude);
         }
     }
@@ -325,7 +325,7 @@ FieldType DudeController::getDudeTypeByChain(ChainObj * chain)
 //--------------------------------------------------------------------
 {
     auto type = FieldType::Unknown;
-    auto cookiesCount = chain->getCookies() ? chain->getCookies()->count() : 0;
+    auto cookiesCount = chain->getCookiesCount();
     switch (chain->getType())
     {
     case ChainType::ChainTypeHorizontal:

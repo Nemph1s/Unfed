@@ -106,7 +106,7 @@ void LevelObj::removeCookies(CommonTypes::Set * chains)
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
 
-        auto cookies = chain->getCookies();
+        auto cookies = chain->getChainObjects(); //TODO: FIX THIS!!!
         if (!cookies) {
             continue;
         }
@@ -148,25 +148,25 @@ bool LevelObj::checkMathicngFieldObjWithChain(CommonTypes::Set * chains, BaseObj
     if (!fieldObj) {
         return result;
     }
-    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
-        auto chain = dynamic_cast<ChainObj*>(*itChain);
-        CC_ASSERT(chain);
-
-        auto cookies = chain->getCookies();
-        for (auto it = cookies->begin(); it != cookies->end(); it++) {
-            auto cookie = dynamic_cast<CookieObj*>(*it);
-            CC_ASSERT(cookie);
-
-            int col = cookie->getColumn();
-            int row = cookie->getRow();
-            if (fieldObj->checkMatchingCondition(col, row)) {
-                result = true;
-                break;
-            }
-        }
-        if (result)
-            break;
-    }
+//     for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+//         auto chain = dynamic_cast<ChainObj*>(*itChain);
+//         CC_ASSERT(chain);
+// 
+//         auto cookies = chain->getChainObjects();
+//         for (auto it = cookies->begin(); it != cookies->end(); it++) {
+//             auto cookie = dynamic_cast<CookieObj*>(*it);
+//             CC_ASSERT(cookie);
+// 
+//             int col = cookie->getColumn();
+//             int row = cookie->getRow();
+//             if (fieldObj->checkMatchingCondition(col, row)) {
+//                 result = true;
+//                 break;
+//             }
+//         }
+//         if (result)
+//             break;
+//     }
     return result;
 }
 
@@ -348,7 +348,7 @@ void LevelObj::calculateScore(CommonTypes::Set * chains)
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
 
-        if (chain->getCookies()) {
+        if (chain->getChainObjects()) {
             auto chainScore = chain->getScore();
             chain->setScore(chainScore * mComboMultiplier);
             mComboMultiplier++;
