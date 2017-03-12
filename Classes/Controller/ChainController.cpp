@@ -78,13 +78,13 @@ CommonTypes::Set * ChainController::removeMatches()
 #endif //COCOS2D_DEBUG
 
     mLevel->calculateScore(horizontalChains);
-    mLevel->removeCookies(horizontalChains);
+    mLevel->matchChains(horizontalChains);
 
     mLevel->calculateScore(verticalChains);
-    mLevel->removeCookies(verticalChains);
+    mLevel->matchChains(verticalChains);
 
     mLevel->calculateScore(difficultChains);
-    mLevel->removeCookies(difficultChains);
+    mLevel->matchChains(difficultChains);
 
     return set;
 }
@@ -118,7 +118,7 @@ CommonTypes::Set * ChainController::removeChainAt(CommonTypes::ChainType & type,
         if (chainSet) {
             addChainsFromSetToSet(chainSet, set);
             mLevel->calculateScore(chainSet);
-            mLevel->removeCookies(chainSet);
+            mLevel->matchChains(chainSet);
         }
     }
     return set;

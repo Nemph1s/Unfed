@@ -58,6 +58,9 @@ protected:
     //TODO: FIX THIS!!!
     void removeCookies(CommonTypes::Set* chains);   
 
+    void matchCookies(CommonTypes::Set* chains);
+    void matchChains(CommonTypes::Set* chains);
+
     CommonTypes::SearchEmptyHoles skipFillTopUpHoles(int column, int row, bool& filledTileFouned);
 
     //TODO: FIX THIS!!!

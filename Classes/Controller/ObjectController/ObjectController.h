@@ -63,6 +63,7 @@ public:
     bool isSameTypeOfCookieAt(int column, int row, int type);
 
     bool matchFieldObject(BaseObj* obj);
+    bool matchCookieObject(BaseObj* obj);
 
     void updateCookieObjectAt(int column, int row, BaseObj* cookie);
     void updateObjectAt(int column, int row, BaseObj* obj);

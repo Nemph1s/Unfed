@@ -298,6 +298,24 @@ bool ObjContainer::addCookieObject(BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
+void ObjContainer::onRemoveCookie(BaseObj* obj)
+//--------------------------------------------------------------------
+{
+    if (mCookieObj == obj) {
+        if (mCookieObj->getSpriteNode()) {
+            mCookieObj->getSpriteNode()->removeFromParent();
+            mCookieObj->setSpriteNode(nullptr);
+        }
+
+        if (mCookieObj->getParent()) {
+            mCookieObj->removeFromParent();
+        }
+        SmartFactory->recycle(mCookieObj);
+        removeObject(BaseObjType::Cookie);
+    }
+}
+
+//--------------------------------------------------------------------
 void ObjContainer::onFieldObjChangeState(BaseObj* obj, std::function<void(FieldObj*)> createSpriteFunc)
 //--------------------------------------------------------------------
 {
@@ -310,12 +328,11 @@ void ObjContainer::onFieldObjChangeState(BaseObj* obj, std::function<void(FieldO
 
         if (fieldObj->getHP() > 0) {
             createSpriteFunc(fieldObj);
-            //scene->createSpriteWithFieldObj(fieldObj); use callback instead of
         }
         else if (fieldObj->isHpEnded()) {
-            removeObject(BaseObjType::Field);
-
             SmartFactory->recycle(fieldObj);
+
+            removeObject(BaseObjType::Field);
 
             for (auto it = mFieldObjects.begin(); it != mFieldObjects.end(); ++it) {
                 auto obj = dynamic_cast<FieldObj*>(*it);
@@ -325,5 +342,4 @@ void ObjContainer::onFieldObjChangeState(BaseObj* obj, std::function<void(FieldO
             }
         }
     }
-    
 }

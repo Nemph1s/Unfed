@@ -377,6 +377,21 @@ bool ObjectController::matchFieldObject(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
+bool ObjectController::matchCookieObject(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    auto objContainer = getObject(obj->getColumn(), obj->getRow());
+    auto cookieObj = objContainer->getCookieObj();
+    if (obj == cookieObj) {
+        std::function<void(BaseObj*)> onRemoveCookieCallback;
+        onRemoveCookieCallback = std::bind(&ObjContainer::onRemoveCookie, objContainer, _1);
+        cookieObj->setRemoveCookieCallback(onRemoveCookieCallback);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------
 void ObjectController::updateCookieObjectAt(int column, int row, BaseObj* cookie)
 //--------------------------------------------------------------------
 {

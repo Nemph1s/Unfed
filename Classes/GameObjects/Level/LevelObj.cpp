@@ -23,6 +23,7 @@
 #include "Utils/Parser/JsonParser.h"
 
 #include "Common/Factory/SmartFactory.h"
+#include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/ObjectController.h"
 #include "Controller/ObjectController/Dude/DudeController.h"
 #include "Controller/ChainController.h"
@@ -115,6 +116,54 @@ void LevelObj::removeCookies(CommonTypes::Set * chains)
             CC_ASSERT(cookie);
 
             mObjCtrl->removeCookie(cookie->getColumn(), cookie->getRow());
+        }
+    }
+}
+
+//--------------------------------------------------------------------
+void LevelObj::matchCookies(CommonTypes::Set * chains)
+//--------------------------------------------------------------------
+{
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+
+        auto cookies = chain->getChainObjects(); //TODO: FIX THIS!!!
+        if (!cookies) {
+            continue;
+        }
+        for (auto it = cookies->begin(); it != cookies->end(); it++) {
+            auto cookie = dynamic_cast<CookieObj*>(*it);
+            CC_ASSERT(cookie);
+
+            mObjCtrl->matchCookieObject(cookie);
+        }
+    }
+}
+
+//--------------------------------------------------------------------
+void LevelObj::matchChains(CommonTypes::Set * chains)
+//--------------------------------------------------------------------
+{
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+
+        auto objects = chain->getObjects();
+        if (!objects) {
+            continue;
+        }
+        for (auto it = objects->begin(); it != objects->end(); it++) {
+            auto container = dynamic_cast<ObjContainer*>(*it);
+            CC_ASSERT(container);
+
+            auto object = container->getObjectForChain();
+            if (object->getType() == BaseObjType::Cookie) {
+                mObjCtrl->matchCookieObject(object);
+            }
+            else if (object->getType() == BaseObjType::Field) {
+                mObjCtrl->matchFieldObject(object);
+            }
         }
     }
 }

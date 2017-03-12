@@ -128,12 +128,14 @@ void _AnimationsManager::animateMatching(CommonTypes::Set* chains, cocos2d::Call
                 auto scaleAction = ScaleTo::create(duration, scaleFactor);
                 auto easeOut = EaseOut::create(scaleAction, duration);
 
-                auto sprite = cookie->getSpriteNode();
-                auto callback = CallFunc::create([sprite, cookie]() {
-                    if (sprite) {
-                        sprite->removeFromParent();
-                        cookie->setSpriteNode(nullptr);
+                auto callback = CallFunc::create([cookie]() {
+
+                    auto func = cookie->getRemoveCookieCallback();
+                    if (func) {
+                        auto baseObj = dynamic_cast<BaseObj*>(cookie);
+                        cookie->getRemoveCookieCallback()(baseObj);
                     }
+
                 });
                 cookie->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
             }

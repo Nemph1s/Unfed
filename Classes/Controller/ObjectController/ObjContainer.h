@@ -49,6 +49,7 @@ public:
     bool isSameTypeOfCookieAt(int type);
 
     //---Callbacks-------------------------------------------------
+    void onRemoveCookie(BaseObj* obj);
     void onFieldObjChangeState(BaseObj* obj, std::function<void(FieldObj*)> createSpriteFunc);
 
 protected:
