@@ -55,20 +55,11 @@ protected:
     LevelObj();
 
     void calculateScore(CommonTypes::Set* chains);
-    //TODO: FIX THIS!!!
-    void removeCookies(CommonTypes::Set* chains);   
-
-    void matchCookies(CommonTypes::Set* chains);
-    void matchChains(CommonTypes::Set* chains);
 
     CommonTypes::SearchEmptyHoles skipFillTopUpHoles(int column, int row, bool& filledTileFouned);
 
-    //TODO: FIX THIS!!!
-    bool checkMathicngFieldObjWithChain(CommonTypes::Set* chains, BaseObj* obj);
-
     bool isPossibleToAddCookie(int column, int row);
     bool useGravityOnObject(cocos2d::Array* colArr, cocos2d::Array* rowArr, BaseObj* obj, int destinationRow);
-
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<bool()>, mDetectPossibleSwapsCallback, DetectPossibleSwapsCallback);

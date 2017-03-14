@@ -13,6 +13,7 @@
 #include "Controller/ObjectController/ObjectController.h"
 
 #include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include "GameObjects/Chain/ChainObj.h"
 #include "GameObjects/Level/LevelObj.h"
 
@@ -24,8 +25,8 @@ using namespace CommonTypes;
 
 //--------------------------------------------------------------------
 ChainController::ChainController()
-//--------------------------------------------------------------------
     : mLevel(nullptr)
+//--------------------------------------------------------------------
 {
 }
 
@@ -78,14 +79,13 @@ CommonTypes::Set * ChainController::removeMatches()
 #endif //COCOS2D_DEBUG
 
     mLevel->calculateScore(horizontalChains);
-    mLevel->matchChains(horizontalChains);
+    matchChains(horizontalChains);
 
     mLevel->calculateScore(verticalChains);
-    mLevel->matchChains(verticalChains);
+    matchChains(verticalChains);
 
     mLevel->calculateScore(difficultChains);
-    mLevel->matchChains(difficultChains);
-
+    matchChains(difficultChains);
     return set;
 }
 
@@ -117,11 +117,42 @@ CommonTypes::Set * ChainController::removeChainAt(CommonTypes::ChainType & type,
         }
         if (chainSet) {
             addChainsFromSetToSet(chainSet, set);
+
             mLevel->calculateScore(chainSet);
-            mLevel->matchChains(chainSet);
+            matchChains(chainSet);
         }
     }
     return set;
+}
+
+//--------------------------------------------------------------------
+void ChainController::matchChains(CommonTypes::Set* chains)
+//--------------------------------------------------------------------
+{
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+
+        auto objects = chain->getObjects();
+        if (!objects) {
+            continue;
+        }
+        for (auto it = objects->begin(); it != objects->end(); it++) {
+            auto container = dynamic_cast<ObjContainer*>(*it);
+            CC_ASSERT(container);
+
+            auto object = container->getObjectForChain();
+            if (!object) {
+                continue;
+            }
+            if (object->getType() == BaseObjType::Cookie) {
+                mObjCtrl->matchCookieObject(object);
+            }
+            else if (object->getType() == BaseObjType::Field) {
+                mObjCtrl->matchFieldObject(object);
+            }
+        }
+    }
 }
 
 //--------------------------------------------------------------------
@@ -441,6 +472,56 @@ void ChainController::addCookiesFromChainToChain(CommonTypes::Set * from, Common
     } else {
         addChainsFromSetToSet(from, to);
     }
+}
+
+//--------------------------------------------------------------------
+void ChainController::addFieldOjbectsToChainSet(CommonTypes::Set* fieldObjects, CommonTypes::Set* chainSet)
+//--------------------------------------------------------------------
+{
+    auto chain = ChainObj::createWithType(ChainType::ChainFieldObjects);
+    chain->setUpdateGoalCallback(mUpdateGoalCallback);
+
+    for (auto it = fieldObjects->begin(); it != fieldObjects->end(); it++) {
+        auto obj = dynamic_cast<FieldObj*>(*it);
+        if (obj)
+            addObjToChain(chain, obj->getColumn(), obj->getRow());
+    }
+
+    addChainToSet(chain, chainSet);
+}
+
+//--------------------------------------------------------------------
+bool ChainController::checkMathicngFieldObjWithChain(CommonTypes::Set * chains, BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    auto result = false;
+    auto fieldObj = dynamic_cast<FieldObj*>(obj);
+    if (!fieldObj) {
+        return result;
+    }
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+
+        if (chain->getIsCreatedByDude()) {
+            return result;
+        }
+        auto objects = chain->getChainObjects();
+        for (auto it = objects->begin(); it != objects->end(); it++) {
+            auto cookie = dynamic_cast<CookieObj*>(*it);
+            if (cookie) {
+                int col = cookie->getColumn();
+                int row = cookie->getRow();
+                if (fieldObj->checkMatchingCondition(col, row)) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+        if (result)
+            break;
+    }
+    return result;
 }
 
 //--------------------------------------------------------------------

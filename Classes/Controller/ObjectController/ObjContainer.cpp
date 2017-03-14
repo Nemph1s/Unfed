@@ -167,7 +167,7 @@ BaseObj* ObjContainer::getObjectForChain()
         obj = fieldObj;
     }
     else if (mDudeObj) {
-        //obj = mDudeObj;
+        obj = mDudeObj;
     }
     return obj;
 }

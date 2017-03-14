@@ -39,8 +39,13 @@ public:
     void addChainsFromSetToSet(CommonTypes::Set* from, CommonTypes::Set* to);
     void addCookiesFromChainToChain(CommonTypes::Set* from, CommonTypes::Set* to);
 
+    void addFieldOjbectsToChainSet(CommonTypes::Set* fieldObjects, CommonTypes::Set* chainSet);
+    bool checkMathicngFieldObjWithChain(CommonTypes::Set* chains, BaseObj* obj);
+
     CommonTypes::Set* removeMatches();
     CommonTypes::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
+
+    void matchChains(CommonTypes::Set* chains);
 
     void calculateChainScore(ChainObj* chain);
     void executeCollectGoalCallback(CommonTypes::Set* chains);

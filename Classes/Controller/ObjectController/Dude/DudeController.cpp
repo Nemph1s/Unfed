@@ -254,7 +254,7 @@ bool DudeController::canActivateDudeTo(int fromCol, int fromRow, int direction)
 }
 
 //--------------------------------------------------------------------
-Set * DudeController::activateDude(DudeObj* obj, int dir)
+Set * DudeController::activateDudeAndGetChains(DudeObj* obj, int dir)
 //--------------------------------------------------------------------
 {
     auto set = Set::create();

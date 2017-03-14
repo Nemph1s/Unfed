@@ -171,7 +171,7 @@ void _AnimationsManager::animateMatching(CommonTypes::Set* chains, cocos2d::Call
     }
     CC_ASSERT(mCurrentScene);
 
-    mCurrentScene->runAction(Sequence::create(DelayTime::create(duration/1.5f), completion, nullptr));
+    mCurrentScene->runAction(Sequence::create(DelayTime::create(duration + 0.05f), completion, nullptr));
 }
 
 //--------------------------------------------------------------------
@@ -331,6 +331,9 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
 
     auto objects = chain->getChainObjects();
     auto cookiesCount = chain->getCookiesCount();
+    if (cookiesCount == 0) {
+        return;
+    }
     CC_ASSERT(objects);
 
     for (auto itObj = objects->begin(); itObj != objects->end(); itObj++) {
@@ -456,51 +459,6 @@ void _AnimationsManager::animateBouncingObj(BaseObj * obj)
     sprite->runAction(Speed::create(seq1, speed));
     auto seq2 = Sequence::create(DelayTime::create(0.4f), easeScaleYOut, reverseEaseScaleYOut, nullptr);
     sprite->runAction(Speed::create(seq2, speed));
-}
-
-//--------------------------------------------------------------------
-void _AnimationsManager::animateRemovingFieldObjects(CommonTypes::Set * fieldObjects, cocos2d::CallFunc* completion)
-//--------------------------------------------------------------------
-{
-    CC_ASSERT(fieldObjects);
-    CC_ASSERT(completion);
-
-    const float duration = 0.3f;
-
-    for (auto it = fieldObjects->begin(); it != fieldObjects->end(); it++) {
-
-        auto obj = dynamic_cast<FieldObj*>(*it);
-        if (!obj)
-            continue;
-
-        const float scaleFactor = 0.1f;
-
-        auto scaleAction = ScaleTo::create(duration, scaleFactor);
-        auto fadeOut = FadeOut::create(duration);
-        auto easeOut = EaseOut::create(fadeOut, duration);
-
-        animateScoreForFieldObj(obj);
-
-        auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
-        CC_ASSERT(scene);
-
-        auto callback = CallFunc::create([scene, obj]() {
-   
-            auto func = obj->getFieldObjChangeState();
-            if (func) {
-                std::function<void(FieldObj*)> createSpriteCallback = [scene](FieldObj* obj) {
-                    scene->createSpriteWithFieldObj(obj);
-                };
-                auto baseObj = dynamic_cast<BaseObj*>(obj);
-                obj->getFieldObjChangeState()(baseObj, createSpriteCallback);
-            }
-
-        });
-        obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
-    }
-    CC_ASSERT(mCurrentScene);
-
-    mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
 }
 
 //--------------------------------------------------------------------

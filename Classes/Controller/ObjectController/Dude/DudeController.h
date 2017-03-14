@@ -50,7 +50,7 @@ public:
     void detectDirectionsForDudes();
 
     bool canActivateDudeTo(int fromCol, int fromRow, int direction);
-    Set* activateDude(DudeObj* obj, int direction);
+    Set* activateDudeAndGetChains(DudeObj* obj, int direction);
     void activateAllDudes();
 
     void removeDude(int column, int row, bool removeWithCleanup = true);

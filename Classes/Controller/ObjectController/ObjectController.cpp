@@ -420,10 +420,10 @@ void ObjectController::removeCookie(int column, int row)
     auto cookie = cookieAt(column, row);
 
     if (!cookie) {
-        cocos2d::log("ObjectController::removeCookies: cookie at (%d,%d) already removed", column, row);
+        cocos2d::log("ObjectController::removeCookie: cookie at (%d,%d) already removed", column, row);
         return;
     }
-    cocos2d::log("ObjectController::removeCookies: remove %s", cookie->description().getCString());
+    cocos2d::log("ObjectController::removeCookie: remove %s", cookie->description().getCString());
     if (cookie->getParent()) {
         cookie->removeFromParent();
     }
