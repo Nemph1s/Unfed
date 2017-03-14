@@ -152,7 +152,7 @@ void GameplayScene::addFieldObjectsAt(int column, int row)
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::addSpritesForObjects(cocos2d::Set* set)
+void GameplayScene::addSpritesForObjects(CommonTypes::Set* set)
 //--------------------------------------------------------------------
 {
     cocos2d::log("GameplayScene::addSpritesForObjects:");

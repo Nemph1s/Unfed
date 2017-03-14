@@ -14,6 +14,8 @@
 #include <string.h>
 #include <vector>
 
+namespace cocos2d { class __Set; }
+
 namespace CommonTypes {
 
     //temporary variables
@@ -21,30 +23,32 @@ namespace CommonTypes {
     static const int NumColumns = 9;
     static const int NumRows = 9;
 
+    typedef cocos2d::__Set Set;
+
     /**
     * @brief GameObjectType enum.
     * Type of the cookie object
     */
-    enum class BaseObjectType : int {
-        TileObj = 0 /**< enum value TileObj. */
-        , CookieObj = 1 /**< enum value CookieObj. */
-        , FieldObj = 2 /**< enum value FieldObj. */
-        , DudeObj = 3 /**< enum value DudeObj. */
+    enum class BaseObjType : int {
+        Tile = 0 /**< enum value TileObj. */
+        , Cookie = 1 /**< enum value CookieObj. */
+        , Field = 2 /**< enum value FieldObj. */
+        , Dude = 3 /**< enum value DudeObj. */
         , Unknown /**< enum value unknown. */
     };
 
     /**
     * @brief GameObjectInfo struct.
     */
-    struct BaseObjectInfo
+    struct BaseObjInfo
     {
-        BaseObjectType type; /**< type of game object */
+        BaseObjType type; /**< type of game object */
         int column; /**< vertical series of cells in a table */
         int row; /**< horizontal series of cells in a table */
 
-        BaseObjectInfo(BaseObjectType _type) 
+        BaseObjInfo(BaseObjType _type) 
             : type(_type), column(-1), row(-1) {}
-        BaseObjectInfo(BaseObjectType _type, int _column, int _row) 
+        BaseObjInfo(BaseObjType _type, int _column, int _row) 
             : type(_type), column(_column), row(_row) {}
     };
 
@@ -68,7 +72,7 @@ namespace CommonTypes {
    */
    struct CookieInfo
    {
-       BaseObjectInfo baseInfo; /**< type of GaneInfoObject struct */
+       BaseObjInfo baseInfo; /**< type of GaneInfoObject struct */
        CookieType cookieType; /**< type of Cookie object */
    };
 
@@ -92,7 +96,7 @@ namespace CommonTypes {
    */
    struct FieldInfo
    {
-       BaseObjectInfo baseInfo; /**< type of BaseObjectInfo struct */
+       BaseObjInfo baseInfo; /**< type of BaseObjectInfo struct */
        FieldType fieldType; /**< type of Field object */
        int priority; /**< priority for z level of Field object. 0 - low priority; 3 - high priority */
    };
@@ -102,7 +106,7 @@ namespace CommonTypes {
    */
    struct FieldJsonInfo
    {
-       BaseObjectInfo baseInfo = BaseObjectInfo(BaseObjectType::FieldObj); /**< type of BaseObjectInfo struct */
+       BaseObjInfo baseInfo = BaseObjInfo(BaseObjType::Field); /**< type of BaseObjectInfo struct */
        std::vector<int> fieldType; /**< type of Field object */
    };
 
@@ -158,7 +162,7 @@ namespace CommonTypes {
    */
    struct TileInfo
    {
-       BaseObjectInfo baseInfo; /**< type of GaneInfoObject struct */
+       BaseObjInfo baseInfo; /**< type of GaneInfoObject struct */
        TileType tileType; /**< type of Tile object */
    };
 

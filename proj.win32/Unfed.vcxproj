@@ -147,9 +147,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\Common\Factory\SmartFactory.cpp" />
     <ClCompile Include="..\Classes\Controller\ChainController.cpp" />
-    <ClCompile Include="..\Classes\Controller\ObjectController\DudeController.cpp" />
+    <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeController.cpp" />
     <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.cpp" />
     <ClCompile Include="..\Classes\Controller\ObjectController\ObjectController.cpp" />
+    <ClCompile Include="..\Classes\Controller\ObjectController\ObjContainer.cpp" />
     <ClCompile Include="..\Classes\Controller\SwapController.cpp" />
     <ClCompile Include="..\Classes\Controller\ViewController.cpp" />
     <ClCompile Include="..\Classes\GameObjects\Chain\ChainObj.cpp" />
@@ -181,9 +182,10 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Common\CommonTypes.h" />
     <ClInclude Include="..\Classes\Common\Factory\SmartFactory.h" />
     <ClInclude Include="..\Classes\Controller\ChainController.h" />
-    <ClInclude Include="..\Classes\Controller\ObjectController\DudeController.h" />
+    <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeController.h" />
     <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.h" />
     <ClInclude Include="..\Classes\Controller\ObjectController\ObjectController.h" />
+    <ClInclude Include="..\Classes\Controller\ObjectController\ObjContainer.h" />
     <ClInclude Include="..\Classes\Controller\SwapController.h" />
     <ClInclude Include="..\Classes\Controller\ViewController.h" />
     <ClInclude Include="..\Classes\GameObjects\Chain\ChainObj.h" />

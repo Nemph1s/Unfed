@@ -11,6 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
+#include "Common/CommonTypes.h"
 
 class BaseObj;
 class CookieObj;
@@ -31,7 +32,7 @@ public:
 
 	void addTiles();
     void addFieldObjectsAt(int column, int row);
-    void addSpritesForObjects(cocos2d::Set* set);
+    void addSpritesForObjects(CommonTypes::Set* set);
 
     void createSpriteWithCookie(CookieObj* cookie, int column, int row);
     void createSpriteWithDude(BaseObj* dudeObj);

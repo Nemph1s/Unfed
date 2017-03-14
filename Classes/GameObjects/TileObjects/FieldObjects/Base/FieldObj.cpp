@@ -55,7 +55,7 @@ bool FieldObj::init(const CommonTypes::FieldInfo &info)
     mFieldType = info.fieldType;
     mPriority = info.priority;
 
-    if (!mDebugLabel && mType != CommonTypes::BaseObjectType::FieldObj) {
+    if (!mDebugLabel && mType != CommonTypes::BaseObjType::Field) {
 #ifdef COCOS2D_DEBUG
         mDebugLabel = cocos2d::Label::create();
         mDebugLabel->setBMFontSize(16);
@@ -125,6 +125,8 @@ void FieldObj::clear()
     BaseObj::clear();
     mFieldType = CommonTypes::FieldType::Unknown;
     mHP = 0;
+    mPriority = 0;
+    mReadyToUpdatePriority = false;
     if (mDebugLabel) {
         if (mDebugLabel->getParent()) {
             mDebugLabel->removeFromParent();
@@ -141,7 +143,7 @@ bool FieldObj::checkMatchingCondition(int column, int row)
 }
 
 //--------------------------------------------------------------------
-bool FieldObj::isReadyToRemove() const
+bool FieldObj::isHpEnded() const
 //--------------------------------------------------------------------
 {
     bool result = false;

@@ -11,7 +11,7 @@
 #include "Controller/ViewController.h"
 #include "Controller/SwapController.h"
 #include "Controller/ChainController.h"
-#include "Controller/ObjectController/DudeController.h"
+#include "Controller/ObjectController/Dude/DudeController.h"
 #include "Controller/ObjectController/ObjectController.h"
 
 #include "Managers/AnimationsManager.h"
@@ -156,7 +156,7 @@ bool ViewController::initObjectController()
     mObjectController->setLevel(mLevel);
     mLevel->setObjectController(mObjectController);
 
-    mObjectController->createInitialTiles();
+    mObjectController->createObjects();
     auto fieldObjecs = mObjectController->createInitialFieldObjects();
     mGameplayScene->addTiles();
     mGameplayScene->addSpritesForObjects(fieldObjecs);
@@ -244,7 +244,7 @@ void ViewController::startGame()
 }
 
 //--------------------------------------------------------------------
-void ViewController::updateScore(cocos2d::Set * chains)
+void ViewController::updateScore(CommonTypes::Set * chains)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -301,22 +301,23 @@ void ViewController::handleMatches()
 
 
 //--------------------------------------------------------------------
-void ViewController::animateHandleMatches(cocos2d::Set* chains)
+void ViewController::animateHandleMatches(CommonTypes::Set* chains)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
 
     mChainController->executeCollectGoalCallback(chains);
 
-    auto completion = CallFunc::create([=]() {
+
+    auto completion = CallFunc::create([&]() {
 
         auto columns = mLevel->useGravityToFillHoles();
         auto newColumns = mLevel->fillTopUpHoles();
-        auto enableTouches = CallFunc::create([=]() {
+        auto enableTouches = CallFunc::create([&]() {
             handleMatches();
         });
 
-        auto addNewCookies = CallFunc::create([=]() {
+        auto addNewCookies = CallFunc::create([&]() {
             updateInfoLabels();
         });
         AnimationsManager->animateNewCookies(newColumns, enableTouches);
@@ -324,8 +325,8 @@ void ViewController::animateHandleMatches(cocos2d::Set* chains)
     });
 
     auto fieldObjects = mLevel->detectFieldObjects(chains);
-    AnimationsManager->animateRemovingFieldObjects(fieldObjects);
-    AnimationsManager->animateMatching(chains, completion);
+    AnimationsManager->animateRemovingFieldObjects(fieldObjects, completion);
+    AnimationsManager->animateMatching(chains, CallFunc::create([](){}));
     AudioManager->playSound(SoundType::MatchSound);
 }
 

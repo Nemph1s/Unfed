@@ -1,5 +1,5 @@
 /**
-* @file Controller/ObjectController.hpp
+* @file Controller/ObjectController/ObjectController.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -14,12 +14,14 @@
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
  
-
+class DudeObj;
 class BaseObj;
 class TileObj;
 class CookieObj;
+class FieldObj;
 class LevelObj;
 class DudeController;
+class ObjContainer;
 
 class ObjectController : public cocos2d::Ref
 {
@@ -38,9 +40,12 @@ public:
 
     bool init();
 
+    void createObjects();
+    inline ObjContainer* getObject(int column, int row);
+
     void createInitialTiles();
-    cocos2d::Set* createInitialFieldObjects();
-    cocos2d::Set* createInitialCookies();
+    CommonTypes::Set* createInitialFieldObjects();
+    CommonTypes::Set* createInitialCookies();
     
     BaseObj* createRandomCookie(int column, int row);
     int getRandomCookieType(int column, int row);
@@ -50,18 +55,19 @@ public:
     bool hasChainAt(int column, int row);
 
     BaseObj* fieldObjectAt(int column, int row);
-    std::list<BaseObj*>& fieldObjectsAt(int column, int row);
-    BaseObj* dudeObjectAt(int column, int row);
+    std::list<FieldObj*>& fieldObjectsAt(int column, int row);
+    DudeObj* dudeObjectAt(int column, int row);
 
     bool isEmptyTileAt(int column, int row);
     bool isPossibleToAddCookie(int column, int row);
     bool isSameTypeOfCookieAt(int column, int row, int type);
 
     bool matchFieldObject(BaseObj* obj);
-    void removeFieldObject(int column, int row);
 
     void updateCookieObjectAt(int column, int row, BaseObj* cookie);
-    void updateObjectAt(int column, int row, BaseObj* obj, CommonTypes::BaseObjectType type);
+    void updateObjectAt(int column, int row, BaseObj* obj);
+    void removeObjectAt(int column, int row, CommonTypes::BaseObjType type);
+
     void removeCookie(int column, int row);
 
     void removeAllCookies();
@@ -81,8 +87,10 @@ protected:
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
     CC_SYNTHESIZE(DudeController*, mDudeCtrl, DudeController);
 
-    BaseObj* mTiles[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
-    BaseObj* mCookies[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
-    // Tile object array (Dirt etc)
-    std::list<BaseObj*> mFieldObjects[CommonTypes::NumColumns][CommonTypes::NumRows];
+    ObjContainer* mObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
+// 
+//     BaseObj* mTiles[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
+//     BaseObj* mCookies[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
+//     // Tile object array (Dirt etc)
+//     std::list<BaseObj*> mFieldObjects[CommonTypes::NumColumns][CommonTypes::NumRows];
 };

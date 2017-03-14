@@ -25,10 +25,10 @@ public:
     * @return A initialized node which is marked as "autorelease".
     */
     static BaseObj * create();
-    static BaseObj * create(const CommonTypes::BaseObjectInfo &info);
+    static BaseObj * create(const CommonTypes::BaseObjInfo &info);
 
     virtual bool init();
-    bool init(const CommonTypes::BaseObjectInfo &info);
+    bool init(const CommonTypes::BaseObjInfo &info);
 
     virtual cocos2d::String& spriteName() const;
     virtual cocos2d::String& description() const;
@@ -36,7 +36,7 @@ public:
     virtual int getTypeAsInt() const;
 
     virtual void match();
-    virtual bool isReadyToRemove() const;
+    virtual bool isHpEnded() const;
 
     virtual void clear();
 
@@ -59,7 +59,7 @@ protected:
 
     CC_SYNTHESIZE(int, mColumn, Column);
     CC_SYNTHESIZE(int, mRow, Row);
-    CC_SYNTHESIZE(CommonTypes::BaseObjectType, mType, Type);
+    CC_SYNTHESIZE(CommonTypes::BaseObjType, mType, Type);
     CC_SYNTHESIZE(cocos2d::Sprite*, mSpriteNode, SpriteNode);
 
 };

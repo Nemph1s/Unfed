@@ -12,6 +12,7 @@
 
 #include "cocos2d.h"
 #include "Utils/PlatformMacros.h"
+#include "Common/CommonTypes.h"
 
 class SwapObj;
 class ChainObj;
@@ -26,7 +27,7 @@ public:
     
     void animateSwap(SwapObj* swap, cocos2d::CallFunc* completion);
     void animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* completion);
-    void animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* completion);
+    void animateMatching(CommonTypes::Set* chains, cocos2d::CallFunc* completion);
     void animateFallingObjects(cocos2d::Array* colums, cocos2d::CallFunc* completion);
     void animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion);
 
@@ -37,7 +38,7 @@ public:
 
     void animateBouncingObj(BaseObj* obj);
 
-    void animateRemovingFieldObjects(cocos2d::Set* fieldObjects);
+    void animateRemovingFieldObjects(CommonTypes::Set* fieldObjects, cocos2d::CallFunc* completion);
 
 
     void animateRemoveDude(BaseObj* obj, cocos2d::CallFunc* completion);

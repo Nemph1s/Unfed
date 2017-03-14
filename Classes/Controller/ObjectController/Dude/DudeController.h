@@ -1,5 +1,5 @@
 /**
-* @file Controller/ObjectController/DudeController.hpp
+* @file Controller/ObjectController/Dude/DudeController.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -15,8 +15,8 @@
  
 #include <map>
 
-using cocos2d::Set;
 using CommonTypes::FieldType;
+using CommonTypes::Set;
 
 class BaseObj;
 class DudeObj;
@@ -74,8 +74,7 @@ protected:
     CC_SYNTHESIZE(ChainController*, mChainCtrl, ChainController);
     
     cocos2d::Map<DudeObj*, DudeHelper*> mDudeDirections;
-    std::map<int, FieldType> mDudeTypes;
 
-    // Dude object array 
-    BaseObj* mDudeObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
+//     // Dude object array 
+//     BaseObj* mDudeObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
 };
