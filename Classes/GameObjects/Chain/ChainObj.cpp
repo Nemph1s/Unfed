@@ -160,6 +160,9 @@ cocos2d::Array* ChainObj::getChainObjects()
 //--------------------------------------------------------------------
 {
     auto arr = cocos2d::Array::create();
+    if (!mObjects) {
+        return arr;
+    }
     for (auto it = mObjects->begin(); it != mObjects->end(); it++) {
         auto container = dynamic_cast<ObjContainer*>(*it);
         CC_ASSERT(container);

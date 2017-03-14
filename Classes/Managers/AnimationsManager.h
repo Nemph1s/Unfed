@@ -17,6 +17,8 @@
 class SwapObj;
 class ChainObj;
 class BaseObj;
+class CookieObj;
+class FieldObj;
 
 class _AnimationsManager
 {
@@ -41,6 +43,8 @@ public:
     void animateRemoveDude(BaseObj* obj, cocos2d::CallFunc* completion);
 
 protected:
+    void animateMatchCookie(CookieObj* obj);
+    void animateMatchFieldObj(FieldObj* obj);
 
     cocos2d::Scene* mCurrentScene;
 };

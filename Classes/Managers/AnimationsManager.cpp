@@ -117,55 +117,20 @@ void _AnimationsManager::animateMatching(CommonTypes::Set* chains, cocos2d::Call
 
         animateScoreForChain(chain);
 
-        auto cookies = chain->getChainObjects();
-        for (auto it = cookies->begin(); it != cookies->end(); it++) {
+        auto objects = chain->getChainObjects();
+        for (auto it = objects->begin(); it != objects->end(); it++) {
 
-            auto cookie = dynamic_cast<CookieObj*>(*it);
-            if (cookie != nullptr) {
-
-                const float scaleFactor = 0.1f;
-
-                auto scaleAction = ScaleTo::create(duration, scaleFactor);
-                auto easeOut = EaseOut::create(scaleAction, duration);
-
-                auto callback = CallFunc::create([cookie]() {
-
-                    auto func = cookie->getRemoveCookieCallback();
-                    if (func) {
-                        auto baseObj = dynamic_cast<BaseObj*>(cookie);
-                        cookie->getRemoveCookieCallback()(baseObj);
-                    }
-
-                });
-                cookie->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
-            }
-
-            auto obj = dynamic_cast<FieldObj*>(*it);
-            if (obj != nullptr) {
-                const float scaleFactor = 0.1f;
-
-                auto scaleAction = ScaleTo::create(duration, scaleFactor);
-                auto fadeOut = FadeOut::create(duration);
-                auto easeOut = EaseOut::create(fadeOut, duration);
-
-                animateScoreForFieldObj(obj);
-
-                auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
-                CC_ASSERT(scene);
-
-                auto callback = CallFunc::create([scene, obj]() {
-
-                    auto func = obj->getFieldObjChangeState();
-                    if (func) {
-                        std::function<void(FieldObj*)> createSpriteCallback = [scene](FieldObj* obj) {
-                            scene->createSpriteWithFieldObj(obj);
-                        };
-                        auto baseObj = dynamic_cast<BaseObj*>(obj);
-                        obj->getFieldObjChangeState()(baseObj, createSpriteCallback);
-                    }
-
-                });
-                obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
+            auto obj = dynamic_cast<BaseObj*>(*it);
+            switch (obj->getType())
+            {
+            case BaseObjType::Cookie:
+                animateMatchCookie(dynamic_cast<CookieObj*>(obj));
+                break;
+            case BaseObjType::Field:
+                animateMatchFieldObj(dynamic_cast<FieldObj*>(obj));
+                break;
+            default:
+                break;
             }
         }
     }
@@ -344,9 +309,14 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
 
         auto color = Helper::getScoreColorByObj(obj);
 
+        int score = obj->getScoreValue();
+        if (cookiesCount != 0 && (obj->getType() != BaseObjType::Field || obj->getType() != BaseObjType::Dude)) {
+            score = chain->getCookiesScore() / cookiesCount;
+        }
+
         // Add a label for the score that slowly floats up.
         auto fontSize = 80;
-        auto str = StringUtils::format("%d", chain->getCookiesScore() / cookiesCount);
+        auto str = StringUtils::format("%d", score);
         Text* scoreLabel = Text::create(str, GameResources::s_fontYellow.getCString(), fontSize);
         scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
         scoreLabel->setPosition(centerPosition);
@@ -487,3 +457,65 @@ void _AnimationsManager::animateRemoveDude(BaseObj * obj, cocos2d::CallFunc * co
     CC_ASSERT(mCurrentScene);
     mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
 }
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateMatchCookie(CookieObj * obj)
+//--------------------------------------------------------------------
+{
+    if (!obj) {
+        return;
+    }
+
+    const float duration = 0.3f;
+    const float scaleFactor = 0.1f;
+
+    auto scaleAction = ScaleTo::create(duration, scaleFactor);
+    auto easeOut = EaseOut::create(scaleAction, duration);
+
+    auto callback = CallFunc::create([obj]() {
+
+        auto func = obj->getRemoveCookieCallback();
+        if (func) {
+            auto baseObj = dynamic_cast<BaseObj*>(obj);
+            obj->getRemoveCookieCallback()(baseObj);
+        }
+
+    });
+    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateMatchFieldObj(FieldObj * obj)
+//--------------------------------------------------------------------
+{
+    if (!obj) {
+        return;
+    }
+
+    const float duration = 0.3f;
+    const float scaleFactor = 0.1f;
+
+//    auto scaleAction = ScaleTo::create(duration, scaleFactor);
+    auto fadeOut = FadeOut::create(duration);
+    auto easeOut = EaseOut::create(fadeOut, duration);
+// 
+//     animateScoreForFieldObj(obj);
+
+    auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
+    CC_ASSERT(scene);
+
+    auto callback = CallFunc::create([scene, obj]() {
+
+        auto func = obj->getFieldObjChangeState();
+        if (func) {
+            std::function<void(FieldObj*)> createSpriteCallback = [scene](FieldObj* obj) {
+                scene->createSpriteWithFieldObj(obj);
+            };
+            auto baseObj = dynamic_cast<BaseObj*>(obj);
+            obj->getFieldObjChangeState()(baseObj, createSpriteCallback);
+        }
+
+    });
+    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
+}
+
