@@ -12,6 +12,7 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
+ 
 #include <list>
 
 class BaseObj;
@@ -26,14 +27,13 @@ public:
     }
     static _SmartFactory* getInstance();
 
-    BaseObj* create(const CommonTypes::BaseObjectInfo &info);
+    BaseObj* create(const CommonTypes::BaseObjInfo &info);
 
-    BaseObj* createBaseObj(const CommonTypes::BaseObjectInfo &info);
+    BaseObj* createBaseObj(const CommonTypes::BaseObjInfo &info);
     BaseObj* createTileObj(const CommonTypes::TileInfo &info);
     BaseObj* createCookieObj(const CommonTypes::CookieInfo &info);
-    BaseObj* createFieldObj(const CommonTypes::TileInfo &info);
-    //TODO: maybe use other typeInfo
-    BaseObj* createDudeObj(const CommonTypes::TileInfo &info);
+    BaseObj* createFieldObj(const CommonTypes::FieldInfo &info);
+    BaseObj* createDudeObj(const CommonTypes::FieldInfo &info);
 
     bool init(int poolSize);
     bool initCookiesPool(int poolSize);

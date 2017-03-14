@@ -11,10 +11,13 @@
 #pragma once
 
 #include "cocos2d.h"
+#include "Common/CommonTypes.h"
+
+class BaseObj;
+class CookieObj;
+class FieldObj;
 
 class LevelObj;
-class CookieObj;
-class BaseObj;
 class CookiesLayer;
 
 class GameplayScene : public cocos2d::Scene
@@ -28,12 +31,12 @@ public:
     virtual bool initWithSize(const cocos2d::Size& size);
 
 	void addTiles();
-    void addSpritesForCookies(cocos2d::Set* cookies);
-    void addSpritesForObjects(cocos2d::Set* set);
+    void addFieldObjectsAt(int column, int row);
+    void addSpritesForObjects(CommonTypes::Set* set);
 
     void createSpriteWithCookie(CookieObj* cookie, int column, int row);
     void createSpriteWithDude(BaseObj* dudeObj);
-    void createSpriteWithFieldObj(BaseObj* fieldObj);
+    void createSpriteWithFieldObj(FieldObj* fieldObj);
 
     void userInteractionEnabled();
     void userInteractionDisabled();
@@ -53,5 +56,6 @@ protected:
     CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mGameLayer, GameLayer);
     CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mTilesLayer, TilesLayer);
     CC_SYNTHESIZE_READONLY(CookiesLayer*, mCookiesLayer, CookiesLayer);
+    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mFieldObjectsLayer, FieldObjectsLayer);
 };
 

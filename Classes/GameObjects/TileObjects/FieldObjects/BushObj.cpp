@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObjects/Obstacles/DirtObject.cpp
+* @file GameObjects/TileObjects/FieldObjects/BushObj.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,31 +8,31 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/TileObjects/Obstacles/DirtObject.h"
+#include "GameObjects/TileObjects/FieldObjects/BushObj.h"
 
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
-using CommonTypes::TileType;
+using CommonTypes::FieldType;
 
 //--------------------------------------------------------------------
-DirtObject::DirtObject()
-    : TileObj()
+BushObj::BushObj()
+    : FieldObj()
 //--------------------------------------------------------------------
 {
 }
 
 //--------------------------------------------------------------------
-DirtObject::~DirtObject()
+BushObj::~BushObj()
 //--------------------------------------------------------------------
 {
 }
 
 //--------------------------------------------------------------------
-DirtObject * DirtObject::create(const CommonTypes::TileInfo & info)
+BushObj * BushObj::create(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
-    DirtObject * ret = new (std::nothrow) DirtObject();
+    BushObj * ret = new (std::nothrow) BushObj();
     if (ret && ret->init(info)) {
         ret->autorelease();
     }
@@ -43,49 +43,55 @@ DirtObject * DirtObject::create(const CommonTypes::TileInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool DirtObject::init(const CommonTypes::TileInfo & info)
+bool BushObj::init(const CommonTypes::FieldInfo & info)
 //--------------------------------------------------------------------
 {
-    if (!TileObj::init(info)) {
-        cocos2d::log("TileObj::init: can't init Node inctance");
+    if (!FieldObj::init(info)) {
+        cocos2d::log("BushObj::init: can't init FieldObj inctance");
         return false;
     }
- 
-    if (info.tileType >= TileType::Dirt && info.tileType <= TileType::Dirt_HP3) {
-        mHP = (getTypeAsInt() - Helper::to_underlying(TileType::Dirt)) + 1;
+
+    if (info.fieldType >= FieldType::Bush && info.fieldType <= FieldType::Bush_HP2) {
+        mHP = (getTypeAsInt() - Helper::to_underlying(FieldType::Bush)) + 1;
     }
     mIsRemovable = true;
-    mIsContainer = true;
+    mIsMovable = false;
+    mIsContainer = false;
+    mScoreValue = 100;
 
     return true;
 }
 
 //--------------------------------------------------------------------
-cocos2d::String& DirtObject::spriteName() const
+cocos2d::String& BushObj::spriteName() const
 //--------------------------------------------------------------------
 {
-    const int x2State = 2;
-    const int x1State = 1;
+    const int normalState = 2;
+    const int corruptedState = 1;
     cocos2d::String* str = nullptr;
     switch (mHP)
     {
-    case x1State:
-        str = &GameResources::s_DirtX2Img;
+    case corruptedState:
+        str = &GameResources::s_BushCorruptedImg;
         break;
-    case x2State:
+    case normalState:
     default:
-        str = &GameResources::s_DirtImg;
+        str = &GameResources::s_BushNormalImg;
         break;
     }
     return *str;
 }
 
 //--------------------------------------------------------------------
-bool DirtObject::checkMatchingCondition(int column, int row)
+bool BushObj::checkMatchingCondition(int column, int row)
 //--------------------------------------------------------------------
 {
     if (column < 0 || column >= CommonTypes::NumColumns || row < 0 || row >= CommonTypes::NumColumns) {
         return false;
     }
-    return (mColumn == column && mRow == row);
+    bool objectOnTop = (mColumn == column && mRow == row - 1);
+    bool objectOnBot = (mColumn == column && mRow == row + 1);
+    bool objectOnLeft = (mColumn == column - 1 && mRow == row);
+    bool objectOnRight = (mColumn == column + 1 && mRow == row);
+    return objectOnTop || objectOnBot || objectOnLeft || objectOnRight;
 }

@@ -11,10 +11,12 @@
 #pragma once
 
 #include "cocos2d.h"
+#include "Common/CommonTypes.h"
 
 class LevelObj;
 class BaseObj;
 class CookieObj;
+class FieldObj;
 
 class CookiesLayer : public cocos2d::Layer
 {
@@ -28,10 +30,10 @@ public:
 
     virtual void onEnter() override;
     virtual void onExit() override;
-    void addSpritesForCookies(cocos2d::Set* cookies);
-    void addSpritesForObjects(cocos2d::Set* set);
+    void addSpritesForObjects(CommonTypes::Set* set);
 
     void createSpriteWithObj(BaseObj* obj, int column, int row);
+    void createSpriteWithFieldObj(FieldObj* fieldObj, int column, int row);
 
     bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);

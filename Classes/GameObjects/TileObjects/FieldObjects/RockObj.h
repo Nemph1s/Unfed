@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObjects/Obstacles/RockObj.hpp
+* @file GameObjects/TileObjects/FieldObjects/RockObj.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -10,9 +10,9 @@
 
 #pragma once
 
-#include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
-class RockObj : public TileObj
+class RockObj : public FieldObj
 {
 CC_CONSTRUCTOR_ACCESS:
     virtual ~RockObj();
@@ -22,9 +22,9 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static RockObj * create(const CommonTypes::TileInfo &info);
+    static RockObj * create(const CommonTypes::FieldInfo &info);
 
-    bool init(const CommonTypes::TileInfo &info);
+    bool init(const CommonTypes::FieldInfo &info);
 
     cocos2d::String& spriteName() const override;
 

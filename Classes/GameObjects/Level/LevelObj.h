@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/LevelObj.hpp
+* @file GameObjects/Level/LevelObj.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -11,7 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "GameObjects/Level/LevelTypes.h"
 
 class BaseObj;
 class ChainObj;
@@ -37,30 +37,33 @@ public:
 
     virtual bool initWithId(const int16_t& levelId);
 
-    cocos2d::Set* shuffle();
+    CommonTypes::Set* shuffle();
 
-    cocos2d::Set* detectFieldObjects(cocos2d::Set* chains);
+    CommonTypes::Set* detectFieldObjects(CommonTypes::Set* chains);
 
     cocos2d::Array* useGravityToFillHoles();
     cocos2d::Array* fillTopUpHoles();
 
     void resetComboMultiplier();
+    void disablePredefinedCookies();
 
     //TODO: move to callback
-    void removeDudeMatches(cocos2d::Set* set);
+    void removeDudeMatches(CommonTypes::Set* set);
 
 protected:
     // Nodes should be created using create();
     LevelObj();
 
-    void calculateScore(cocos2d::Set* chains);
-    void removeCookies(cocos2d::Set* chains);   
+    void calculateScore(CommonTypes::Set* chains);
+    void removeCookies(CommonTypes::Set* chains);   
 
     CommonTypes::SearchEmptyHoles skipFillTopUpHoles(int column, int row, bool& filledTileFouned);
 
-    bool checkMathicngFieldObjWithChain(cocos2d::Set* chains, BaseObj* obj);
+    bool checkMathicngFieldObjWithChain(CommonTypes::Set* chains, BaseObj* obj);
 
     bool isPossibleToAddCookie(int column, int row);
+    bool useGravityOnObject(cocos2d::Array* colArr, cocos2d::Array* rowArr, BaseObj* obj, int destinationRow);
+
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<bool()>, mDetectPossibleSwapsCallback, DetectPossibleSwapsCallback);

@@ -30,7 +30,7 @@ public:
 
     bool initWithDudeObject(DudeObj* obj);
 
-    cocos2d::Set* getChainByDirection(CommonTypes::Direction& direction);
+    CommonTypes::Set* getChainByDirection(CommonTypes::Direction& direction);
 
     void clear();
 
@@ -38,14 +38,13 @@ protected:
     // Nodes should be created using create();
     DudeHelper();
 
-
     //---Class Attributes-------------------------------------------------
 
     CC_SYNTHESIZE(DudeObj*, mDudeObj, DudeObj);
     CC_SYNTHESIZE(DudeController*, mDudeCtrl, DudeController);
 
-    CC_PROPERTY(cocos2d::Set*, mTopChain, TopChain);
-    CC_PROPERTY(cocos2d::Set*, mBottomChain, BottomChain);
-    CC_PROPERTY(cocos2d::Set*, mLeftChain, LeftChain);
-    CC_PROPERTY(cocos2d::Set*, mRightChain, RightChain);
+    CC_PROPERTY(CommonTypes::Set*, mTopChain, TopChain);
+    CC_PROPERTY(CommonTypes::Set*, mBottomChain, BottomChain);
+    CC_PROPERTY(CommonTypes::Set*, mLeftChain, LeftChain);
+    CC_PROPERTY(CommonTypes::Set*, mRightChain, RightChain);
 };

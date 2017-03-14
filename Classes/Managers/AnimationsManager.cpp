@@ -15,6 +15,7 @@
 #include "GameObjects/Chain/ChainObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
@@ -52,8 +53,8 @@ void _AnimationsManager::animateSwap(SwapObj* swap, cocos2d::CallFunc* completio
     auto cookieA = swap->getCookieA()->getSpriteNode();
     auto cookieB = swap->getCookieB()->getSpriteNode();
 
-    cookieA->setZOrder(100);
-    cookieB->setZOrder(90);
+    cookieA->setLocalZOrder(100);
+    cookieB->setLocalZOrder(90);
 
     const float duration = 0.3f;
 
@@ -65,8 +66,8 @@ void _AnimationsManager::animateSwap(SwapObj* swap, cocos2d::CallFunc* completio
     auto easeB = EaseOut::create(moveB, duration);
     cookieB->runAction(easeB);
     
-    swap->getCookieA()->updateDebugTileLabel();
-    swap->getCookieB()->updateDebugTileLabel();
+    swap->getCookieA()->updateDebugLabel();
+    swap->getCookieB()->updateDebugLabel();
 }
 
 //--------------------------------------------------------------------
@@ -80,8 +81,8 @@ void _AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* co
     auto cookieA = swap->getCookieA()->getSpriteNode();
     auto cookieB = swap->getCookieB()->getSpriteNode();
 
-    cookieA->setZOrder(100);
-    cookieB->setZOrder(90);
+    cookieA->setLocalZOrder(100);
+    cookieB->setLocalZOrder(90);
 
     const float duration = 0.3f;
     auto deltaA = cookieB->getPosition() - cookieA->getPosition();
@@ -100,7 +101,7 @@ void _AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* co
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateMatching(CommonTypes::Set* chains, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -140,7 +141,7 @@ void _AnimationsManager::animateMatching(cocos2d::Set* chains, cocos2d::CallFunc
     }
     CC_ASSERT(mCurrentScene);
 
-    mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
+    mCurrentScene->runAction(Sequence::create(DelayTime::create(duration/1.5f), completion, nullptr));
 }
 
 //--------------------------------------------------------------------
@@ -180,17 +181,7 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
             // Perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
 
-                if (obj->getType() == BaseObjectType::CookieObj) {
-                    auto cookie = dynamic_cast<CookieObj*>(obj);
-                    cookie->updateDebugTileLabel();
-                }
-
-                if (obj->getType() == BaseObjectType::TileObj 
-                    || obj->getType() == BaseObjectType::DudeObj 
-                    || obj->getType() == BaseObjectType::FieldObj) {
-                    auto tile = dynamic_cast<TileObj*>(obj);
-                    tile->updateDebugTileLabel();
-                }
+                obj->updateDebugLabel();
 
                 auto moveCallback = CallFunc::create([=]() {
                     AnimationsManager->animateBouncingObj(obj);
@@ -258,7 +249,7 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
             // You perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
 
-                cookie->updateDebugTileLabel();
+                cookie->updateDebugLabel();
 
                 auto moveCallback = CallFunc::create([=]() {
                     AnimationsManager->animateBouncingObj(cookie);
@@ -311,48 +302,44 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
     auto cookies = chain->getCookies();
     CC_ASSERT(cookies);
 
-    auto firstCookie = dynamic_cast<CookieObj*>(cookies->getObjectAtIndex(0));
-    auto lastCookie = dynamic_cast<CookieObj*>(cookies->getLastObject());
-    CC_ASSERT(firstCookie);
-    CC_ASSERT(lastCookie);
+    for (auto itObj = cookies->begin(); itObj != cookies->end(); itObj++) {
+        auto obj = dynamic_cast<BaseObj*>(*itObj);
 
-    auto firstSpritePos = firstCookie->getSpriteNode()->getPosition();
-    auto lastSpritePos = lastCookie->getSpriteNode()->getPosition();
+        auto spritePos = obj->getSpriteNode()->getPosition();
+        Vec2 centerPosition = Vec2(spritePos.x, spritePos.y);// - 8);
 
-    Vec2 centerPosition = Vec2((firstSpritePos.x + lastSpritePos.x) / 2,
-        (firstSpritePos.y + lastSpritePos.y) / 2);// - 8);
+        auto color = Helper::getScoreColorByObj(obj);
 
-    auto color = Helper::getScoreColorByObj(lastCookie);
+        // Add a label for the score that slowly floats up.
+        auto fontSize = 80;
+        auto str = StringUtils::format("%d", chain->getScore() / cookies->count());
+        Text* scoreLabel = Text::create(str, GameResources::s_fontYellow.getCString(), fontSize);
+        scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
+        scoreLabel->setPosition(centerPosition);
+        scoreLabel->setLocalZOrder(300);
+        scoreLabel->setTextColor(Color4B::WHITE);
+        scoreLabel->enableOutline(color, 2);
+        scoreLabel->setScale(0.5f);
 
-    // Add a label for the score that slowly floats up.
-    auto fontSize = 80;
-    auto str = StringUtils::format("%d", chain->getScore());
-    Text* scoreLabel = Text::create(str, GameResources::s_fontYellow.getCString(), fontSize);
-    scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
-    scoreLabel->setPosition(centerPosition);
-    scoreLabel->setZOrder(300);
-    scoreLabel->setTextColor(Color4B::WHITE);
-    scoreLabel->enableOutline(color, 2);
-    scoreLabel->setScale(0.5f);
+        auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
+        CC_ASSERT(scene);
 
-    auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
-    CC_ASSERT(scene);
+        scene->getCookiesLayer()->addChild(scoreLabel);
 
-    scene->getCookiesLayer()->addChild(scoreLabel);
+        auto duration = 1.15f;
+        //auto scaleAction = ScaleTo::create(duration, 2.0f);
+        auto moveAction = MoveBy::create(duration, Vec2(0.0f, 10.0f));
+        auto easeOut = EaseOut::create(moveAction, duration);
+        auto fadeOut = FadeOut::create(0.5f);
 
-    auto duration = 1.15f;
-    //auto scaleAction = ScaleTo::create(duration, 2.0f);
-    auto moveAction = MoveBy::create(duration, Vec2(0.0f, 10.0f));
-    auto easeOut = EaseOut::create(moveAction, duration);
-    auto fadeOut = FadeOut::create(0.5f);
-
-    auto callback = CallFunc::create([scoreLabel]() {
-        if (scoreLabel) {
-            scoreLabel->removeFromParent();
-        }
-    });
-    scoreLabel->runAction(Sequence::create(DelayTime::create(duration/2), fadeOut, nullptr));
-    scoreLabel->runAction(Sequence::create(easeOut, callback, nullptr));
+        auto callback = CallFunc::create([scoreLabel]() {
+            if (scoreLabel) {
+                scoreLabel->removeFromParent();
+            }
+        });
+        scoreLabel->runAction(Sequence::create(DelayTime::create(duration / 2), fadeOut, nullptr));
+        scoreLabel->runAction(Sequence::create(easeOut, callback, nullptr));
+    }
 }
 
 //--------------------------------------------------------------------
@@ -371,7 +358,7 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
     Text* scoreLabel = Text::create(str, GameResources::s_fontYellow.getCString(), fontSize);
     scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
     scoreLabel->setPosition(centerPosition);
-    scoreLabel->setZOrder(300);
+    scoreLabel->setLocalZOrder(300);
     scoreLabel->setTextColor(Color4B::WHITE);
     scoreLabel->enableOutline(color, 2);
     scoreLabel->setScale(0.5f);
@@ -441,7 +428,7 @@ void _AnimationsManager::animateBouncingObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects, cocos2d::CallFunc * completion)
+void _AnimationsManager::animateRemovingFieldObjects(CommonTypes::Set * fieldObjects, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(fieldObjects);
@@ -451,7 +438,7 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
 
     for (auto it = fieldObjects->begin(); it != fieldObjects->end(); it++) {
 
-        auto obj = dynamic_cast<TileObj*>(*it);
+        auto obj = dynamic_cast<FieldObj*>(*it);
         if (!obj)
             continue;
 
@@ -466,19 +453,17 @@ void _AnimationsManager::animateRemovingFieldObjects(cocos2d::Set * fieldObjects
         auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
         CC_ASSERT(scene);
 
-        auto sprite = obj->getSpriteNode();
-        auto callback = CallFunc::create([scene, sprite, obj]() {
-            if (sprite) {
-                sprite->removeFromParent();
-                obj->setSpriteNode(nullptr);
+        auto callback = CallFunc::create([scene, obj]() {
+   
+            auto func = obj->getFieldObjChangeState();
+            if (func) {
+                std::function<void(FieldObj*)> createSpriteCallback = [scene](FieldObj* obj) {
+                    scene->createSpriteWithFieldObj(obj);
+                };
+                auto baseObj = dynamic_cast<BaseObj*>(obj);
+                obj->getFieldObjChangeState()(baseObj, createSpriteCallback);
             }
-            //TODO: move this to another place
-            if (obj->getHP() > 0) {
-                scene->createSpriteWithFieldObj(obj);
-            } else if (obj->isReadyToRemove()) {
-                SmartFactory->recycle(obj);
-            }
-            
+
         });
         obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
     }

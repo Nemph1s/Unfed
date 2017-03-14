@@ -16,14 +16,14 @@
 BaseObj::BaseObj()
     : mColumn(-1)
     , mRow(-1)
-    , mType(CommonTypes::BaseObjectType::Unknown)
+    , mType(CommonTypes::BaseObjType::Unknown)
     , mIsMovable(false)
     , mIsSwappable(false)
     , mIsRemovable(false)
     , mIsContainer(false)
     , mSpriteNode(nullptr)
     , mDummyString(nullptr)
-    , mScoreValue(40) //TODO: move to global info
+    , mScoreValue(10) //TODO: move to global info
 //--------------------------------------------------------------------
 {
 }
@@ -51,7 +51,7 @@ BaseObj * BaseObj::create()
 }
 
 //--------------------------------------------------------------------
-BaseObj * BaseObj::create(const CommonTypes::BaseObjectInfo & info)
+BaseObj * BaseObj::create(const CommonTypes::BaseObjInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj * ret = new (std::nothrow) BaseObj();
@@ -77,7 +77,7 @@ bool BaseObj::init()
 }
 
 //--------------------------------------------------------------------
-bool BaseObj::init(const CommonTypes::BaseObjectInfo & info)
+bool BaseObj::init(const CommonTypes::BaseObjInfo & info)
 //--------------------------------------------------------------------
 {
     if (!Node::init()) {
@@ -120,7 +120,7 @@ void BaseObj::match()
 }
 
 //--------------------------------------------------------------------
-bool BaseObj::isReadyToRemove() const
+bool BaseObj::isHpEnded() const
 //--------------------------------------------------------------------
 {
     return false;
@@ -132,7 +132,7 @@ void BaseObj::clear()
 {
     mColumn = -1;
     mRow = -1;
-    mType = CommonTypes::BaseObjectType::Unknown;
+    mType = CommonTypes::BaseObjType::Unknown;
     mIsMovable = false;
     mIsSwappable = false;
     mIsRemovable = false;
@@ -146,4 +146,10 @@ void BaseObj::clear()
         }
         mSpriteNode = nullptr;
     }
+}
+
+//--------------------------------------------------------------------
+void BaseObj::updateDebugLabel()
+//--------------------------------------------------------------------
+{
 }

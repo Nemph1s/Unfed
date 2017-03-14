@@ -1,5 +1,5 @@
 /**
-* @file Controller/ObjectController/DudeController.hpp
+* @file Controller/ObjectController/Dude/DudeController.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -12,10 +12,11 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
+ 
 #include <map>
 
-using cocos2d::Set;
-using CommonTypes::TileType;
+using CommonTypes::FieldType;
+using CommonTypes::Set;
 
 class BaseObj;
 class DudeObj;
@@ -52,7 +53,7 @@ public:
     Set* activateDude(DudeObj* obj, int direction);
     void activateAllDudes();
 
-    void removeDude(int column, int row);
+    void removeDude(int column, int row, bool removeWithCleanup = true);
     void removeAllDudes();
 
 protected:
@@ -64,7 +65,7 @@ protected:
 
     bool isEnoughCookiesForDude(int count, int neededCount);
 
-    TileType getDudeTypeByChain(ChainObj* chain);
+    FieldType getDudeTypeByChain(ChainObj* chain);
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(DudeObj*, int direction)>, mActivateDudeCallback, ActivateDudeCallback);
@@ -73,8 +74,7 @@ protected:
     CC_SYNTHESIZE(ChainController*, mChainCtrl, ChainController);
     
     cocos2d::Map<DudeObj*, DudeHelper*> mDudeDirections;
-    std::map<int, CommonTypes::TileType> mDudeTypes;
 
-    // Dude object array 
-    BaseObj* mDudeObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
+//     // Dude object array 
+//     BaseObj* mDudeObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
 };

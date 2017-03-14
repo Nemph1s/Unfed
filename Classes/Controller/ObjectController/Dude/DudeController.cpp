@@ -1,5 +1,5 @@
 /**
-* @file Scenes/ObjectController/DudeController.cpp
+* @file Scenes/ObjectController/Dude/DudeController.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,9 +8,11 @@
 * @author VMartyniuk
 */
 
-#include "Controller/ObjectController/DudeController.h"
+#include "Controller/ObjectController/Dude/DudeController.h"
 #include "Controller/ObjectController/Dude/DudeHelper.h"
 #include "Controller/ObjectController/ObjectController.h"
+#include "Controller/ObjectController/ObjContainer.h"
+
 #include "Controller/ChainController.h"
 
 #include "Common/Factory/SmartFactory.h"
@@ -34,7 +36,6 @@ DudeController::DudeController()
     : mObjCtrl(nullptr)
     , mChainCtrl(nullptr)
     , mDudeDirections()
-    , mDudeTypes()
 //--------------------------------------------------------------------
 {
 }
@@ -64,22 +65,20 @@ DudeController * DudeController::create()
 bool DudeController::init()
 //--------------------------------------------------------------------
 {
-    mDudeTypes[RequiredCountForDudeFromAToB] = TileType::DudeFromAToBx3;
-    mDudeTypes[RequiredCountForDudeFromAToBx3] = TileType::DudeFromAToB;
     return true;
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set* DudeController::createDudeObectsFromChains(cocos2d::Set * chains)
+Set* DudeController::createDudeObectsFromChains(Set * chains)
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = Set::create();
     for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
 
         auto dudeType = getDudeTypeByChain(chain);
-        if (dudeType != TileType::Unknown) {
+        if (dudeType != FieldType::Unknown) {
             auto cookies = chain->getCookies();
             auto cookie = dynamic_cast<CookieObj*>(cookies->getRandomObject());
             if (!cookie) {
@@ -97,11 +96,12 @@ cocos2d::Set* DudeController::createDudeObectsFromChains(cocos2d::Set * chains)
 BaseObj * DudeController::createDudeObject(int column, int row, int type)
 //--------------------------------------------------------------------
 {
-    BaseObjectInfo baseInfo = { BaseObjectType::DudeObj, column, row };
-    TileInfo info = { baseInfo, static_cast<TileType>(type) };
+    BaseObjInfo baseInfo = { BaseObjType::Dude, column, row };
+    FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
     auto obj = dynamic_cast<DudeObj*>(SmartFactory->createDudeObj(info));
     CC_ASSERT(obj);
-    mDudeObjects[column][row] = obj;
+    mObjCtrl->getObject(column, row)->addObject(obj);
+    //mDudeObjects[column][row] = obj;
 
     auto helper = DudeHelper::createWithDudeObject(obj);
     helper->setDudeController(this);
@@ -115,17 +115,19 @@ BaseObj* DudeController::objectAt(int column, int row)
 //--------------------------------------------------------------------
 {
     if (!(column >= 0 && column < NumColumns) || !(row >= 0 && row < NumColumns)) {
-        cocos2d::log("ChainController::createChainFromPosToPos: wrong destinationPos at column=%d, row=%d", column, row);
+        cocos2d::log("DudeController::objectAt: wrong pos at column=%d, row=%d", column, row);
         return nullptr;
     }
-    return mDudeObjects[column][row];
+    auto container = mObjCtrl->getObject(column, row);
+    return container->getObject(BaseObjType::Dude);
 }
 
 //--------------------------------------------------------------------
 DudeObj* DudeController::dudeObjectAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    return dynamic_cast<DudeObj*>(objectAt(column,row));
+    auto container = mObjCtrl->getObject(column, row);
+    return container->getDudeObj();
 }
 
 //--------------------------------------------------------------------
@@ -156,55 +158,55 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
     int column = obj->getColumn();
     int row = obj->getRow();
 
-    auto topSet = cocos2d::Set::create();
-    auto botSet = cocos2d::Set::create();
-    auto leftSet = cocos2d::Set::create();
-    auto rightSet = cocos2d::Set::create();
+    auto topSet = Set::create();
+    auto botSet = Set::create();
+    auto leftSet = Set::create();
+    auto rightSet = Set::create();
 
-    switch (obj->getTileType())
+    switch (obj->getFieldType())
     {
-    case TileType::DudeFromAToBx3:
+    case FieldType::DudeFromAToBx3:
     {
         for (int i = -1; i <= 1; i++) {
-            auto newTopSet = mChainCtrl->createChainFromPosToPos(column + i, row, column + i, 0);
-            auto newBotSet = mChainCtrl->createChainFromPosToPos(column + i, row, column + i, NumRows - 1);
-            auto newLeftSet = mChainCtrl->createChainFromPosToPos(column, row + i, 0, row + i);
-            auto newRightSet = mChainCtrl->createChainFromPosToPos(column, row + i, NumColumns - 1, row + i);
-            mChainCtrl->addChainsFromSetToSet(newTopSet, topSet);
-            mChainCtrl->addChainsFromSetToSet(newBotSet, botSet);
-            mChainCtrl->addChainsFromSetToSet(newLeftSet, leftSet);
-            mChainCtrl->addChainsFromSetToSet(newRightSet, rightSet);
+            auto newTopSet = mChainCtrl->createChainFromPosToPos(column + i, row, column + i, 0, true);
+            auto newBotSet = mChainCtrl->createChainFromPosToPos(column + i, row, column + i, NumRows - 1, true);
+            auto newLeftSet = mChainCtrl->createChainFromPosToPos(column, row + i, 0, row + i, true);
+            auto newRightSet = mChainCtrl->createChainFromPosToPos(column, row + i, NumColumns - 1, row + i, true);
+            mChainCtrl->addCookiesFromChainToChain(newTopSet, topSet);
+            mChainCtrl->addCookiesFromChainToChain(newBotSet, botSet);
+            mChainCtrl->addCookiesFromChainToChain(newLeftSet, leftSet);
+            mChainCtrl->addCookiesFromChainToChain(newRightSet, rightSet);
         }
     }
         break;
-    case TileType::DudeChainX:
+    case FieldType::DudeChainX:
     {
-        auto set = mChainCtrl->createXChainAt(column, row);
+        auto set = mChainCtrl->createXChainAt(column, row, true);
         mChainCtrl->addChainsFromSetToSet(set, topSet);
         mChainCtrl->addChainsFromSetToSet(set, botSet);
         mChainCtrl->addChainsFromSetToSet(set, leftSet);
         mChainCtrl->addChainsFromSetToSet(set, rightSet);
     }
     break;
-    case TileType::DudeAllOfType:
+    case FieldType::DudeAllOfType:
     {
-        auto newTopSet = mChainCtrl->createAllOfOneChain(column, row - 1);
-        auto newBotSet = mChainCtrl->createAllOfOneChain(column, row + 1);
-        auto newLeftSet = mChainCtrl->createAllOfOneChain(column - 1, row);
-        auto newRightSet = mChainCtrl->createAllOfOneChain(column + 1, row);
+        auto newTopSet = mChainCtrl->createAllOfOneChain(column, row - 1, true);
+        auto newBotSet = mChainCtrl->createAllOfOneChain(column, row + 1, true);
+        auto newLeftSet = mChainCtrl->createAllOfOneChain(column - 1, row, true);
+        auto newRightSet = mChainCtrl->createAllOfOneChain(column + 1, row, true);
         mChainCtrl->addChainsFromSetToSet(newTopSet, topSet);
         mChainCtrl->addChainsFromSetToSet(newBotSet, botSet);
         mChainCtrl->addChainsFromSetToSet(newLeftSet, leftSet);
         mChainCtrl->addChainsFromSetToSet(newRightSet, rightSet);
     }
         break;
-    case TileType::DudeFromAToB:
+    case FieldType::DudeFromAToB:
     default:
     {
-        auto newTopSet = mChainCtrl->createChainFromPosToPos(column, row, column, 0);
-        auto newBotSet = mChainCtrl->createChainFromPosToPos(column, row, column, NumRows - 1);
-        auto newLeftSet = mChainCtrl->createChainFromPosToPos(column, row, 0, row);
-        auto newRightSet = mChainCtrl->createChainFromPosToPos(column, row, NumColumns - 1, row);
+        auto newTopSet = mChainCtrl->createChainFromPosToPos(column, row, column, 0, true);
+        auto newBotSet = mChainCtrl->createChainFromPosToPos(column, row, column, NumRows - 1, true);
+        auto newLeftSet = mChainCtrl->createChainFromPosToPos(column, row, 0, row, true);
+        auto newRightSet = mChainCtrl->createChainFromPosToPos(column, row, NumColumns - 1, row, true);
         mChainCtrl->addChainsFromSetToSet(newTopSet, topSet);
         mChainCtrl->addChainsFromSetToSet(newBotSet, botSet);
         mChainCtrl->addChainsFromSetToSet(newLeftSet, leftSet);
@@ -252,10 +254,10 @@ bool DudeController::canActivateDudeTo(int fromCol, int fromRow, int direction)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Set * DudeController::activateDude(DudeObj* obj, int dir)
+Set * DudeController::activateDude(DudeObj* obj, int dir)
 //--------------------------------------------------------------------
 {
-    auto set = cocos2d::Set::create();
+    auto set = Set::create();
     if (!obj) {
         cocos2d::log("DudeController::activateDude: empty ptr DudeObj");
         return set;
@@ -279,20 +281,25 @@ void DudeController::activateAllDudes()
 
 
 //--------------------------------------------------------------------
-void DudeController::removeDude(int column, int row)
+void DudeController::removeDude(int column, int row, bool removeWithCleanup)
 //--------------------------------------------------------------------
 {
-    auto dude = dudeObjectAt(column, row);
+    if (removeWithCleanup)
+    {
+        auto dude = dudeObjectAt(column, row);
 
-    if (!dude) {
-        cocos2d::log("DudeController::removeDude: dude at (%d,%d) already removed", column, row);
-        return;
+        if (!dude) {
+            cocos2d::log("DudeController::removeDude: dude at (%d,%d) already removed", column, row);
+            return;
+        }
+        cocos2d::log("DudeController::removeDude: remove %s", dude->description().getCString());
+
+        SmartFactory->recycle(dude);
+        mDudeDirections.erase(dude);
     }
-    cocos2d::log("DudeController::removeDude: remove %s", dude->description().getCString());
     
-    SmartFactory->recycle(dude);
-    mDudeDirections.erase(dude);
-    mDudeObjects[column][row] = nullptr;
+    auto container = mObjCtrl->getObject(column, row);
+    container->removeObject(BaseObjType::Dude);
 }
 
 //--------------------------------------------------------------------
@@ -314,29 +321,29 @@ bool DudeController::isEnoughCookiesForDude(int count, int neededCount)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::TileType DudeController::getDudeTypeByChain(ChainObj * chain)
+FieldType DudeController::getDudeTypeByChain(ChainObj * chain)
 //--------------------------------------------------------------------
 {
-    auto type = TileType::Unknown;
+    auto type = FieldType::Unknown;
     auto cookiesCount = chain->getCookies() ? chain->getCookies()->count() : 0;
     switch (chain->getType())
     {
     case ChainType::ChainTypeHorizontal:
     case ChainType::ChainTypeVertical:
         if (isEnoughCookiesForDude(cookiesCount, RequiredCountForDudeFromAToBx3)) {
-            type = TileType::DudeFromAToBx3;
+            type = FieldType::DudeFromAToBx3;
         } else if (isEnoughCookiesForDude(cookiesCount, RequiredCountForDudeFromAToB)) {
-            type = TileType::DudeFromAToB;
+            type = FieldType::DudeFromAToB;
         }
         break;
     case ChainType::ChainTypeL:
         if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForOni)) {
-            type = TileType::DudeChainX;
+            type = FieldType::DudeChainX;
         }
         break;
     case ChainType::ChainTypeT:
         if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForPina)) {
-            type = TileType::DudeAllOfType;
+            type = FieldType::DudeAllOfType;
         }
         break;
     default:

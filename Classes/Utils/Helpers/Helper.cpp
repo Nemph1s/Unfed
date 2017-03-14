@@ -12,9 +12,11 @@
 #include "Utils/GameResources.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include <random>
 
 using namespace GameResources;
+using namespace CommonTypes;
 using namespace CommonTypes;
 
 //--------------------------------------------------------------------
@@ -44,6 +46,52 @@ CookieType Helper::randomCookieType(int fromRange, int toRange)
 }
 
 //--------------------------------------------------------------------
+cocos2d::String* Helper::getSpriteNameByTileType(int tileType)
+//--------------------------------------------------------------------
+{
+    cocos2d::String* str = nullptr;
+    auto type = static_cast<CommonTypes::TileType>(tileType);
+    int firstDudeType = Helper::to_underlying(CommonTypes::TileType::DudeFromAToB);
+    switch (type)
+    {
+    case CommonTypes::TileType::Empty:
+    case CommonTypes::TileType::Normal:
+        str = &GameResources::s_TileImg;
+        break;
+    case CommonTypes::TileType::Water:
+        str = &GameResources::s_TileImg;
+        break;
+    case CommonTypes::TileType::Dirt:
+        str = &GameResources::s_DirtImg;
+        break;
+    case CommonTypes::TileType::Dirt_HP2:
+    case CommonTypes::TileType::Dirt_HP3:
+        str = &GameResources::s_DirtX2Img;
+        break;
+    case CommonTypes::TileType::Bush:
+        str = &GameResources::s_BushCorruptedImg;
+        break;
+    case CommonTypes::TileType::Bush_HP2:
+        str = &GameResources::s_BushNormalImg;
+        break;
+    case CommonTypes::TileType::RockWall:
+        str = &GameResources::s_RockImg;
+        break;
+    case CommonTypes::TileType::DudeFromAToB:
+    case CommonTypes::TileType::DudeFromAToBx3:
+    case CommonTypes::TileType::DudeChainX:
+    case CommonTypes::TileType::DudeAllOfType:
+        str = &GameResources::s_dudeSpriteNames.at(tileType - firstDudeType);
+        break;
+    case CommonTypes::TileType::Unknown:
+        break;
+    default:
+        break;
+    }
+    return str;
+}
+
+//--------------------------------------------------------------------
 cocos2d::Vec2 Helper::pointForColumnAndRow(int column, int row)
 //--------------------------------------------------------------------
 {
@@ -53,10 +101,30 @@ cocos2d::Vec2 Helper::pointForColumnAndRow(int column, int row)
 }
 
 //--------------------------------------------------------------------
+cocos2d::Vec2 Helper::pointForColumnAndRowWithPriority(int column, int row, int priority)
+//--------------------------------------------------------------------
+{
+    auto pos = pointForColumnAndRow(column, row);
+    if (priority > 0) {
+        pos.y += (GameResources::TileHeight / 4) * priority;
+    }
+    return pos;
+}
+
+//--------------------------------------------------------------------
 cocos2d::Vec2 Helper::pointForTile(BaseObj * obj)
 //--------------------------------------------------------------------
 {
-    return pointForColumnAndRow(obj->getColumn(), obj->getRow());
+    auto pos = cocos2d::Vec2::ZERO;
+    if (obj->getType() == BaseObjType::Field) {
+        auto tileObj = dynamic_cast<FieldObj*>(obj);
+        if (tileObj) {
+            pos = pointForColumnAndRowWithPriority(obj->getColumn(), obj->getRow(), tileObj->getPriority());
+        }
+    } else {
+        pos = pointForColumnAndRow(obj->getColumn(), obj->getRow());
+    }
+    return pos;
 }
 
 //--------------------------------------------------------------------
@@ -108,16 +176,16 @@ cocos2d::Color4B Helper::getScoreColorByObj(BaseObj * obj)
         return color;
     }
 
-    if (obj->getType() == BaseObjectType::CookieObj) {
+    if (obj->getType() == BaseObjType::Cookie) {
         auto cookie = dynamic_cast<CookieObj*>(obj);
         if (cookie) {
             color = getScoreColorByCookieType(cookie->getCookieType());
         }
     }
-    else if (obj->getType() == BaseObjectType::FieldObj) {
-        auto tileObj = dynamic_cast<TileObj*>(obj);
+    else if (obj->getType() == BaseObjType::Field) {
+        auto tileObj = dynamic_cast<FieldObj*>(obj);
         if (tileObj) {
-            color = getScoreColorByTileType(tileObj->getTileType());
+            color = getScoreColorByFieldType(tileObj->getFieldType());
         }
     }
 
@@ -156,22 +224,22 @@ cocos2d::Color4B Helper::getScoreColorByCookieType(CommonTypes::CookieType type)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorByTileType(CommonTypes::TileType type)
+cocos2d::Color4B Helper::getScoreColorByFieldType(CommonTypes::FieldType type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
     switch (type)
     {
-    case TileType::Dirt:
-    case TileType::Dirt_HP2:
-    case TileType::Dirt_HP3:
+    case FieldType::Dirt:
+    case FieldType::Dirt_HP2:
+    case FieldType::Dirt_HP3:
         color = cocos2d::Color4B(156, 102, 31, 255);
         break;
-    case TileType::Bush:
-    case TileType::Bush_HP2:
+    case FieldType::Bush:
+    case FieldType::Bush_HP2:
         color = cocos2d::Color4B::GREEN;
         break;
-    case TileType::RockWall:
+    case FieldType::RockWall:
         color = cocos2d::Color4B::BLACK;
         break;
     default:

@@ -13,6 +13,7 @@
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
 
+class BaseObj;
 class ChainObj;
 class LevelObj;
 class GameplayScene;
@@ -35,34 +36,41 @@ public:
 
     bool init();
 
-    void addChainsFromSetToSet(cocos2d::Set* from, cocos2d::Set* to);
+    void addChainsFromSetToSet(CommonTypes::Set* from, CommonTypes::Set* to);
+    void addCookiesFromChainToChain(CommonTypes::Set* from, CommonTypes::Set* to);
 
-    cocos2d::Set* removeMatches();
-    cocos2d::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
+    CommonTypes::Set* removeMatches();
+    CommonTypes::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
+
+    void calculateChainScore(ChainObj* chain);
+    void executeCollectGoalCallback(CommonTypes::Set* chains);
 
 protected:
     // Nodes should be created using create();
     ChainController();
 
-    cocos2d::Set* detectHorizontalMatches();
-    cocos2d::Set* detectVerticalMatches();
-    cocos2d::Set* detectDifficultMatches(cocos2d::Set* horizontal, cocos2d::Set* vertical);
+    void addChainToSet(ChainObj* chain, CommonTypes::Set* set);
+    CommonTypes::Set* detectHorizontalMatches();
+    CommonTypes::Set* detectVerticalMatches();
+    CommonTypes::Set* detectDifficultMatches(CommonTypes::Set* horizontal, CommonTypes::Set* vertical);
 
     ChainObj* detectLChainMatches(ChainObj* horzChain, ChainObj* vertChain);
     ChainObj* detectTChainMatches(ChainObj* horzChain, ChainObj* vertChain);
 
-    cocos2d::Set* createHorizontalChainAt(int column);
-    cocos2d::Set* createVerticalChainAt(int row);
-    cocos2d::Set* createXChainAt(int column, int row);
-    cocos2d::Set* createAllOfOneChain(int entryColumn, int entryRow);
-    cocos2d::Set* createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to);
-    cocos2d::Set* createChainFromPosToPos(int fromCol, int fromRow, int toCol, int toRow);
+    CommonTypes::Set* createHorizontalChainAt(int column);
+    CommonTypes::Set* createVerticalChainAt(int row);
+    CommonTypes::Set* createXChainAt(int column, int row, bool isCreatedByDude = false);
+    CommonTypes::Set* createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude = false);
+    CommonTypes::Set* createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to, bool isCreatedByDude = false);
+    CommonTypes::Set* createChainFromPosToPos(int fromCol, int fromRow, int toCol, int toRow, bool isCreatedByDude = false);
 
 #ifdef COCOS2D_DEBUG
-    void logDebugChains(cocos2d::Set* horizontal, cocos2d::Set* vertical, cocos2d::Set* difficult);
+    void logDebugChains(CommonTypes::Set* horizontal, CommonTypes::Set* vertical, CommonTypes::Set* difficult);
 #endif // COCOS2D_DEBUG 
 
     //---Class Attributes-------------------------------------------------
+    CC_SYNTHESIZE(std::function<void(BaseObj* obj)>, mUpdateGoalCallback, UpdateGoalCallback);
+
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
     CC_SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController);
 };

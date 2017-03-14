@@ -1,0 +1,57 @@
+/**
+* @file GameObjects/Level/LevelTypes.h
+* Copyright (C) 2017
+* Company       Octohead LTD
+*               All Rights Reserved
+*               Secrecy Level STRICTLY CONFIDENTIAL
+*
+* @author VMartyniuk
+*/
+
+#pragma once
+
+#include <stdint.h>
+#include <vector>
+#include "Common/CommonTypes.h"
+
+namespace CommonTypes {
+
+    typedef int TilesArray[CommonTypes::NumColumns][CommonTypes::NumRows];
+
+    /**
+    * @brief LevelInfo struct.
+    */
+    struct LevelInfo
+    {
+        uint32_t id = 0; /**< current level ID */
+        uint32_t targetScore = 0; /**< Goal score */
+        int moves = 0; /**< available moves */
+        TilesArray tiles = { 0 }; /**< array of tiles */
+        TilesArray cookies = { 0 }; /**< array of cookies */
+        std::vector<CommonTypes::FieldJsonInfo> fieldObjects; /**< array of tileObjects */
+        int typesCount = 0; /**< count of types */
+        bool isPredefinedCookies = false; /**< availability to load predefined cookies */
+        bool skipEmptyHoles = false; /**< availability to skip empty tiles when obj falling */
+        std::vector<int> allowedCookieTypes;
+    };
+
+    /**
+    * @brief CollectGoalInfo struct.
+    */
+    struct CollectGoalInfo
+    {
+        int8_t baseObjectType = 0; /**< baseObjectType type of base field object(tile, cookie, field, dude) */
+        int8_t objectType = 0; /**< objectType type of child field obj */
+        int8_t targetCount = 0; /**< targetCount object count goal*/
+        int8_t currentCount = 0; /**< currentCount object count goal*/
+    };
+
+    /**
+    * @brief LevelInfo struct.
+    */
+    struct LevelGoals
+    {
+        int8_t goalsCount = 0; /**< goalsCount count current goals*/
+        std::vector<CollectGoalInfo> collectGoals; /**< collectGoal vector of CollectGoalInfo struct*/
+    };
+}

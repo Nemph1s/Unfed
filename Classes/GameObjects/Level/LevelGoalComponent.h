@@ -1,5 +1,5 @@
-/**
-* @file GameObjects/TileObjects/Obstacles/BushObj.hpp
+#/**
+* @file GameObjects/Level/LevelGoalComponent.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -10,30 +10,32 @@
 
 #pragma once
 
-#include "GameObjects/TileObjects/TileObj.h"
+#include "cocos2d.h"
+#include "GameObjects/Level/LevelTypes.h"
 
-class BushObj : public TileObj
+class BaseObj;
+
+class LevelGoalComponent : public cocos2d::Node
 {
 CC_CONSTRUCTOR_ACCESS:
-    virtual ~BushObj();
+    virtual ~LevelGoalComponent();
 
 public:
     /**
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static BushObj * create(const CommonTypes::TileInfo &info);
+    static LevelGoalComponent * create();
 
-    bool init(const CommonTypes::TileInfo &info);
+    virtual bool init();
 
-    cocos2d::String& spriteName() const override;
-
-    virtual bool checkMatchingCondition(int column, int row) override;
+    void updateGoalByObject(BaseObj* obj);
 
 protected:
     // Nodes should be created using create();
-    BushObj();
+    LevelGoalComponent();
 
     //---Class Attributes-------------------------------------------------
-};
+    CC_SYNTHESIZE_READONLY(CommonTypes::LevelGoals, mLevelGoals, LevelGoals);
 
+};

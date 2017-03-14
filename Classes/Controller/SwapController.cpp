@@ -12,7 +12,7 @@
 #include "Controller/ObjectController/ObjectController.h"
 
 #include "GameObjects/Swap/SwapObj.h"
-#include "GameObjects/LevelObj.h"
+#include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 
 #include "Common/CommonTypes.h"
@@ -22,9 +22,9 @@
 
 //--------------------------------------------------------------------
 SwapController::SwapController()
-//--------------------------------------------------------------------
     : mLevel(nullptr)
     , mPossibleSwaps(nullptr)
+//--------------------------------------------------------------------
 {
 }
 
@@ -63,7 +63,7 @@ bool SwapController::detectPossibleSwaps()
     cocos2d::log("SwapController::detectPossibleSwaps:");
 
     clearPossibleSwaps();
-    cocos2d::Set* set = cocos2d::Set::create();
+    CommonTypes::Set* set = CommonTypes::Set::create();
 
     for (int row = 0; row < CommonTypes::NumRows; row++) {
         for (int column = 0; column < CommonTypes::NumColumns; column++) {
@@ -110,8 +110,8 @@ void SwapController::detectSwap(SwapChecker * checker)
     auto other = objCtrl->cookieAt(checker->nextCol, checker->nextRow);
     if (cookie && other) {
         // Swap them
-        objCtrl->updateCookieObjectAt(checker->curCol, checker->curRow, other);
-        objCtrl->updateCookieObjectAt(checker->nextCol, checker->nextRow, cookie);
+        objCtrl->updateObjectAt(checker->curCol, checker->curRow, other);
+        objCtrl->updateObjectAt(checker->nextCol, checker->nextRow, cookie);
 
         // Is either cookie now part of a chain?
         if (objCtrl->hasChainAt(checker->nextCol, checker->nextRow) || objCtrl->hasChainAt(checker->curCol, checker->curRow)) {
@@ -120,8 +120,8 @@ void SwapController::detectSwap(SwapChecker * checker)
             checker->set->addObject(swap);
         }
         // Swap them back
-        objCtrl->updateCookieObjectAt(checker->curCol, checker->curRow, cookie);
-        objCtrl->updateCookieObjectAt(checker->nextCol, checker->nextRow, other);
+        objCtrl->updateObjectAt(checker->curCol, checker->curRow, cookie);
+        objCtrl->updateObjectAt(checker->nextCol, checker->nextRow, other);
     }
 }
 
@@ -159,11 +159,11 @@ void SwapController::performSwap(SwapObj * swap)
     int rowB = swap->getCookieB()->getRow();
 
     auto objCtrl = mLevel->getObjectController();
-    objCtrl->updateCookieObjectAt(columnA, rowA, swap->getCookieB());
+    objCtrl->updateObjectAt(columnA, rowA, swap->getCookieB());
     swap->getCookieB()->setColumn(columnA);
     swap->getCookieB()->setRow(rowA);
 
-    objCtrl->updateCookieObjectAt(columnB, rowB, swap->getCookieA());
+    objCtrl->updateObjectAt(columnB, rowB, swap->getCookieA());
     swap->getCookieA()->setColumn(columnB);
     swap->getCookieA()->setRow(rowB);
 }
@@ -215,16 +215,6 @@ void SwapController::clearPossibleSwaps()
     if (!mPossibleSwaps) {
         return;
     }
-    for (auto itr = mPossibleSwaps->begin(); itr != mPossibleSwaps->end(); itr++) {
-        SwapObj* obj = dynamic_cast<SwapObj*>(*itr);
-        if (obj) {
-            if (obj->getParent()) {
-                obj->removeAllChildren();
-                obj->removeFromParent();
-            }
-        }
-        CC_SAFE_RELEASE(obj);
-    }
     mPossibleSwaps->removeAllObjects();
-    CC_SAFE_DELETE(mPossibleSwaps);
+    CC_SAFE_RELEASE_NULL(mPossibleSwaps);
 }
