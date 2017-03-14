@@ -134,16 +134,9 @@ bool ViewController::initLevel()
     mLevel->setName("Level");
 
     mGameplayScene->setLevel(mLevel);
-
     mLevelGoals = LevelGoalComponent::create();
 
     GuiManager->initWithScene(mGameplayScene, mLevelGoals);
-//     auto updateGoalCallback = [=](BaseObj* obj) {
-//         mLevelGoals->updateGoalByObject(obj);
-//     };
-//     mChainController->setUpdateGoalCallback(updateGoalCallback);
-
-    //TODO: add callback to gamescene and GIU to update target score labels
 
     return true;
 }
@@ -308,7 +301,6 @@ void ViewController::animateHandleMatches(CommonTypes::Set* chains)
 
     mChainController->executeCollectGoalCallback(chains);
 
-
     auto completion = CallFunc::create([&]() {
 
         auto columns = mLevel->useGravityToFillHoles();
@@ -325,8 +317,10 @@ void ViewController::animateHandleMatches(CommonTypes::Set* chains)
     });
 
     auto fieldObjects = mLevel->detectFieldObjects(chains);
-    AnimationsManager->animateRemovingFieldObjects(fieldObjects, completion);
-    AnimationsManager->animateMatching(chains, CallFunc::create([](){}));
+    if (fieldObjects->count() > 0) {
+        mChainController->addFieldOjbectsToChainSet(fieldObjects, chains);
+    }
+    AnimationsManager->animateMatching(chains, completion);
     AudioManager->playSound(SoundType::MatchSound);
 }
 
@@ -401,10 +395,10 @@ void ViewController::swapCallback(SwapObj * swap)
 void ViewController::activateDudeCallback(DudeObj * obj, int direction)
 //--------------------------------------------------------------------
 {
-    auto set = mDudeController->activateDude(obj, direction);
+    auto set = mDudeController->activateDudeAndGetChains(obj, direction);
     auto chains = dynamic_cast<ChainObj*>(set->anyObject());
     if (chains) {
-        if (chains->getCookies()) {
+        if (chains->getChainObjects()) {
             mGameplayScene->userInteractionDisabled();
 
             mLevel->removeDudeMatches(set);

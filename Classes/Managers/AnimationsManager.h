@@ -37,10 +37,7 @@ public:
     void animateScoreForFieldObj(BaseObj* obj);
 
     void animateBouncingObj(BaseObj* obj);
-
-    void animateRemovingFieldObjects(CommonTypes::Set* fieldObjects, cocos2d::CallFunc* completion);
-
-
+    
     void animateRemoveDude(BaseObj* obj, cocos2d::CallFunc* completion);
 
 protected:

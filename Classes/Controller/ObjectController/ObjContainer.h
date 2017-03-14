@@ -20,7 +20,7 @@ class FieldObj;
 class DudeObj;
 class GameplayScene;
 
-class ObjContainer : public cocos2d::Ref
+class ObjContainer : public cocos2d::Node
 {
 CC_CONSTRUCTOR_ACCESS:
     virtual ~ObjContainer();
@@ -41,11 +41,15 @@ public:
     FieldObj* getFieldObject() const;
     std::list<FieldObj*>& getFieldObjects();
 
+    bool isContainObjForChain();
+    BaseObj* getObjectForChain();
+
     bool isEmptyTileAt();
     bool isPossibleToAddCookie();
     bool isSameTypeOfCookieAt(int type);
 
     //---Callbacks-------------------------------------------------
+    void onRemoveCookie(BaseObj* obj);
     void onFieldObjChangeState(BaseObj* obj, std::function<void(FieldObj*)> createSpriteFunc);
 
 protected:

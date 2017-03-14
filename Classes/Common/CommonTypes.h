@@ -133,6 +133,7 @@ namespace CommonTypes {
        , ChainTypeX = 4 /**< enum value ChainTypeX. */
        , ChainTypeAllOfOne = 5 /**< enum value ChainTypeAllOfOne. */
        , ChainFromAToB = 6 /**< enum value ChainTypeAllOfOne. */
+       , ChainFieldObjects = 7 /**< enum value ChainFieldObjects. */
        , Unknown /**< enum value unknown. */
    };
 

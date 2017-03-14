@@ -23,6 +23,7 @@
 #include "Utils/Parser/JsonParser.h"
 
 #include "Common/Factory/SmartFactory.h"
+#include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/ObjectController.h"
 #include "Controller/ObjectController/Dude/DudeController.h"
 #include "Controller/ChainController.h"
@@ -99,27 +100,6 @@ CommonTypes::Set* LevelObj::shuffle()
 }
 
 //--------------------------------------------------------------------
-void LevelObj::removeCookies(CommonTypes::Set * chains)
-//--------------------------------------------------------------------
-{
-    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
-        auto chain = dynamic_cast<ChainObj*>(*itChain);
-        CC_ASSERT(chain);
-
-        auto cookies = chain->getCookies();
-        if (!cookies) {
-            continue;
-        }
-        for (auto it = cookies->begin(); it != cookies->end(); it++) {
-            auto cookie = dynamic_cast<CookieObj*>(*it);
-            CC_ASSERT(cookie);
-
-            mObjCtrl->removeCookie(cookie->getColumn(), cookie->getRow());
-        }
-    }
-}
-
-//--------------------------------------------------------------------
 SearchEmptyHoles LevelObj::skipFillTopUpHoles(int column, int row, bool& filledTileFouned)
 //--------------------------------------------------------------------
 {
@@ -137,37 +117,6 @@ SearchEmptyHoles LevelObj::skipFillTopUpHoles(int column, int row, bool& filledT
         }
     }
     return res;
-}
-
-//--------------------------------------------------------------------
-bool LevelObj::checkMathicngFieldObjWithChain(CommonTypes::Set * chains, BaseObj * obj)
-//--------------------------------------------------------------------
-{
-    auto result = false;
-    auto fieldObj = dynamic_cast<FieldObj*>(obj);
-    if (!fieldObj) {
-        return result;
-    }
-    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
-        auto chain = dynamic_cast<ChainObj*>(*itChain);
-        CC_ASSERT(chain);
-
-        auto cookies = chain->getCookies();
-        for (auto it = cookies->begin(); it != cookies->end(); it++) {
-            auto cookie = dynamic_cast<CookieObj*>(*it);
-            CC_ASSERT(cookie);
-
-            int col = cookie->getColumn();
-            int row = cookie->getRow();
-            if (fieldObj->checkMatchingCondition(col, row)) {
-                result = true;
-                break;
-            }
-        }
-        if (result)
-            break;
-    }
-    return result;
 }
 
 //--------------------------------------------------------------------
@@ -225,7 +174,7 @@ CommonTypes::Set* LevelObj::detectFieldObjects(CommonTypes::Set * chains)
             }
             if (obj->isRemovable()) {
 
-                if (checkMathicngFieldObjWithChain(chains, obj)) {
+                if (mChainCtrl->checkMathicngFieldObjWithChain(chains, obj)) {
                     if (mObjCtrl->matchFieldObject(obj)) {
                         set->addObject(obj);
                         continue;
@@ -348,7 +297,7 @@ void LevelObj::calculateScore(CommonTypes::Set * chains)
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
 
-        if (chain->getCookies()) {
+        if (chain->getChainObjects()) {
             auto chainScore = chain->getScore();
             chain->setScore(chainScore * mComboMultiplier);
             mComboMultiplier++;
@@ -373,11 +322,12 @@ void LevelObj::disablePredefinedCookies()
 }
 
 //--------------------------------------------------------------------
-void LevelObj::removeDudeMatches(CommonTypes::Set * set)
+void LevelObj::removeDudeMatches(CommonTypes::Set* set)
 //--------------------------------------------------------------------
 {
+    cocos2d::log("LevelObj::removeDudeMatches:");
     if (set) {
         calculateScore(set);
-        removeCookies(set);
+        mChainCtrl->matchChains(set);
     }
 }

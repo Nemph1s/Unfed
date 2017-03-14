@@ -377,6 +377,21 @@ bool ObjectController::matchFieldObject(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
+bool ObjectController::matchCookieObject(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    auto objContainer = getObject(obj->getColumn(), obj->getRow());
+    auto cookieObj = objContainer->getCookieObj();
+    if (obj == cookieObj) {
+        std::function<void(BaseObj*)> onRemoveCookieCallback;
+        onRemoveCookieCallback = std::bind(&ObjContainer::onRemoveCookie, objContainer, _1);
+        cookieObj->setRemoveCookieCallback(onRemoveCookieCallback);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------
 void ObjectController::updateCookieObjectAt(int column, int row, BaseObj* cookie)
 //--------------------------------------------------------------------
 {
@@ -405,10 +420,10 @@ void ObjectController::removeCookie(int column, int row)
     auto cookie = cookieAt(column, row);
 
     if (!cookie) {
-        cocos2d::log("ObjectController::removeCookies: cookie at (%d,%d) already removed", column, row);
+        cocos2d::log("ObjectController::removeCookie: cookie at (%d,%d) already removed", column, row);
         return;
     }
-    cocos2d::log("ObjectController::removeCookies: remove %s", cookie->description().getCString());
+    cocos2d::log("ObjectController::removeCookie: remove %s", cookie->description().getCString());
     if (cookie->getParent()) {
         cookie->removeFromParent();
     }

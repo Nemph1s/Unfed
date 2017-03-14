@@ -39,8 +39,13 @@ public:
     void addChainsFromSetToSet(CommonTypes::Set* from, CommonTypes::Set* to);
     void addCookiesFromChainToChain(CommonTypes::Set* from, CommonTypes::Set* to);
 
+    void addFieldOjbectsToChainSet(CommonTypes::Set* fieldObjects, CommonTypes::Set* chainSet);
+    bool checkMathicngFieldObjWithChain(CommonTypes::Set* chains, BaseObj* obj);
+
     CommonTypes::Set* removeMatches();
     CommonTypes::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
+
+    void matchChains(CommonTypes::Set* chains);
 
     void calculateChainScore(ChainObj* chain);
     void executeCollectGoalCallback(CommonTypes::Set* chains);
@@ -49,7 +54,10 @@ protected:
     // Nodes should be created using create();
     ChainController();
 
+    bool isPossibleToAddObjToChain(int col, int row, int& prevType, int& nextType);
+    void addObjToChain(ChainObj* chain, int col, int row);
     void addChainToSet(ChainObj* chain, CommonTypes::Set* set);
+
     CommonTypes::Set* detectHorizontalMatches();
     CommonTypes::Set* detectVerticalMatches();
     CommonTypes::Set* detectDifficultMatches(CommonTypes::Set* horizontal, CommonTypes::Set* vertical);

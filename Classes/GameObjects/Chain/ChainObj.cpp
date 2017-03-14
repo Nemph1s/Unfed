@@ -10,13 +10,16 @@
 
 
 #include "GameObjects/Chain/ChainObj.h"
+#include "Controller/ObjectController/ObjContainer.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "Utils/Helpers/Helper.h"
 
 //--------------------------------------------------------------------
 ChainObj::ChainObj()
-    : mCookies(nullptr)
+    : mObjects(nullptr)
     , mIsCreatedByDude(false)
+    , mCookiesScore(0)
+    , mScore(0)
 //--------------------------------------------------------------------
 {
 }
@@ -29,7 +32,7 @@ ChainObj::~ChainObj()
     if (getParent()) {
         removeFromParent();
     }
-    CC_SAFE_RELEASE_NULL(mCookies);
+    CC_SAFE_RELEASE_NULL(mObjects);
 }
 
 //--------------------------------------------------------------------
@@ -65,10 +68,11 @@ std::string ChainObj::description()
 //--------------------------------------------------------------------
 {
     int count = 0;
+    auto objects = getChainObjects();
     auto strChains = cocos2d::String::createWithFormat("\ttype:%d cookies:{\n", getTypeAsInt());
-    for (auto it = mCookies->begin(); it != mCookies->end(); ++it, count++) {
+    for (auto it = objects->begin(); it != objects->end(); ++it, count++) {
         
-        auto cookie = static_cast<CookieObj*>(*it);
+        auto cookie = static_cast<BaseObj*>(*it);
         strChains->appendWithFormat("\t\t%s\n", cookie->description().getCString());
     }
     strChains->append("\t}");
@@ -111,44 +115,29 @@ int ChainObj::getTypeAsInt()
 }
 
 //--------------------------------------------------------------------
-void ChainObj::addObject(BaseObj* obj)
+void ChainObj::addObjectToChain(ObjContainer * obj)
 //--------------------------------------------------------------------
 {
-    if (mCookies == nullptr) {
-        mCookies = cocos2d::Array::createWithCapacity(CommonTypes::NumColumns * CommonTypes::NumRows);
-        CC_SAFE_RETAIN(mCookies);
+    if (mObjects == nullptr) {
+        mObjects = cocos2d::Array::createWithCapacity(CommonTypes::NumColumns * CommonTypes::NumRows);
+        CC_SAFE_RETAIN(mObjects);
     }
-    mCookies->addObject(obj);
+    mObjects->addObject(obj);
 }
 
 //--------------------------------------------------------------------
-void ChainObj::addCookie(CookieObj * cookie)
-//--------------------------------------------------------------------
-{
-    if (mCookies == nullptr) {
-        mCookies = cocos2d::Array::createWithCapacity(CommonTypes::NumColumns * CommonTypes::NumRows);
-        CC_SAFE_RETAIN(mCookies);
-    }
-    mCookies->addObject(cookie);
-}
-
-//--------------------------------------------------------------------
-void ChainObj::addCookiesFromChain(ChainObj * chain)
+void ChainObj::addCookiesFromChain(ChainObj* chain)
 //--------------------------------------------------------------------
 {
     cocos2d::log("ChainObj::addCookiesFromChain:");
     CC_ASSERT(chain);
-    auto cookies = chain->getCookies();
-    CC_ASSERT(cookies);
+    auto objects = chain->getObjects();
+    CC_ASSERT(objects);
 
-    for (auto it = cookies->begin(); it != cookies->end(); it++) {
-        auto obj = dynamic_cast<BaseObj*>(*it);
+    for (auto it = objects->begin(); it != objects->end(); it++) {
+        auto obj = dynamic_cast<ObjContainer*>(*it);
         CC_ASSERT(obj);
-        addObject(obj);
-//         auto cookie = dynamic_cast<CookieObj*>(*it);
-//         CC_ASSERT(cookie);
-//         addCookie(cookie);
-//         addObjectToGoalMap(cookie);
+        addObjectToChain(obj);
     }
 }
 
@@ -156,11 +145,45 @@ void ChainObj::addCookiesFromChain(ChainObj * chain)
 void ChainObj::executeCollectGoalCallback()
 //--------------------------------------------------------------------
 {
-    for (auto it = mCookies->begin(); it != mCookies->end(); it++) {
+    auto objects = getChainObjects();
+    for (auto it = objects->begin(); it != objects->end(); it++) {
         auto obj = dynamic_cast<BaseObj*>(*it);
         CC_ASSERT(obj);
         if (mUpdateGoalCallback) {
             mUpdateGoalCallback(obj);
         }
     }
+}
+
+//--------------------------------------------------------------------
+cocos2d::Array* ChainObj::getChainObjects()
+//--------------------------------------------------------------------
+{
+    auto arr = cocos2d::Array::create();
+    for (auto it = mObjects->begin(); it != mObjects->end(); it++) {
+        auto container = dynamic_cast<ObjContainer*>(*it);
+        CC_ASSERT(container);
+
+        auto obj = container->getObjectForChain();
+        if (obj) {
+            arr->addObject(obj);
+        }
+    }
+    return arr;
+}
+
+//--------------------------------------------------------------------
+int ChainObj::getCookiesCount()
+//--------------------------------------------------------------------
+{
+    int count = 0;
+    auto objs = getChainObjects();
+    for (auto it = objs->begin(); it != objs->end(); it++) {
+        auto obj = dynamic_cast<BaseObj*>(*it);
+        CC_ASSERT(obj);
+        if (obj->getType() == CommonTypes::BaseObjType::Cookie) {
+            count++;
+        }
+    }
+    return count;
 }
