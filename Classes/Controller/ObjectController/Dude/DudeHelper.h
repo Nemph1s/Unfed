@@ -30,7 +30,7 @@ public:
 
     bool initWithDudeObject(DudeObj* obj);
 
-    CommonTypes::Set* getChainByDirection(CommonTypes::Direction& direction);
+    CommonTypes::Set* getChainByDirection(const CommonTypes::Direction& direction);
 
     void clear();
 

@@ -40,6 +40,8 @@ public:
 
     static bool convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row);
 
+    static int getDirectionByTileFromAToB(int fromCol, int fromRow, int toCol, int toRow);
+
     static bool convertDirectionToSwipeDelta(int dir, int& horzDelta, int& vertDelta);
 
     static cocos2d::Color4B getScoreColorByObj(BaseObj* obj);

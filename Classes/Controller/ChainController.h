@@ -36,7 +36,14 @@ public:
 
     bool init();
 
-    void addChainsFromSetToSet(CommonTypes::Set* from, CommonTypes::Set* to);
+    /**
+    * Moves chains from Set to Set
+    * @param from The set from which the chains are moved.
+    * @param to The set to which the chains are moved.
+    * @param skipDudes The flag that allows to add first dude and skip the other ones(if true). If false doesnt skip any dudes.
+    */
+    void addChainsFromSetToSet(CommonTypes::Set* from, CommonTypes::Set* to, bool skipDudes = false);
+
     void addCookiesFromChainToChain(CommonTypes::Set* from, CommonTypes::Set* to);
 
     void addFieldOjbectsToChainSet(CommonTypes::Set* fieldObjects, CommonTypes::Set* chainSet);

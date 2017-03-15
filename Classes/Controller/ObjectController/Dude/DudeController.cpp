@@ -269,9 +269,10 @@ Set * DudeController::activateDudeAndGetChains(DudeObj* obj, int dir)
         auto direction = static_cast<Direction>(dir);
         auto chains = helper->getChainByDirection(direction);
 
-        mChainCtrl->addChainsFromSetToSet(chains, set); // create param without dude obj, to skip all dudes from adding except dude at 0 chain pos
+        // create param without dude obj, to skip all dudes from adding except dude at 0 chain pos
+        mChainCtrl->addChainsFromSetToSet(chains, set, true); 
 
-       // updateChainSetWithDudesInChain(set, chains);
+        updateChainSetWithDudesInChain(chains, set);
     }
     
     return set;
@@ -297,18 +298,31 @@ void DudeController::updateChainSetWithDudesInChain(Set* chains, Set* chainSet)
             if (!object) {
                 continue;
             }
+
             if (object->getType() == BaseObjType::Dude) {
 
-                auto helper = mDudeDirections.at(container->getDudeObj());
-                if (helper) {
-                    auto direction = static_cast<Direction>(Direction::Up);//TODO: need to set the chain direction
-                    auto chains = helper->getChainByDirection(direction);
-                    //TODO: make recursive
-                    updateChainSetWithDudesInChain(chains, chainSet);
+                CommonTypes::Set* chains = nullptr;
+                auto dude = container->getDudeObj();
+                auto helper = mDudeDirections.at(dude);
+                if (!helper) {
+                    continue;
+                }
+                if (dude->getFieldType() == FieldType::DudeFromAToB || dude->getFieldType() == FieldType::DudeFromAToBx3) {
 
-                    mChainCtrl->addChainsFromSetToSet(chains, chainSet);
+                    if (chain->getDirection() == Direction::Up || chain->getDirection() == Direction::Down) {
+                        chains = helper->getChainByDirection(Direction::Left);
+                    }
+                    else {
+                        chains = helper->getChainByDirection(Direction::Up);
+                    }
+                }
+                else {
+                    chains = mChainCtrl->createXChainAt(dude->getColumn(), dude->getRow(), true);
                 }
 
+                mChainCtrl->addChainsFromSetToSet(chains, chainSet, true);
+                //Beware of recursive
+                updateChainSetWithDudesInChain(chains, chainSet);
             }
         }
     }

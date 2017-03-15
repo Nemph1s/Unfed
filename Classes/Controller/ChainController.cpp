@@ -221,12 +221,7 @@ void ChainController::addObjToChain(ChainObj* chain, int col, int row)
     auto container = mObjCtrl->getObject(col, row);
     CC_ASSERT(container);
     if (container->isContainObjForChain()) {
-        //TODO: fix in future duplicating dudes in chains
-        if (container->getIsAlreadyInChain() && container->getDudeObj() == nullptr) {
-            cocos2d::log("ChainController::addObjToChain: obj at column=%d, row=%d has already added to chain", col, row);
-        } else {
-            chain->addObjectToChain(container);
-        }        
+        chain->addObjectToChain(container);
     }    
 }
 
@@ -448,14 +443,18 @@ ChainObj * ChainController::detectTChainMatches(ChainObj * horzChain, ChainObj *
 }
 
 //--------------------------------------------------------------------
-void ChainController::addChainsFromSetToSet(CommonTypes::Set* from, CommonTypes::Set* to)
+void ChainController::addChainsFromSetToSet(CommonTypes::Set* from, CommonTypes::Set* to, bool skipDudes)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(from);
     CC_ASSERT(to);
-    for (auto it = from->begin(); it != from->end(); it++) {
+    uint8_t index = 0;
+    for (auto it = from->begin(); it != from->end(); it++, index++) {
         auto chain = dynamic_cast<ChainObj*>(*it);
         CC_ASSERT(chain);
+        if (skipDudes) {
+            chain->removeDudeObjectsFromChain();
+        }
         to->addObject(chain);
     }
 }
@@ -638,6 +637,9 @@ CommonTypes::Set * ChainController::createChainFromPosToPos(int fromCol, int fro
 
     auto chain = ChainObj::createWithType(ChainType::ChainFromAToB);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
+
+    auto dir = Helper::getDirectionByTileFromAToB(fromCol, fromRow, toCol, toRow);
+    chain->setDirection(static_cast<CommonTypes::Direction>(dir));
 
     addObjToChain(chain, i, j);
     do {

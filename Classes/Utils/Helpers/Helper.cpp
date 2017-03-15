@@ -140,6 +140,20 @@ bool Helper::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
 }
 
 //--------------------------------------------------------------------
+int Helper::getDirectionByTileFromAToB(int fromCol, int fromRow, int toCol, int toRow)
+//--------------------------------------------------------------------
+{
+    auto dir = Direction::Unknown;
+    if (fromCol != toCol) {
+        dir = fromCol > toCol ? Direction::Left : Direction::Right;
+    }
+    if (fromRow != toRow) {
+        dir = fromRow > toRow ? Direction::Up : Direction::Down;
+    }
+    return 0;
+}
+
+//--------------------------------------------------------------------
 bool Helper::convertDirectionToSwipeDelta(int dir, int & horzDelta, int & vertDelta)
 //--------------------------------------------------------------------
 {

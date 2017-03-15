@@ -67,7 +67,7 @@ bool DudeHelper::initWithDudeObject(DudeObj * obj)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set * DudeHelper::getChainByDirection(CommonTypes::Direction & direction)
+CommonTypes::Set * DudeHelper::getChainByDirection(const CommonTypes::Direction & direction)
 //--------------------------------------------------------------------
 {
     auto set = CommonTypes::Set::create();

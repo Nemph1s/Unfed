@@ -142,6 +142,36 @@ void ChainObj::addCookiesFromChain(ChainObj* chain)
 }
 
 //--------------------------------------------------------------------
+void ChainObj::removeDudeObjectsFromChain(bool skipFirst)
+//--------------------------------------------------------------------
+{
+    if (!mObjects) {
+        cocos2d::log("ChainObj::removeDudeObjectsFromChain: empty objects array");
+        return;
+    }
+    cocos2d::log("ChainObj::removeDudeObjectsFromChain: objects size before removing=%d", mObjects->count());
+    uint8_t index = 0;
+    auto it = mObjects->begin();
+    while (it != mObjects->end())
+    {
+        auto obj = dynamic_cast<ObjContainer*>(*it);
+        CC_ASSERT(obj);
+        if (obj->getObjectForChain()->getType() == CommonTypes::BaseObjType::Dude) {
+            if (skipFirst && index == 0) {
+                it++;
+                index++;
+                continue;
+            }
+            mScore = mScore - obj->getObjectForChain()->getScoreValue();
+            mObjects->removeObject(obj); //TODO: need to fix dead loop
+        }        
+        it++;
+        index++;
+    };
+    cocos2d::log("ChainObj::removeDudeObjectsFromChain: objects size after removing=%d", mObjects->count());
+}
+
+//--------------------------------------------------------------------
 void ChainObj::executeCollectGoalCallback()
 //--------------------------------------------------------------------
 {
