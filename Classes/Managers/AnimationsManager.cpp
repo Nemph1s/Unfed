@@ -445,6 +445,8 @@ void _AnimationsManager::animateRemoveDude(BaseObj * obj, cocos2d::CallFunc * co
     auto scaleAction = ScaleTo::create(duration, scaleFactor);
     auto easeOut = EaseOut::create(scaleAction, duration);
 
+    animateScoreForFieldObj(obj);
+
     auto sprite = obj->getSpriteNode();
     auto callback = CallFunc::create([sprite, obj]() {
         if (sprite) {
@@ -498,8 +500,8 @@ void _AnimationsManager::animateMatchFieldObj(FieldObj * obj)
 //    auto scaleAction = ScaleTo::create(duration, scaleFactor);
     auto fadeOut = FadeOut::create(duration);
     auto easeOut = EaseOut::create(fadeOut, duration);
-// 
-//     animateScoreForFieldObj(obj);
+
+    animateScoreForFieldObj(obj);
 
     auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
     CC_ASSERT(scene);

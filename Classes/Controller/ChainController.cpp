@@ -179,7 +179,7 @@ void ChainController::calculateChainScore(ChainObj* chain)
             }
             int score = obj->getType() == CommonTypes::BaseObjType::Cookie ? obj->getScoreValue() : 0;
             cookiesValue = cookiesValue + score;
-            chainValue = chainValue + obj->getScale();
+            chainValue = chainValue + obj->getScoreValue();
         }
         auto multiplier = !chain->getIsCreatedByDude() && objects->count() > 2 ? objects->count() - 2 : 1;
         chain->setCookiesScore(cookiesValue * multiplier);
