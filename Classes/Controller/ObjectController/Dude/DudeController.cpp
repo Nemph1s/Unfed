@@ -269,13 +269,54 @@ Set * DudeController::activateDudeAndGetChains(DudeObj* obj, int dir)
         auto direction = static_cast<Direction>(dir);
         auto chains = helper->getChainByDirection(direction);
 
-        mChainCtrl->addChainsFromSetToSet(chains, set);
+        mChainCtrl->addChainsFromSetToSet(chains, set); // create param without dude obj, to skip all dudes from adding except dude at 0 chain pos
+
+       // updateChainSetWithDudesInChain(set, chains);
     }
     
     return set;
 }
 
+//--------------------------------------------------------------------
+void DudeController::updateChainSetWithDudesInChain(Set* chains, Set* chainSet)
+//--------------------------------------------------------------------
+{
+    for (auto itChain = chains->begin(); itChain != chains->end(); ++itChain) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+
+        auto objects = chain->getObjects();
+        if (!objects) {
+            continue;
+        }
+        for (auto it = objects->begin(); it != objects->end(); it++) {
+            auto container = dynamic_cast<ObjContainer*>(*it);
+            CC_ASSERT(container);
+            
+            auto object = container->getObjectForChain();
+            if (!object) {
+                continue;
+            }
+            if (object->getType() == BaseObjType::Dude) {
+
+                auto helper = mDudeDirections.at(container->getDudeObj());
+                if (helper) {
+                    auto direction = static_cast<Direction>(Direction::Up);//TODO: need to set the chain direction
+                    auto chains = helper->getChainByDirection(direction);
+                    //TODO: make recursive
+                    updateChainSetWithDudesInChain(chains, chainSet);
+
+                    mChainCtrl->addChainsFromSetToSet(chains, chainSet);
+                }
+
+            }
+        }
+    }
+}
+
+//--------------------------------------------------------------------
 void DudeController::activateAllDudes()
+//--------------------------------------------------------------------
 {
 }
 

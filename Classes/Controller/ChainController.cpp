@@ -221,7 +221,12 @@ void ChainController::addObjToChain(ChainObj* chain, int col, int row)
     auto container = mObjCtrl->getObject(col, row);
     CC_ASSERT(container);
     if (container->isContainObjForChain()) {
-        chain->addObjectToChain(container);
+        //TODO: fix in future duplicating dudes in chains
+        if (container->getIsAlreadyInChain() && container->getDudeObj() == nullptr) {
+            cocos2d::log("ChainController::addObjToChain: obj at column=%d, row=%d has already added to chain", col, row);
+        } else {
+            chain->addObjectToChain(container);
+        }        
     }    
 }
 

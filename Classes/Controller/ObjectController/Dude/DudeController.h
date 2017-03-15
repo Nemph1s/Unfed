@@ -51,6 +51,9 @@ public:
 
     bool canActivateDudeTo(int fromCol, int fromRow, int direction);
     Set* activateDudeAndGetChains(DudeObj* obj, int direction);
+
+    void updateChainSetWithDudesInChain(Set* chains, Set* chainSet);
+
     void activateAllDudes();
 
     void removeDude(int column, int row, bool removeWithCleanup = true);
