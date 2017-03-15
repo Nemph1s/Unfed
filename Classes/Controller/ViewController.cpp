@@ -402,13 +402,7 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
             mGameplayScene->userInteractionDisabled();
 
             mLevel->removeDudeMatches(set);
-            mDudeController->removeDude(obj->getColumn(), obj->getRow(), false);
-            auto removeCallback = CallFunc::create([=]() {
-                mDudeController->removeDude(obj->getColumn(), obj->getRow());
-            });
-
-            AnimationsManager->animateRemoveDude(obj, removeCallback);
-            
+ 
             updateScore(set);
             animateHandleMatches(set);
         }

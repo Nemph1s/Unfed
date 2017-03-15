@@ -15,6 +15,7 @@
 #include "GameObjects/Chain/ChainObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
+#include "GameObjects/TileObjects/DudeObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 #include "Utils/Helpers/Helper.h"
@@ -128,6 +129,9 @@ void _AnimationsManager::animateMatching(CommonTypes::Set* chains, cocos2d::Call
                 break;
             case BaseObjType::Field:
                 animateMatchFieldObj(dynamic_cast<FieldObj*>(obj));
+                break;
+            case BaseObjType::Dude:
+                animateMatchDude(dynamic_cast<DudeObj*>(obj));
                 break;
             default:
                 break;
@@ -310,7 +314,7 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
         auto color = Helper::getScoreColorByObj(obj);
 
         int score = obj->getScoreValue();
-        if (cookiesCount != 0 && (obj->getType() != BaseObjType::Field || obj->getType() != BaseObjType::Dude)) {
+        if (cookiesCount != 0 && (obj->getType() != BaseObjType::Field && obj->getType() != BaseObjType::Dude)) {
             score = chain->getCookiesScore() / cookiesCount;
         }
 
@@ -445,8 +449,6 @@ void _AnimationsManager::animateRemoveDude(BaseObj * obj, cocos2d::CallFunc * co
     auto scaleAction = ScaleTo::create(duration, scaleFactor);
     auto easeOut = EaseOut::create(scaleAction, duration);
 
-    animateScoreForFieldObj(obj);
-
     auto sprite = obj->getSpriteNode();
     auto callback = CallFunc::create([sprite, obj]() {
         if (sprite) {
@@ -474,12 +476,12 @@ void _AnimationsManager::animateMatchCookie(CookieObj * obj)
     auto scaleAction = ScaleTo::create(duration, scaleFactor);
     auto easeOut = EaseOut::create(scaleAction, duration);
 
-    auto callback = CallFunc::create([obj]() {
+    auto baseObj = dynamic_cast<BaseObj*>(obj);
+    auto callback = CallFunc::create([baseObj, obj]() {
 
         auto func = obj->getRemoveCookieCallback();
         if (func) {
-            auto baseObj = dynamic_cast<BaseObj*>(obj);
-            obj->getRemoveCookieCallback()(baseObj);
+            func(baseObj);
         }
 
     });
@@ -495,9 +497,7 @@ void _AnimationsManager::animateMatchFieldObj(FieldObj * obj)
     }
 
     const float duration = 0.3f;
-    const float scaleFactor = 0.1f;
 
-//    auto scaleAction = ScaleTo::create(duration, scaleFactor);
     auto fadeOut = FadeOut::create(duration);
     auto easeOut = EaseOut::create(fadeOut, duration);
 
@@ -506,15 +506,41 @@ void _AnimationsManager::animateMatchFieldObj(FieldObj * obj)
     auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
     CC_ASSERT(scene);
 
-    auto callback = CallFunc::create([scene, obj]() {
+    std::function<void(FieldObj*)> createSpriteCallback = [scene](FieldObj* obj) {
+        scene->createSpriteWithFieldObj(obj);
+    };
+    auto baseObj = dynamic_cast<BaseObj*>(obj);
+    auto callback = CallFunc::create([scene, baseObj, obj, createSpriteCallback]() {
 
         auto func = obj->getFieldObjChangeState();
         if (func) {
-            std::function<void(FieldObj*)> createSpriteCallback = [scene](FieldObj* obj) {
-                scene->createSpriteWithFieldObj(obj);
-            };
-            auto baseObj = dynamic_cast<BaseObj*>(obj);
-            obj->getFieldObjChangeState()(baseObj, createSpriteCallback);
+            func(baseObj, createSpriteCallback);
+        }
+
+    });
+    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateMatchDude(DudeObj * obj)
+//--------------------------------------------------------------------
+{
+    if (!obj) {
+        return;
+    }
+
+    const float duration = 0.3f;
+    const float scaleFactor = 0.1f;
+
+    auto scaleAction = ScaleTo::create(duration, scaleFactor);
+    auto easeOut = EaseOut::create(scaleAction, duration);
+
+    auto baseObj = dynamic_cast<BaseObj*>(obj);
+    auto callback = CallFunc::create([baseObj, obj]() {
+
+        auto func = obj->getRemoveDudeCallback();
+        if (func) {
+            func(baseObj);
         }
 
     });

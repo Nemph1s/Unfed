@@ -392,6 +392,30 @@ bool ObjectController::matchCookieObject(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
+bool ObjectController::matchDudeObject(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    auto objContainer = getObject(obj->getColumn(), obj->getRow());
+    auto dudeObj = objContainer->getDudeObj();
+
+    if (obj == dudeObj) {
+        std::function<void(BaseObj*)> func = [&](BaseObj* obj) {
+            auto dudeObj = dynamic_cast<DudeObj*>(obj);
+            if (dudeObj) {
+                mDudeCtrl->eraseDirectionsForDude(dudeObj);
+            }
+        };
+        dudeObj->setEraseDirectionsCallback(func);
+
+        std::function<void(BaseObj*)> onRemoveDudeCallback;
+        onRemoveDudeCallback = std::bind(&ObjContainer::onRemoveDude, objContainer, _1);
+        dudeObj->setRemoveDudeCallback(onRemoveDudeCallback);
+    }
+
+    return true;
+}
+
+//--------------------------------------------------------------------
 void ObjectController::updateCookieObjectAt(int column, int row, BaseObj* cookie)
 //--------------------------------------------------------------------
 {

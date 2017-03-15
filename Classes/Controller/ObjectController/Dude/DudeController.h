@@ -54,6 +54,7 @@ public:
     void activateAllDudes();
 
     void removeDude(int column, int row, bool removeWithCleanup = true);
+    void eraseDirectionsForDude(DudeObj* obj);
     void removeAllDudes();
 
 protected:
@@ -61,7 +62,6 @@ protected:
     DudeController();
 
     void updateDirectionsForDude(DudeObj* obj, DudeHelper* helper);
-    //Set* createDudeChain(int fromCol, int fromRow, int toCol, int toRow);
 
     bool isEnoughCookiesForDude(int count, int neededCount);
 
@@ -74,7 +74,4 @@ protected:
     CC_SYNTHESIZE(ChainController*, mChainCtrl, ChainController);
     
     cocos2d::Map<DudeObj*, DudeHelper*> mDudeDirections;
-
-//     // Dude object array 
-//     BaseObj* mDudeObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
 };

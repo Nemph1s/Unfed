@@ -151,6 +151,9 @@ void ChainController::matchChains(CommonTypes::Set* chains)
             else if (object->getType() == BaseObjType::Field) {
                 mObjCtrl->matchFieldObject(object);
             }
+            else if (object->getType() == BaseObjType::Dude) {
+                mObjCtrl->matchDudeObject(object);
+            }
         }
     }
 }

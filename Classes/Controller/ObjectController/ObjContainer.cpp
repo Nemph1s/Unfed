@@ -316,6 +316,30 @@ void ObjContainer::onRemoveCookie(BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
+void ObjContainer::onRemoveDude(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    if (mDudeObj == obj) {
+        if (mDudeObj->getSpriteNode()) {
+            mDudeObj->getSpriteNode()->removeFromParent();
+            mDudeObj->setSpriteNode(nullptr);
+        }
+
+        if (mDudeObj->getParent()) {
+            mDudeObj->removeFromParent();
+        }
+
+        auto eraseDirectionsFunc = mDudeObj->getEraseDirectionsCallback();
+        if (eraseDirectionsFunc) {
+            eraseDirectionsFunc(obj);
+        }
+
+        SmartFactory->recycle(mDudeObj);
+        removeObject(BaseObjType::Dude);
+    }
+}
+
+//--------------------------------------------------------------------
 void ObjContainer::onFieldObjChangeState(BaseObj* obj, std::function<void(FieldObj*)> createSpriteFunc)
 //--------------------------------------------------------------------
 {

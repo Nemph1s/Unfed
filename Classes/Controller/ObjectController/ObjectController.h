@@ -43,7 +43,6 @@ public:
     void createObjects();
     inline ObjContainer* getObject(int column, int row);
 
-    void createInitialTiles();
     CommonTypes::Set* createInitialFieldObjects();
     CommonTypes::Set* createInitialCookies();
     
@@ -64,13 +63,13 @@ public:
 
     bool matchFieldObject(BaseObj* obj);
     bool matchCookieObject(BaseObj* obj);
+    bool matchDudeObject(BaseObj* obj);
 
     void updateCookieObjectAt(int column, int row, BaseObj* cookie);
     void updateObjectAt(int column, int row, BaseObj* obj);
     void removeObjectAt(int column, int row, CommonTypes::BaseObjType type);
 
     void removeCookie(int column, int row);
-
     void removeAllCookies();
 
 protected:
@@ -89,9 +88,4 @@ protected:
     CC_SYNTHESIZE(DudeController*, mDudeCtrl, DudeController);
 
     ObjContainer* mObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
-// 
-//     BaseObj* mTiles[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
-//     BaseObj* mCookies[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
-//     // Tile object array (Dirt etc)
-//     std::list<BaseObj*> mFieldObjects[CommonTypes::NumColumns][CommonTypes::NumRows];
 };

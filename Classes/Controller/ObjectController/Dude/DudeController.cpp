@@ -303,6 +303,17 @@ void DudeController::removeDude(int column, int row, bool removeWithCleanup)
 }
 
 //--------------------------------------------------------------------
+void DudeController::eraseDirectionsForDude(DudeObj * obj)
+//--------------------------------------------------------------------
+{
+    if (!obj) {
+        cocos2d::log("DudeController::eraseDirectionsForDude: epmty dude ptr");
+        return;
+    }
+    mDudeDirections.erase(obj);
+}
+
+//--------------------------------------------------------------------
 void DudeController::removeAllDudes()
 //--------------------------------------------------------------------
 {
