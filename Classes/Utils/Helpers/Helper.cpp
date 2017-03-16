@@ -140,6 +140,31 @@ bool Helper::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
 }
 
 //--------------------------------------------------------------------
+Direction Helper::invertDirection(const Direction & direction)
+//--------------------------------------------------------------------
+{
+    auto dir = Direction::Unknown;
+    switch (direction)
+    {
+    case Direction::Up:
+        dir = Direction::Left;
+        break;
+    case Direction::Down:
+        dir = Direction::Right;
+        break;
+    case Direction::Left:
+        dir = Direction::Up;
+        break;
+    case Direction::Right:
+        dir = Direction::Down;
+        break;
+    default:
+        break;
+    }
+    return dir;
+}
+
+//--------------------------------------------------------------------
 int Helper::getDirectionByTileFromAToB(int fromCol, int fromRow, int toCol, int toRow)
 //--------------------------------------------------------------------
 {

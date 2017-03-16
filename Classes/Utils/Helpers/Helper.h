@@ -40,6 +40,7 @@ public:
 
     static bool convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row);
 
+    static CommonTypes::Direction invertDirection(const CommonTypes::Direction& direction);
     static int getDirectionByTileFromAToB(int fromCol, int fromRow, int toCol, int toRow);
 
     static bool convertDirectionToSwipeDelta(int dir, int& horzDelta, int& vertDelta);

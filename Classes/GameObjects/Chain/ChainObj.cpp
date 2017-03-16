@@ -152,20 +152,23 @@ void ChainObj::removeDudeObjectsFromChain(bool skipFirst)
     }
     cocos2d::log("ChainObj::removeDudeObjectsFromChain: objects size before removing=%d", mObjects->count());
     uint8_t index = 0;
+    cocos2d::Ref* itToRemove = nullptr;
     auto it = mObjects->begin();
     while (it != mObjects->end())
     {
+        if (itToRemove) {
+            mObjects->removeObject(itToRemove);
+            itToRemove = nullptr;
+        }
         auto obj = dynamic_cast<ObjContainer*>(*it);
-        CC_ASSERT(obj);
-        if (obj->getObjectForChain()->getType() == CommonTypes::BaseObjType::Dude) {
-            if (skipFirst && index == 0) {
-                it++;
-                index++;
-                continue;
+        if (obj) {
+            if (obj->getObjectForChain()->getType() == CommonTypes::BaseObjType::Dude) {
+                if (!skipFirst && index != 0) { // skip first dude in chain
+                    mScore = mScore - obj->getObjectForChain()->getScoreValue();
+                    itToRemove = *it;
+                }
             }
-            mScore = mScore - obj->getObjectForChain()->getScoreValue();
-            mObjects->removeObject(*it); //TODO: need to fix dead loop
-        }        
+        }           
         it++;
         index++;
     };

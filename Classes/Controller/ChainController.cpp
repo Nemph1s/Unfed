@@ -667,10 +667,11 @@ CommonTypes::Set * ChainController::createChainFromPosToPos(const CommonTypes::D
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
     auto dir = Helper::getDirectionByTileFromAToB(fromCol, fromRow, toCol, toRow);
+    auto newDirection = direction;
     if (direction == Direction::Unknown) {
-        direction = static_cast<Direction>(dir);
+        newDirection = static_cast<Direction>(dir);
     }
-    chain->setDirection(direction);
+    chain->setDirection(newDirection);
 
     addObjToChain(chain, i, j);
     do {

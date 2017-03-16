@@ -280,7 +280,7 @@ Set * DudeController::activateDudeAndGetChains(DudeObj* obj, int dir)
             return set;
         }
 
-        updateChainSetWithDudesInChain(chains, set);
+        updateChainSetWithDudesInChain(direction, chains, set);
         // create param without dude obj, to skip all dudes from adding except dude at 0 chain pos
         mChainCtrl->addChainsFromSetToSet(chains, set, true); 
     }
@@ -289,7 +289,7 @@ Set * DudeController::activateDudeAndGetChains(DudeObj* obj, int dir)
 }
 
 //--------------------------------------------------------------------
-void DudeController::updateChainSetWithDudesInChain(Set* chains, Set* chainSet)
+void DudeController::updateChainSetWithDudesInChain(const Direction& direction, Set* chains, Set* chainSet)
 //--------------------------------------------------------------------
 {
     for (auto itChain = chains->begin(); itChain != chains->end(); ++itChain) {
@@ -297,52 +297,37 @@ void DudeController::updateChainSetWithDudesInChain(Set* chains, Set* chainSet)
         CC_ASSERT(chain);
 
         auto objects = chain->getObjects();
-        if (!objects) {
+        if (!objects) 
             continue;
-        }
-        uint8_t index = 0;
-        for (auto it = objects->begin(); it != objects->end(); it++, index++) {
+
+        for (auto it = objects->begin(); it != objects->end(); it++) {
             auto container = dynamic_cast<ObjContainer*>(*it);
             CC_ASSERT(container);
             
             auto object = container->getObjectForChain();
-            if (!object) {
+            if (object) 
                 continue;
-            }
 
             if (object->getType() == BaseObjType::Dude) {
 
-                if (index == 0) { // skip first dude to avoid dead loop
+                if (it == objects->begin())  // skip first dude to avoid dead loop
                     continue;
-                }
 
-                CommonTypes::Set* chains = nullptr;
+                CommonTypes::Set* newChains = nullptr;
                 auto dude = container->getDudeObj();
-                auto direction = chain->getDirection();
-                auto dudeType = dude->getFieldType();
+                auto invertedDirection = Helper::invertDirection(direction);
 
                 auto helper = mDudeDirections.at(dude);
-                if (!helper || dude->isActivated()) {
-                    continue;
-                }
-                if (dudeType == FieldType::DudeFromAToB || dudeType == FieldType::DudeFromAToBx3) {
-
-                    if (direction == Direction::Up || direction == Direction::Down) {
-                        chains = helper->getHorizontalChain();
-                    } else {
-                        chains = helper->getVerticalChain();
-                    }
-                }
-                else {
-                    chains = helper->getXChain();
+                if (helper && !dude->isActivated()) {
+                    newChains = helper->getChainByDirection(invertedDirection);
                 }
 
                 //Beware of recursive
-                if (chains != nullptr) {
+                if (newChains != nullptr) {
                     dude->activate();
 
-                    updateChainSetWithDudesInChain(chains, chainSet);
-                    mChainCtrl->addChainsFromSetToSet(chains, chainSet, true);
+                    updateChainSetWithDudesInChain(invertedDirection, newChains, chainSet);
+                    mChainCtrl->addChainsFromSetToSet(newChains, chainSet, true);
                 }                
             }
         }

@@ -36,7 +36,7 @@ using namespace std::placeholders;
 #define COCOS2D_DEBUG 1
 #define UNFED_ENABLE_DEBUG 1
 
-#define CURRENT_LEVEL 667
+#define CURRENT_LEVEL 2
 
 //--------------------------------------------------------------------
 ViewController::ViewController()

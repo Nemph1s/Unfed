@@ -17,6 +17,7 @@
 
 using CommonTypes::FieldType;
 using CommonTypes::Set;
+using CommonTypes::Direction;
 
 class BaseObj;
 class DudeObj;
@@ -52,7 +53,7 @@ public:
     bool canActivateDudeTo(int fromCol, int fromRow, int direction);
     Set* activateDudeAndGetChains(DudeObj* obj, int direction);
 
-    void updateChainSetWithDudesInChain(Set* chains, Set* chainSet);
+    void updateChainSetWithDudesInChain(const Direction& direction, Set* chains, Set* chainSet);
 
     void activateAllDudes();
 
