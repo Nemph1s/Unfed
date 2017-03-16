@@ -47,4 +47,7 @@ protected:
     CC_PROPERTY(CommonTypes::Set*, mBottomChain, BottomChain);
     CC_PROPERTY(CommonTypes::Set*, mLeftChain, LeftChain);
     CC_PROPERTY(CommonTypes::Set*, mRightChain, RightChain);
+    CC_PROPERTY(CommonTypes::Set*, mHorizontalChain, HorizontalChain);
+    CC_PROPERTY(CommonTypes::Set*, mVerticalChain, VerticalChain);
+    CC_PROPERTY(CommonTypes::Set*, mXChain, XChain);
 };

@@ -20,6 +20,7 @@ ChainObj::ChainObj()
     , mIsCreatedByDude(false)
     , mCookiesScore(0)
     , mScore(0)
+    , mDirection(CommonTypes::Direction::Unknown)
 //--------------------------------------------------------------------
 {
 }
@@ -126,19 +127,19 @@ void ChainObj::addObjectToChain(ObjContainer * obj)
 }
 
 //--------------------------------------------------------------------
-void ChainObj::addCookiesFromChain(ChainObj* chain)
+void ChainObj::addObjectsFromChain(ChainObj* chain)
 //--------------------------------------------------------------------
 {
     cocos2d::log("ChainObj::addCookiesFromChain:");
     CC_ASSERT(chain);
     auto objects = chain->getObjects();
-    CC_ASSERT(objects);
-
-    for (auto it = objects->begin(); it != objects->end(); it++) {
-        auto obj = dynamic_cast<ObjContainer*>(*it);
-        CC_ASSERT(obj);
-        addObjectToChain(obj);
-    }
+    if (objects) {
+        for (auto it = objects->begin(); it != objects->end(); it++) {
+            auto obj = dynamic_cast<ObjContainer*>(*it);
+            CC_ASSERT(obj);
+            addObjectToChain(obj);
+        }
+    }    
 }
 
 //--------------------------------------------------------------------
@@ -163,7 +164,7 @@ void ChainObj::removeDudeObjectsFromChain(bool skipFirst)
                 continue;
             }
             mScore = mScore - obj->getObjectForChain()->getScoreValue();
-            mObjects->removeObject(obj); //TODO: need to fix dead loop
+            mObjects->removeObject(*it); //TODO: need to fix dead loop
         }        
         it++;
         index++;

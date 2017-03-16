@@ -44,7 +44,7 @@ public:
     */
     void addChainsFromSetToSet(CommonTypes::Set* from, CommonTypes::Set* to, bool skipDudes = false);
 
-    void addCookiesFromChainToChain(CommonTypes::Set* from, CommonTypes::Set* to);
+    void addObjectsFromChainToChain(CommonTypes::Set* from, CommonTypes::Set* to);
 
     void addFieldOjbectsToChainSet(CommonTypes::Set* fieldObjects, CommonTypes::Set* chainSet);
     bool checkMathicngFieldObjWithChain(CommonTypes::Set* chains, BaseObj* obj);
@@ -72,12 +72,13 @@ protected:
     ChainObj* detectLChainMatches(ChainObj* horzChain, ChainObj* vertChain);
     ChainObj* detectTChainMatches(ChainObj* horzChain, ChainObj* vertChain);
 
-    CommonTypes::Set* createHorizontalChainAt(int column);
-    CommonTypes::Set* createVerticalChainAt(int row);
+    CommonTypes::Set* createHorizontalChainAt(int column, int startRow, bool isCreatedByDude = false);
+    CommonTypes::Set* createVerticalChainAt(int startColumn, int row, bool isCreatedByDude = false);
     CommonTypes::Set* createXChainAt(int column, int row, bool isCreatedByDude = false);
+
     CommonTypes::Set* createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude = false);
     CommonTypes::Set* createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to, bool isCreatedByDude = false);
-    CommonTypes::Set* createChainFromPosToPos(int fromCol, int fromRow, int toCol, int toRow, bool isCreatedByDude = false);
+    CommonTypes::Set* createChainFromPosToPos(const CommonTypes::Direction& direction, int fromCol, int fromRow, int toCol, int toRow, bool isCreatedByDude = false);
 
 #ifdef COCOS2D_DEBUG
     void logDebugChains(CommonTypes::Set* horizontal, CommonTypes::Set* vertical, CommonTypes::Set* difficult);

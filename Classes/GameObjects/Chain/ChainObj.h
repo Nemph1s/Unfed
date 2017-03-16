@@ -40,7 +40,7 @@ public:
     cocos2d::Array* getChainObjects();
     int getCookiesCount();
 
-    void addCookiesFromChain(ChainObj* chain);
+    void addObjectsFromChain(ChainObj* chain);
 
     void removeDudeObjectsFromChain(bool skipFirst = true);
 
