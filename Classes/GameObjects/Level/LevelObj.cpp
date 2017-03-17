@@ -300,7 +300,9 @@ void LevelObj::calculateScore(CommonTypes::Set * chains)
 
         if (chain->getChainObjects()) {
             auto chainScore = chain->getScore();
+            auto cookieScore = chain->getCookiesScore();
             chain->setScore(chainScore * mComboMultiplier);
+            chain->setCookiesScore(cookieScore * mComboMultiplier);
             mComboMultiplier++;
         }
     }
