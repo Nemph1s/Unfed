@@ -266,7 +266,6 @@ void CookiesLayer::hideSelectionIndicator()
     });
     const float duration = 0.3f;
     auto seq = Sequence::create(FadeOut::create(duration), DelayTime::create(0.5f), callbackFunc, nullptr);
-    //TODO: fix fade animation
     mSelectionSprite->runAction(seq);
 }
 
@@ -274,7 +273,6 @@ void CookiesLayer::hideSelectionIndicator()
 void CookiesLayer::removeAllCookieSprites()
 //--------------------------------------------------------------------
 {
-    //TODO: dont remove dudes!
     for (const auto& child : getChildren()) {
         auto obj = dynamic_cast<BaseObj*>(child);
         if (!obj) {

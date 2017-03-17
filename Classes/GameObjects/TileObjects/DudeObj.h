@@ -38,6 +38,9 @@ protected:
 
     //---Class Attributes-------------------------------------------------
 
+    CC_SYNTHESIZE(std::function<void(BaseObj*)>, mRemoveDudeCallback, RemoveDudeCallback);
+    CC_SYNTHESIZE(std::function<void(BaseObj*)>, mEraseDirectionsCallback, EraseDirectionsCallback);
+
     /**
     * @brief A parameter that checks is the dude object was touched
     * If it doesn't, when next dude was founded in chain, then it will create chain for all horizontal or vertical fields

@@ -40,7 +40,9 @@ public:
     cocos2d::Array* getChainObjects();
     int getCookiesCount();
 
-    void addCookiesFromChain(ChainObj* chain);
+    void addObjectsFromChain(ChainObj* chain);
+
+    void removeDudeObjectsFromChain(bool skipFirst = true);
 
     //---Callbacks-------------------------------------------------
     void executeCollectGoalCallback();
@@ -52,6 +54,7 @@ protected:
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(BaseObj* obj)>, mUpdateGoalCallback, UpdateGoalCallback);
 
+    CC_SYNTHESIZE_PASS_BY_REF(CommonTypes::Direction, mDirection, Direction);
     CC_SYNTHESIZE(int, mCookiesScore, CookiesScore); // use this to get multiplier for cookies in chain
     CC_SYNTHESIZE(int, mScore, Score);
     CC_SYNTHESIZE(bool, mIsCreatedByDude, IsCreatedByDude);

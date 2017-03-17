@@ -36,7 +36,7 @@ using namespace std::placeholders;
 #define COCOS2D_DEBUG 1
 #define UNFED_ENABLE_DEBUG 1
 
-#define CURRENT_LEVEL 666
+#define CURRENT_LEVEL 2
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
@@ -402,13 +402,7 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
             mGameplayScene->userInteractionDisabled();
 
             mLevel->removeDudeMatches(set);
-            mDudeController->removeDude(obj->getColumn(), obj->getRow(), false);
-            auto removeCallback = CallFunc::create([=]() {
-                mDudeController->removeDude(obj->getColumn(), obj->getRow());
-            });
-
-            AnimationsManager->animateRemoveDude(obj, removeCallback);
-            
+ 
             updateScore(set);
             animateHandleMatches(set);
         }

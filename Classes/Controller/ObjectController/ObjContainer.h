@@ -50,6 +50,7 @@ public:
 
     //---Callbacks-------------------------------------------------
     void onRemoveCookie(BaseObj* obj);
+    void onRemoveDude(BaseObj* obj);
     void onFieldObjChangeState(BaseObj* obj, std::function<void(FieldObj*)> createSpriteFunc);
 
 protected:

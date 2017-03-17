@@ -1,0 +1,22 @@
+{
+	"res" : "OK",
+	"tiles" : [ [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1 ] ],
+
+	"targetScore" : 100000,
+	"moves" : 50,
+	"typesCount" : 3,
+    "levelGoals": {
+        "goalsCount" : 3,
+        "collect" : [ { "baseObjType": 1, "objType": 1, "targetCount": 40 }, 
+                     { "baseObjType": 1, "objType": 3, "targetCount": 40 },
+					{ "baseObjType": 1, "objType": 0, "targetCount": 40 } ]
+    }
+}

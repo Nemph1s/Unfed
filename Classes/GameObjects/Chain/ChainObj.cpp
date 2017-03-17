@@ -20,6 +20,7 @@ ChainObj::ChainObj()
     , mIsCreatedByDude(false)
     , mCookiesScore(0)
     , mScore(0)
+    , mDirection(CommonTypes::Direction::Unknown)
 //--------------------------------------------------------------------
 {
 }
@@ -126,19 +127,52 @@ void ChainObj::addObjectToChain(ObjContainer * obj)
 }
 
 //--------------------------------------------------------------------
-void ChainObj::addCookiesFromChain(ChainObj* chain)
+void ChainObj::addObjectsFromChain(ChainObj* chain)
 //--------------------------------------------------------------------
 {
     cocos2d::log("ChainObj::addCookiesFromChain:");
     CC_ASSERT(chain);
     auto objects = chain->getObjects();
-    CC_ASSERT(objects);
+    if (objects) {
+        for (auto it = objects->begin(); it != objects->end(); it++) {
+            auto obj = dynamic_cast<ObjContainer*>(*it);
+            CC_ASSERT(obj);
+            addObjectToChain(obj);
+        }
+    }    
+}
 
-    for (auto it = objects->begin(); it != objects->end(); it++) {
-        auto obj = dynamic_cast<ObjContainer*>(*it);
-        CC_ASSERT(obj);
-        addObjectToChain(obj);
+//--------------------------------------------------------------------
+void ChainObj::removeDudeObjectsFromChain(bool skipFirst)
+//--------------------------------------------------------------------
+{
+    if (!mObjects) {
+        cocos2d::log("ChainObj::removeDudeObjectsFromChain: empty objects array");
+        return;
     }
+    cocos2d::log("ChainObj::removeDudeObjectsFromChain: objects size before removing=%d", mObjects->count());
+    uint8_t index = 0;
+    cocos2d::Ref* itToRemove = nullptr;
+    auto it = mObjects->begin();
+    while (it != mObjects->end())
+    {
+        if (itToRemove) {
+            mObjects->removeObject(itToRemove);
+            itToRemove = nullptr;
+        }
+        auto obj = dynamic_cast<ObjContainer*>(*it);
+        if (obj) {
+            if (obj->getObjectForChain()->getType() == CommonTypes::BaseObjType::Dude) {
+                if (!skipFirst && index != 0) { // skip first dude in chain
+                    mScore = mScore - obj->getObjectForChain()->getScoreValue();
+                    itToRemove = *it;
+                }
+            }
+        }           
+        it++;
+        index++;
+    };
+    cocos2d::log("ChainObj::removeDudeObjectsFromChain: objects size after removing=%d", mObjects->count());
 }
 
 //--------------------------------------------------------------------
@@ -160,6 +194,9 @@ cocos2d::Array* ChainObj::getChainObjects()
 //--------------------------------------------------------------------
 {
     auto arr = cocos2d::Array::create();
+    if (!mObjects) {
+        return arr;
+    }
     for (auto it = mObjects->begin(); it != mObjects->end(); it++) {
         auto container = dynamic_cast<ObjContainer*>(*it);
         CC_ASSERT(container);
