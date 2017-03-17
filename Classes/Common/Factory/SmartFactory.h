@@ -53,6 +53,9 @@ private:
     typedef typename std::list<BaseObj*> TBaseObjList; 
     typedef typename std::list<BaseObj*>::iterator TBaseObjListItr;
 
+    void clearPool(TBaseObjList* pool);
+    void clearEntity(BaseObj* obj);
+
     TBaseObjList* mBaseObjPool = nullptr;
     TBaseObjList* mCookieObjPool = nullptr;
     TBaseObjList* mTileObjPool = nullptr;

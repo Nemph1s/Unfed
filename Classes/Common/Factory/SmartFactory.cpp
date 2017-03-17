@@ -20,7 +20,6 @@
 #include "GameObjects/TileObjects/FieldObjects/RockObj.h"
 
 using namespace CommonTypes;
-using namespace CommonTypes;
 
 //--------------------------------------------------------------------
 _SmartFactory * _SmartFactory::getInstance()
@@ -133,8 +132,6 @@ BaseObj * _SmartFactory::create(const BaseObjInfo & info)
         baseObject = createBaseObj(info);
         break;
     }
-    cocos2d::log("SmartFactory::create: created with type=%d", baseObject->getTypeAsInt());
-
     return baseObject;
 }
 
@@ -142,7 +139,7 @@ BaseObj * _SmartFactory::create(const BaseObjInfo & info)
 void _SmartFactory::recycle(BaseObj * obj)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("SmartFactory::recycle: type=%d", obj->getTypeAsInt());
+    //cocos2d::log("SmartFactory::recycle: type=%d", obj->getTypeAsInt());
     switch (obj->getType())
     {
     case BaseObjType::Cookie:
@@ -257,8 +254,6 @@ BaseObj * _SmartFactory::createFieldObj(const FieldInfo & info)
         CC_ASSERT(baseObject);
         break;
     }
-    cocos2d::log("SmartFactory::create: created with type=%d", baseObject->getTypeAsInt());
-
     return baseObject;
 }
 
@@ -282,8 +277,6 @@ BaseObj * _SmartFactory::createDudeObj(const FieldInfo & info)
         CC_ASSERT(baseObject);
         break;
     }
-    cocos2d::log("SmartFactory::create: created with type=%d", baseObject->getTypeAsInt());
-
     return baseObject;
 }
 
@@ -291,28 +284,30 @@ BaseObj * _SmartFactory::createDudeObj(const FieldInfo & info)
 _SmartFactory::~_SmartFactory()
 //--------------------------------------------------------------------
 {
-    if (mBaseObjPool) {
-        for (TBaseObjListItr itr = mBaseObjPool->begin(); itr != mBaseObjPool->end(); itr++) {
-            BaseObj* entity = *itr;
-            CC_SAFE_RELEASE(entity);
+    clearPool(mBaseObjPool);
+    clearPool(mTileObjPool);
+    clearPool(mCookieObjPool);
+}
+
+//--------------------------------------------------------------------
+void _SmartFactory::clearPool(TBaseObjList * pool)
+//--------------------------------------------------------------------
+{
+    if (pool) {
+        for (TBaseObjListItr itr = pool->begin(); itr != pool->end(); itr++) {
+            clearEntity(*itr);
         }
-        mBaseObjPool->clear();
-        CC_SAFE_DELETE(mBaseObjPool);
+        pool->clear();
+        CC_SAFE_DELETE(pool);
     }
-    if (mTileObjPool) {
-        for (TBaseObjListItr itr = mTileObjPool->begin(); itr != mTileObjPool->end(); itr++) {
-            BaseObj* entity = *itr;
-            CC_SAFE_RELEASE(entity);
-        }
-        mTileObjPool->clear();
-        CC_SAFE_DELETE(mTileObjPool);
-    }
-    if (mCookieObjPool) {
-        for (TBaseObjListItr itr = mCookieObjPool->begin(); itr != mCookieObjPool->end(); itr++) {
-            BaseObj* entity = *itr;
-            CC_SAFE_RELEASE(entity);
-        }
-        mCookieObjPool->clear();
-        CC_SAFE_DELETE(mCookieObjPool);
-    }
+}
+
+//--------------------------------------------------------------------
+void _SmartFactory::clearEntity(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    if (obj) {
+        obj->clear();
+        CC_SAFE_RELEASE_NULL(obj);
+    }    
 }

@@ -38,6 +38,5 @@ protected:
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE_READONLY(CookieObj*, mCookieA, CookieA);
     CC_SYNTHESIZE_READONLY(CookieObj*, mCookieB, CookieB);
-   
 };
 

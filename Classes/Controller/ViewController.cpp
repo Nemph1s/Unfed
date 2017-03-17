@@ -36,15 +36,19 @@ using namespace std::placeholders;
 #define COCOS2D_DEBUG 1
 #define UNFED_ENABLE_DEBUG 1
 
-#define CURRENT_LEVEL 2
+#define CURRENT_LEVEL 668
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
-    : mLevel(nullptr)
+    : mMovesLeft(0)
+    , mScore(0)
+    , mLevel(nullptr)
     , mGameplayScene(nullptr)
+    , mLevelGoals(nullptr)
     , mObjectController(nullptr)
     , mChainController(nullptr)
     , mSwapController(nullptr)
+    , mDudeController(nullptr)
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::ViewController");
@@ -55,9 +59,14 @@ ViewController::~ViewController()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ViewController::~ViewController");
+    
+    CC_SAFE_RELEASE_NULL(mLevel);
+    CC_SAFE_RELEASE_NULL(mGameplayScene);
+    CC_SAFE_RELEASE_NULL(mLevelGoals);
     CC_SAFE_RELEASE_NULL(mObjectController);
     CC_SAFE_RELEASE_NULL(mChainController);
     CC_SAFE_RELEASE_NULL(mSwapController);
+    CC_SAFE_RELEASE_NULL(mDudeController);
 }
 
 //--------------------------------------------------------------------
@@ -113,7 +122,6 @@ bool ViewController::initGameScene()
     AudioManager->init();
     AnimationsManager->initWithScene(mGameplayScene);
 
-    SmartFactory->init((NumColumns * NumRows) / 2);
     SmartFactory->initTilesPool(NumColumns * NumRows);
     SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
 

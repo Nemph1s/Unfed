@@ -43,6 +43,8 @@ ObjectController::~ObjectController()
             CC_SAFE_RELEASE_NULL(mObjects[column][row]);
         }
     }
+    mLevel = nullptr;
+    mDudeCtrl = nullptr;
 }
 
 //--------------------------------------------------------------------
@@ -476,4 +478,3 @@ void ObjectController::removeAllCookies()
         }
     }
 }
-

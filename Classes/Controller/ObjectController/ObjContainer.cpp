@@ -36,6 +36,7 @@ ObjContainer::ObjContainer()
     , mCookieObj(nullptr)
     , mDudeObj(nullptr)
     , mFieldObjects()
+    , mObjectInChain(false)
 //--------------------------------------------------------------------
 {
 }
@@ -44,9 +45,27 @@ ObjContainer::ObjContainer()
 ObjContainer::~ObjContainer()
 //--------------------------------------------------------------------
 {
-    mTileObj = nullptr;
-    mCookieObj = nullptr;
-    mDudeObj = nullptr;
+    if (mTileObj) {
+        SmartFactory->recycle(mTileObj);
+        mTileObj = nullptr;
+    }
+    
+    if (mCookieObj) {
+        SmartFactory->recycle(mCookieObj);
+        mCookieObj = nullptr;
+    }
+    
+    if (mDudeObj) {
+        SmartFactory->recycle(mDudeObj);
+        mDudeObj = nullptr;
+    }
+    
+    while (mFieldObjects.size() > 0) {
+        if (mFieldObjects.front()) {
+            SmartFactory->recycle(mFieldObjects.front());
+        }        
+        mFieldObjects.pop_front();
+    }
     mFieldObjects.clear();
 }
 

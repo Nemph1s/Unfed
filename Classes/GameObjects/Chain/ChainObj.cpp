@@ -28,10 +28,18 @@ ChainObj::ChainObj()
 //--------------------------------------------------------------------
 ChainObj::~ChainObj()
 //--------------------------------------------------------------------
-{
+{   
     cocos2d::log("ChainObj::~ChainObj: deallocing ChainObj: %p - tag: %i", this, _tag);
     if (getParent()) {
         removeFromParent();
+    }
+    if (mObjects) {
+        for (auto it = mObjects->begin(); it != mObjects->end(); it++) {
+            auto obj = dynamic_cast<ObjContainer*>(*it);
+            if (obj) {
+                obj->setObjectInChain(nullptr);
+            }
+        }
     }
     CC_SAFE_RELEASE_NULL(mObjects);
 }

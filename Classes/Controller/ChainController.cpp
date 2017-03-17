@@ -78,7 +78,7 @@ CommonTypes::Set * ChainController::removeMatches()
 
 
 #ifdef COCOS2D_DEBUG
-    logDebugChains(horizontalChains, verticalChains, difficultChains);
+    //logDebugChains(horizontalChains, verticalChains, difficultChains);
 #endif //COCOS2D_DEBUG
 
     mLevel->calculateScore(horizontalChains);
@@ -708,46 +708,46 @@ CommonTypes::Set * ChainController::createChainFromPosToPos(const CommonTypes::D
 
 #ifdef COCOS2D_DEBUG
 // --------------------------------------------------------------------
-void ChainController::logDebugChains(CommonTypes::Set * horizontal, CommonTypes::Set * vertical, CommonTypes::Set * difficult)
-//--------------------------------------------------------------------
-{
-    auto strHorizontalChains = cocos2d::String::createWithFormat("Horizontal matches: {\n");
-    auto horzIt = horizontal->begin();
-    for (horzIt; horzIt != horizontal->end(); horzIt++) {
-        auto chain = dynamic_cast<ChainObj*>(*horzIt);
-        CC_ASSERT(chain);
-        strHorizontalChains->appendWithFormat("%s\n", chain->description().c_str());
-    }
-    strHorizontalChains->append("}");
-
-    auto strVerticalChains = cocos2d::String::createWithFormat("Vertical matches: {\n");
-    auto vertIt = vertical->begin();
-    for (vertIt; vertIt != vertical->end(); vertIt++) {
-        auto chain = dynamic_cast<ChainObj*>(*vertIt);
-        CC_ASSERT(chain);
-        strVerticalChains->appendWithFormat("%s\n", chain->description().c_str());
-    }
-    strVerticalChains->append("}");
-
-    auto strtypeLChains = cocos2d::String::createWithFormat("type L matches: {\n");
-    auto strtypeTChains = cocos2d::String::createWithFormat("type T matches: {\n");
-    auto lIt = difficult->begin();
-    for (lIt; lIt != difficult->end(); lIt++) {
-        auto chain = dynamic_cast<ChainObj*>(*lIt);
-        CC_ASSERT(chain);
-        if (chain->getType() == ChainType::ChainTypeL) {
-            strtypeLChains->appendWithFormat("%s\n", chain->description().c_str());
-        }
-        else if (chain->getType() == ChainType::ChainTypeT) {
-            strtypeTChains->appendWithFormat("%s\n", chain->description().c_str());
-        }
-    }
-    strtypeLChains->append("}");
-    strtypeTChains->append("}");
-
-    cocos2d::log("ChainController::logDebugChains: %s", strHorizontalChains->getCString());
-    cocos2d::log("ChainController::logDebugChains: %s", strVerticalChains->getCString());
-    cocos2d::log("ChainController::logDebugChains: %s", strtypeLChains->getCString());
-    cocos2d::log("ChainController::logDebugChains: %s", strtypeTChains->getCString());
-}
+// void ChainController::logDebugChains(CommonTypes::Set * horizontal, CommonTypes::Set * vertical, CommonTypes::Set * difficult)
+// --------------------------------------------------------------------
+// {
+//     auto strHorizontalChains = cocos2d::String::createWithFormat("Horizontal matches: {\n");
+//     auto horzIt = horizontal->begin();
+//     for (horzIt; horzIt != horizontal->end(); horzIt++) {
+//         auto chain = dynamic_cast<ChainObj*>(*horzIt);
+//         CC_ASSERT(chain);
+//         strHorizontalChains->appendWithFormat("%s\n", chain->description().c_str());
+//     }
+//     strHorizontalChains->append("}");
+// 
+//     auto strVerticalChains = cocos2d::String::createWithFormat("Vertical matches: {\n");
+//     auto vertIt = vertical->begin();
+//     for (vertIt; vertIt != vertical->end(); vertIt++) {
+//         auto chain = dynamic_cast<ChainObj*>(*vertIt);
+//         CC_ASSERT(chain);
+//         strVerticalChains->appendWithFormat("%s\n", chain->description().c_str());
+//     }
+//     strVerticalChains->append("}");
+// 
+//     auto strtypeLChains = cocos2d::String::createWithFormat("type L matches: {\n");
+//     auto strtypeTChains = cocos2d::String::createWithFormat("type T matches: {\n");
+//     auto lIt = difficult->begin();
+//     for (lIt; lIt != difficult->end(); lIt++) {
+//         auto chain = dynamic_cast<ChainObj*>(*lIt);
+//         CC_ASSERT(chain);
+//         if (chain->getType() == ChainType::ChainTypeL) {
+//             strtypeLChains->appendWithFormat("%s\n", chain->description().c_str());
+//         }
+//         else if (chain->getType() == ChainType::ChainTypeT) {
+//             strtypeTChains->appendWithFormat("%s\n", chain->description().c_str());
+//         }
+//     }
+//     strtypeLChains->append("}");
+//     strtypeTChains->append("}");
+// 
+//     cocos2d::log("ChainController::logDebugChains: %s", strHorizontalChains->getCString());
+//     cocos2d::log("ChainController::logDebugChains: %s", strVerticalChains->getCString());
+//     cocos2d::log("ChainController::logDebugChains: %s", strtypeLChains->getCString());
+//     cocos2d::log("ChainController::logDebugChains: %s", strtypeTChains->getCString());
+// }
 #endif // #ifdef COCOS2D_DEBUG

@@ -32,6 +32,8 @@ SwapController::SwapController()
 SwapController::~SwapController()
 //--------------------------------------------------------------------
 {
+    mLevel = nullptr;
+    clearPossibleSwaps();
 }
 
 //--------------------------------------------------------------------

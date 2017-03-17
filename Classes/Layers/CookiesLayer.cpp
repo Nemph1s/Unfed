@@ -58,6 +58,10 @@ CookiesLayer::~CookiesLayer()
 {
     cocos2d::log("CookiesLayer::~CookiesLayer: deallocing CookiesLayer: %p - tag: %i", this, _tag);
     CC_SAFE_RELEASE_NULL(mSelectionSprite);
+    clearTouchedObj();
+    mListener = nullptr;
+    mLevel = nullptr;
+    mDudesLayer = nullptr;
 }
 
 //--------------------------------------------------------------------

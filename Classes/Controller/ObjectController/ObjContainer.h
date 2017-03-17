@@ -18,6 +18,7 @@ class TileObj;
 class CookieObj;
 class FieldObj;
 class DudeObj;
+class ChainObj;
 class GameplayScene;
 
 class ObjContainer : public cocos2d::Node
@@ -64,6 +65,8 @@ protected:
 
     //---Class Attributes-------------------------------------------------
     std::list<FieldObj*> mFieldObjects;
+
+    CC_SYNTHESIZE(ChainObj*, mObjectInChain, ObjectInChain);
 
     CC_SYNTHESIZE_READONLY(DudeObj*, mDudeObj, DudeObj);
     CC_SYNTHESIZE_READONLY(TileObj*, mTileObj, TileObj);

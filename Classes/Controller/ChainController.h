@@ -81,7 +81,7 @@ protected:
     CommonTypes::Set* createChainFromPosToPos(const CommonTypes::Direction& direction, int fromCol, int fromRow, int toCol, int toRow, bool isCreatedByDude = false);
 
 #ifdef COCOS2D_DEBUG
-    void logDebugChains(CommonTypes::Set* horizontal, CommonTypes::Set* vertical, CommonTypes::Set* difficult);
+    //void logDebugChains(CommonTypes::Set* horizontal, CommonTypes::Set* vertical, CommonTypes::Set* difficult);
 #endif // COCOS2D_DEBUG 
 
     //---Class Attributes-------------------------------------------------

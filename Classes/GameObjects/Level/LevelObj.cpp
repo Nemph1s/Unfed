@@ -47,6 +47,7 @@ LevelObj::~LevelObj()
     cocos2d::log("LevelObj::~LevelObj: deallocing CookieObj: %p - tag: %i", this, _tag);
     CC_SAFE_RELEASE_NULL(mObjCtrl);
     CC_SAFE_RELEASE_NULL(mChainCtrl);
+    CC_SAFE_RELEASE_NULL(mDudeCtrl);
 }
 
 //--------------------------------------------------------------------
@@ -245,7 +246,7 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
 {
     cocos2d::log("LevelObj::fillTopUpHoles:");
     auto columns = cocos2d::Array::createWithCapacity(NumColumns);
-    auto createdString = cocos2d::String::create("");
+    //auto createdString = cocos2d::String::create("");
     int cookieType = -1;
     // loop through the rows, from top to bottom
     for (int column = 0; column < NumColumns; column++) {
@@ -280,12 +281,12 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
                     columns->addObject(array);
                 }
                 array->addObject(cookie);
-                createdString->appendWithFormat("\t%s\n", cookie->description());
+                //createdString->appendWithFormat("\t%s\n", cookie->description());
             }
         }
-        createdString->append("}\n");
+        //createdString->append("}\n");
     }
-    cocos2d::log("LevelObj::fillTopUpHoles:  new created cookies: {\n%s", createdString->getCString());
+    //cocos2d::log("LevelObj::fillTopUpHoles:  new created cookies: {\n%s", createdString->getCString());
     return columns;
 }
 

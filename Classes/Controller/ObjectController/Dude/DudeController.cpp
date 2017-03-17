@@ -44,6 +44,8 @@ DudeController::DudeController()
 DudeController::~DudeController()
 //--------------------------------------------------------------------
 {
+    mObjCtrl = nullptr;
+    mChainCtrl = nullptr;
 }
 
 //--------------------------------------------------------------------
