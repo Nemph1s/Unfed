@@ -239,9 +239,7 @@ bool DudeController::canActivateDudeTo(int fromCol, int fromRow, int direction)
     int toColumn = fromCol + horzDelta;
     int toRow = fromRow + vertDelta;
 
-    if (toColumn < 0 || toColumn >=NumColumns)
-        return false;
-    if (toRow < 0 || toRow >= NumRows)
+    if (toColumn < 0 || toColumn >= NumColumns || toRow < 0 || toRow >= NumRows)
         return false;
 
     auto fromObj = dudeObjectAt(fromCol, fromRow);
@@ -253,7 +251,6 @@ bool DudeController::canActivateDudeTo(int fromCol, int fromRow, int direction)
 
     if (!mActivateDudeCallback)
         return false;
-
 
     mActivateDudeCallback(fromObj, direction);
 
@@ -269,11 +266,15 @@ Set * DudeController::activateDudeAndGetChains(DudeObj* obj, int dir)
         cocos2d::log("DudeController::activateDudeAndGetChains: empty ptr DudeObj");
         return set;
     }
+    auto direction = static_cast<Direction>(dir);
+    if (direction == Direction::Unknown) {
+        return set;
+    }
+
     auto helper = mDudeDirections.at(obj);
     if (helper) {
         obj->activate();
 
-        auto direction = static_cast<Direction>(dir);
         auto chains = helper->getChainByDirection(direction);
         if (!chains) {
             cocos2d::log("DudeController::activateDudeAndGetChains: empty chain from helper! direction=%d", dir);
@@ -300,17 +301,18 @@ void DudeController::updateChainSetWithDudesInChain(const Direction& direction, 
         if (!objects) 
             continue;
 
-        for (auto it = objects->begin(); it != objects->end(); it++) {
+        uint8_t index = 0;
+        for (auto it = objects->begin(); it != objects->end(); it++, index++) {
             auto container = dynamic_cast<ObjContainer*>(*it);
             CC_ASSERT(container);
             
             auto object = container->getObjectForChain();
-            if (object) 
+            if (!object) 
                 continue;
 
             if (object->getType() == BaseObjType::Dude) {
 
-                if (it == objects->begin())  // skip first dude to avoid dead loop
+                if (index == 0)  // skip first dude to avoid dead loop
                     continue;
 
                 CommonTypes::Set* newChains = nullptr;

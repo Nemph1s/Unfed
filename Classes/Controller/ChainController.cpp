@@ -26,6 +26,7 @@ using namespace CommonTypes;
 //--------------------------------------------------------------------
 ChainController::ChainController()
     : mLevel(nullptr)
+    , mObjCtrl(nullptr)
 //--------------------------------------------------------------------
 {
 }
@@ -34,6 +35,8 @@ ChainController::ChainController()
 ChainController::~ChainController()
 //--------------------------------------------------------------------
 {
+    mLevel = nullptr;
+    mObjCtrl = nullptr;
 }
 
 //--------------------------------------------------------------------
@@ -536,6 +539,12 @@ CommonTypes::Set* ChainController::createHorizontalChainAt(int startColumn, int 
 //--------------------------------------------------------------------
 {
     auto set = CommonTypes::Set::create();
+
+    if (!(startColumn >= 0 && startColumn < NumColumns) || !(startRow >= 0 && startRow < NumRows)) {
+        cocos2d::log("ChainController::createHorizontalChainAt: wrong destinationPos at column=%d, row=%d", startColumn, startRow);
+        return set;
+    }
+
     auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
@@ -558,6 +567,12 @@ CommonTypes::Set* ChainController::createVerticalChainAt(int startColumn, int st
 //--------------------------------------------------------------------
 {
     auto set = CommonTypes::Set::create();
+
+    if (!(startColumn >= 0 && startColumn < NumColumns) || !(startRow >= 0 && startRow < NumRows)) {
+        cocos2d::log("ChainController::createVerticalChainAt: wrong destinationPos at column=%d, row=%d", startColumn, startRow);
+        return set;
+    }
+
     auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
@@ -692,7 +707,7 @@ CommonTypes::Set * ChainController::createChainFromPosToPos(const CommonTypes::D
 
 
 #ifdef COCOS2D_DEBUG
-//--------------------------------------------------------------------
+// --------------------------------------------------------------------
 void ChainController::logDebugChains(CommonTypes::Set * horizontal, CommonTypes::Set * vertical, CommonTypes::Set * difficult)
 //--------------------------------------------------------------------
 {
