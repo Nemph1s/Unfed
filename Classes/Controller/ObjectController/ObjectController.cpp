@@ -142,7 +142,6 @@ BaseObj * ObjectController::createTile(int column, int row, int type)
     TileInfo info = { baseInfo, static_cast<TileType>(type) };
     auto tile = SmartFactory->createTileObj(info);
     CC_ASSERT(tile);
-    //mTiles[column][row] = tile;
     getObject(column, row)->addObject(tile);
     return tile;
 }
@@ -155,7 +154,6 @@ BaseObj * ObjectController::createCookie(int column, int row, int type)
     CookieInfo info = { baseInfo, static_cast<CookieType>(type) };
     auto cookie = SmartFactory->createCookieObj(info);
     CC_ASSERT(cookie);
-    //mCookies[column][row] = cookie;
     getObject(column, row)->addObject(cookie);
     return cookie;
 }
@@ -168,7 +166,6 @@ BaseObj * ObjectController::createFieldObject(int column, int row, int type, int
     FieldInfo info = { baseInfo, static_cast<FieldType>(type), priority };
     auto obj = SmartFactory->createFieldObj(info);
     CC_ASSERT(obj);
-    //mFieldObjects[column][row].push_back(obj);
     getObject(column, row)->addObject(obj);
     return obj;
 }
@@ -254,7 +251,6 @@ TileObj* ObjectController::tileAt(int column, int row)
         CC_ASSERT(validRow);
     }
     return getObject(column, row)->getTileObj();
-//    return dynamic_cast<TileObj*>(mTiles[column][row]);
 }
 
 //--------------------------------------------------------------------
@@ -268,7 +264,6 @@ CookieObj* ObjectController::cookieAt(int column, int row)
         return nullptr;
     }
     return getObject(column, row)->getCookieObj();
-//    return dynamic_cast<CookieObj*>(mCookies[column][row]);
 }
 
 //--------------------------------------------------------------------
@@ -310,9 +305,6 @@ BaseObj * ObjectController::fieldObjectAt(int column, int row)
         cocos2d::log("ObjectController::fieldObjectAt: Invalid row: %d", row);
         CC_ASSERT(invalidRow);
     }
-//     auto fieldsList = mFieldObjects[column][row];
-//     if (fieldsList.size() == 0) return nullptr;
-//     return fieldsList.front();
     return getObject(column, row)->getObject(BaseObjType::Field);
 }
 
@@ -422,7 +414,6 @@ void ObjectController::updateCookieObjectAt(int column, int row, BaseObj* cookie
 //--------------------------------------------------------------------
 {
     getObject(column, row)->addObject(cookie);
-//    mCookies[column][row] = cookie;
 }
 
 //--------------------------------------------------------------------
