@@ -44,6 +44,7 @@ public:
     cocos2d::Array* useGravityToFillHoles();
     cocos2d::Array* fillTopUpHoles();
 
+    void increaseComboMultiplier();
     void resetComboMultiplier();
     void disablePredefinedCookies();
 

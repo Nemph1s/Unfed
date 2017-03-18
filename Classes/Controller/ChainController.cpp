@@ -72,23 +72,22 @@ CommonTypes::Set * ChainController::removeMatches()
 
     auto set = CommonTypes::Set::create();
 
+    activateChains(horizontalChains);
+    activateChains(verticalChains);
+    activateChains(difficultChains);
+
     addChainsFromSetToSet(horizontalChains, set);
     addChainsFromSetToSet(verticalChains, set);
     addChainsFromSetToSet(difficultChains, set);
-
 
 #ifdef COCOS2D_DEBUG
     //logDebugChains(horizontalChains, verticalChains, difficultChains);
 #endif //COCOS2D_DEBUG
 
-    mLevel->calculateScore(horizontalChains);
-    matchChains(horizontalChains);
+    mLevel->calculateScore(set);
+    matchChains(set);
 
-    mLevel->calculateScore(verticalChains);
-    matchChains(verticalChains);
-
-    mLevel->calculateScore(difficultChains);
-    matchChains(difficultChains);
+    mLevel->increaseComboMultiplier();
     return set;
 }
 
@@ -129,13 +128,24 @@ CommonTypes::Set * ChainController::removeChainAt(CommonTypes::ChainType & type,
 }
 
 //--------------------------------------------------------------------
+void ChainController::activateChains(CommonTypes::Set * chains)
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ChainController::activateChains:");
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+        chain->activateObjects();
+    }
+}
+
+//--------------------------------------------------------------------
 void ChainController::matchChains(CommonTypes::Set* chains)
 //--------------------------------------------------------------------
 {
     for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
-
         auto objects = chain->getObjects();
         if (!objects) {
             continue;
@@ -188,8 +198,8 @@ void ChainController::calculateChainScore(ChainObj* chain)
             chainValue = chainValue + obj->getScoreValue();
         }
         auto multiplier = !chain->getIsCreatedByDude() && objects->count() > 2 ? objects->count() - 2 : 1;
-        chain->setCookiesScore(cookiesValue * multiplier);
-        chain->setScore(chainValue * multiplier);
+        chain->setCookiesScore(cookiesValue);// *multiplier);
+        chain->setScore(chainValue);// *multiplier);
     }
 }
 
@@ -249,33 +259,20 @@ CommonTypes::Set * ChainController::detectVerticalMatches()
     for (int column = 0; column < NumColumns; column++) {
         for (int row = 0; row < NumRows - 2;) {
 
-            auto cookie = mObjCtrl->cookieAt(column, row);
-            // skip over any gaps in the level design.
-            if (cookie != nullptr) {
-                int matchType = cookie->getTypeAsInt();
+            if (isNextTwoCookieSuitable(ChainType::ChainTypeVertical, column, row)) {
+                int matchType = mObjCtrl->cookieAt(column, row)->getTypeAsInt();
 
-                auto other1 = mObjCtrl->cookieAt(column, row + 1);
-                auto other2 = mObjCtrl->cookieAt(column, row + 2);
-                // check whether the next two columns have the same cookie type.
-                if (other1 != nullptr && other2 != nullptr) {
-
-                    if (other1->getTypeAsInt() == matchType
-                        && other2->getTypeAsInt() == matchType) {
-                        //  There is a chain of at least three cookies but potentially there are more. This steps through all the matching cookies 
-                        // until it finds a cookie that breaks the chain or it reaches the end of the grid.
-                        auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
-                        chain->setUpdateGoalCallback(mUpdateGoalCallback);
-                        int newMatchType = -1;
-                        do {
-                            if (isPossibleToAddObjToChain(column, row, matchType, newMatchType)) {
-                                addObjToChain(chain, column, row);
-                                row += 1;
-                            }
-                        } while (row < NumColumns && newMatchType == matchType);
-                        addChainToSet(chain, set);
-                        continue;
+                auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
+                chain->setUpdateGoalCallback(mUpdateGoalCallback);
+                int newMatchType = -1;
+                do {
+                    if (isPossibleToAddObjToChain(column, row, matchType, newMatchType)) {
+                        addObjToChain(chain, column, row);
+                        row += 1;
                     }
-                }
+                } while (row < NumColumns && newMatchType == matchType);
+                addChainToSet(chain, set);
+                continue;
             }
             //  If the next two cookies don’t match the current one or if there is an empty tile, 
             // then there is no chain, so you skip over the cookie.
@@ -294,33 +291,20 @@ CommonTypes::Set * ChainController::detectHorizontalMatches()
     for (int row = 0; row < NumRows; row++) {
         for (int column = 0; column < NumColumns - 2; ) {
 
-            auto cookie = mObjCtrl->cookieAt(column, row);
-            // skip over any gaps in the level design.
-            if (cookie != nullptr) {
-                int matchType = cookie->getTypeAsInt();
+            if (isNextTwoCookieSuitable(ChainType::ChainTypeHorizontal, column, row)) {
+                int matchType = mObjCtrl->cookieAt(column, row)->getTypeAsInt();
 
-                auto other1 = mObjCtrl->cookieAt(column + 1, row);
-                auto other2 = mObjCtrl->cookieAt(column + 2, row);
-                // check whether the next two columns have the same cookie type.
-                if (other1 != nullptr && other2 != nullptr) {
-
-                    if (other1->getTypeAsInt() == matchType
-                        && other2->getTypeAsInt() == matchType) {
-                        //  There is a chain of at least three cookies but potentially there are more. This steps through all the matching cookies 
-                        // until it finds a cookie that breaks the chain or it reaches the end of the grid.
-                        auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
-                        chain->setUpdateGoalCallback(mUpdateGoalCallback);
-                        int newMatchType = -1;
-                        do {
-                            if (isPossibleToAddObjToChain(column, row, matchType, newMatchType)) {
-                                addObjToChain(chain, column, row);
-                                column += 1;
-                            }
-                        } while (column < NumColumns && newMatchType == matchType);
-                        addChainToSet(chain, set);
-                        continue;
+                auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
+                chain->setUpdateGoalCallback(mUpdateGoalCallback);
+                int newMatchType = -1;
+                do {
+                    if (isPossibleToAddObjToChain(column, row, matchType, newMatchType)) {
+                        addObjToChain(chain, column, row);
+                        column += 1;
                     }
-                }
+                } while (column < NumColumns && newMatchType == matchType);
+                addChainToSet(chain, set);
+                continue;
             }
             //  If the next two cookies don’t match the current one or if there is an empty tile, 
             // then there is no chain, so you skip over the cookie.
@@ -446,6 +430,38 @@ ChainObj * ChainController::detectTChainMatches(ChainObj * horzChain, ChainObj *
 }
 
 //--------------------------------------------------------------------
+bool ChainController::isNextTwoCookieSuitable(const ChainType& type, int col, int row)
+//--------------------------------------------------------------------
+{
+    bool result = false;
+    auto obj = mObjCtrl->getObject(col, row);
+    // skip over any gaps in the level design.
+    if (obj->getCookie() != nullptr) {
+
+        int matchType = obj->getCookie()->getTypeAsInt();
+
+        int horzDelta = type == ChainType::ChainTypeHorizontal ? 1 : 0;
+        int vertDelta = type == ChainType::ChainTypeVertical ? 1 : 0;
+
+        auto obj1 = mObjCtrl->getObject(col + (1 * horzDelta), row + (1 * vertDelta));
+        auto obj2 = mObjCtrl->getObject(col + (2 * horzDelta), row + (2 * vertDelta));
+        // check whether the next two columns have the same cookie type.
+        if (obj1->getCookie() != nullptr && obj2->getCookie() != nullptr) {
+
+            if (obj1->getCookie()->getTypeAsInt() == matchType
+                && obj2->getCookie()->getTypeAsInt() == matchType) {
+                //  There is a chain of at least three cookies but potentially there are more. 
+                // This steps through all the matching cookies until it finds a cookie that breaks 
+                // the chain or it reaches the end of the grid.
+                result = true;
+            }
+        }
+        
+    }
+    return result;
+}
+
+//--------------------------------------------------------------------
 void ChainController::addChainsFromSetToSet(CommonTypes::Set* from, CommonTypes::Set* to, bool skipDudes)
 //--------------------------------------------------------------------
 {
@@ -548,7 +564,7 @@ CommonTypes::Set* ChainController::createHorizontalChainAt(int startColumn, int 
     auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
-    if (mObjCtrl->getObject(startColumn, startRow)->getDudeObj()) {
+    if (mObjCtrl->getObject(startColumn, startRow)->getDude()) {
         addObjToChain(chain, startColumn, startRow);
         chain->setIsCreatedByDude(true);
     }
@@ -576,7 +592,7 @@ CommonTypes::Set* ChainController::createVerticalChainAt(int startColumn, int st
     auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
-    if (mObjCtrl->getObject(startColumn, startRow)->getDudeObj()) {
+    if (mObjCtrl->getObject(startColumn, startRow)->getDude()) {
         addObjToChain(chain, startColumn, startRow);
         chain->setIsCreatedByDude(true);
     }

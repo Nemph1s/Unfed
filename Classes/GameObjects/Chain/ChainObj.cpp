@@ -151,6 +151,41 @@ void ChainObj::addObjectsFromChain(ChainObj* chain)
 }
 
 //--------------------------------------------------------------------
+void ChainObj::activateObjects()
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ChainObj::activateObjects:");
+    if (!mObjects) {
+        cocos2d::log("ChainObj::activateObjects: empty objects array");
+        return;
+    }
+    cocos2d::log("ChainObj::activateObjects: objects size before removing=%d", mObjects->count());
+    auto objsToRemove = cocos2d::Array::create();
+    auto it = mObjects->begin();
+    while (it != mObjects->end())
+    {
+        auto obj = dynamic_cast<ObjContainer*>(*it);
+        if (obj) {
+            if (obj->isObjectInChain()) {
+                objsToRemove->addObject(obj);
+            } else {
+                obj->setObjectInChain(this);
+            }
+        }
+        it++;
+    };
+
+    for (auto itToRemove = objsToRemove->begin(); itToRemove != objsToRemove->end(); ++itToRemove) {
+        auto obj = dynamic_cast<ObjContainer*>(*itToRemove);
+        if (obj) {
+            mScore = mScore - obj->getObjectForChain()->getScoreValue();
+            mObjects->removeObject(obj);
+        }
+    }
+    cocos2d::log("ChainObj::activateObjects: objects size after removing=%d", mObjects->count());
+}
+
+//--------------------------------------------------------------------
 void ChainObj::removeDudeObjectsFromChain(bool skipFirst)
 //--------------------------------------------------------------------
 {

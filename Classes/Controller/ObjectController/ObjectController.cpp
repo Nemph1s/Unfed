@@ -250,7 +250,7 @@ TileObj* ObjectController::tileAt(int column, int row)
         cocos2d::log("ObjectController::tileAt: Invalid row: %d", row);
         CC_ASSERT(validRow);
     }
-    return getObject(column, row)->getTileObj();
+    return getObject(column, row)->getTile();
 }
 
 //--------------------------------------------------------------------
@@ -263,7 +263,7 @@ CookieObj* ObjectController::cookieAt(int column, int row)
         cocos2d::log("ObjectController::cookieAt: Invalid cookie at column = %d, row = %d", column, row);
         return nullptr;
     }
-    return getObject(column, row)->getCookieObj();
+    return getObject(column, row)->getCookie();
 }
 
 //--------------------------------------------------------------------
@@ -329,7 +329,7 @@ std::list<FieldObj*>& ObjectController::fieldObjectsAt(int column, int row)
 DudeObj* ObjectController::dudeObjectAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    return getObject(column, row)->getDudeObj();
+    return getObject(column, row)->getDude();
 }
 
 //--------------------------------------------------------------------
@@ -375,7 +375,7 @@ bool ObjectController::matchCookieObject(BaseObj * obj)
 //--------------------------------------------------------------------
 {
     auto objContainer = getObject(obj->getColumn(), obj->getRow());
-    auto cookieObj = objContainer->getCookieObj();
+    auto cookieObj = objContainer->getCookie();
     if (obj == cookieObj) {
         std::function<void(BaseObj*)> onRemoveCookieCallback;
         onRemoveCookieCallback = std::bind(&ObjContainer::onRemoveCookie, objContainer, _1);
@@ -390,7 +390,7 @@ bool ObjectController::matchDudeObject(BaseObj * obj)
 //--------------------------------------------------------------------
 {
     auto objContainer = getObject(obj->getColumn(), obj->getRow());
-    auto dudeObj = objContainer->getDudeObj();
+    auto dudeObj = objContainer->getDude();
 
     if (obj == dudeObj) {
         std::function<void(BaseObj*)> func = [&](BaseObj* obj) {

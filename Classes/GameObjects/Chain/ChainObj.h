@@ -42,6 +42,8 @@ public:
 
     void addObjectsFromChain(ChainObj* chain);
 
+    void activateObjects();
+
     void removeDudeObjectsFromChain(bool skipFirst = true);
 
     //---Callbacks-------------------------------------------------

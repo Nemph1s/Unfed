@@ -129,7 +129,7 @@ DudeObj* DudeController::dudeObjectAt(int column, int row)
 //--------------------------------------------------------------------
 {
     auto container = mObjCtrl->getObject(column, row);
-    return container->getDudeObj();
+    return container->getDude();
 }
 
 //--------------------------------------------------------------------
@@ -303,6 +303,8 @@ void DudeController::updateChainSetWithDudesInChain(const Direction& direction, 
         if (!objects) 
             continue;
 
+        mChainCtrl->activateChains(chains);
+
         uint8_t index = 0;
         for (auto it = objects->begin(); it != objects->end(); it++, index++) {
             auto container = dynamic_cast<ObjContainer*>(*it);
@@ -318,7 +320,7 @@ void DudeController::updateChainSetWithDudesInChain(const Direction& direction, 
                     continue;
 
                 CommonTypes::Set* newChains = nullptr;
-                auto dude = container->getDudeObj();
+                auto dude = container->getDude();
                 auto invertedDirection = Helper::invertDirection(direction);
 
                 auto helper = mDudeDirections.at(dude);

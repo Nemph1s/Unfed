@@ -329,6 +329,7 @@ void ObjContainer::onRemoveCookie(BaseObj* obj)
         if (mCookieObj->getParent()) {
             mCookieObj->removeFromParent();
         }
+        mObjectInChain = nullptr;
         SmartFactory->recycle(mCookieObj);
         removeObject(BaseObjType::Cookie);
     }
@@ -352,7 +353,7 @@ void ObjContainer::onRemoveDude(BaseObj * obj)
         if (eraseDirectionsFunc) {
             eraseDirectionsFunc(obj);
         }
-
+        mObjectInChain = nullptr;
         SmartFactory->recycle(mDudeObj);
         removeObject(BaseObjType::Dude);
     }
@@ -368,7 +369,7 @@ void ObjContainer::onFieldObjChangeState(BaseObj* obj, std::function<void(FieldO
             fieldObj->getSpriteNode()->removeFromParent();
             fieldObj->setSpriteNode(nullptr);
         }
-
+        mObjectInChain = nullptr;
         if (fieldObj->getHP() > 0) {
             createSpriteFunc(fieldObj);
         }

@@ -303,9 +303,15 @@ void LevelObj::calculateScore(CommonTypes::Set * chains)
             auto cookieScore = chain->getCookiesScore();
             chain->setScore(chainScore * mComboMultiplier);
             chain->setCookiesScore(cookieScore * mComboMultiplier);
-            mComboMultiplier++;
         }
     }
+}
+
+//--------------------------------------------------------------------
+void LevelObj::increaseComboMultiplier()
+//--------------------------------------------------------------------
+{
+    mComboMultiplier++;
 }
 
 //--------------------------------------------------------------------

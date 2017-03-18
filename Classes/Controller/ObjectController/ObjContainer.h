@@ -12,6 +12,7 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
+#include "Utils/PlatformMacros.h"
 
 class BaseObj;
 class TileObj;
@@ -42,7 +43,7 @@ public:
     FieldObj* getFieldObject() const;
     std::list<FieldObj*>& getFieldObjects();
 
-    bool isContainObjForChain();
+    bool isContainObjForChain(); //TODO: rename it
     BaseObj* getObjectForChain();
 
     bool isEmptyTileAt();
@@ -66,9 +67,9 @@ protected:
     //---Class Attributes-------------------------------------------------
     std::list<FieldObj*> mFieldObjects;
 
-    CC_SYNTHESIZE(ChainObj*, mObjectInChain, ObjectInChain);
+    CC_SYNTHESIZE_BOOL(ChainObj*, mObjectInChain, ObjectInChain);
 
-    CC_SYNTHESIZE_READONLY(DudeObj*, mDudeObj, DudeObj);
-    CC_SYNTHESIZE_READONLY(TileObj*, mTileObj, TileObj);
-    CC_SYNTHESIZE_READONLY(CookieObj*, mCookieObj, CookieObj);
+    CC_SYNTHESIZE_READONLY(DudeObj*, mDudeObj, Dude);
+    CC_SYNTHESIZE_READONLY(TileObj*, mTileObj, Tile);
+    CC_SYNTHESIZE_READONLY(CookieObj*, mCookieObj, Cookie);
 };

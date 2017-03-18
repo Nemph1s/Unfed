@@ -52,6 +52,12 @@ public:
     CommonTypes::Set* removeMatches();
     CommonTypes::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
 
+    /**
+    * Add chain to objectContainer and remove duplicate containers from other chains
+    * @param chains The set with the chains.
+    */
+    void activateChains(CommonTypes::Set* chains);
+
     void matchChains(CommonTypes::Set* chains);
 
     void calculateChainScore(ChainObj* chain);
@@ -71,6 +77,8 @@ protected:
 
     ChainObj* detectLChainMatches(ChainObj* horzChain, ChainObj* vertChain);
     ChainObj* detectTChainMatches(ChainObj* horzChain, ChainObj* vertChain);
+
+    bool isNextTwoCookieSuitable(const CommonTypes::ChainType& type, int col, int row);
 
     CommonTypes::Set* createHorizontalChainAt(int column, int startRow, bool isCreatedByDude = false);
     CommonTypes::Set* createVerticalChainAt(int startColumn, int row, bool isCreatedByDude = false);
