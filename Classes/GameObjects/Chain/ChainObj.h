@@ -39,6 +39,7 @@ public:
 
     cocos2d::Array* getChainObjects();
     int getCookiesCount();
+    void updateChainScore();
 
     void addObjectsFromChain(ChainObj* chain);
 

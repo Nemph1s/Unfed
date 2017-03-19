@@ -299,6 +299,7 @@ void LevelObj::calculateScore(CommonTypes::Set * chains)
         CC_ASSERT(chain);
 
         if (chain->getChainObjects()) {
+            chain->updateChainScore();
             auto chainScore = chain->getScore();
             auto cookieScore = chain->getCookiesScore();
             chain->setScore(chainScore * mComboMultiplier);

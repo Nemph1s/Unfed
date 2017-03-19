@@ -246,7 +246,7 @@ void ChainController::addChainToSet(ChainObj* chain, CommonTypes::Set* set)
     CC_ASSERT(chain);
     if (chain->getChainObjects()) {
 
-        calculateChainScore(chain);
+        chain->updateChainScore();
         set->addObject(chain);
     }
 }
@@ -491,8 +491,7 @@ void ChainController::addObjectsFromChainToChain(CommonTypes::Set * from, Common
             CC_ASSERT(chain);
             CC_ASSERT(toChain);
             toChain->addObjectsFromChain(chain);
-            toChain->setCookiesScore(toChain->getCookiesScore() + chain->getCookiesScore());
-            toChain->setScore(toChain->getScore() + chain->getScore());
+            toChain->updateChainScore();
         }
         
     } else {

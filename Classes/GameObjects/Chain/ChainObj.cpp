@@ -267,3 +267,22 @@ int ChainObj::getCookiesCount()
     }
     return count;
 }
+
+//--------------------------------------------------------------------
+void ChainObj::updateChainScore()
+//--------------------------------------------------------------------
+{
+    int score = 0;
+    int cookiesScore = 0;
+    auto objs = getChainObjects();
+    for (auto it = objs->begin(); it != objs->end(); it++) {
+        auto obj = dynamic_cast<BaseObj*>(*it);
+        CC_ASSERT(obj);
+        if (obj->getType() == CommonTypes::BaseObjType::Cookie) {
+            cookiesScore += obj->getScoreValue();
+        }
+        score += obj->getScoreValue();
+    }
+    setScore(score);
+    setCookiesScore(cookiesScore);
+}
