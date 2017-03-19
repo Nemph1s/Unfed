@@ -13,7 +13,7 @@
 #include "cocos2d.h"
 #include <string.h>
 
-class CookieObj;
+class BaseObj;
 
 class SwapObj : public cocos2d::Node
 {
@@ -25,9 +25,9 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static SwapObj* createWithCookies(CookieObj* cookieA, CookieObj* cookieB);
+    static SwapObj* createWithObjects(BaseObj* objectA, BaseObj* objectB);
 
-    virtual bool initWithCookies(CookieObj* cookieA, CookieObj* cookieB);
+    virtual bool initWithObjects(BaseObj* objectA, BaseObj* objectB);
 
     std::string description();
 
@@ -36,7 +36,7 @@ protected:
     SwapObj();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE_READONLY(CookieObj*, mCookieA, CookieA);
-    CC_SYNTHESIZE_READONLY(CookieObj*, mCookieB, CookieB);
+    CC_SYNTHESIZE_READONLY(BaseObj*, mObjectA, ObjectA);
+    CC_SYNTHESIZE_READONLY(BaseObj*, mObjectB, ObjectB);
 };
 

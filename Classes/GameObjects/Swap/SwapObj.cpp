@@ -9,22 +9,22 @@
 */
 
 #include "GameObjects/Swap/SwapObj.h"
-#include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/Base/BaseObj.h"
 
 //--------------------------------------------------------------------
 SwapObj::~SwapObj()
 //--------------------------------------------------------------------
 {
-    mCookieA = nullptr;
-    mCookieB = nullptr;
+    mObjectA = nullptr;
+    mObjectB = nullptr;
 }
 
 //--------------------------------------------------------------------
-SwapObj* SwapObj::createWithCookies(CookieObj * cookieA, CookieObj * cookieB)
+SwapObj* SwapObj::createWithObjects(BaseObj * objectA, BaseObj * objectB)
 //--------------------------------------------------------------------
 {
     SwapObj* ret = new (std::nothrow) SwapObj();
-    if (ret && ret->initWithCookies(cookieA, cookieB)) {
+    if (ret && ret->initWithObjects(objectA, objectB)) {
         ret->autorelease();
     }
     else {
@@ -34,7 +34,7 @@ SwapObj* SwapObj::createWithCookies(CookieObj * cookieA, CookieObj * cookieB)
 }
 
 //--------------------------------------------------------------------
-bool SwapObj::initWithCookies(CookieObj * cookieA, CookieObj * cookieB)
+bool SwapObj::initWithObjects(BaseObj * objectA, BaseObj * objectB)
 //--------------------------------------------------------------------
 {
     if (!Node::init()) {
@@ -42,12 +42,12 @@ bool SwapObj::initWithCookies(CookieObj * cookieA, CookieObj * cookieB)
         return false;
     }
 
-    if (!cookieA || !cookieB) {
-        cocos2d::log("SwapObj::initWithCookies: broken cookie pointers: A=%p; B=%p", cookieA, cookieB);
+    if (!objectA || !objectB) {
+        cocos2d::log("SwapObj::initWithCookies: broken cookie pointers: A=%p; B=%p", objectA, objectB);
         return false;
     }
-    mCookieA = cookieA;
-    mCookieB = cookieB;
+    mObjectA = objectA;
+    mObjectB = objectB;
 
     return true;
 }
@@ -57,16 +57,16 @@ std::string SwapObj::description()
 //--------------------------------------------------------------------
 {
     auto str = cocos2d::StringUtils::format("swap type:%d square:(%d,%d) with type:%d square:(%d,%d),"
-        , mCookieA->getTypeAsInt(), mCookieA->getColumn(), mCookieA->getRow(), mCookieB->getTypeAsInt()
-        , mCookieB->getColumn(), mCookieB->getRow());
+        , mObjectA->getTypeAsInt(), mObjectA->getColumn(), mObjectA->getRow(), mObjectB->getTypeAsInt()
+        , mObjectB->getColumn(), mObjectB->getRow());
     //cocos2d::log("GameplayScene::trySwapCookieTo: %s;", str.c_str());
     return str;
 }
 
 //--------------------------------------------------------------------
 SwapObj::SwapObj()
-    : mCookieA(nullptr)
-    , mCookieB(nullptr)
+    : mObjectA(nullptr)
+    , mObjectB(nullptr)
 //--------------------------------------------------------------------
 {
 }

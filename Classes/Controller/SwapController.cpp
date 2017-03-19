@@ -9,6 +9,7 @@
 */
 
 #include "Controller/SwapController.h"
+#include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/ObjectController.h"
 
 #include "GameObjects/Swap/SwapObj.h"
@@ -107,23 +108,27 @@ void SwapController::detectSwap(SwapChecker * checker)
 {
     CC_ASSERT(checker);
     auto objCtrl = mLevel->getObjectController();
-    auto cookie = objCtrl->cookieAt(checker->curCol, checker->curRow);
+
+    auto currContainer = objCtrl->getObject(checker->curCol, checker->curRow);
+    auto nextContainer = objCtrl->getObject(checker->nextCol, checker->nextRow);
+
+    auto currObject = currContainer->getObjectForChain();
+    auto nextObject = nextContainer->getObjectForChain();
     // Have a cookie in this spot? If there is no tile, there is no cookie.
-    auto other = objCtrl->cookieAt(checker->nextCol, checker->nextRow);
-    if (cookie && other) {
+    if (currObject && nextObject) {
         // Swap them
-        objCtrl->updateObjectAt(checker->curCol, checker->curRow, other);
-        objCtrl->updateObjectAt(checker->nextCol, checker->nextRow, cookie);
+        currContainer->updateObjectWith(currObject, nextObject);
+        nextContainer->updateObjectWith(nextObject, currObject);
 
         // Is either cookie now part of a chain?
         if (objCtrl->hasChainAt(checker->nextCol, checker->nextRow) || objCtrl->hasChainAt(checker->curCol, checker->curRow)) {
 
-            SwapObj *swap = SwapObj::createWithCookies(cookie, other);
+            SwapObj *swap = SwapObj::createWithObjects(currObject, nextObject);
             checker->set->addObject(swap);
         }
         // Swap them back
-        objCtrl->updateObjectAt(checker->curCol, checker->curRow, cookie);
-        objCtrl->updateObjectAt(checker->nextCol, checker->nextRow, other);
+        currContainer->updateObjectWith(nextObject, currObject);
+        nextContainer->updateObjectWith(currObject, nextObject);
     }
 }
 
@@ -136,10 +141,10 @@ bool SwapController::isPossibleSwap(SwapObj * swap)
         auto other = static_cast<SwapObj*>(*it);
         if (!other)
             continue;
-        if ((other->getCookieA() == swap->getCookieA() && other->getCookieB() == swap->getCookieB()) ||
-            (other->getCookieB() == swap->getCookieA() && other->getCookieA() == swap->getCookieB())) {
+        if ((other->getObjectA() == swap->getObjectA() && other->getObjectB() == swap->getObjectB()) ||
+            (other->getObjectB() == swap->getObjectA() && other->getObjectA() == swap->getObjectB())) {
 
-            if (swap->getCookieA()->isSwappable() && swap->getCookieB()->isSwappable()) {
+            if (swap->getObjectA()->isSwappable() && swap->getObjectB()->isSwappable()) {
                 return true;
             }
         }            
@@ -155,19 +160,19 @@ void SwapController::performSwap(SwapObj * swap)
         return;
     
     cocos2d::log("performSwap::performSwap: %s", swap->description().c_str());
-    int columnA = swap->getCookieA()->getColumn();
-    int rowA = swap->getCookieA()->getRow();
-    int columnB = swap->getCookieB()->getColumn();
-    int rowB = swap->getCookieB()->getRow();
+    int columnA = swap->getObjectA()->getColumn();
+    int rowA = swap->getObjectA()->getRow();
+    int columnB = swap->getObjectB()->getColumn();
+    int rowB = swap->getObjectB()->getRow();
 
     auto objCtrl = mLevel->getObjectController();
-    objCtrl->updateObjectAt(columnA, rowA, swap->getCookieB());
-    swap->getCookieB()->setColumn(columnA);
-    swap->getCookieB()->setRow(rowA);
+    objCtrl->updateObjectAt(columnA, rowA, swap->getObjectB());
+    swap->getObjectB()->setColumn(columnA);
+    swap->getObjectB()->setRow(rowA);
 
-    objCtrl->updateObjectAt(columnB, rowB, swap->getCookieA());
-    swap->getCookieA()->setColumn(columnB);
-    swap->getCookieA()->setRow(rowB);
+    objCtrl->updateObjectAt(columnB, rowB, swap->getObjectA());
+    swap->getObjectA()->setColumn(columnB);
+    swap->getObjectA()->setRow(rowB);
 }
 
 //--------------------------------------------------------------------
@@ -201,7 +206,7 @@ bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
     if (!mSwapCallback)
         return false;
 
-    SwapObj* swap = SwapObj::createWithCookies(fromCookie, toCookie);
+    SwapObj* swap = SwapObj::createWithObjects(fromCookie, toCookie);
     if (!swap)
         return false;
 
