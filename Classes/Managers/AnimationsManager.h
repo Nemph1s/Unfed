@@ -41,8 +41,6 @@ public:
 
     void animateBouncingObj(BaseObj* obj);
     
-    void animateRemoveDude(BaseObj* obj, cocos2d::CallFunc* completion);
-
 protected:
     void animateMatchCookie(CookieObj* obj);
     void animateMatchFieldObj(FieldObj* obj);
