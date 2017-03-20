@@ -15,11 +15,11 @@
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
-#include "Common/Factory/SmartFactory.h"
+#include "Common/Factory/SmartObjFactory.h"
 
 // #include "Controller/ObjectController/Dude/DudeController.h"
 // 
-// #include "Common/Factory/SmartFactory.h"
+// #include "Common/Factory/SmartObjFactory.h"
 // #include "GameObjects/Level/LevelObj.h"
 // 
 // #include "Utils/Parser/JsonParser.h"
@@ -46,23 +46,23 @@ ObjContainer::~ObjContainer()
 //--------------------------------------------------------------------
 {
     if (mTileObj) {
-        SmartFactory->recycle(mTileObj);
+        SmartObjFactory->recycle(mTileObj);
         mTileObj = nullptr;
     }
     
     if (mCookieObj) {
-        SmartFactory->recycle(mCookieObj);
+        SmartObjFactory->recycle(mCookieObj);
         mCookieObj = nullptr;
     }
     
     if (mDudeObj) {
-        SmartFactory->recycle(mDudeObj);
+        SmartObjFactory->recycle(mDudeObj);
         mDudeObj = nullptr;
     }
     
     while (mFieldObjects.size() > 0) {
         if (mFieldObjects.front()) {
-            SmartFactory->recycle(mFieldObjects.front());
+            SmartObjFactory->recycle(mFieldObjects.front());
         }        
         mFieldObjects.pop_front();
     }
@@ -369,7 +369,7 @@ void ObjContainer::onRemoveCookie(BaseObj* obj)
             mCookieObj->removeFromParent();
         }
         mObjectInChain = nullptr;
-        SmartFactory->recycle(mCookieObj);
+        SmartObjFactory->recycle(mCookieObj);
         removeObject(BaseObjType::Cookie);
     }
 }
@@ -393,7 +393,7 @@ void ObjContainer::onRemoveDude(BaseObj * obj)
             eraseDirectionsFunc(obj);
         }
         mObjectInChain = nullptr;
-        SmartFactory->recycle(mDudeObj);
+        SmartObjFactory->recycle(mDudeObj);
         removeObject(BaseObjType::Dude);
     }
 }
@@ -413,7 +413,7 @@ void ObjContainer::onFieldObjChangeState(BaseObj* obj, std::function<void(FieldO
             createSpriteFunc(fieldObj);
         }
         else if (fieldObj->isHpEnded()) {
-            SmartFactory->recycle(fieldObj);
+            SmartObjFactory->recycle(fieldObj);
 
             removeObject(BaseObjType::Field);
 

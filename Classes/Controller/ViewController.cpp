@@ -18,7 +18,7 @@
 #include "Managers/AudioManager.h"
 #include "Managers/GuiManager.h"
 
-#include "Common/Factory/SmartFactory.h"
+#include "Common/Factory/SmartObjFactory.h"
 
 #include "GameObjects/Swap/SwapObj.h"
 #include "GameObjects/Level/LevelObj.h"
@@ -122,8 +122,8 @@ bool ViewController::initGameScene()
     AudioManager->init();
     AnimationsManager->initWithScene(mGameplayScene);
 
-    SmartFactory->initTilesPool(NumColumns * NumRows);
-    SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
+    SmartObjFactory->initTilesPool(NumColumns * NumRows);
+    SmartObjFactory->initCookiesPool((NumColumns * NumRows) * 2);
 
     return true;
 }

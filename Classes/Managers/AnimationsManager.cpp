@@ -21,7 +21,7 @@
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
 #include "Common/CommonTypes.h"
-#include "Common/Factory/SmartFactory.h"
+#include "Common/Factory/SmartObjFactory.h"
 
 #include "Scenes/GameplayScene.h"
 #include "Layers/CookiesLayer.h"

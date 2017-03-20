@@ -22,7 +22,7 @@
 #include "Utils/Helpers/Helper.h"
 #include "Utils/Parser/JsonParser.h"
 
-#include "Common/Factory/SmartFactory.h"
+#include "Common/Factory/SmartObjFactory.h"
 #include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/ObjectController.h"
 #include "Controller/ObjectController/Dude/DudeController.h"

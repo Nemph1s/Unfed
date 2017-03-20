@@ -12,7 +12,7 @@
 #include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/Dude/DudeController.h"
 
-#include "Common/Factory/SmartFactory.h"
+#include "Common/Factory/SmartObjFactory.h"
 
 #include "Utils/Parser/JsonParser.h"
 #include "Utils/Helpers/Helper.h"
@@ -140,7 +140,7 @@ BaseObj * ObjectController::createTile(int column, int row, int type)
 {
     BaseObjInfo baseInfo = { BaseObjType::Tile, column, row };
     TileInfo info = { baseInfo, static_cast<TileType>(type) };
-    auto tile = SmartFactory->createTileObj(info);
+    auto tile = SmartObjFactory->createTileObj(info);
     CC_ASSERT(tile);
     getObject(column, row)->addObject(tile);
     return tile;
@@ -152,7 +152,7 @@ BaseObj * ObjectController::createCookie(int column, int row, int type)
 {
     BaseObjInfo baseInfo = { BaseObjType::Cookie, column, row };
     CookieInfo info = { baseInfo, static_cast<CookieType>(type) };
-    auto cookie = SmartFactory->createCookieObj(info);
+    auto cookie = SmartObjFactory->createCookieObj(info);
     CC_ASSERT(cookie);
     getObject(column, row)->addObject(cookie);
     return cookie;
@@ -164,7 +164,7 @@ BaseObj * ObjectController::createFieldObject(int column, int row, int type, int
 {
     BaseObjInfo baseInfo = { BaseObjType::Field, column, row };
     FieldInfo info = { baseInfo, static_cast<FieldType>(type), priority };
-    auto obj = SmartFactory->createFieldObj(info);
+    auto obj = SmartObjFactory->createFieldObj(info);
     CC_ASSERT(obj);
     getObject(column, row)->addObject(obj);
     return obj;
@@ -444,7 +444,7 @@ void ObjectController::removeCookie(int column, int row)
     if (cookie->getParent()) {
         cookie->removeFromParent();
     }
-    SmartFactory->recycle(cookie);
+    SmartObjFactory->recycle(cookie);
     getObject(column, row)->removeObject(BaseObjType::Cookie);
 }
 

@@ -15,7 +15,7 @@
 
 #include "Controller/ChainController.h"
 
-#include "Common/Factory/SmartFactory.h"
+#include "Common/Factory/SmartObjFactory.h"
 
 #include "Utils/Parser/JsonParser.h"
 #include "Utils/Helpers/Helper.h"
@@ -100,7 +100,7 @@ BaseObj * DudeController::createDudeObject(int column, int row, int type)
 {
     BaseObjInfo baseInfo = { BaseObjType::Dude, column, row };
     FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
-    auto obj = dynamic_cast<DudeObj*>(SmartFactory->createDudeObj(info));
+    auto obj = dynamic_cast<DudeObj*>(SmartObjFactory->createDudeObj(info));
     CC_ASSERT(obj);
     mObjCtrl->getObject(column, row)->addObject(obj);
     //mDudeObjects[column][row] = obj;
@@ -361,7 +361,7 @@ void DudeController::removeDude(int column, int row, bool removeWithCleanup)
         }
         cocos2d::log("DudeController::removeDude: remove %s", dude->description().getCString());
 
-        SmartFactory->recycle(dude);
+        SmartObjFactory->recycle(dude);
         mDudeDirections.erase(dude);
     }
     
