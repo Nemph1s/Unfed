@@ -51,8 +51,8 @@ void _AnimationsManager::animateSwap(SwapObj* swap, cocos2d::CallFunc* completio
     CC_ASSERT(completion);
     // Put the cookie you started with on top.
 
-    auto cookieA = swap->getCookieA()->getSpriteNode();
-    auto cookieB = swap->getCookieB()->getSpriteNode();
+    auto cookieA = swap->getObjectA()->getSpriteNode();
+    auto cookieB = swap->getObjectB()->getSpriteNode();
 
     cookieA->setLocalZOrder(100);
     cookieB->setLocalZOrder(90);
@@ -67,8 +67,8 @@ void _AnimationsManager::animateSwap(SwapObj* swap, cocos2d::CallFunc* completio
     auto easeB = EaseOut::create(moveB, duration);
     cookieB->runAction(easeB);
     
-    swap->getCookieA()->updateDebugLabel();
-    swap->getCookieB()->updateDebugLabel();
+    swap->getObjectA()->updateDebugLabel();
+    swap->getObjectB()->updateDebugLabel();
 }
 
 //--------------------------------------------------------------------
@@ -79,8 +79,8 @@ void _AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* co
     CC_ASSERT(completion);
     // Put the cookie you started with on top.
 
-    auto cookieA = swap->getCookieA()->getSpriteNode();
-    auto cookieB = swap->getCookieB()->getSpriteNode();
+    auto cookieA = swap->getObjectA()->getSpriteNode();
+    auto cookieB = swap->getObjectB()->getSpriteNode();
 
     cookieA->setLocalZOrder(100);
     cookieB->setLocalZOrder(90);

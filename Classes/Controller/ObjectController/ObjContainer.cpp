@@ -217,6 +217,45 @@ bool ObjContainer::removeObject(const CommonTypes::BaseObjType& type)
     return result;
 }
 
+//--------------------------------------------------------------------
+void ObjContainer::updateObjectWith(BaseObj* currObj, BaseObj* newObj)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(currObj);
+    CC_ASSERT(newObj);
+    //You can swap only cookie or dude
+    if (currObj->getType() == BaseObjType::Cookie) {
+        mCookieObj = nullptr;
+    }
+    else if (currObj->getType() == BaseObjType::Dude) {
+        mDudeObj = nullptr;
+    }
+
+    if (newObj->getType() == BaseObjType::Cookie) {
+        mCookieObj = dynamic_cast<CookieObj*>(newObj);
+    }
+    else if (newObj->getType() == BaseObjType::Dude) {
+        mDudeObj = dynamic_cast<DudeObj*>(newObj);
+    }
+}
+
+//--------------------------------------------------------------------
+void ObjContainer::synchronizeTilePos()
+//--------------------------------------------------------------------
+{
+    if (mTileObj) {
+        if (mDudeObj) {
+            mDudeObj->setColumn(mTileObj->getColumn());
+            mDudeObj->setRow(mTileObj->getRow());
+            mDudeObj->updateDebugLabel();
+        }
+        if (mCookieObj) {
+            mCookieObj->setColumn(mTileObj->getColumn());
+            mCookieObj->setRow(mTileObj->getRow());
+            mCookieObj->updateDebugLabel();
+        }
+    }
+}
 
 //--------------------------------------------------------------------
 bool ObjContainer::isEmptyTileAt()
