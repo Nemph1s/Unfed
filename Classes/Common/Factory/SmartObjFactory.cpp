@@ -85,7 +85,7 @@ bool _SmartObjFactory::initTilesPool(int poolSize)
     bool result = false;
 
     do {
-        mTileObjPool = new TBaseObjList;
+        mTileObjPool = new TBaseObjList; //TODO: remove in destructor
         CCASSERT(mTileObjPool, "error while creating mTileObjPool");
 
         while (poolSize--) {
