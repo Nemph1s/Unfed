@@ -71,7 +71,8 @@ bool SwapController::detectPossibleSwaps()
     for (int row = 0; row < CommonTypes::NumRows; row++) {
         for (int column = 0; column < CommonTypes::NumColumns; column++) {
             auto objCtrl = mLevel->getObjectController();
-            if (nullptr == objCtrl->cookieAt(column, row)) {
+            auto container = objCtrl->getObject(column, row);
+            if (nullptr == container->getObjectForChain()) {
                 continue;
             }
             // Is it possible to swap this cookie with the one on the right?
@@ -166,13 +167,17 @@ void SwapController::performSwap(SwapObj * swap)
     int rowB = swap->getObjectB()->getRow();
 
     auto objCtrl = mLevel->getObjectController();
-    objCtrl->updateObjectAt(columnA, rowA, swap->getObjectB());
-    swap->getObjectB()->setColumn(columnA);
-    swap->getObjectB()->setRow(rowA);
 
-    objCtrl->updateObjectAt(columnB, rowB, swap->getObjectA());
-    swap->getObjectA()->setColumn(columnB);
-    swap->getObjectA()->setRow(rowB);
+    auto currContainer = objCtrl->getObject(columnA, rowA);
+    auto nextContainer = objCtrl->getObject(columnB, rowB);
+
+    auto currObject = currContainer->getObjectForChain();
+    auto nextObject = nextContainer->getObjectForChain();
+
+    currContainer->updateObjectWith(currObject, nextObject);
+    nextContainer->updateObjectWith(nextObject, currObject);
+    currContainer->synchronizeTilePos();
+    nextContainer->synchronizeTilePos();
 }
 
 //--------------------------------------------------------------------
@@ -192,16 +197,24 @@ bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
         return false;
 
     auto objCtrl = mLevel->getObjectController();
-    CookieObj* toCookie = objCtrl->cookieAt(toColumn, toRow);
+    auto toCookie = objCtrl->getObject(toColumn, toRow)->getObjectForChain();
     if (!toCookie)
         return false;
 
-    CookieObj* fromCookie = objCtrl->cookieAt(fromCol, fromRow);
+    auto fromCookie = objCtrl->getObject(fromCol, fromRow)->getObjectForChain();
     if (!fromCookie)
         return false;
 
-    cocos2d::log("GameplayScene::trySwapCookieTo: fromCookie=[%d,%d]; toCookie=[%d][%d];"
-        , fromCookie->getColumn(), fromCookie->getRow(), toCookie->getColumn(), toCookie->getRow());
+    cocos2d::log("GameplayScene::trySwapCookieTo: swap type:%d square:(%d,%d) with type:%d square:(%d,%d),"
+        , fromCookie->getTypeAsInt(), fromCookie->getColumn(), fromCookie->getRow(), toCookie->getTypeAsInt()
+        , toCookie->getColumn(), toCookie->getRow());
+
+    auto cookieType = CommonTypes::BaseObjType::Cookie;
+
+    if (fromCookie->getType() != cookieType && toCookie->getType() != cookieType) {
+        cocos2d::log("GameplayScene::trySwapCookieTo: cant swap non cookies obj");
+        return false;
+    } 
 
     if (!mSwapCallback)
         return false;

@@ -239,6 +239,23 @@ void ObjContainer::updateObjectWith(BaseObj* currObj, BaseObj* newObj)
     }
 }
 
+//--------------------------------------------------------------------
+void ObjContainer::synchronizeTilePos()
+//--------------------------------------------------------------------
+{
+    if (mTileObj) {
+        if (mDudeObj) {
+            mDudeObj->setColumn(mTileObj->getColumn());
+            mDudeObj->setRow(mTileObj->getRow());
+            mDudeObj->updateDebugLabel();
+        }
+        if (mCookieObj) {
+            mCookieObj->setColumn(mTileObj->getColumn());
+            mCookieObj->setRow(mTileObj->getRow());
+            mCookieObj->updateDebugLabel();
+        }
+    }
+}
 
 //--------------------------------------------------------------------
 bool ObjContainer::isEmptyTileAt()

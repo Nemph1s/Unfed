@@ -40,6 +40,7 @@ public:
     bool removeObject(const CommonTypes::BaseObjType& type);
 
     void updateObjectWith(BaseObj* currObj, BaseObj* newObj);
+    void synchronizeTilePos();
 
     BaseObj* getObject(const CommonTypes::BaseObjType& type) const;
     FieldObj* getFieldObject() const;
