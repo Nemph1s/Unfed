@@ -10,6 +10,8 @@
 
 #include "Scenes/GameplayScene.h"
 
+#include "Common/Factory/SpritesFactory.h"
+
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
@@ -124,7 +126,8 @@ void GameplayScene::addTiles()
 				continue;
 			}
             auto tile = objCtrl->tileAt(column, row);
-			auto tileSprite = Sprite::create(GameResources::s_TileImg.getCString());
+            auto tileSprite = SpritesFactory->createWithBaseObject(tile);
+            tileSprite->setVisible(true);
             tileSprite->setPosition(Helper::pointForColumnAndRow(column, row));
             tileSprite->setOpacity(127);
             tile->setSpriteNode(tileSprite);
@@ -198,7 +201,6 @@ void GameplayScene::removeAllCookieSprites()
 void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int row)
 //--------------------------------------------------------------------
 {
-    //TODO: use sprites factory
     mCookiesLayer->createSpriteWithObj(cookie, column, row);
 }
 
@@ -206,7 +208,6 @@ void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int r
 void GameplayScene::createSpriteWithDude(BaseObj * dudeObj)
 //--------------------------------------------------------------------
 {
-    //TODO: use sprites factory
     mCookiesLayer->createSpriteWithObj(dudeObj, dudeObj->getColumn(), dudeObj->getRow());
 }
 
@@ -214,19 +215,7 @@ void GameplayScene::createSpriteWithDude(BaseObj * dudeObj)
 void GameplayScene::createSpriteWithFieldObj(FieldObj * obj)
 //--------------------------------------------------------------------
 {
-    //TODO: use sprites factory
-    auto sprite = Sprite::create(obj->spriteName().getCString());
-
-    auto col = obj->getColumn();
-    auto row = obj->getRow();
-    auto zOrder = (row * 10);
-    auto priority = obj->getPriority();
-    auto pos = Helper::pointForColumnAndRowWithPriority(col, row, priority);
-
-    sprite->setPosition(pos);
-    sprite->setScale(1);
-    obj->setSpriteNode(sprite);
-    mFieldObjectsLayer->addChild(sprite, zOrder);
+    mCookiesLayer->createSpriteWithFieldObj(obj, obj->getColumn(), obj->getRow());
 }
 
 //--------------------------------------------------------------------

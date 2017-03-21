@@ -17,7 +17,7 @@ class CookieObj : public BaseObj
 CC_CONSTRUCTOR_ACCESS:
     virtual ~CookieObj();
 
-/*    friend SmartFactory;*/
+/*    friend SmartObjFactory;*/
 
 public:
    /**

@@ -111,9 +111,6 @@
     <ClCompile Include="..\Classes\GameObjects\Swap\SwapObj.cpp">
       <Filter>src\GameObjects\Swap</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Common\Factory\SmartFactory.cpp">
-      <Filter>src\Common\Factory</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\GameObjects\Chain\ChainObj.cpp">
       <Filter>src\GameObjects\Chain</Filter>
     </ClCompile>
@@ -164,6 +161,12 @@
     </ClCompile>
     <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeController.cpp">
       <Filter>src\Controller\ObjectController\Dude</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Common\Factory\SmartObjFactory.cpp">
+      <Filter>src\Common\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Common\Factory\SpritesFactory.cpp">
+      <Filter>src\Common\Factory</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -221,9 +224,6 @@
     <ClInclude Include="..\Classes\GameObjects\Swap\SwapObj.h">
       <Filter>src\GameObjects\Swap</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Common\Factory\SmartFactory.h">
-      <Filter>src\Common\Factory</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\Chain\ChainObj.h">
       <Filter>src\GameObjects\Chain</Filter>
     </ClInclude>
@@ -280,6 +280,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeController.h">
       <Filter>src\Controller\ObjectController\Dude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Common\Factory\SmartObjFactory.h">
+      <Filter>src\Common\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Common\Factory\SpritesFactory.h">
+      <Filter>src\Common\Factory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

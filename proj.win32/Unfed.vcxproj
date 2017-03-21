@@ -145,7 +145,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
-    <ClCompile Include="..\Classes\Common\Factory\SmartFactory.cpp" />
+    <ClCompile Include="..\Classes\Common\Factory\SmartObjFactory.cpp" />
+    <ClCompile Include="..\Classes\Common\Factory\SpritesFactory.cpp" />
     <ClCompile Include="..\Classes\Controller\ChainController.cpp" />
     <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeController.cpp" />
     <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.cpp" />
@@ -180,7 +181,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\Common\CommonTypes.h" />
-    <ClInclude Include="..\Classes\Common\Factory\SmartFactory.h" />
+    <ClInclude Include="..\Classes\Common\Factory\SmartObjFactory.h" />
+    <ClInclude Include="..\Classes\Common\Factory\SpritesFactory.h" />
     <ClInclude Include="..\Classes\Controller\ChainController.h" />
     <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeController.h" />
     <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.h" />
