@@ -16,6 +16,7 @@
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 #include "Common/Factory/SmartObjFactory.h"
+#include "Common/Factory/SpritesFactory.h"
 
 // #include "Controller/ObjectController/Dude/DudeController.h"
 // 
@@ -360,16 +361,15 @@ void ObjContainer::onRemoveCookie(BaseObj* obj)
 //--------------------------------------------------------------------
 {
     if (mCookieObj == obj) {
-        if (mCookieObj->getSpriteNode()) {
-            mCookieObj->getSpriteNode()->removeFromParent();
-            mCookieObj->setSpriteNode(nullptr);
-        }
-
         if (mCookieObj->getParent()) {
             mCookieObj->removeFromParent();
         }
         mObjectInChain = nullptr;
-        SmartObjFactory->recycle(mCookieObj);
+        SpritesFactory->recycle(mCookieObj->getSpriteNode(), mCookieObj);
+        if (mCookieObj->getSpriteNode()) {
+            mCookieObj->setSpriteNode(nullptr);
+        }
+        SmartObjFactory->recycle(mCookieObj);        
         removeObject(BaseObjType::Cookie);
     }
 }
@@ -379,11 +379,6 @@ void ObjContainer::onRemoveDude(BaseObj * obj)
 //--------------------------------------------------------------------
 {
     if (mDudeObj == obj) {
-        if (mDudeObj->getSpriteNode()) {
-            mDudeObj->getSpriteNode()->removeFromParent();
-            mDudeObj->setSpriteNode(nullptr);
-        }
-
         if (mDudeObj->getParent()) {
             mDudeObj->removeFromParent();
         }
@@ -393,7 +388,11 @@ void ObjContainer::onRemoveDude(BaseObj * obj)
             eraseDirectionsFunc(obj);
         }
         mObjectInChain = nullptr;
-        SmartObjFactory->recycle(mDudeObj);
+        SpritesFactory->recycle(mDudeObj->getSpriteNode(), mDudeObj);
+        if (mDudeObj->getSpriteNode()) {
+            mDudeObj->setSpriteNode(nullptr);
+        }
+        SmartObjFactory->recycle(mDudeObj);        
         removeObject(BaseObjType::Dude);
     }
 }
@@ -404,17 +403,16 @@ void ObjContainer::onFieldObjChangeState(BaseObj* obj, std::function<void(FieldO
 {
     auto fieldObj = getFieldObject();
     if (fieldObj == obj) {
-        if (fieldObj->getSpriteNode()) {
-            fieldObj->getSpriteNode()->removeFromParent();
-            fieldObj->setSpriteNode(nullptr);
-        }
         mObjectInChain = nullptr;
         if (fieldObj->getHP() > 0) {
             createSpriteFunc(fieldObj);
         }
         else if (fieldObj->isHpEnded()) {
+            SpritesFactory->recycle(fieldObj->getSpriteNode(), fieldObj);
+            if (fieldObj->getSpriteNode()) {
+                fieldObj->setSpriteNode(nullptr);
+            }
             SmartObjFactory->recycle(fieldObj);
-
             removeObject(BaseObjType::Field);
 
             for (auto it = mFieldObjects.begin(); it != mFieldObjects.end(); ++it) {

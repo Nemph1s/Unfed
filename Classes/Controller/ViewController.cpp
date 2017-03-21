@@ -160,6 +160,8 @@ bool ViewController::initSpritesFactory()
     auto cookiesPoolSize = (NumColumns * NumRows);
     SpritesFactory->initCookiesPool(cookiesPoolSize / 2);
     SpritesFactory->initDudesPool(NumRows / 2);
+    auto fieldObjsPoolSize = mLevel->getLevelInfo().fieldObjects.size();
+    SpritesFactory->initFieldObjectsPool(fieldObjsPoolSize);
 
     return true;
 }
