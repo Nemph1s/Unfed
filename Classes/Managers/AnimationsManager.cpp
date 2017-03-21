@@ -436,7 +436,7 @@ void _AnimationsManager::animateBouncingObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateHintSwap(CommonTypes::Set* objects)
+void _AnimationsManager::animateHintSwap(CommonTypes::Set* objects, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(objects);
@@ -447,6 +447,8 @@ void _AnimationsManager::animateHintSwap(CommonTypes::Set* objects)
             animateBouncingObj(obj);
         }
     }
+
+    mCurrentScene->runAction(Sequence::create(DelayTime::create(0.8f), completion, nullptr));
 }
 
 //--------------------------------------------------------------------

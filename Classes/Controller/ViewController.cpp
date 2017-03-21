@@ -37,7 +37,9 @@ using namespace std::placeholders;
 #define COCOS2D_DEBUG 1
 #define UNFED_ENABLE_DEBUG 1
 
-#define CURRENT_LEVEL 2
+const float showHintInterval = 6.0f;
+
+#define CURRENT_LEVEL 6
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
@@ -460,14 +462,16 @@ void ViewController::activateChainCallback(CommonTypes::ChainType & type, cocos2
 void ViewController::startHintTimer()
 //--------------------------------------------------------------------
 {
-    Director::getInstance()->getScheduler()->schedule(schedule_selector(ViewController::showSwapHint), this,  10, 0);
+    auto selector = schedule_selector(ViewController::showSwapHint);
+    Director::getInstance()->getScheduler()->schedule(selector, this, showHintInterval, 0);
 }
 
 //--------------------------------------------------------------------
 void ViewController::stopHintTimer()
 //--------------------------------------------------------------------
 {
-    Director::getInstance()->getScheduler()->unschedule(schedule_selector(ViewController::showSwapHint), this);
+    auto selector = schedule_selector(ViewController::showSwapHint);
+    Director::getInstance()->getScheduler()->unschedule(selector, this);
 }
 
 //--------------------------------------------------------------------
@@ -478,9 +482,15 @@ void ViewController::showSwapHint(float dt)
 
     auto swapObj = dynamic_cast<SwapObj*>(mSwapController->getPossibleSwaps()->anyObject());
     if (swapObj) {
+        mGameplayScene->userInteractionDisabled();
         set->addObject(swapObj->getObjectA());
         set->addObject(swapObj->getObjectB());
 
-        AnimationsManager->animateHintSwap(set);
+        auto callback = CallFunc::create([=]() {
+            // enable touches on layer.
+            mGameplayScene->userInteractionEnabled();
+        });
+
+        AnimationsManager->animateHintSwap(set, callback);
     }
 }
