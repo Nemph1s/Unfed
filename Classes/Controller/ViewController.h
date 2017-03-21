@@ -44,6 +44,7 @@ protected:
 
     bool initGameScene();
     bool initLevel();
+    bool initSpritesFactory();
     bool initObjectController();
     bool initSwapController();
     bool initChainController();

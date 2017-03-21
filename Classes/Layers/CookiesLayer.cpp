@@ -13,6 +13,9 @@
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
+#include "Common/Factory/SpritesFactory.h"
+#include "Scenes/GameplayScene.h"
+
 #include "Managers/AnimationsManager.h"
 #include "Controller/ObjectController/ObjectController.h"
 
@@ -330,9 +333,9 @@ int CookiesLayer::getSwipeDirection(int column, int row)
 void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
 //--------------------------------------------------------------------
 {
-    //TODO: use sprites factory
     if (obj) {
-        auto sprite = Sprite::create(obj->spriteName().getCString());
+        auto sprite = SpritesFactory->createWithBaseObject(obj);
+        sprite->setVisible(true);
         sprite->setPosition(Helper::pointForColumnAndRow(column, row));
         obj->setSpriteNode(sprite);
 
@@ -342,7 +345,9 @@ void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
             mDudesLayer->addChild(obj, zOrder);
         } else {
             this->addChild(sprite, zOrder);
-            this->addChild(obj, zOrder);
+            if (!obj->getParent()) {
+                this->addChild(obj, zOrder);
+            }
         }
         if (obj->getType() != BaseObjType::Tile) {
             obj->updateDebugLabel();
@@ -351,12 +356,12 @@ void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::createSpriteWithFieldObj(FieldObj * obj, int column, int row)
+void CookiesLayer::createSpriteWithFieldObj(FieldObj* obj, int column, int row)
 //--------------------------------------------------------------------
 {
-    //TODO: use sprites factory
     if (obj) {
-        auto sprite = Sprite::create(obj->spriteName().getCString());
+        auto sprite = SpritesFactory->createWithBaseObject(obj);
+        sprite->setVisible(true);
         obj->setSpriteNode(sprite);
 
         auto priority = obj->getPriority();
@@ -366,7 +371,13 @@ void CookiesLayer::createSpriteWithFieldObj(FieldObj * obj, int column, int row)
         sprite->setPosition(pos);
         sprite->setScale(1);
 
-        this->addChild(sprite, zOrder);
-        this->addChild(obj, zOrder);
+        auto gameLayer = this->getParent();
+        auto scene = dynamic_cast<GameplayScene*>(gameLayer->getParent());
+        CC_ASSERT(scene);
+
+        scene->getFieldObjectsLayer()->addChild(sprite, zOrder);
+        if (!obj->getParent()) {
+            this->addChild(obj, zOrder);
+        }       
     }
 }

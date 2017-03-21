@@ -13,16 +13,20 @@
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
-#include "GameObjects/TileObjects/Base/BaseObj.h"
+#include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/DudeObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
-#include "GameObjects/TileObjects/FieldObjects/DirtObject.h"
-#include "GameObjects/TileObjects/FieldObjects/BushObj.h"
-#include "GameObjects/TileObjects/FieldObjects/RockObj.h"
 
 using namespace CommonTypes;
+
+const std::map<FieldType, cocos2d::String*> FieldTypeNames = {
+    { FieldType::Bush, &GameResources::s_BushCorruptedImg }
+    , { FieldType::Bush_HP2, &GameResources::s_BushNormalImg }
+    , { FieldType::Dirt, &GameResources::s_DirtImg }
+    , { FieldType::Dirt_HP2, &GameResources::s_DirtX2Img }
+    , { FieldType::RockWall, &GameResources::s_RockImg } };
 
 //--------------------------------------------------------------------
 _SpritesFactory * _SpritesFactory::getInstance()
@@ -51,50 +55,13 @@ Sprite* _SpritesFactory::createWithBaseObject(BaseObj* obj)
         sprite = createForFieldObj(obj);
         break;
     case BaseObjType::Dude:
-        sprite = createForFieldObj(obj);
+        sprite = createForDudeObj(obj);
         break;
     case BaseObjType::Unknown:
     default:
         break;
     }
     return sprite;
-}
-
-//--------------------------------------------------------------------
-bool _SpritesFactory::initCookiesPool(int poolSize)
-//--------------------------------------------------------------------
-{
-    auto cookieTypeInt = Helper::to_underlying(CookieType::Croissant);
-    auto cookieTypeMax = Helper::to_underlying(CommonTypes::CookieType::CookieMax) - 1;
-    while(cookieTypeInt != cookieTypeMax) {
-        auto cookieList = new TSpriteList;
-        CCASSERT(cookieList, "error while creating cookieList with type:%d", cookieTypeInt);
-
-        auto cookiePoolSize = poolSize;
-        while (cookiePoolSize--) {
-            auto sprite = Sprite::create(GameResources::s_cookieSpriteNames.at(cookieTypeInt).getCString());
-            sprite->setTag(cookieTypeInt);
-            sprite->setVisible(false);
-            CC_SAFE_RETAIN(sprite);
-            CCASSERT(sprite, "error while creating sprite for CookieObj with type:%d", cookieTypeInt);
-
-            cookieList->push_back(sprite);
-        }
-        auto type = static_cast<CookieType>(cookieTypeInt);
-        mCookieSpritesPool[type] = cookieList;
-        cocos2d::log("SpritesFactory::initCookiesPool: actual cookieList type=%d size=%d", cookieTypeInt, cookieList->size());
-        cookieTypeInt++;
-    };
-
-    cocos2d::log("SpritesFactory::initCookiesPool: actual mCookieSpritesPool size=%d", mCookieSpritesPool.size());
-    return true;
-}
-
-//--------------------------------------------------------------------
-bool _SpritesFactory::initFieldObjectsPool(int poolSize)
-//--------------------------------------------------------------------
-{
-    return false;
 }
 
 //--------------------------------------------------------------------
@@ -123,14 +90,108 @@ bool _SpritesFactory::initTilesPool(int poolSize)
 }
 
 //--------------------------------------------------------------------
-void _SpritesFactory::recycle(Sprite* spriteNode, CommonTypes::BaseObjType & type)
+bool _SpritesFactory::initCookiesPool(int poolSize)
+//--------------------------------------------------------------------
+{
+    auto cookieTypeInt = Helper::to_underlying(CookieType::Croissant);
+    auto cookieTypeMax = Helper::to_underlying(CommonTypes::CookieType::CookieMax);
+    while(cookieTypeInt != cookieTypeMax) {
+        auto cookieList = new TSpriteList;
+        CCASSERT(cookieList, "error while creating cookieLis");
+
+        auto cookiePoolSize = poolSize;
+        while (cookiePoolSize--) {
+            auto sprite = Sprite::create(GameResources::s_cookieSpriteNames.at(cookieTypeInt).getCString());
+            sprite->setTag(cookieTypeInt);
+            sprite->setVisible(false);
+            CC_SAFE_RETAIN(sprite);
+            CCASSERT(sprite, "error while creating sprite for CookieObj");
+
+            cookieList->push_back(sprite);
+        }
+        auto type = static_cast<CookieType>(cookieTypeInt);
+        mCookieSpritesPool[type] = cookieList;
+        cocos2d::log("SpritesFactory::initCookiesPool: actual cookieList type=%d size=%d", cookieTypeInt, cookieList->size());
+        cookieTypeInt++;
+    };
+
+    cocos2d::log("SpritesFactory::initCookiesPool: actual mCookieSpritesPool size=%d", mCookieSpritesPool.size());
+    return true;
+}
+
+//--------------------------------------------------------------------
+bool _SpritesFactory::initFieldObjectsPool(int poolSize)
+//--------------------------------------------------------------------
+{
+    for (auto fieldName : FieldTypeNames) {
+        
+        auto fieldTypeInt = Helper::to_underlying(fieldName.first);
+        auto fieldList = new TSpriteList;
+        CCASSERT(fieldList, "error while creating fieldList");
+
+        auto fieldObjsPoolSize = poolSize;
+        while (fieldObjsPoolSize--) {
+            auto sprite = Sprite::create(fieldName.second->getCString());
+            sprite->setTag(fieldTypeInt);
+            sprite->setVisible(false);
+            CC_SAFE_RETAIN(sprite);
+            CCASSERT(sprite, "error while creating sprite for FieldObj");
+
+            fieldList->push_back(sprite);
+        }
+        mFieldSpritesPool[fieldName.first] = fieldList;
+        cocos2d::log("SpritesFactory::initFieldObjectsPool: actual fieldList type=%d size=%d", fieldTypeInt, fieldList->size());
+    }
+    cocos2d::log("SpritesFactory::initFieldObjectsPool: actual mFieldSpritesPool size=%d", mFieldSpritesPool.size());
+    return true;
+}
+
+//--------------------------------------------------------------------
+bool _SpritesFactory::initDudesPool(int poolSize)
+//--------------------------------------------------------------------
+{
+    auto dudeTypeInt = Helper::to_underlying(FieldType::DudeFromAToB);
+    auto dudeTypeMax = Helper::to_underlying(FieldType::DudeAllOfType) + 1;
+    while (dudeTypeInt != dudeTypeMax) {
+        auto dudeList = new TSpriteList;
+        CCASSERT(dudeList, "error while creating dudeList");
+
+        auto dudePoolSize = poolSize;
+        while (dudePoolSize--) {
+            auto spriteName = GameResources::s_dudeSpriteNames.at(dudeTypeInt - Helper::to_underlying(FieldType::DudeFromAToB)).getCString();
+            auto sprite = Sprite::create(spriteName);
+            sprite->setTag(dudeTypeInt);
+            sprite->setVisible(false);
+            CC_SAFE_RETAIN(sprite);
+            CCASSERT(sprite, "error while creating sprite for DudeObj");
+
+            dudeList->push_back(sprite);
+        }
+        auto type = static_cast<FieldType>(dudeTypeInt);
+        mDudeSpritesPool[type] = dudeList;
+        cocos2d::log("SpritesFactory::initDudesPool: actual dudeList type=%d size=%d", dudeTypeInt, dudeList->size());
+        dudeTypeInt++;
+    };
+
+    cocos2d::log("SpritesFactory::initDudesPool: actual mDudeSpritesPool size=%d", mDudeSpritesPool.size());
+    return true;
+}
+
+
+//--------------------------------------------------------------------
+void _SpritesFactory::recycle(Sprite* spriteNode)
 //--------------------------------------------------------------------
 {
     if (!spriteNode) {
         return;
     }
+
+    auto obj = dynamic_cast<BaseObj*>(spriteNode->getUserObject());
+    if (!obj) {
+        return;
+    }
     
-    switch (type)
+    switch (obj->getType())
     {
     case BaseObjType::Cookie:
     {
@@ -152,6 +213,7 @@ void _SpritesFactory::recycle(Sprite* spriteNode, CommonTypes::BaseObjType & typ
     default:
         break;
     }
+    spriteNode->setUserObject(nullptr);
 }
 
 //--------------------------------------------------------------------
@@ -167,21 +229,111 @@ _SpritesFactory::~_SpritesFactory()
 Sprite * _SpritesFactory::createForTileObj(BaseObj * obj)
 //--------------------------------------------------------------------
 {
-    return nullptr;
+    Sprite* sprite = nullptr;
+    auto tile = dynamic_cast<TileObj*>(obj);
+    if (!tile) {
+        return sprite;
+    }
+    if (mTileSpritesPool->size() > 0) {
+        sprite = mTileSpritesPool->front();
+        mTileSpritesPool->pop_front();
+        sprite->setVisible(true);
+    }
+    else {
+        sprite = createSpriteForObj(obj);
+    }
+    return sprite;
 }
 
 //--------------------------------------------------------------------
-Sprite * _SpritesFactory::createForCookieObj(BaseObj * obj)
+Sprite* _SpritesFactory::createForCookieObj(BaseObj* obj)
 //--------------------------------------------------------------------
 {
-    return nullptr;
+    Sprite* sprite = nullptr;
+    auto cookie = dynamic_cast<CookieObj*>(obj);
+    if (!cookie) {
+        return sprite;
+    }
+    auto type = cookie->getCookieType();
+    if (mCookieSpritesPool.size() > 0) {
+        if (mCookieSpritesPool.at(type)->size() > 0) {
+            sprite = mCookieSpritesPool.at(type)->front();
+            mCookieSpritesPool.at(type)->pop_front();
+            sprite->setVisible(true);
+        }
+    }
+    if (!sprite) {
+        sprite = createSpriteForObj(obj);
+    }
+    return sprite;
 }
 
 //--------------------------------------------------------------------
 Sprite * _SpritesFactory::createForFieldObj(BaseObj * obj)
 //--------------------------------------------------------------------
 {
-    return nullptr;
+    Sprite* sprite = nullptr;
+    auto fieldObj = dynamic_cast<FieldObj*>(obj);
+    if (!fieldObj) {
+        return sprite;
+    }
+    auto type = fieldObj->getFieldType();
+    if (mFieldSpritesPool.size() > 0) {
+        if (mFieldSpritesPool.at(type)->size() > 0) {
+            sprite = mFieldSpritesPool.at(type)->front();
+            mFieldSpritesPool.at(type)->pop_front();
+            sprite->setVisible(true);
+        }
+    }
+    if (!sprite) {
+        sprite = createSpriteForObj(obj);
+    }
+    return sprite;
+}
+
+//--------------------------------------------------------------------
+Sprite* _SpritesFactory::createForDudeObj(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    Sprite* sprite = nullptr;
+    auto fieldObj = dynamic_cast<DudeObj*>(obj);
+    if (!fieldObj) {
+        return sprite;
+    }
+    auto type = fieldObj->getFieldType();
+    if (mDudeSpritesPool.size() > 0) {
+        if (mDudeSpritesPool.at(type)->size() > 0) {
+            sprite = mDudeSpritesPool.at(type)->front();
+            mDudeSpritesPool.at(type)->pop_front();
+            sprite->setVisible(true);
+        }
+    }
+    if (!sprite) {
+        sprite = createSpriteForObj(obj);
+    }
+    return sprite;
+}
+
+//--------------------------------------------------------------------
+Sprite* _SpritesFactory::createSpriteForObj(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    Sprite* sprite = nullptr;
+    if (!obj) {
+        return sprite;
+    }
+    auto spriteName = obj->spriteName().getCString();
+    auto baseType = Helper::to_underlying(obj->getType());
+
+    cocos2d::log("SpritesFactory::createSpriteForObj: spriteName=%s; baseType=%d; typeAsInt=%d;"
+        , spriteName, baseType, obj->getTypeAsInt());
+
+    sprite = Sprite::create(spriteName);
+    sprite->setTag(obj->getTypeAsInt());
+    sprite->setVisible(false);
+    sprite->setUserObject(obj);
+    CC_SAFE_RETAIN(sprite);
+    return sprite;
 }
 
 //--------------------------------------------------------------------

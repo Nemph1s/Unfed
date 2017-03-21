@@ -19,6 +19,7 @@
 using cocos2d::Sprite;
 
 class BaseObj;
+class LevelObj;
 
 class _SpritesFactory
 {
@@ -32,11 +33,12 @@ public:
 
     Sprite* createWithBaseObject(BaseObj* obj);
     
+    bool initTilesPool(int poolSize);
     bool initCookiesPool(int poolSize);
     bool initFieldObjectsPool(int poolSize);
-    bool initTilesPool(int poolSize);
+    bool initDudesPool(int poolSize);        
 
-    void recycle(Sprite* spriteNode, CommonTypes::BaseObjType& type);
+    void recycle(Sprite* spriteNode);
 
 protected:
     explicit _SpritesFactory() {};
@@ -53,12 +55,18 @@ private:
     Sprite* createForTileObj(BaseObj* obj);
     Sprite* createForCookieObj(BaseObj* obj);
     Sprite* createForFieldObj(BaseObj* obj);
+    Sprite* createForDudeObj(BaseObj* obj);
 
+    Sprite* createSpriteForObj(BaseObj* obj);
+    
     void clearPool(TSpriteList* pool);
 
     std::map<CommonTypes::CookieType, TSpriteList*> mCookieSpritesPool;
     std::map<CommonTypes::FieldType, TSpriteList*> mFieldSpritesPool;
+    std::map<CommonTypes::FieldType, TSpriteList*> mDudeSpritesPool;
     TSpriteList* mTileSpritesPool = nullptr;
+
+    CC_SYNTHESIZE(LevelObj*, mLevel, Level);
 
 };
 
