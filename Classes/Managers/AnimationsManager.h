@@ -40,6 +40,7 @@ public:
     void animateScoreForFieldObj(BaseObj* obj);
 
     void animateBouncingObj(BaseObj* obj);
+    void animateHintSwap(CommonTypes::Set* objects);
     
 protected:
     void animateMatchCookie(CookieObj* obj);

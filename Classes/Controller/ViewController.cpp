@@ -257,6 +257,8 @@ void ViewController::startGame()
    mLevel->resetComboMultiplier();
 
    shuffle();
+
+   startHintTimer();
 }
 
 //--------------------------------------------------------------------
@@ -301,6 +303,7 @@ void ViewController::handleMatches()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ViewController::handleMatches");
+
     auto chains = mChainController->removeMatches();
     auto dudes = mDudeController->createDudeObectsFromChains(chains);
     mGameplayScene->addSpritesForObjects(dudes);
@@ -322,6 +325,7 @@ void ViewController::animateHandleMatches(CommonTypes::Set* chains)
 {
     CC_ASSERT(chains);
 
+    stopHintTimer();
     mChainController->executeCollectGoalCallback(chains);
 
     auto completion = CallFunc::create([&]() {
@@ -361,6 +365,8 @@ void ViewController::beginNextTurn()
 
     auto callback = cocos2d::CallFunc::create([=]() {
         mGameplayScene->userInteractionEnabled();
+
+        startHintTimer();
     });
 
     mLevel->resetComboMultiplier();
@@ -422,6 +428,7 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
     auto chains = dynamic_cast<ChainObj*>(set->anyObject());
     if (chains) {
         if (chains->getChainObjects()) {
+            stopHintTimer();
             mGameplayScene->userInteractionDisabled();
 
             mLevel->removeDudeMatches(set);
@@ -445,4 +452,33 @@ void ViewController::activateChainCallback(CommonTypes::ChainType & type, cocos2
         updateScore(chains);
         animateHandleMatches(chains);
     }    
+}
+
+//--------------------------------------------------------------------
+void ViewController::startHintTimer()
+//--------------------------------------------------------------------
+{
+    Director::getInstance()->getScheduler()->schedule(schedule_selector(ViewController::showSwapHint), this,  10, 0);
+}
+
+//--------------------------------------------------------------------
+void ViewController::stopHintTimer()
+//--------------------------------------------------------------------
+{
+    Director::getInstance()->getScheduler()->unschedule(schedule_selector(ViewController::showSwapHint), this);
+}
+
+//--------------------------------------------------------------------
+void ViewController::showSwapHint(float dt)
+//--------------------------------------------------------------------
+{
+    CommonTypes::Set* set = CommonTypes::Set::create();
+
+    auto swapObj = dynamic_cast<SwapObj*>(mSwapController->getPossibleSwaps()->anyObject());
+    if (swapObj) {
+        set->addObject(swapObj->getObjectA());
+        set->addObject(swapObj->getObjectB());
+
+        AnimationsManager->animateHintSwap(set);
+    }
 }

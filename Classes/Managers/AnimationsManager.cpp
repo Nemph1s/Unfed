@@ -436,6 +436,20 @@ void _AnimationsManager::animateBouncingObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
+void _AnimationsManager::animateHintSwap(CommonTypes::Set* objects)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(objects);
+
+    for (auto itObj = objects->begin(); itObj != objects->end(); itObj++) {
+        auto obj = dynamic_cast<BaseObj*>(*itObj);
+        if (obj) {
+            animateBouncingObj(obj);
+        }
+    }
+}
+
+//--------------------------------------------------------------------
 void _AnimationsManager::animateMatchCookie(CookieObj * obj)
 //--------------------------------------------------------------------
 {
