@@ -157,8 +157,8 @@ bool ViewController::initSpritesFactory()
 {
     SpritesFactory->setLevel(mLevel);
     SpritesFactory->initTilesPool(NumColumns * NumRows);
-    auto cookiesPoolSize = (NumColumns * NumRows) / (mLevel->getLevelInfo().typesCount - 1);
-    SpritesFactory->initCookiesPool(cookiesPoolSize);
+    auto cookiesPoolSize = (NumColumns * NumRows);
+    SpritesFactory->initCookiesPool(cookiesPoolSize / 2);
     SpritesFactory->initDudesPool(NumRows / 2);
 
     return true;
