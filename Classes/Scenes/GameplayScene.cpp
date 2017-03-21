@@ -37,6 +37,7 @@ GameplayScene::GameplayScene()
     , mCookiesLayer(nullptr)
     , mGameLayer(nullptr)
     , mTilesLayer(nullptr)
+    , mInfoLayer(nullptr)
  //--------------------------------------------------------------------
 {
 }
@@ -108,6 +109,10 @@ bool GameplayScene::initWithSize(const Size& size)
     mFieldObjectsLayer = Layer::create();
     mFieldObjectsLayer->setPosition(layerPos);
     mGameLayer->addChild(mFieldObjectsLayer);
+
+    mInfoLayer = Layer::create();
+    mInfoLayer->setPosition(layerPos);
+    mGameLayer->addChild(mInfoLayer);
 
     AudioManager->playBGMusic();
 

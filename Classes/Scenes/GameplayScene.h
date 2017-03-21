@@ -57,5 +57,7 @@ protected:
     CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mTilesLayer, TilesLayer);
     CC_SYNTHESIZE_READONLY(CookiesLayer*, mCookiesLayer, CookiesLayer);
     CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mFieldObjectsLayer, FieldObjectsLayer);
+
+    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mInfoLayer, InfoLayer);
 };
 

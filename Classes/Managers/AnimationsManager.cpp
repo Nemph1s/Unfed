@@ -332,7 +332,7 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
         auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
         CC_ASSERT(scene);
 
-        scene->getCookiesLayer()->addChild(scoreLabel);
+        scene->getInfoLayer()->addChild(scoreLabel);
 
         auto duration = 1.15f;
         //auto scaleAction = ScaleTo::create(duration, 2.0f);
@@ -374,7 +374,7 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
     auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
     CC_ASSERT(scene);
 
-    scene->getCookiesLayer()->addChild(scoreLabel);
+    scene->getInfoLayer()->addChild(scoreLabel);
 
     auto duration = 1.15f;
     //auto scaleAction = ScaleTo::create(duration, 2.0f);
