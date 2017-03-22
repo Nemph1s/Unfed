@@ -477,6 +477,10 @@ void _AnimationsManager::animateJumpingObj(BaseObj * obj)
     sprite->runAction(Speed::create(seq1, speed));
     auto seq2 = Sequence::create(DelayTime::create(0.4f), easeScaleYOut, reverseEaseScaleYOut, nullptr);
     sprite->runAction(Speed::create(seq2, speed));
+
+    auto jumpAction = cocos2d::JumpBy::create(0.4f, Vec2::ZERO, 30.0f, 1);
+    auto seq3 = Sequence::create(DelayTime::create(0.5f), jumpAction, nullptr);
+    sprite->runAction(Speed::create(seq3, speed));
 }
 
 //--------------------------------------------------------------------
@@ -492,7 +496,9 @@ void _AnimationsManager::animateHintSwap(CommonTypes::Set* objects, cocos2d::Cal
         }
     }
 
-    mCurrentScene->runAction(Sequence::create(DelayTime::create(0.8f), completion, nullptr));
+    const float duration = 0.4f;
+
+    mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
 }
 
 //--------------------------------------------------------------------

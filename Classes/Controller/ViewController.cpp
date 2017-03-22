@@ -39,7 +39,7 @@ using namespace std::placeholders;
 
 const float showHintInterval = 6.0f;
 
-#define CURRENT_LEVEL 6
+#define CURRENT_LEVEL 667
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
@@ -483,14 +483,16 @@ void ViewController::showSwapHint(float dt)
     auto swapObj = dynamic_cast<SwapObj*>(mSwapController->getPossibleSwaps()->anyObject());
     if (swapObj) {
         mGameplayScene->userInteractionDisabled();
-        set->addObject(swapObj->getObjectA());
-        set->addObject(swapObj->getObjectB());
-
+        set = mChainController->detectHintChainByObj(swapObj->getObjectA());
+        if (!set) {
+            set = mChainController->detectHintChainByObj(swapObj->getObjectB());
+        }
         auto callback = CallFunc::create([=]() {
             // enable touches on layer.
             mGameplayScene->userInteractionEnabled();
         });
-
-        AnimationsManager->animateHintSwap(set, callback);
+        if (set) {
+            AnimationsManager->animateHintSwap(set, callback);
+        }        
     }
 }

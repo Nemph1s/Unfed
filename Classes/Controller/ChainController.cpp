@@ -128,6 +128,51 @@ CommonTypes::Set * ChainController::removeChainAt(CommonTypes::ChainType & type,
 }
 
 //--------------------------------------------------------------------
+CommonTypes::Set* ChainController::detectHintChainByObj(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    CommonTypes::Set* set = nullptr;
+    if (!obj) {
+        return set;
+    }
+    auto column = obj->getColumn();
+    auto row = obj->getRow();
+    int matchType = mObjCtrl->cookieAt(column, row)->getTypeAsInt();
+
+    if (isNextTwoCookieSuitable(ChainType::ChainTypeHorizontal, column, row)) {
+        auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
+        chain->setUpdateGoalCallback(mUpdateGoalCallback);
+        int newMatchType = -1;
+        auto tmpColumn = column;
+        do {
+            if (isPossibleToAddObjToChain(tmpColumn, row, matchType, newMatchType)) {
+                addObjToChain(chain, tmpColumn, row);
+                tmpColumn += 1;
+            }
+        } while (tmpColumn < NumColumns && newMatchType == matchType);
+        set = CommonTypes::Set::create();
+        addChainToSet(chain, set);
+    }
+    if (!set) {
+        if (isNextTwoCookieSuitable(ChainType::ChainTypeVertical, column, row)) {
+            auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
+            chain->setUpdateGoalCallback(mUpdateGoalCallback);
+            int newMatchType = -1;
+            auto tmpRow = row;
+            do {
+                if (isPossibleToAddObjToChain(column, tmpRow, matchType, newMatchType)) {
+                    addObjToChain(chain, column, tmpRow);
+                    row += 1;
+                }
+            } while (tmpRow < NumColumns && newMatchType == matchType);
+            set = CommonTypes::Set::create();
+            addChainToSet(chain, set);
+        }
+    }    
+    return set;
+}
+
+//--------------------------------------------------------------------
 void ChainController::activateChains(CommonTypes::Set * chains)
 //--------------------------------------------------------------------
 {
