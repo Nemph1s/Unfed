@@ -12,11 +12,26 @@
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 
 //--------------------------------------------------------------------
+SwapObj::SwapObj()
+    : mObjectA(nullptr)
+    , mObjectB(nullptr)
+    , mObjectsForHint(nullptr)
+    //--------------------------------------------------------------------
+{
+}
+
+//--------------------------------------------------------------------
 SwapObj::~SwapObj()
 //--------------------------------------------------------------------
 {
+    cocos2d::log("SwapObj::~SwapObj: deallocing %p - objA: %s; objB: %s;"
+        , this, mObjectA->description().getCString(), mObjectB->description().getCString());
     mObjectA = nullptr;
     mObjectB = nullptr;
+    if (mObjectsForHint) {
+        mObjectsForHint->removeAllObjects();
+    }
+    CC_SAFE_RELEASE_NULL(mObjectsForHint);
 }
 
 //--------------------------------------------------------------------
@@ -64,9 +79,19 @@ std::string SwapObj::description()
 }
 
 //--------------------------------------------------------------------
-SwapObj::SwapObj()
-    : mObjectA(nullptr)
-    , mObjectB(nullptr)
+CommonTypes::Set* SwapObj::getObjectsForHint() const
 //--------------------------------------------------------------------
 {
+    return mObjectsForHint;
+}
+
+//--------------------------------------------------------------------
+void SwapObj::setObjectsForHint(CommonTypes::Set* var)
+//--------------------------------------------------------------------
+{
+    if (mObjectsForHint) {
+        CC_SAFE_RELEASE_NULL(mObjectsForHint);
+    }
+    mObjectsForHint = var;
+    CC_SAFE_RETAIN(mObjectsForHint);
 }

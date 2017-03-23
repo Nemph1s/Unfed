@@ -52,8 +52,7 @@ public:
     CommonTypes::Set* removeMatches();
     CommonTypes::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
 
-
-    CommonTypes::Set* detectHintChainByObj(BaseObj* obj);
+    CommonTypes::Set* detectChainAt(int column, int row);
 
     /**
     * Add chain to objectContainer and remove duplicate containers from other chains

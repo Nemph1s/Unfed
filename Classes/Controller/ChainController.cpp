@@ -128,47 +128,46 @@ CommonTypes::Set * ChainController::removeChainAt(CommonTypes::ChainType & type,
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* ChainController::detectHintChainByObj(BaseObj * obj)
+CommonTypes::Set* ChainController::detectChainAt(int column, int row)
 //--------------------------------------------------------------------
 {
     CommonTypes::Set* set = nullptr;
-    if (!obj) {
+    if (!mObjCtrl->cookieAt(column, row))
+        return set;
+
+    set = CommonTypes::Set::create();
+    int type = mObjCtrl->cookieAt(column, row)->getTypeAsInt();
+    int fieldSize = NumColumns;
+
+    int horzLength = 1;
+    for (int i = column - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(i, row, type); i--, horzLength++) {
+        set->addObject(mObjCtrl->cookieAt(i, row));
+    };
+    for (int i = column + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(i, row, type); i++, horzLength++) {
+        set->addObject(mObjCtrl->cookieAt(i, row));
+    };
+    if (horzLength >= 3) {
+        set->addObject(mObjCtrl->cookieAt(column, row));
         return set;
     }
-    auto column = obj->getColumn();
-    auto row = obj->getRow();
-    int matchType = mObjCtrl->cookieAt(column, row)->getTypeAsInt();
+    set->removeAllObjects();
 
-    if (isNextTwoCookieSuitable(ChainType::ChainTypeHorizontal, column, row)) {
-        auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
-        chain->setUpdateGoalCallback(mUpdateGoalCallback);
-        int newMatchType = -1;
-        auto tmpColumn = column;
-        do {
-            if (isPossibleToAddObjToChain(tmpColumn, row, matchType, newMatchType)) {
-                addObjToChain(chain, tmpColumn, row);
-                tmpColumn += 1;
-            }
-        } while (tmpColumn < NumColumns && newMatchType == matchType);
-        set = CommonTypes::Set::create();
-        addChainToSet(chain, set);
+    int vertLength = 1;
+
+    for (int i = row - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(column, i, type); i--, vertLength++) {
+        set->addObject(mObjCtrl->cookieAt(column, i));
+    };
+    for (int i = row + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(column, i, type); i++, vertLength++) {
+        set->addObject(mObjCtrl->cookieAt(column, i));
+    };
+    if (vertLength >= 3) {
+        set->addObject(mObjCtrl->cookieAt(column, row));
     }
-    if (!set) {
-        if (isNextTwoCookieSuitable(ChainType::ChainTypeVertical, column, row)) {
-            auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
-            chain->setUpdateGoalCallback(mUpdateGoalCallback);
-            int newMatchType = -1;
-            auto tmpRow = row;
-            do {
-                if (isPossibleToAddObjToChain(column, tmpRow, matchType, newMatchType)) {
-                    addObjToChain(chain, column, tmpRow);
-                    row += 1;
-                }
-            } while (tmpRow < NumColumns && newMatchType == matchType);
-            set = CommonTypes::Set::create();
-            addChainToSet(chain, set);
-        }
-    }    
+    else {
+        set->removeAllObjects();
+        set = nullptr;
+    }
+
     return set;
 }
 

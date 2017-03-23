@@ -138,7 +138,6 @@ void ChainObj::addObjectToChain(ObjContainer * obj)
 void ChainObj::addObjectsFromChain(ChainObj* chain)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("ChainObj::addCookiesFromChain:");
     CC_ASSERT(chain);
     auto objects = chain->getObjects();
     if (objects) {

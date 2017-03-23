@@ -478,15 +478,12 @@ void ViewController::stopHintTimer()
 void ViewController::showSwapHint(float dt)
 //--------------------------------------------------------------------
 {
-    CommonTypes::Set* set = CommonTypes::Set::create();
+    CommonTypes::Set* set = nullptr;
 
     auto swapObj = dynamic_cast<SwapObj*>(mSwapController->getPossibleSwaps()->anyObject());
     if (swapObj) {
         mGameplayScene->userInteractionDisabled();
-        set = mChainController->detectHintChainByObj(swapObj->getObjectA());
-        if (!set) {
-            set = mChainController->detectHintChainByObj(swapObj->getObjectB());
-        }
+        set = swapObj->getObjectsForHint();
         auto callback = CallFunc::create([=]() {
             // enable touches on layer.
             mGameplayScene->userInteractionEnabled();
