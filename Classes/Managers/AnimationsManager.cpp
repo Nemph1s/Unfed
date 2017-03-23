@@ -18,6 +18,9 @@
 #include "GameObjects/TileObjects/DudeObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
+#include "GameObjects/Level/LevelObj.h"
+#include "Controller/ObjectController/ObjectController.h"
+
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
 #include "Common/CommonTypes.h"
@@ -308,7 +311,20 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
     for (auto itObj = objects->begin(); itObj != objects->end(); itObj++) {
         auto obj = dynamic_cast<BaseObj*>(*itObj);
 
-        auto spritePos = obj->getSpriteNode()->getPosition();
+        auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
+        CC_ASSERT(scene);
+
+        auto objCtrl = scene->getLevel()->getObjectController();
+
+        Vec2 spritePos = Vec2::ZERO;
+        if (objCtrl) {
+            auto tileObj = objCtrl->tileAt(obj->getColumn(), obj->getRow());
+            spritePos = tileObj->getSpriteNode()->getPosition();
+        }
+        else {
+            spritePos = obj->getSpriteNode()->getPosition();
+        }        
+        
         Vec2 centerPosition = Vec2(spritePos.x, spritePos.y);// - 8);
 
         auto color = Helper::getScoreColorByObj(obj);
@@ -328,9 +344,6 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
         scoreLabel->setTextColor(Color4B::WHITE);
         scoreLabel->enableOutline(color, 2);
         scoreLabel->setScale(0.5f);
-
-        auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
-        CC_ASSERT(scene);
 
         scene->getInfoLayer()->addChild(scoreLabel);
 
