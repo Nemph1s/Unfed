@@ -128,6 +128,50 @@ CommonTypes::Set * ChainController::removeChainAt(CommonTypes::ChainType & type,
 }
 
 //--------------------------------------------------------------------
+CommonTypes::Set* ChainController::detectChainAt(int column, int row)
+//--------------------------------------------------------------------
+{
+    CommonTypes::Set* set = nullptr;
+    if (!mObjCtrl->cookieAt(column, row))
+        return set;
+
+    set = CommonTypes::Set::create();
+    int type = mObjCtrl->cookieAt(column, row)->getTypeAsInt();
+    int fieldSize = NumColumns;
+
+    int horzLength = 1;
+    for (int i = column - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(i, row, type); i--, horzLength++) {
+        set->addObject(mObjCtrl->cookieAt(i, row));
+    };
+    for (int i = column + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(i, row, type); i++, horzLength++) {
+        set->addObject(mObjCtrl->cookieAt(i, row));
+    };
+    if (horzLength >= 3) {
+        set->addObject(mObjCtrl->cookieAt(column, row));
+        return set;
+    }
+    set->removeAllObjects();
+
+    int vertLength = 1;
+
+    for (int i = row - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(column, i, type); i--, vertLength++) {
+        set->addObject(mObjCtrl->cookieAt(column, i));
+    };
+    for (int i = row + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(column, i, type); i++, vertLength++) {
+        set->addObject(mObjCtrl->cookieAt(column, i));
+    };
+    if (vertLength >= 3) {
+        set->addObject(mObjCtrl->cookieAt(column, row));
+    }
+    else {
+        set->removeAllObjects();
+        set = nullptr;
+    }
+
+    return set;
+}
+
+//--------------------------------------------------------------------
 void ChainController::activateChains(CommonTypes::Set * chains)
 //--------------------------------------------------------------------
 {

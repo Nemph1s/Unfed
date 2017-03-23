@@ -179,18 +179,20 @@ bool _SpritesFactory::initDudesPool(int poolSize)
 
 
 //--------------------------------------------------------------------
-void _SpritesFactory::recycle(Sprite* spriteNode)
+void _SpritesFactory::recycle(Sprite* spriteNode, BaseObj* obj)
 //--------------------------------------------------------------------
 {
     if (!spriteNode) {
         return;
     }
-
-    auto obj = dynamic_cast<BaseObj*>(spriteNode->getUserObject());
+    spriteNode->setScale(1);
+    spriteNode->setVisible(false);
+    if (spriteNode->getParent()) {
+        spriteNode->removeFromParent();
+    }
     if (!obj) {
         return;
     }
-    
     switch (obj->getType())
     {
     case BaseObjType::Cookie:
@@ -203,10 +205,15 @@ void _SpritesFactory::recycle(Sprite* spriteNode)
         mTileSpritesPool->push_back(spriteNode);
         break;
     case BaseObjType::Field:
-    case BaseObjType::Dude:
     {
         auto fieldType = static_cast<FieldType>(spriteNode->getTag());
         mFieldSpritesPool.at(fieldType)->push_back(spriteNode);
+    }
+    break;
+    case BaseObjType::Dude:
+    {
+        auto fieldType = static_cast<FieldType>(spriteNode->getTag());
+        mDudeSpritesPool.at(fieldType)->push_back(spriteNode);
     }
         break;
     case BaseObjType::Unknown:

@@ -375,7 +375,12 @@ void CookiesLayer::createSpriteWithFieldObj(FieldObj* obj, int column, int row)
         auto scene = dynamic_cast<GameplayScene*>(gameLayer->getParent());
         CC_ASSERT(scene);
 
-        scene->getFieldObjectsLayer()->addChild(sprite, zOrder);
+        if (obj->getPriority() <= -1) {
+            scene->getTilesLayer()->addChild(sprite, zOrder);
+        } else {
+            scene->getFieldObjectsLayer()->addChild(sprite, zOrder);
+        }
+        
         if (!obj->getParent()) {
             this->addChild(obj, zOrder);
         }       

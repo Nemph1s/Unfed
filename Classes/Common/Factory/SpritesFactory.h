@@ -38,7 +38,7 @@ public:
     bool initFieldObjectsPool(int poolSize);
     bool initDudesPool(int poolSize);        
 
-    void recycle(Sprite* spriteNode);
+    void recycle(Sprite* spriteNode, BaseObj* obj);
 
 protected:
     explicit _SpritesFactory() {};

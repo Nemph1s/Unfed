@@ -13,6 +13,10 @@
 #include "cocos2d.h"
 #include <string.h>
 
+namespace CommonTypes {
+    typedef cocos2d::__Set Set;
+}
+
 class BaseObj;
 
 class SwapObj : public cocos2d::Node
@@ -38,5 +42,7 @@ protected:
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE_READONLY(BaseObj*, mObjectA, ObjectA);
     CC_SYNTHESIZE_READONLY(BaseObj*, mObjectB, ObjectB);
+
+    CC_PROPERTY(CommonTypes::Set*, mObjectsForHint, ObjectsForHint);
 };
 

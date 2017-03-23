@@ -178,6 +178,7 @@ void GameplayScene::userInteractionEnabled()
 void GameplayScene::userInteractionDisabled()
 //--------------------------------------------------------------------
 {
+    mCookiesLayer->hideSelectionIndicator();
     Director::getInstance()->getEventDispatcher()->pauseEventListenersForTarget(mCookiesLayer);
 }
 

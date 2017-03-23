@@ -10,6 +10,7 @@
 
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 
+#include "Common/Factory/SpritesFactory.h"
 #include "Utils/Helpers/Helper.h"
 
 //--------------------------------------------------------------------
@@ -140,10 +141,8 @@ void BaseObj::clear()
     if (getParent()) {
         removeFromParent();
     }
+    SpritesFactory->recycle(mSpriteNode, this);
     if (mSpriteNode) {
-        if (mSpriteNode->getParent()) {
-            mSpriteNode->removeFromParent();
-        }
         mSpriteNode = nullptr;
     }
 }

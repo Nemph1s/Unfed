@@ -9,6 +9,7 @@
 */
 
 #include "Controller/SwapController.h"
+#include "Controller/ChainController.h"
 #include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/ObjectController.h"
 
@@ -117,14 +118,23 @@ void SwapController::detectSwap(SwapChecker * checker)
     auto nextObject = nextContainer->getObjectForChain();
     // Have a cookie in this spot? If there is no tile, there is no cookie.
     if (currObject && nextObject) {
+        
         // Swap them
         currContainer->updateObjectWith(currObject, nextObject);
         nextContainer->updateObjectWith(nextObject, currObject);
 
         // Is either cookie now part of a chain?
-        if (objCtrl->hasChainAt(checker->nextCol, checker->nextRow) || objCtrl->hasChainAt(checker->curCol, checker->curRow)) {
-
-            SwapObj *swap = SwapObj::createWithObjects(currObject, nextObject);
+        bool hasChainFromNextTile = objCtrl->hasChainAt(checker->nextCol, checker->nextRow);
+        bool hasChainFromCurrTile = objCtrl->hasChainAt(checker->curCol, checker->curRow);
+        if (hasChainFromNextTile || hasChainFromCurrTile) {
+            auto chainCtrl = mLevel->getChainController();
+            SwapObj* swap = SwapObj::createWithObjects(currObject, nextObject);
+            if (hasChainFromNextTile) {
+                swap->setObjectsForHint(chainCtrl->detectChainAt(checker->nextCol, checker->nextRow));
+            }
+            else if (hasChainFromCurrTile) {
+                swap->setObjectsForHint(chainCtrl->detectChainAt(checker->curCol, checker->curRow));
+            }
             checker->set->addObject(swap);
         }
         // Swap them back
