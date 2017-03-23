@@ -39,7 +39,7 @@ using namespace std::placeholders;
 
 const float showHintInterval = 10.0f;
 
-#define CURRENT_LEVEL 667
+#define CURRENT_LEVEL 6
 
 //--------------------------------------------------------------------
 ViewController::ViewController()

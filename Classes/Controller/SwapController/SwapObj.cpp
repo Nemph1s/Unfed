@@ -24,10 +24,7 @@ SwapObj::SwapObj()
 SwapObj::~SwapObj()
 //--------------------------------------------------------------------
 {
-    cocos2d::log("SwapObj::~SwapObj: deallocing %p - objA: %s; objB: %s;"
-        , this
-        , mObjectA ? mObjectA->description().getCString() : ""
-        , mObjectB ? mObjectB->description().getCString() : "");
+    cocos2d::log("SwapObj::~SwapObj: deallocing %p", this);
     mObjectA = nullptr;
     mObjectB = nullptr;
     if (mObjectsForHint) {

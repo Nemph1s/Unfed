@@ -53,7 +53,7 @@ protected:
     CC_SYNTHESIZE_BOOL_READONLY(bool, mIsSwappable, Swappable);
     CC_SYNTHESIZE_BOOL_READONLY(bool, mIsContainer, Container);
 
-    CC_SYNTHESIZE_READONLY(uint16_t, mScoreValue, ScoreValue);
+    CC_SYNTHESIZE(uint16_t, mScoreValue, ScoreValue);
 
     cocos2d::String* mDummyString;
 

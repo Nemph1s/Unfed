@@ -46,8 +46,12 @@ public:
     FieldObj* getFieldObject() const;
     std::list<FieldObj*>& getFieldObjects();
 
-    bool isContainObjForChain(); //TODO: rename it
+    bool isContainGameObj();
     BaseObj* getObjectForChain();
+    CommonTypes::Set* getObjectsForChain();
+
+    int16_t getScoreValueForObject() const;
+    int16_t getScoreValueForGameObjects() const;
 
     bool isEmptyTileAt();
     bool isPossibleToAddCookie();

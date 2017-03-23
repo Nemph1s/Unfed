@@ -310,31 +310,36 @@ void DudeController::updateChainSetWithDudesInChain(const Direction& direction, 
             auto container = dynamic_cast<ObjContainer*>(*it);
             CC_ASSERT(container);
             
-            auto object = container->getObjectForChain();
-            if (!object) 
+            auto objects = container->getObjectsForChain();
+            if (!objects) 
                 continue;
 
-            if (object->getType() == BaseObjType::Dude) {
+            for (auto itObj = objects->begin(); itObj != objects->end(); ++itObj) {
+                auto object = dynamic_cast<BaseObj*>(*itObj);
+                CC_ASSERT(object);
 
-                if (index == 0)  // skip first dude to avoid dead loop
-                    continue;
+                if (object->getType() == BaseObjType::Dude) {
 
-                CommonTypes::Set* newChains = nullptr;
-                auto dude = container->getDude();
-                auto invertedDirection = Helper::invertDirection(direction);
+                    if (index == 0)  // skip first dude to avoid dead loop
+                        continue;
 
-                auto helper = mDudeDirections.at(dude);
-                if (helper && !dude->isActivated()) {
-                    newChains = helper->getChainByDirection(invertedDirection);
+                    CommonTypes::Set* newChains = nullptr;
+                    auto dude = container->getDude();
+                    auto invertedDirection = Helper::invertDirection(direction);
+
+                    auto helper = mDudeDirections.at(dude);
+                    if (helper && !dude->isActivated()) {
+                        newChains = helper->getChainByDirection(invertedDirection);
+                    }
+
+                    //Beware of recursive
+                    if (newChains != nullptr) {
+                        dude->activate();
+
+                        updateChainSetWithDudesInChain(invertedDirection, newChains, chainSet);
+                        mChainCtrl->addChainsFromSetToSet(newChains, chainSet, true);
+                    }
                 }
-
-                //Beware of recursive
-                if (newChains != nullptr) {
-                    dude->activate();
-
-                    updateChainSetWithDudesInChain(invertedDirection, newChains, chainSet);
-                    mChainCtrl->addChainsFromSetToSet(newChains, chainSet, true);
-                }                
             }
         }
     }

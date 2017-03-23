@@ -301,7 +301,7 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
     CC_ASSERT(chain);
     // Figure out what the midpoint of the chain is.
 
-    auto objects = chain->getChainObjects();
+    auto objects = chain->getChainObjectsForScoreAnimation();
     auto cookiesCount = chain->getCookiesCount();
     if (cookiesCount == 0) {
         return;
@@ -553,7 +553,7 @@ void _AnimationsManager::animateMatchFieldObj(FieldObj * obj)
     auto fadeOut = FadeOut::create(duration);
     auto easeOut = EaseOut::create(fadeOut, duration);
 
-    animateScoreForFieldObj(obj);
+    //animateScoreForFieldObj(obj);
 
     auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
     CC_ASSERT(scene);

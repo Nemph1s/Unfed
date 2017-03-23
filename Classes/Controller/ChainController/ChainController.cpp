@@ -198,19 +198,24 @@ void ChainController::matchChains(CommonTypes::Set* chains)
             auto container = dynamic_cast<ObjContainer*>(*it);
             CC_ASSERT(container);
 
-            auto object = container->getObjectForChain();
-            if (!object) {
+            auto objects = container->getObjectsForChain();
+            if (!objects) {
                 continue;
             }
-            if (object->getType() == BaseObjType::Cookie) {
-                mObjCtrl->matchCookieObject(object);
-            }
-            else if (object->getType() == BaseObjType::Field) {
-                mObjCtrl->matchFieldObject(object);
-            }
-            else if (object->getType() == BaseObjType::Dude) {
-                mObjCtrl->matchDudeObject(object);
-            }
+            for (auto itObj = objects->begin(); itObj != objects->end(); ++itObj) {
+                auto object = dynamic_cast<BaseObj*>(*itObj);
+                CC_ASSERT(object);
+
+                if (object->getType() == BaseObjType::Cookie) {
+                    mObjCtrl->matchCookieObject(object);
+                }
+                else if (object->getType() == BaseObjType::Field) {
+                    mObjCtrl->matchFieldObject(object);
+                }
+                else if (object->getType() == BaseObjType::Dude) {
+                    mObjCtrl->matchDudeObject(object);
+                }
+            }            
         }
     }
 }
@@ -277,7 +282,7 @@ void ChainController::addObjToChain(ChainObj* chain, int col, int row)
     CC_ASSERT(chain);
     auto container = mObjCtrl->getObject(col, row);
     CC_ASSERT(container);
-    if (container->isContainObjForChain()) {
+    if (container->isContainGameObj()) {
         chain->addObjectToChain(container);
     }    
 }
