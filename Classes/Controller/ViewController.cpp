@@ -37,7 +37,7 @@ using namespace std::placeholders;
 #define COCOS2D_DEBUG 1
 #define UNFED_ENABLE_DEBUG 1
 
-const float showHintInterval = 6.0f;
+const float showHintInterval = 10.0f;
 
 #define CURRENT_LEVEL 667
 
