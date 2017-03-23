@@ -9,8 +9,8 @@
 */
 
 #include "Controller/ViewController.h"
-#include "Controller/SwapController.h"
-#include "Controller/ChainController.h"
+#include "Controller/SwapController/SwapController.h"
+#include "Controller/ChainController/ChainController.h"
 #include "Controller/ObjectController/Dude/DudeController.h"
 #include "Controller/ObjectController/ObjectController.h"
 
@@ -21,11 +21,11 @@
 #include "Common/Factory/SmartObjFactory.h"
 #include "Common/Factory/SpritesFactory.h"
 
-#include "GameObjects/Swap/SwapObj.h"
+#include "Controller/SwapController/SwapObj.h"
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/Level/LevelGoalComponent.h"
-#include "GameObjects/TileObjects/DudeObj.h"
-#include "GameObjects/Chain/ChainObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
+#include "Controller/ChainController/ChainObj.h"
 
 #include "Scenes/GameplayScene.h"
 

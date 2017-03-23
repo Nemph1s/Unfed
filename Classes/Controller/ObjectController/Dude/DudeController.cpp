@@ -13,16 +13,16 @@
 #include "Controller/ObjectController/ObjectController.h"
 #include "Controller/ObjectController/ObjContainer.h"
 
-#include "Controller/ChainController.h"
+#include "Controller/ChainController/ChainController.h"
 
 #include "Common/Factory/SmartObjFactory.h"
 
 #include "Utils/Parser/JsonParser.h"
 #include "Utils/Helpers/Helper.h"
 
-#include "GameObjects/TileObjects/DudeObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
-#include "GameObjects/Chain/ChainObj.h"
+#include "Controller/ChainController/ChainObj.h"
 
 #define RequiredCountForDudeFromAToB 4
 #define RequiredCountForDudeFromAToBx3 5

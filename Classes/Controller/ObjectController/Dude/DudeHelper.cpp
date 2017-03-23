@@ -11,9 +11,9 @@
 #include "Controller/ObjectController/Dude/DudeHelper.h"
 
 #include "Controller/ObjectController/Dude/DudeController.h"
-#include "Controller/ChainController.h"
+#include "Controller/ChainController/ChainController.h"
 
-#include "GameObjects/TileObjects/DudeObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 
 #include "Utils/Helpers/Helper.h"
 

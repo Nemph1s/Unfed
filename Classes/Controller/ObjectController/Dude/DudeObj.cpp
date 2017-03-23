@@ -8,7 +8,7 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/TileObjects/DudeObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 

@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/ChainObj.cpp
+* @file Controller/ChainController/ChainObj.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,8 +8,7 @@
 * @author VMartyniuk
 */
 
-
-#include "GameObjects/Chain/ChainObj.h"
+#include "Controller/ChainController/ChainObj.h"
 #include "Controller/ObjectController/ObjContainer.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "Utils/Helpers/Helper.h"

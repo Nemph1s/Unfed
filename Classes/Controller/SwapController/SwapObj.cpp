@@ -8,7 +8,7 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/Swap/SwapObj.h"
+#include "Controller/SwapController/SwapObj.h"
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 
 //--------------------------------------------------------------------
@@ -24,7 +24,6 @@ SwapObj::SwapObj()
 SwapObj::~SwapObj()
 //--------------------------------------------------------------------
 {
-    
     cocos2d::log("SwapObj::~SwapObj: deallocing %p - objA: %s; objB: %s;"
         , this
         , mObjectA ? mObjectA->description().getCString() : ""

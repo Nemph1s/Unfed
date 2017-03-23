@@ -11,11 +11,11 @@
 #include "Managers/AnimationsManager.h"
 #include "Managers/AudioManager.h"
 
-#include "GameObjects/Swap/SwapObj.h"
-#include "GameObjects/Chain/ChainObj.h"
+#include "Controller/SwapController/SwapObj.h"
+#include "Controller/ChainController/ChainObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
-#include "GameObjects/TileObjects/DudeObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 #include "GameObjects/Level/LevelObj.h"

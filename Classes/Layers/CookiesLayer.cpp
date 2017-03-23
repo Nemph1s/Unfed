@@ -21,7 +21,7 @@
 
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
-#include "GameObjects/TileObjects/DudeObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 
 USING_NS_CC;
 using namespace GameResources;

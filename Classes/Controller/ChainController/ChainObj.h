@@ -1,5 +1,5 @@
 #/**
-* @file GameObjects/ChainObj.hpp
+* @file Controller/ChainController/ChainObj.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved

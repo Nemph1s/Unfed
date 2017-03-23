@@ -12,12 +12,12 @@
 
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
-#include "GameObjects/TileObjects/DudeObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
-#include "GameObjects/Chain/ChainObj.h"
-#include "GameObjects/Swap/SwapObj.h"
+#include "Controller/ChainController/ChainObj.h"
+#include "Controller/SwapController/SwapObj.h"
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/Parser/JsonParser.h"
@@ -26,7 +26,7 @@
 #include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/ObjectController.h"
 #include "Controller/ObjectController/Dude/DudeController.h"
-#include "Controller/ChainController.h"
+#include "Controller/ChainController/ChainController.h"
 
 
 using namespace CommonTypes;

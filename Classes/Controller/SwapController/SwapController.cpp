@@ -1,5 +1,5 @@
 /**
-* @file Scenes/SwapController.cpp
+* @file Controller/SwapController/SwapController.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,12 +8,12 @@
 * @author VMartyniuk
 */
 
-#include "Controller/SwapController.h"
-#include "Controller/ChainController.h"
+#include "Controller/SwapController/SwapController.h"
+#include "Controller/ChainController/ChainController.h"
 #include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/ObjectController.h"
 
-#include "GameObjects/Swap/SwapObj.h"
+#include "Controller/SwapController/SwapObj.h"
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 

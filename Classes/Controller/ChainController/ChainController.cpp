@@ -1,5 +1,5 @@
 /**
-* @file Scenes/SwapController.cpp
+* @file Controller/ChainController/ChainController.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,13 +8,13 @@
 * @author VMartyniuk
 */
 
-#include "Controller/ChainController.h"
+#include "Controller/ChainController/ChainController.h"
 #include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/ObjectController.h"
 
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
-#include "GameObjects/Chain/ChainObj.h"
+#include "Controller/ChainController/ChainObj.h"
 #include "GameObjects/Level/LevelObj.h"
 
 #include "Utils/Helpers/Helper.h"

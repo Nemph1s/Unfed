@@ -1,5 +1,5 @@
 /**
-* @file Controller/ChainController.hpp
+* @file Controller/ChainController/ChainController.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
