@@ -177,6 +177,45 @@ bool _SpritesFactory::initDudesPool(int poolSize)
     return true;
 }
 
+//--------------------------------------------------------------------
+bool _SpritesFactory::initHintPool(int poolSize)
+//--------------------------------------------------------------------
+{
+    bool result = false;
+
+    do {
+        mHintSpritesPool = new TSpriteList;
+        CCASSERT(mHintSpritesPool, "error while creating mHintSpritesPool");
+
+        while (poolSize--) {
+            auto sprite = Sprite::create(GameResources::s_HintImg.getCString());
+            sprite->setVisible(false);
+            CC_SAFE_RETAIN(sprite);
+            CCASSERT(sprite, "error while creating sprite for Hint");
+
+            mHintSpritesPool->push_back(sprite);
+        }
+        result = true;
+    } while (0);
+
+    cocos2d::log("SpritesFactory::initHintPool: actual mHintSpritesPool size=%d", mHintSpritesPool->size());
+    return result;
+}
+
+//--------------------------------------------------------------------
+void _SpritesFactory::recycleHintSprite(Sprite * spriteNode)
+//--------------------------------------------------------------------
+{
+    if (!spriteNode) {
+        return;
+    }
+    spriteNode->setScale(1);
+    spriteNode->setVisible(false);
+    if (spriteNode->getParent()) {
+        spriteNode->removeFromParent();
+    }
+    mHintSpritesPool->push_back(spriteNode);
+}
 
 //--------------------------------------------------------------------
 void _SpritesFactory::recycle(Sprite* spriteNode, BaseObj* obj)
@@ -340,6 +379,24 @@ Sprite* _SpritesFactory::createSpriteForObj(BaseObj * obj)
     sprite->setVisible(false);
     sprite->setUserObject(obj);
     CC_SAFE_RETAIN(sprite);
+    return sprite;
+}
+
+//--------------------------------------------------------------------
+Sprite* _SpritesFactory::createHintSprite()
+//--------------------------------------------------------------------
+{
+    Sprite* sprite = nullptr;
+    if (mHintSpritesPool->size() > 0) {
+        sprite = mHintSpritesPool->front();
+        mHintSpritesPool->pop_front();
+        sprite->setVisible(true);
+    }
+    else {
+        sprite = Sprite::create(GameResources::s_HintImg.getCString());
+        sprite->setVisible(true);
+        CC_SAFE_RETAIN(sprite);
+    }
     return sprite;
 }
 

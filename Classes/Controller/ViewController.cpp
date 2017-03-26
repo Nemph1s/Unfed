@@ -164,6 +164,7 @@ bool ViewController::initSpritesFactory()
     SpritesFactory->initDudesPool(NumRows / 2);
     auto fieldObjsPoolSize = mLevel->getLevelInfo().fieldObjects.size();
     SpritesFactory->initFieldObjectsPool(fieldObjsPoolSize);
+    SpritesFactory->initHintPool(NumColumns * NumRows);
 
     return true;
 }
@@ -220,6 +221,13 @@ bool ViewController::initDudeController()
         return dudeCtrl->canActivateDudeTo(fromCol, fromRow, direction);
     };
     mGameplayScene->setDudeActivationCallback(dudeActivationCallback);
+
+    auto updateDirectionCallback = [dudeCtrl](BaseObj* obj, int direction) {
+        auto dude = dynamic_cast<DudeObj*>(obj);
+        return dudeCtrl->getChainPreviewHint(dude, direction);
+
+    };
+    mGameplayScene->setUpdateDirectionCallback(updateDirectionCallback);
 
     return true;
 }

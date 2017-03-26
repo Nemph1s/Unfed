@@ -292,6 +292,36 @@ Set * DudeController::activateDudeAndGetChains(DudeObj* obj, int dir)
 }
 
 //--------------------------------------------------------------------
+Set* DudeController::getChainPreviewHint(DudeObj* obj, int dir)
+//--------------------------------------------------------------------
+{
+    Set* set = nullptr;
+    if (!obj) {
+        cocos2d::log("DudeController::getHintPreviewChains: empty ptr DudeObj");
+        return set;
+    }
+    auto direction = static_cast<Direction>(dir);
+    if (direction == Direction::Unknown) {
+        return set;
+    }
+
+    auto helper = mDudeDirections.at(obj);
+    if (helper) {
+        auto chains = helper->getChainByDirection(direction, true);
+        if (!chains) {
+            cocos2d::log("DudeController::getHintPreviewChains: empty chain from helper! direction=%d", dir);
+            return set;
+        }
+
+        //updateChainSetWithDudesInChain(direction, chains, set);
+        // create param without dude obj, to skip all dudes from adding except dude at 0 chain pos
+        mChainCtrl->addChainsFromSetToSet(chains, set, true);
+    }
+
+    return set;
+}
+
+//--------------------------------------------------------------------
 void DudeController::updateChainSetWithDudesInChain(const Direction& direction, Set* chains, Set* chainSet)
 //--------------------------------------------------------------------
 {

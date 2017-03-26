@@ -172,18 +172,27 @@ void CookiesLayer::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
     if (!isObjTouched())
         return;
 
-    if (mTouchedObj) {
-        if (mTouchedObj->getType() == BaseObjType::Dude) {
-            return;
-        }
-    }
-
     Vec2 locationInNode = this->convertToNodeSpace(touch->getLocation());
 
     int column = -1, row = -1;
     if (Helper::convertPointToTilePos(locationInNode, column, row)) {
 
         auto direction = getSwipeDirection(column, row);
+
+        if (mTouchedObj->getType() == BaseObjType::Dude) {
+            auto dir = static_cast<CommonTypes::Direction>(direction);
+            if (dir != mHintPreviewDirection) {
+
+                removeChainPreviewSprites();
+
+                auto set = mUpdateDirectionCallback(mTouchedObj, direction);
+                if (set) {
+                    createChainPreviewSprites(set);
+                }
+                mHintPreviewDirection = dir;
+            }
+            return;
+        }
 
         if (direction != Helper::to_underlying(Direction::Unknown)) {
             if (!mTrySwapCookieCallback) {
@@ -208,6 +217,8 @@ void CookiesLayer::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 
             int column = -1, row = -1;
             if (Helper::convertPointToTilePos(locationInNode, column, row)) {
+
+                removeChainPreviewSprites();
 
                 auto direction = getSwipeDirection(column, row);
                 if (mCanActivateDudeCallback(mSwipeFromColumn, mSwipeFromRow, direction)) {
@@ -289,6 +300,17 @@ void CookiesLayer::removeAllCookieSprites()
             this->removeChild(child);
         }
     }
+}
+
+//--------------------------------------------------------------------
+void CookiesLayer::removeChainPreviewSprites()
+//--------------------------------------------------------------------
+{
+    auto gameLayer = this->getParent();
+    auto scene = dynamic_cast<GameplayScene*>(gameLayer->getParent());
+    CC_ASSERT(scene);
+
+    scene->removeAllChainPreviewSprites();
 }
 
 //--------------------------------------------------------------------
@@ -384,5 +406,29 @@ void CookiesLayer::createSpriteWithFieldObj(FieldObj* obj, int column, int row)
         if (!obj->getParent()) {
             this->addChild(obj, zOrder);
         }       
+    }
+}
+
+//--------------------------------------------------------------------
+void CookiesLayer::createChainPreviewSprites(CommonTypes::Set* set)
+//--------------------------------------------------------------------
+{
+    cocos2d::log("CookiesLayer::addSpritesForDudes:");
+    auto it = set->begin();
+    for (it; it != set->end(); it++) {
+        auto obj = dynamic_cast<BaseObj*>(*it);
+        CC_ASSERT(obj);
+
+        auto sprite = SpritesFactory->createHintSprite();
+        sprite->setVisible(true);
+        sprite->setPosition(Helper::pointForColumnAndRow(obj->getColumn(), obj->getRow()));
+
+        auto gameLayer = this->getParent();
+        auto scene = dynamic_cast<GameplayScene*>(gameLayer->getParent());
+        CC_ASSERT(scene);
+
+        scene->getChainPreviewLayer()->addChild(sprite);
+       
+        AnimationsManager->animateNewCookieSprite(sprite);
     }
 }

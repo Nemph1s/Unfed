@@ -102,6 +102,10 @@ bool GameplayScene::initWithSize(const Size& size)
     mTilesLayer->setPosition(layerPos);
     mGameLayer->addChild(mTilesLayer);
 
+    mChainPreviewLayer = Layer::create();
+    mChainPreviewLayer->setPosition(layerPos);
+    mGameLayer->addChild(mChainPreviewLayer);
+
     mCookiesLayer = CookiesLayer::create();
     mCookiesLayer->setPosition(layerPos);
     mGameLayer->addChild(mCookiesLayer);
@@ -168,6 +172,13 @@ void GameplayScene::addSpritesForObjects(CommonTypes::Set* set)
 }
 
 //--------------------------------------------------------------------
+void GameplayScene::createChainPreviewSprites(CommonTypes::Set * set)
+//--------------------------------------------------------------------
+{
+    mCookiesLayer->createChainPreviewSprites(set);
+}
+
+//--------------------------------------------------------------------
 void GameplayScene::userInteractionEnabled()
 //--------------------------------------------------------------------
 {
@@ -180,6 +191,13 @@ void GameplayScene::userInteractionDisabled()
 {
     mCookiesLayer->hideSelectionIndicator();
     Director::getInstance()->getEventDispatcher()->pauseEventListenersForTarget(mCookiesLayer);
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::setUpdateDirectionCallback(std::function<CommonTypes::Set*(BaseObj* obj, int direction)> func)
+//--------------------------------------------------------------------
+{
+    mCookiesLayer->setUpdateDirectionCallback(func);
 }
 
 //--------------------------------------------------------------------
@@ -201,6 +219,19 @@ void GameplayScene::removeAllCookieSprites()
 //--------------------------------------------------------------------
 {
     mCookiesLayer->removeAllCookieSprites();
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::removeAllChainPreviewSprites()
+//--------------------------------------------------------------------
+{
+    for (const auto& child : mChainPreviewLayer->getChildren()) {
+        auto sprite = dynamic_cast<Sprite*>(child);
+        if (!sprite) {
+            continue;
+        }
+        this->removeChild(child);
+    }
 }
 
 //--------------------------------------------------------------------
