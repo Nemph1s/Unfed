@@ -12,11 +12,11 @@
 #include "Utils/GameResources.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include <random>
 
 using namespace GameResources;
-using namespace CommonTypes;
 using namespace CommonTypes;
 
 //--------------------------------------------------------------------
@@ -140,6 +140,45 @@ bool Helper::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
 }
 
 //--------------------------------------------------------------------
+Direction Helper::invertDirection(const Direction & direction)
+//--------------------------------------------------------------------
+{
+    auto dir = Direction::Unknown;
+    switch (direction)
+    {
+    case Direction::Up:
+        dir = Direction::Left;
+        break;
+    case Direction::Down:
+        dir = Direction::Right;
+        break;
+    case Direction::Left:
+        dir = Direction::Up;
+        break;
+    case Direction::Right:
+        dir = Direction::Down;
+        break;
+    default:
+        break;
+    }
+    return dir;
+}
+
+//--------------------------------------------------------------------
+int Helper::getDirectionByTileFromAToB(int fromCol, int fromRow, int toCol, int toRow)
+//--------------------------------------------------------------------
+{
+    auto dir = Direction::Unknown;
+    if (fromCol != toCol) {
+        dir = fromCol > toCol ? Direction::Left : Direction::Right;
+    }
+    if (fromRow != toRow) {
+        dir = fromRow > toRow ? Direction::Up : Direction::Down;
+    }
+    return 0;
+}
+
+//--------------------------------------------------------------------
 bool Helper::convertDirectionToSwipeDelta(int dir, int & horzDelta, int & vertDelta)
 //--------------------------------------------------------------------
 {
@@ -186,6 +225,12 @@ cocos2d::Color4B Helper::getScoreColorByObj(BaseObj * obj)
         auto tileObj = dynamic_cast<FieldObj*>(obj);
         if (tileObj) {
             color = getScoreColorByFieldType(tileObj->getFieldType());
+        }
+    }
+    else if (obj->getType() == BaseObjType::Dude) {
+        auto dudeObj = dynamic_cast<DudeObj*>(obj);
+        if (dudeObj) {
+            color = cocos2d::Color4B::MAGENTA;
         }
     }
 

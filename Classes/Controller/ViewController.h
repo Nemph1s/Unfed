@@ -44,6 +44,7 @@ protected:
 
     bool initGameScene();
     bool initLevel();
+    bool initSpritesFactory();
     bool initObjectController();
     bool initSwapController();
     bool initChainController();
@@ -65,6 +66,10 @@ protected:
     //???? something wrong with
     void activateDudeCallback(DudeObj* obj, int direction);
     void activateChainCallback(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
+
+    void startHintTimer();
+    void stopHintTimer();
+    void showSwapHint(float dt);
     //--------------------------------------------------------------------
 
     //---Class Attributes-------------------------------------------------

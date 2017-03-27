@@ -1,5 +1,5 @@
 #/**
-* @file GameObjects/ChainObj.hpp
+* @file Controller/ChainController/ChainObj.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -15,8 +15,7 @@
 
 class BaseObj;
 class CookieObj;
-
-typedef cocos2d::Map<int8_t, int16_t> TFieldObjGoalMap;
+class ObjContainer;
 
 class ChainObj : public cocos2d::Node
 {
@@ -36,11 +35,20 @@ public:
     std::string typeAsString();
     int getTypeAsInt();
 
-    void addObject(BaseObj* obj);
+    void addObjectToChain(ObjContainer* obj);
 
-    void addCookie(CookieObj* cookie);
-    void addCookiesFromChain(ChainObj* chain);
+    cocos2d::Array* getChainObjects();
+    cocos2d::Array* getChainObjectsForScoreAnimation();
+    int getCookiesCount();
+    void updateChainScore();
 
+    void addObjectsFromChain(ChainObj* chain);
+
+    void activateObjects();
+
+    void removeDudeObjectsFromChain(bool skipFirst = true);
+
+    //---Callbacks-------------------------------------------------
     void executeCollectGoalCallback();
 
 protected:
@@ -50,10 +58,12 @@ protected:
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(BaseObj* obj)>, mUpdateGoalCallback, UpdateGoalCallback);
 
+    CC_SYNTHESIZE_PASS_BY_REF(CommonTypes::Direction, mDirection, Direction);
+    CC_SYNTHESIZE(int, mCookiesScore, CookiesScore); // use this to get multiplier for cookies in chain
     CC_SYNTHESIZE(int, mScore, Score);
     CC_SYNTHESIZE(bool, mIsCreatedByDude, IsCreatedByDude);
 
     CC_SYNTHESIZE_READONLY(CommonTypes::ChainType, mType, Type);
-    CC_SYNTHESIZE_READONLY(cocos2d::Array*, mCookies, Cookies);
+    CC_SYNTHESIZE_READONLY(cocos2d::Array*, mObjects, Objects);
 };
 

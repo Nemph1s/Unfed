@@ -12,20 +12,21 @@
 
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
-#include "GameObjects/TileObjects/DudeObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
-#include "GameObjects/Chain/ChainObj.h"
-#include "GameObjects/Swap/SwapObj.h"
+#include "Controller/ChainController/ChainObj.h"
+#include "Controller/SwapController/SwapObj.h"
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/Parser/JsonParser.h"
 
-#include "Common/Factory/SmartFactory.h"
+#include "Common/Factory/SmartObjFactory.h"
+#include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/ObjectController.h"
 #include "Controller/ObjectController/Dude/DudeController.h"
-#include "Controller/ChainController.h"
+#include "Controller/ChainController/ChainController.h"
 
 
 using namespace CommonTypes;
@@ -46,6 +47,7 @@ LevelObj::~LevelObj()
     cocos2d::log("LevelObj::~LevelObj: deallocing CookieObj: %p - tag: %i", this, _tag);
     CC_SAFE_RELEASE_NULL(mObjCtrl);
     CC_SAFE_RELEASE_NULL(mChainCtrl);
+    CC_SAFE_RELEASE_NULL(mDudeCtrl);
 }
 
 //--------------------------------------------------------------------
@@ -99,27 +101,6 @@ CommonTypes::Set* LevelObj::shuffle()
 }
 
 //--------------------------------------------------------------------
-void LevelObj::removeCookies(CommonTypes::Set * chains)
-//--------------------------------------------------------------------
-{
-    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
-        auto chain = dynamic_cast<ChainObj*>(*itChain);
-        CC_ASSERT(chain);
-
-        auto cookies = chain->getCookies();
-        if (!cookies) {
-            continue;
-        }
-        for (auto it = cookies->begin(); it != cookies->end(); it++) {
-            auto cookie = dynamic_cast<CookieObj*>(*it);
-            CC_ASSERT(cookie);
-
-            mObjCtrl->removeCookie(cookie->getColumn(), cookie->getRow());
-        }
-    }
-}
-
-//--------------------------------------------------------------------
 SearchEmptyHoles LevelObj::skipFillTopUpHoles(int column, int row, bool& filledTileFouned)
 //--------------------------------------------------------------------
 {
@@ -137,37 +118,6 @@ SearchEmptyHoles LevelObj::skipFillTopUpHoles(int column, int row, bool& filledT
         }
     }
     return res;
-}
-
-//--------------------------------------------------------------------
-bool LevelObj::checkMathicngFieldObjWithChain(CommonTypes::Set * chains, BaseObj * obj)
-//--------------------------------------------------------------------
-{
-    auto result = false;
-    auto fieldObj = dynamic_cast<FieldObj*>(obj);
-    if (!fieldObj) {
-        return result;
-    }
-    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
-        auto chain = dynamic_cast<ChainObj*>(*itChain);
-        CC_ASSERT(chain);
-
-        auto cookies = chain->getCookies();
-        for (auto it = cookies->begin(); it != cookies->end(); it++) {
-            auto cookie = dynamic_cast<CookieObj*>(*it);
-            CC_ASSERT(cookie);
-
-            int col = cookie->getColumn();
-            int row = cookie->getRow();
-            if (fieldObj->checkMatchingCondition(col, row)) {
-                result = true;
-                break;
-            }
-        }
-        if (result)
-            break;
-    }
-    return result;
 }
 
 //--------------------------------------------------------------------
@@ -225,7 +175,7 @@ CommonTypes::Set* LevelObj::detectFieldObjects(CommonTypes::Set * chains)
             }
             if (obj->isRemovable()) {
 
-                if (checkMathicngFieldObjWithChain(chains, obj)) {
+                if (mChainCtrl->checkMathicngFieldObjWithChain(chains, obj)) {
                     if (mObjCtrl->matchFieldObject(obj)) {
                         set->addObject(obj);
                         continue;
@@ -296,7 +246,7 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
 {
     cocos2d::log("LevelObj::fillTopUpHoles:");
     auto columns = cocos2d::Array::createWithCapacity(NumColumns);
-    auto createdString = cocos2d::String::create("");
+    //auto createdString = cocos2d::String::create("");
     int cookieType = -1;
     // loop through the rows, from top to bottom
     for (int column = 0; column < NumColumns; column++) {
@@ -331,12 +281,12 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
                     columns->addObject(array);
                 }
                 array->addObject(cookie);
-                createdString->appendWithFormat("\t%s\n", cookie->description());
+                //createdString->appendWithFormat("\t%s\n", cookie->description());
             }
         }
-        createdString->append("}\n");
+        //createdString->append("}\n");
     }
-    cocos2d::log("LevelObj::fillTopUpHoles:  new created cookies: {\n%s", createdString->getCString());
+    //cocos2d::log("LevelObj::fillTopUpHoles:  new created cookies: {\n%s", createdString->getCString());
     return columns;
 }
 
@@ -348,12 +298,21 @@ void LevelObj::calculateScore(CommonTypes::Set * chains)
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
 
-        if (chain->getCookies()) {
+        if (chain->getChainObjects()) {
+            chain->updateChainScore();
             auto chainScore = chain->getScore();
+            auto cookieScore = chain->getCookiesScore();
             chain->setScore(chainScore * mComboMultiplier);
-            mComboMultiplier++;
+            chain->setCookiesScore(cookieScore * mComboMultiplier);
         }
     }
+}
+
+//--------------------------------------------------------------------
+void LevelObj::increaseComboMultiplier()
+//--------------------------------------------------------------------
+{
+    mComboMultiplier++;
 }
 
 //--------------------------------------------------------------------
@@ -373,11 +332,12 @@ void LevelObj::disablePredefinedCookies()
 }
 
 //--------------------------------------------------------------------
-void LevelObj::removeDudeMatches(CommonTypes::Set * set)
+void LevelObj::removeDudeMatches(CommonTypes::Set* set)
 //--------------------------------------------------------------------
 {
+    cocos2d::log("LevelObj::removeDudeMatches:");
     if (set) {
         calculateScore(set);
-        removeCookies(set);
+        mChainCtrl->matchChains(set);
     }
 }

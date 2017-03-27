@@ -17,6 +17,9 @@
 class SwapObj;
 class ChainObj;
 class BaseObj;
+class CookieObj;
+class FieldObj;
+class DudeObj;
 
 class _AnimationsManager
 {
@@ -37,13 +40,13 @@ public:
     void animateScoreForFieldObj(BaseObj* obj);
 
     void animateBouncingObj(BaseObj* obj);
-
-    void animateRemovingFieldObjects(CommonTypes::Set* fieldObjects, cocos2d::CallFunc* completion);
-
-
-    void animateRemoveDude(BaseObj* obj, cocos2d::CallFunc* completion);
-
+    void animateJumpingObj(BaseObj* obj);
+    void animateHintSwap(CommonTypes::Set* objects, cocos2d::CallFunc* completion);
+    
 protected:
+    void animateMatchCookie(CookieObj* obj);
+    void animateMatchFieldObj(FieldObj* obj);
+    void animateMatchDude(DudeObj* obj);
 
     cocos2d::Scene* mCurrentScene;
 };

@@ -17,7 +17,7 @@ class CookieObj : public BaseObj
 CC_CONSTRUCTOR_ACCESS:
     virtual ~CookieObj();
 
-/*    friend SmartFactory;*/
+/*    friend SmartObjFactory;*/
 
 public:
    /**
@@ -48,5 +48,7 @@ protected:
     //---Class Attributes-------------------------------------------------
    CC_SYNTHESIZE_READONLY(CommonTypes::CookieType, mCookieType, CookieType);
    CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);
+
+   CC_SYNTHESIZE(std::function<void(BaseObj*)>, mRemoveCookieCallback, RemoveCookieCallback);
 };
 

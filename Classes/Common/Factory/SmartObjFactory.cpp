@@ -1,5 +1,5 @@
 /**
-* @file Common/Factory/SmartFactory.cpp
+* @file Common/Factory/SmartObjFactory.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,29 +8,28 @@
 * @author VMartyniuk
 */
 
-#include "Common/Factory/SmartFactory.h"
+#include "Common/Factory/SmartObjFactory.h"
 
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
-#include "GameObjects/TileObjects/DudeObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include "GameObjects/TileObjects/FieldObjects/DirtObject.h"
 #include "GameObjects/TileObjects/FieldObjects/BushObj.h"
 #include "GameObjects/TileObjects/FieldObjects/RockObj.h"
 
 using namespace CommonTypes;
-using namespace CommonTypes;
 
 //--------------------------------------------------------------------
-_SmartFactory * _SmartFactory::getInstance()
+_SmartObjFactory * _SmartObjFactory::getInstance()
 //--------------------------------------------------------------------
 {
-    return &_SmartFactory::Instance();
+    return &_SmartObjFactory::Instance();
 }
 
 //--------------------------------------------------------------------
-bool _SmartFactory::init(int poolSize)
+bool _SmartObjFactory::init(int poolSize)
 //--------------------------------------------------------------------
 {
     bool result = false;
@@ -49,12 +48,12 @@ bool _SmartFactory::init(int poolSize)
         result = true;
     } while (0);
 
-    cocos2d::log("SmartFactory::init: actual mBaseObjPool size=%d", mBaseObjPool->size());
+    cocos2d::log("SmartObjFactory::init: actual mBaseObjPool size=%d", mBaseObjPool->size());
     return result;
 }
 
 //--------------------------------------------------------------------
-bool _SmartFactory::initCookiesPool(int poolSize)
+bool _SmartObjFactory::initCookiesPool(int poolSize)
 //--------------------------------------------------------------------
 {
     bool result = false;
@@ -75,12 +74,12 @@ bool _SmartFactory::initCookiesPool(int poolSize)
         result = true;
     } while (0);
 
-    cocos2d::log("SmartFactory::initCookiesPool: actual mCookieObjPool size=%d", mCookieObjPool->size());
+    cocos2d::log("SmartObjFactory::initCookiesPool: actual mCookieObjPool size=%d", mCookieObjPool->size());
     return result;
 }
 
 //--------------------------------------------------------------------
-bool _SmartFactory::initTilesPool(int poolSize)
+bool _SmartObjFactory::initTilesPool(int poolSize)
 //--------------------------------------------------------------------
 {
     bool result = false;
@@ -101,12 +100,12 @@ bool _SmartFactory::initTilesPool(int poolSize)
         result = true;
     } while (0);
 
-    cocos2d::log("SmartFactory::initTilesPool: actual mCookieObjPool size=%d", mTileObjPool->size());
+    cocos2d::log("SmartObjFactory::initTilesPool: actual mCookieObjPool size=%d", mTileObjPool->size());
     return result;
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::create(const BaseObjInfo & info)
+BaseObj * _SmartObjFactory::create(const BaseObjInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj* baseObject = nullptr;
@@ -133,16 +132,14 @@ BaseObj * _SmartFactory::create(const BaseObjInfo & info)
         baseObject = createBaseObj(info);
         break;
     }
-    cocos2d::log("SmartFactory::create: created with type=%d", baseObject->getTypeAsInt());
-
     return baseObject;
 }
 
 //--------------------------------------------------------------------
-void _SmartFactory::recycle(BaseObj * obj)
+void _SmartObjFactory::recycle(BaseObj * obj)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("SmartFactory::recycle: type=%d", obj->getTypeAsInt());
+    //cocos2d::log("SmartObjFactory::recycle: type=%d", obj->getTypeAsInt());
     switch (obj->getType())
     {
     case BaseObjType::Cookie:
@@ -153,18 +150,16 @@ void _SmartFactory::recycle(BaseObj * obj)
         break;
     case BaseObjType::Field:
     case BaseObjType::Dude:
-        obj->clear();
-        CC_SAFE_RELEASE(obj);
-        break;
     case BaseObjType::Unknown:
     default:
-        mBaseObjPool->push_back(obj);
+        obj->clear();
+        CC_SAFE_RELEASE(obj);
         break;
     }
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::createBaseObj(const BaseObjInfo & info)
+BaseObj * _SmartObjFactory::createBaseObj(const BaseObjInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj* baseObject = nullptr;
@@ -184,7 +179,7 @@ BaseObj * _SmartFactory::createBaseObj(const BaseObjInfo & info)
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::createTileObj(const TileInfo & info)
+BaseObj * _SmartObjFactory::createTileObj(const TileInfo & info)
 //--------------------------------------------------------------------
 {
     TileObj* baseObject = nullptr;
@@ -206,7 +201,7 @@ BaseObj * _SmartFactory::createTileObj(const TileInfo & info)
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::createCookieObj(const CookieInfo & info)
+BaseObj * _SmartObjFactory::createCookieObj(const CookieInfo & info)
 //--------------------------------------------------------------------
 {
     CookieObj* baseObject = nullptr;
@@ -228,7 +223,7 @@ BaseObj * _SmartFactory::createCookieObj(const CookieInfo & info)
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::createFieldObj(const FieldInfo & info)
+BaseObj * _SmartObjFactory::createFieldObj(const FieldInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj* baseObject = nullptr;
@@ -257,13 +252,11 @@ BaseObj * _SmartFactory::createFieldObj(const FieldInfo & info)
         CC_ASSERT(baseObject);
         break;
     }
-    cocos2d::log("SmartFactory::create: created with type=%d", baseObject->getTypeAsInt());
-
     return baseObject;
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartFactory::createDudeObj(const FieldInfo & info)
+BaseObj * _SmartObjFactory::createDudeObj(const FieldInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj* baseObject = nullptr;
@@ -282,37 +275,37 @@ BaseObj * _SmartFactory::createDudeObj(const FieldInfo & info)
         CC_ASSERT(baseObject);
         break;
     }
-    cocos2d::log("SmartFactory::create: created with type=%d", baseObject->getTypeAsInt());
-
     return baseObject;
 }
 
 //--------------------------------------------------------------------
-_SmartFactory::~_SmartFactory()
+_SmartObjFactory::~_SmartObjFactory()
 //--------------------------------------------------------------------
 {
-    if (mBaseObjPool) {
-        for (TBaseObjListItr itr = mBaseObjPool->begin(); itr != mBaseObjPool->end(); itr++) {
-            BaseObj* entity = *itr;
-            CC_SAFE_RELEASE(entity);
+    clearPool(mBaseObjPool);
+    clearPool(mTileObjPool);
+    clearPool(mCookieObjPool);
+}
+
+//--------------------------------------------------------------------
+void _SmartObjFactory::clearPool(TBaseObjList * pool)
+//--------------------------------------------------------------------
+{
+    if (pool) {
+        for (TBaseObjListItr itr = pool->begin(); itr != pool->end(); itr++) {
+            clearEntity(*itr);
         }
-        mBaseObjPool->clear();
-        CC_SAFE_DELETE(mBaseObjPool);
+        pool->clear();
+        CC_SAFE_DELETE(pool);
     }
-    if (mTileObjPool) {
-        for (TBaseObjListItr itr = mTileObjPool->begin(); itr != mTileObjPool->end(); itr++) {
-            BaseObj* entity = *itr;
-            CC_SAFE_RELEASE(entity);
-        }
-        mTileObjPool->clear();
-        CC_SAFE_DELETE(mTileObjPool);
-    }
-    if (mCookieObjPool) {
-        for (TBaseObjListItr itr = mCookieObjPool->begin(); itr != mCookieObjPool->end(); itr++) {
-            BaseObj* entity = *itr;
-            CC_SAFE_RELEASE(entity);
-        }
-        mCookieObjPool->clear();
-        CC_SAFE_DELETE(mCookieObjPool);
-    }
+}
+
+//--------------------------------------------------------------------
+void _SmartObjFactory::clearEntity(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    if (obj) {
+        obj->clear();
+        CC_SAFE_RELEASE_NULL(obj);
+    }    
 }

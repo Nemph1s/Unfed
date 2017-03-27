@@ -42,7 +42,7 @@ void _AudioManager::playSound(CommonTypes::SoundType type)
 //--------------------------------------------------------------------
 {
     auto soundType = Helper::getInstance()->to_underlying(type);
-    cocos2d::log("AudioManager::playSound: type=%d", soundType);
+    //cocos2d::log("AudioManager::playSound: type=%d", soundType);
 
     if (type < SoundType::SwapSound || type >= SoundType::SoundsMax) {
         cocos2d::log("AudioManager::playSound: wrong sound type!");
