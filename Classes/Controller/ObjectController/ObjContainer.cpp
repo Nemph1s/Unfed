@@ -165,7 +165,7 @@ std::list<FieldObj*>& ObjContainer::getFieldObjects()
 }
 
 //--------------------------------------------------------------------
-bool ObjContainer::isContainObjForChain()
+bool ObjContainer::isContainGameObj()
 //--------------------------------------------------------------------
 {
     if (mCookieObj || mDudeObj || getFieldObject()) {
@@ -183,13 +183,62 @@ BaseObj* ObjContainer::getObjectForChain()
     if (mCookieObj) {
         obj = mCookieObj;
     }
-    else if (fieldObj) {
-        obj = fieldObj;
-    }
     else if (mDudeObj) {
         obj = mDudeObj;
     }
+    else if (fieldObj) {
+        obj = fieldObj;
+    }
+    
     return obj;
+}
+
+//--------------------------------------------------------------------
+CommonTypes::Set* ObjContainer::getObjectsForChain()
+//--------------------------------------------------------------------
+{
+    auto set = CommonTypes::Set::create();
+    auto fieldObj = getFieldObject();
+
+    if (mCookieObj) set->addObject(mCookieObj);
+    if (fieldObj) set->addObject(fieldObj);
+    if (mDudeObj) set->addObject(mDudeObj);
+
+    if (set->count() == 0) {
+        set = nullptr;
+    }
+    return set;
+}
+
+//--------------------------------------------------------------------
+int16_t ObjContainer::getScoreValueForObject() const
+//--------------------------------------------------------------------
+{
+    int16_t score = 0;
+    auto fieldObj = getFieldObject();
+    if (mCookieObj) {
+        score = mCookieObj->getScoreValue();
+    }
+    else if (fieldObj) {
+        score = fieldObj->getScoreValue();
+    }
+    else if (mDudeObj) {
+        score = mDudeObj->getScoreValue();
+    }
+    return score;
+}
+
+//--------------------------------------------------------------------
+int16_t ObjContainer::getScoreValueForGameObjects() const
+//--------------------------------------------------------------------
+{
+    int16_t score = 0;
+    auto fieldObj = getFieldObject();
+
+    if (mCookieObj) score += mCookieObj->getScoreValue();
+    if (fieldObj) score += fieldObj->getScoreValue();
+    if (mDudeObj) score += mDudeObj->getScoreValue();
+    return score;
 }
 
 //--------------------------------------------------------------------

@@ -39,7 +39,7 @@ using namespace std::placeholders;
 
 const float showHintInterval = 10.0f;
 
-#define CURRENT_LEVEL 667
+#define CURRENT_LEVEL 6
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
@@ -164,6 +164,7 @@ bool ViewController::initSpritesFactory()
     SpritesFactory->initDudesPool(NumRows / 2);
     auto fieldObjsPoolSize = mLevel->getLevelInfo().fieldObjects.size();
     SpritesFactory->initFieldObjectsPool(fieldObjsPoolSize);
+    SpritesFactory->initHintPool(NumColumns * NumRows);
 
     return true;
 }
@@ -220,6 +221,14 @@ bool ViewController::initDudeController()
         return dudeCtrl->canActivateDudeTo(fromCol, fromRow, direction);
     };
     mGameplayScene->setDudeActivationCallback(dudeActivationCallback);
+
+    auto updateDirectionCallback = [dudeCtrl](BaseObj* obj, int direction) {
+        auto dude = dynamic_cast<DudeObj*>(obj);
+        auto set = dudeCtrl->getChainPreviewHint(dude, direction);
+        CC_SAFE_RETAIN(set);
+        return set;
+    };
+    mGameplayScene->setUpdateDirectionCallback(updateDirectionCallback);
 
     return true;
 }

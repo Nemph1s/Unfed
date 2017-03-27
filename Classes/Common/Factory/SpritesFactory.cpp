@@ -177,6 +177,43 @@ bool _SpritesFactory::initDudesPool(int poolSize)
     return true;
 }
 
+//--------------------------------------------------------------------
+bool _SpritesFactory::initHintPool(int poolSize)
+//--------------------------------------------------------------------
+{
+    bool result = false;
+
+    do {
+        mHintSpritesPool = new TSpriteList;
+        CCASSERT(mHintSpritesPool, "error while creating mHintSpritesPool");
+
+        while (poolSize--) {
+            auto sprite = createNewHintSprite();
+            CCASSERT(sprite, "error while creating sprite for Hint");
+
+            mHintSpritesPool->push_back(sprite);
+        }
+        result = true;
+    } while (0);
+
+    cocos2d::log("SpritesFactory::initHintPool: actual mHintSpritesPool size=%d", mHintSpritesPool->size());
+    return result;
+}
+
+//--------------------------------------------------------------------
+void _SpritesFactory::recycleHintSprite(Sprite* spriteNode)
+//--------------------------------------------------------------------
+{
+    if (!spriteNode) {
+        return;
+    }
+    spriteNode->setScale(1);
+    spriteNode->setVisible(false);
+    if (spriteNode->getParent()) {
+        spriteNode->removeFromParent();
+    }
+    mHintSpritesPool->push_back(spriteNode);
+}
 
 //--------------------------------------------------------------------
 void _SpritesFactory::recycle(Sprite* spriteNode, BaseObj* obj)
@@ -340,6 +377,51 @@ Sprite* _SpritesFactory::createSpriteForObj(BaseObj * obj)
     sprite->setVisible(false);
     sprite->setUserObject(obj);
     CC_SAFE_RETAIN(sprite);
+    return sprite;
+}
+
+//--------------------------------------------------------------------
+Sprite* _SpritesFactory::createNewHintSprite(bool isVisible)
+//--------------------------------------------------------------------
+{
+    auto sprite = Sprite::create(GameResources::s_HintImg.getCString());
+    sprite->setVisible(isVisible);
+    sprite->setOpacity(100);
+    cocos2d::BlendFunc f = { GL_ONE, GL_ONE };
+    auto pos = cocos2d::Vec2(sprite->getContentSize().width / 2, sprite->getContentSize().height / 2);
+    auto glowSprite = Sprite::create(GameResources::s_HintImg.getCString());
+    //glowSprite->setColor(cocos2d::Color3B::BLUE);
+    glowSprite->setPosition(pos);
+    glowSprite->setOpacity(200);
+    glowSprite->setBlendFunc(f);
+    sprite->addChild(glowSprite, -1);
+
+    // Run some animation which scales a bit the glow
+    auto scaleFactor = 0.80f;
+    sprite->setScale(scaleFactor);
+    auto seq1 = cocos2d::Sequence::createWithTwoActions(
+        cocos2d::ScaleTo::create(0.9f, scaleFactor*0.75f, scaleFactor*0.75f),
+        cocos2d::ScaleTo::create(0.9f, scaleFactor, scaleFactor));
+
+    sprite->runAction(cocos2d::RepeatForever::create(seq1));
+
+    CC_SAFE_RETAIN(sprite);
+    return sprite;
+}
+
+//--------------------------------------------------------------------
+Sprite* _SpritesFactory::createHintSprite()
+//--------------------------------------------------------------------
+{
+    Sprite* sprite = nullptr;
+    if (mHintSpritesPool->size() > 0) {
+        sprite = mHintSpritesPool->front();
+        mHintSpritesPool->pop_front();
+        sprite->setVisible(true);
+    }
+    else {
+        sprite = createNewHintSprite(true);
+    }
     return sprite;
 }
 

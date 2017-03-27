@@ -102,6 +102,10 @@ bool GameplayScene::initWithSize(const Size& size)
     mTilesLayer->setPosition(layerPos);
     mGameLayer->addChild(mTilesLayer);
 
+    mChainPreviewLayer = Layer::create();
+    mChainPreviewLayer->setPosition(layerPos);
+    mGameLayer->addChild(mChainPreviewLayer);
+
     mCookiesLayer = CookiesLayer::create();
     mCookiesLayer->setPosition(layerPos);
     mGameLayer->addChild(mCookiesLayer);
@@ -168,6 +172,13 @@ void GameplayScene::addSpritesForObjects(CommonTypes::Set* set)
 }
 
 //--------------------------------------------------------------------
+void GameplayScene::createChainPreviewSprites(CommonTypes::Set * set)
+//--------------------------------------------------------------------
+{
+    mCookiesLayer->createChainPreviewSprites(set);
+}
+
+//--------------------------------------------------------------------
 void GameplayScene::userInteractionEnabled()
 //--------------------------------------------------------------------
 {
@@ -180,6 +191,13 @@ void GameplayScene::userInteractionDisabled()
 {
     mCookiesLayer->hideSelectionIndicator();
     Director::getInstance()->getEventDispatcher()->pauseEventListenersForTarget(mCookiesLayer);
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::setUpdateDirectionCallback(std::function<CommonTypes::Set*(BaseObj* obj, int direction)> func)
+//--------------------------------------------------------------------
+{
+    mCookiesLayer->setUpdateDirectionCallback(func);
 }
 
 //--------------------------------------------------------------------
@@ -201,6 +219,24 @@ void GameplayScene::removeAllCookieSprites()
 //--------------------------------------------------------------------
 {
     mCookiesLayer->removeAllCookieSprites();
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::removeAllChainPreviewSprites()
+//--------------------------------------------------------------------
+{
+    std::vector<Sprite*> sprites;
+    auto childs = mChainPreviewLayer->getChildren();
+    for (auto it = childs.begin(); it != childs.end(); ++it) {
+        auto sprite = dynamic_cast<Sprite*>(*it);
+        if (sprite) {
+            sprites.push_back(sprite);
+        }
+    }
+    for (auto it = sprites.begin(); it != sprites.end(); ++it) {
+        auto sprite = *it;
+        SpritesFactory->recycleHintSprite(sprite);
+    }
 }
 
 //--------------------------------------------------------------------

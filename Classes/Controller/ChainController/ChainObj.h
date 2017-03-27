@@ -38,6 +38,7 @@ public:
     void addObjectToChain(ObjContainer* obj);
 
     cocos2d::Array* getChainObjects();
+    cocos2d::Array* getChainObjectsForScoreAnimation();
     int getCookiesCount();
     void updateChainScore();
 

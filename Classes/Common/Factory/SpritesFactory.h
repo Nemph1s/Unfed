@@ -32,12 +32,16 @@ public:
     static _SpritesFactory* getInstance();
 
     Sprite* createWithBaseObject(BaseObj* obj);
+    Sprite* createHintSprite();
     
     bool initTilesPool(int poolSize);
     bool initCookiesPool(int poolSize);
     bool initFieldObjectsPool(int poolSize);
-    bool initDudesPool(int poolSize);        
+    bool initDudesPool(int poolSize);     
 
+    bool initHintPool(int poolSize);
+
+    void recycleHintSprite(Sprite* spriteNode);
     void recycle(Sprite* spriteNode, BaseObj* obj);
 
 protected:
@@ -58,6 +62,8 @@ private:
     Sprite* createForDudeObj(BaseObj* obj);
 
     Sprite* createSpriteForObj(BaseObj* obj);
+    Sprite* createNewHintSprite(bool isVisible = false);
+
     
     void clearPool(TSpriteList* pool);
 
@@ -65,6 +71,8 @@ private:
     std::map<CommonTypes::FieldType, TSpriteList*> mFieldSpritesPool;
     std::map<CommonTypes::FieldType, TSpriteList*> mDudeSpritesPool;
     TSpriteList* mTileSpritesPool = nullptr;
+
+    TSpriteList* mHintSpritesPool = nullptr;
 
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
 

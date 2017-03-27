@@ -150,12 +150,10 @@ void _SmartObjFactory::recycle(BaseObj * obj)
         break;
     case BaseObjType::Field:
     case BaseObjType::Dude:
-        obj->clear();
-        CC_SAFE_RELEASE(obj);
-        break;
     case BaseObjType::Unknown:
     default:
-        mBaseObjPool->push_back(obj);
+        obj->clear();
+        CC_SAFE_RELEASE(obj);
         break;
     }
 }

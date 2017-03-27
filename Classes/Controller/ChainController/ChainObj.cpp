@@ -176,7 +176,7 @@ void ChainObj::activateObjects()
     for (auto itToRemove = objsToRemove->begin(); itToRemove != objsToRemove->end(); ++itToRemove) {
         auto obj = dynamic_cast<ObjContainer*>(*itToRemove);
         if (obj) {
-            mScore = mScore - obj->getObjectForChain()->getScoreValue();
+            mScore = mScore - obj->getScoreValueForGameObjects();// obj->getObjectForChain()->getScoreValue();
             mObjects->removeObject(obj);
         }
     }
@@ -205,7 +205,7 @@ void ChainObj::removeDudeObjectsFromChain(bool skipFirst)
         if (obj) {
             if (obj->getObjectForChain()->getType() == CommonTypes::BaseObjType::Dude) {
                 if (!skipFirst && index != 0) { // skip first dude in chain
-                    mScore = mScore - obj->getObjectForChain()->getScoreValue();
+                    mScore = mScore - obj->getScoreValueForGameObjects();//obj->getObjectForChain()->getScoreValue();
                     itToRemove = *it;
                 }
             }
@@ -242,10 +242,40 @@ cocos2d::Array* ChainObj::getChainObjects()
         auto container = dynamic_cast<ObjContainer*>(*it);
         CC_ASSERT(container);
 
-        auto obj = container->getObjectForChain();
-        if (obj) {
-            arr->addObject(obj);
+        auto objects = container->getObjectsForChain();
+        for (auto itObj = objects->begin(); itObj != objects->end(); ++itObj) {
+            auto object = dynamic_cast<BaseObj*>(*itObj);
+            CC_ASSERT(object);
+            arr->addObject(object);
         }
+    }
+    return arr;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Array * ChainObj::getChainObjectsForScoreAnimation()
+//--------------------------------------------------------------------
+{
+    auto arr = cocos2d::Array::create();
+    if (!mObjects) {
+        return arr;
+    }
+    for (auto it = mObjects->begin(); it != mObjects->end(); it++) {
+        auto container = dynamic_cast<ObjContainer*>(*it);
+        CC_ASSERT(container);
+
+        int score = 0;
+        auto objects = container->getObjectsForChain();
+        
+        for (auto itObj = objects->begin(); itObj != objects->end(); ++itObj) {
+            auto object = dynamic_cast<BaseObj*>(*itObj);
+            CC_ASSERT(object);
+            score += object->getScoreValue();
+        }
+
+        auto object = container->getObjectForChain();
+        object->setScoreValue(score);
+        arr->addObject(object);        
     }
     return arr;
 }

@@ -51,7 +51,8 @@ public:
     void detectDirectionsForDudes();
 
     bool canActivateDudeTo(int fromCol, int fromRow, int direction);
-    Set* activateDudeAndGetChains(DudeObj* obj, int direction);
+    Set* activateDudeAndGetChains(DudeObj* obj, int dir);
+    Set* getChainPreviewHint(DudeObj* obj, int dir);
 
     void updateChainSetWithDudesInChain(const Direction& direction, Set* chains, Set* chainSet);
 
