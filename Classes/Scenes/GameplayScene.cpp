@@ -225,12 +225,17 @@ void GameplayScene::removeAllCookieSprites()
 void GameplayScene::removeAllChainPreviewSprites()
 //--------------------------------------------------------------------
 {
-    for (const auto& child : mChainPreviewLayer->getChildren()) {
-        auto sprite = dynamic_cast<Sprite*>(child);
-        if (!sprite) {
-            continue;
+    std::vector<Sprite*> sprites;
+    auto childs = mChainPreviewLayer->getChildren();
+    for (auto it = childs.begin(); it != childs.end(); ++it) {
+        auto sprite = dynamic_cast<Sprite*>(*it);
+        if (sprite) {
+            sprites.push_back(sprite);
         }
-        this->removeChild(child);
+    }
+    for (auto it = sprites.begin(); it != sprites.end(); ++it) {
+        auto sprite = *it;
+        SpritesFactory->recycleHintSprite(sprite);
     }
 }
 

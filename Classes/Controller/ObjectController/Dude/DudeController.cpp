@@ -307,12 +307,13 @@ Set* DudeController::getChainPreviewHint(DudeObj* obj, int dir)
 
     auto helper = mDudeDirections.at(obj);
     if (helper) {
+        
         auto chains = helper->getChainByDirection(direction, true);
         if (!chains) {
             cocos2d::log("DudeController::getHintPreviewChains: empty chain from helper! direction=%d", dir);
             return set;
         }
-
+        set = Set::create();
         //updateChainSetWithDudesInChain(direction, chains, set);
         // create param without dude obj, to skip all dudes from adding except dude at 0 chain pos
         mChainCtrl->addChainsFromSetToSet(chains, set, true);

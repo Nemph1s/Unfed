@@ -62,6 +62,7 @@ private:
     Sprite* createForDudeObj(BaseObj* obj);
 
     Sprite* createSpriteForObj(BaseObj* obj);
+    Sprite* createNewHintSprite(bool isVisible = false);
 
     
     void clearPool(TSpriteList* pool);

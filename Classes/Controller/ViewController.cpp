@@ -224,8 +224,9 @@ bool ViewController::initDudeController()
 
     auto updateDirectionCallback = [dudeCtrl](BaseObj* obj, int direction) {
         auto dude = dynamic_cast<DudeObj*>(obj);
-        return dudeCtrl->getChainPreviewHint(dude, direction);
-
+        auto set = dudeCtrl->getChainPreviewHint(dude, direction);
+        CC_SAFE_RETAIN(set);
+        return set;
     };
     mGameplayScene->setUpdateDirectionCallback(updateDirectionCallback);
 

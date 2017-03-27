@@ -55,6 +55,8 @@ protected:
     void clearTouchedObj();
     int getSwipeDirection(int newCol, int newRow);
 
+    bool updateChainPreviewHint(int column, int row);
+
 
     //---Class Attributes-------------------------------------------------
     cocos2d::EventListener* mListener;
