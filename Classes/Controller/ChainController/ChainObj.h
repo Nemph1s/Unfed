@@ -45,6 +45,8 @@ public:
     void addObjectsFromChain(ChainObj* chain);
 
     void activateObjects();
+    void removeDuplicateObjects(cocos2d::Array* objsToRemove);
+    void deactivateObjects();
 
     void removeDudeObjectsFromChain(bool skipFirst = true);
 

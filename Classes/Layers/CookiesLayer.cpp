@@ -435,12 +435,27 @@ void CookiesLayer::createChainPreviewSprites(CommonTypes::Set* set)
         auto chain = dynamic_cast<ChainObj*>(*it);
         CC_ASSERT(chain);
 
+//        bool isFirstChain = it == set->begin();
+
         auto objects = chain->getChainObjects();
         for (auto itObj = objects->begin(); itObj != objects->end(); itObj++) {
             auto obj = dynamic_cast<BaseObj*>(*itObj);
             CC_ASSERT(obj);
 
             auto sprite = SpritesFactory->createHintSprite();
+
+            // Run some animation which scales a bit the glow
+            auto scaleFactor = 0.80f;
+            sprite->setScale(scaleFactor);
+            auto seq1 = cocos2d::Sequence::createWithTwoActions(
+                cocos2d::ScaleTo::create(0.9f, scaleFactor*0.75f, scaleFactor*0.75f),
+                cocos2d::ScaleTo::create(0.9f, scaleFactor, scaleFactor));
+
+            sprite->runAction(cocos2d::RepeatForever::create(seq1));
+
+//             if (!isFirstChain) {
+//                 sprite->setColor(cocos2d::Color3B::RED);
+//             }
             sprite->setVisible(true);
             sprite->setPosition(Helper::pointForColumnAndRow(obj->getColumn(), obj->getRow()));
 

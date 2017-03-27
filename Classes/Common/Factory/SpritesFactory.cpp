@@ -209,6 +209,7 @@ void _SpritesFactory::recycleHintSprite(Sprite* spriteNode)
     }
     spriteNode->setScale(1);
     spriteNode->setVisible(false);
+    spriteNode->stopAllActions();
     if (spriteNode->getParent()) {
         spriteNode->removeFromParent();
     }
@@ -395,15 +396,6 @@ Sprite* _SpritesFactory::createNewHintSprite(bool isVisible)
     glowSprite->setOpacity(200);
     glowSprite->setBlendFunc(f);
     sprite->addChild(glowSprite, -1);
-
-    // Run some animation which scales a bit the glow
-    auto scaleFactor = 0.80f;
-    sprite->setScale(scaleFactor);
-    auto seq1 = cocos2d::Sequence::createWithTwoActions(
-        cocos2d::ScaleTo::create(0.9f, scaleFactor*0.75f, scaleFactor*0.75f),
-        cocos2d::ScaleTo::create(0.9f, scaleFactor, scaleFactor));
-
-    sprite->runAction(cocos2d::RepeatForever::create(seq1));
 
     CC_SAFE_RETAIN(sprite);
     return sprite;

@@ -10,6 +10,7 @@
 
 #include "Controller/ChainController/ChainObj.h"
 #include "Controller/ObjectController/ObjContainer.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "Utils/Helpers/Helper.h"
 
@@ -172,15 +173,47 @@ void ChainObj::activateObjects()
         }
         it++;
     };
+    removeDuplicateObjects(objsToRemove);
+    cocos2d::log("ChainObj::activateObjects: objects size after removing=%d", mObjects->count());
+}
 
+//--------------------------------------------------------------------
+void ChainObj::removeDuplicateObjects(cocos2d::Array* objsToRemove)
+//--------------------------------------------------------------------
+{
+    if (!objsToRemove) {
+        cocos2d::log("ChainObj::removeDuplicateObjects: empty objsToRemove array");
+        return;
+    }
+    cocos2d::log("ChainObj::removeDuplicateObjects: objsToRemove.size=%d", objsToRemove->count());
     for (auto itToRemove = objsToRemove->begin(); itToRemove != objsToRemove->end(); ++itToRemove) {
         auto obj = dynamic_cast<ObjContainer*>(*itToRemove);
         if (obj) {
-            mScore = mScore - obj->getScoreValueForGameObjects();// obj->getObjectForChain()->getScoreValue();
+            mScore = mScore - obj->getScoreValueForGameObjects();
             mObjects->removeObject(obj);
         }
     }
-    cocos2d::log("ChainObj::activateObjects: objects size after removing=%d", mObjects->count());
+}
+
+//--------------------------------------------------------------------
+void ChainObj::deactivateObjects()
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ChainObj::deactivateObjects:");
+    if (!mObjects) {
+        cocos2d::log("ChainObj::deactivateObjects: empty objects array");
+        return;
+    }
+    for (auto it = mObjects->begin(); it != mObjects->end(); ++it) {
+        auto obj = dynamic_cast<ObjContainer*>(*it);
+        if (obj) {
+            obj->setObjectInChain(nullptr);
+            auto dude = obj->getDude();
+            if (dude) {
+                dude->deactivate();
+            }
+        }
+    }
 }
 
 //--------------------------------------------------------------------

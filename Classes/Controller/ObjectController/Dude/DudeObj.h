@@ -30,6 +30,7 @@ public:
     cocos2d::String& spriteName() const override;
 
     void activate();
+    void deactivate();
 
 
 protected:

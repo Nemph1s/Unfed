@@ -314,9 +314,10 @@ Set* DudeController::getChainPreviewHint(DudeObj* obj, int dir)
             return set;
         }
         set = Set::create();
-        //updateChainSetWithDudesInChain(direction, chains, set);
+        updateChainSetWithDudesInChain(direction, chains, set);
         // create param without dude obj, to skip all dudes from adding except dude at 0 chain pos
         mChainCtrl->addChainsFromSetToSet(chains, set, true);
+        mChainCtrl->deactivateChains(set);
     }
 
     return set;

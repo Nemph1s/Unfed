@@ -172,7 +172,7 @@ CommonTypes::Set* ChainController::detectChainAt(int column, int row)
 }
 
 //--------------------------------------------------------------------
-void ChainController::activateChains(CommonTypes::Set * chains)
+void ChainController::activateChains(CommonTypes::Set* chains)
 //--------------------------------------------------------------------
 {
     cocos2d::log("ChainController::activateChains:");
@@ -180,6 +180,18 @@ void ChainController::activateChains(CommonTypes::Set * chains)
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
         chain->activateObjects();
+    }
+}
+
+//--------------------------------------------------------------------
+void ChainController::deactivateChains(CommonTypes::Set* chains)
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ChainController::deactivateChains:");
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+        chain->deactivateObjects();
     }
 }
 
