@@ -224,13 +224,13 @@ cocos2d::Color4B Helper::getScoreColorByObj(BaseObj * obj)
     else if (obj->getType() == BaseObjType::Field) {
         auto tileObj = dynamic_cast<FieldObj*>(obj);
         if (tileObj) {
-            color = getScoreColorByFieldType(tileObj->getFieldType());
+            color = getScoreColorForFieldObj(tileObj->getFieldType());
         }
     }
     else if (obj->getType() == BaseObjType::Dude) {
         auto dudeObj = dynamic_cast<DudeObj*>(obj);
         if (dudeObj) {
-            color = cocos2d::Color4B::MAGENTA;
+            color = getScoreColorForDudeObj(dudeObj->getFieldType());
         }
     }
 
@@ -269,7 +269,7 @@ cocos2d::Color4B Helper::getScoreColorByCookieType(CommonTypes::CookieType type)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorByFieldType(CommonTypes::FieldType type)
+cocos2d::Color4B Helper::getScoreColorForFieldObj(CommonTypes::FieldType type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
@@ -286,6 +286,31 @@ cocos2d::Color4B Helper::getScoreColorByFieldType(CommonTypes::FieldType type)
         break;
     case FieldType::RockWall:
         color = cocos2d::Color4B::BLACK;
+        break;
+    default:
+        break;
+    }
+    return color;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Color4B Helper::getScoreColorForDudeObj(CommonTypes::FieldType type)
+//--------------------------------------------------------------------
+{
+    auto color = cocos2d::Color4B::WHITE;
+    switch (type)
+    {
+    case FieldType::DudeFromAToB:
+        color = cocos2d::Color4B::YELLOW;
+        break;
+    case FieldType::DudeFromAToBx3:
+        color = cocos2d::Color4B::BLUE;
+        break;
+    case FieldType::DudeAllOfType:
+        color = cocos2d::Color4B::GREEN;
+        break;
+    case FieldType::DudeChainX:
+        color = cocos2d::Color4B::GREEN;
         break;
     default:
         break;

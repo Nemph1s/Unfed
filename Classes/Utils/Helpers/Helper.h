@@ -49,5 +49,6 @@ public:
 
 private:
     static cocos2d::Color4B getScoreColorByCookieType(CommonTypes::CookieType type);
-    static cocos2d::Color4B getScoreColorByFieldType(CommonTypes::FieldType type);
+    static cocos2d::Color4B getScoreColorForFieldObj(CommonTypes::FieldType type);
+    static cocos2d::Color4B getScoreColorForDudeObj(CommonTypes::FieldType type);
 };

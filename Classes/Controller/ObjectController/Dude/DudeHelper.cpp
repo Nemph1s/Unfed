@@ -79,31 +79,33 @@ CommonTypes::Set * DudeHelper::getChainByDirection(const CommonTypes::Direction 
         cocos2d::log("DudeHelper::getChainByDirection: empty pointer ChainController");
         return set;
     }
-
+    set = CommonTypes::Set::create();
     if (mDudeObj->getFieldType() == FieldType::DudeChainX 
         || mDudeObj->getFieldType() == FieldType::DudeAllOfType) {
-        set = mXChain;
+        chainCtrl->addChainsFromSetToSet(mXChain, set);
     }
     bool isActivated = isPreview ? true : mDudeObj->isActivated();
 
-    if (!set) {
+    if (set->count() == 0) {
+        CommonTypes::Set* newSet = nullptr;
         switch (direction)
         {
         case CommonTypes::Direction::Up:
-            set = isActivated ? mTopChain : mVerticalChain;
+            newSet = isActivated ? mTopChain : mVerticalChain;
             break;
         case CommonTypes::Direction::Down:
-            set = isActivated ? mBottomChain : mVerticalChain;
+            newSet = isActivated ? mBottomChain : mVerticalChain;
             break;
         case CommonTypes::Direction::Left:
-            set = isActivated ? mLeftChain : mHorizontalChain;
+            newSet = isActivated ? mLeftChain : mHorizontalChain;
             break;
         case CommonTypes::Direction::Right:
-            set = isActivated ? mRightChain : mHorizontalChain;
+            newSet = isActivated ? mRightChain : mHorizontalChain;
             break;
         default:
             break;
         }
+        chainCtrl->addChainsFromSetToSet(newSet, set);
     }    
     return set;
 }

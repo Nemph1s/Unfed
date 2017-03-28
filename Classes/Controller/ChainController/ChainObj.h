@@ -66,6 +66,7 @@ protected:
     CC_SYNTHESIZE(bool, mIsCreatedByDude, IsCreatedByDude);
 
     CC_SYNTHESIZE_READONLY(CommonTypes::ChainType, mType, Type);
+    CC_SYNTHESIZE_READONLY(cocos2d::Array*, mObjsToRemove, ObjsToRemove);
     CC_SYNTHESIZE_READONLY(cocos2d::Array*, mObjects, Objects);
 };
 

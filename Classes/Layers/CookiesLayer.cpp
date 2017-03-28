@@ -436,13 +436,19 @@ void CookiesLayer::createChainPreviewSprites(CommonTypes::Set* set)
         CC_ASSERT(chain);
 
 //        bool isFirstChain = it == set->begin();
-
+        DudeObj* dude = nullptr;
         auto objects = chain->getChainObjects();
         for (auto itObj = objects->begin(); itObj != objects->end(); itObj++) {
             auto obj = dynamic_cast<BaseObj*>(*itObj);
             CC_ASSERT(obj);
 
+            if (!dude && obj->getType() == BaseObjType::Dude) {
+                dude = dynamic_cast<DudeObj*>(obj);
+            }
+
             auto sprite = SpritesFactory->createHintSprite();
+            auto color = Helper::getScoreColorByObj(dude);
+            sprite->setColor(cocos2d::Color3B(color));
 
             // Run some animation which scales a bit the glow
 //             auto scaleFactor = 0.80f;

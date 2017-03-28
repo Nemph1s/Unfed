@@ -261,6 +261,13 @@ void GameplayScene::createSpriteWithFieldObj(FieldObj * obj)
 }
 
 //--------------------------------------------------------------------
+bool GameplayScene::isObjTouched()
+//--------------------------------------------------------------------
+{
+    return mCookiesLayer->isObjTouched();
+}
+
+//--------------------------------------------------------------------
 LevelObj* GameplayScene::getLevel() const
 //--------------------------------------------------------------------
 {
