@@ -387,15 +387,15 @@ Sprite* _SpritesFactory::createNewHintSprite(bool isVisible)
 {
     auto sprite = Sprite::create(GameResources::s_HintImg.getCString());
     sprite->setVisible(isVisible);
-    sprite->setOpacity(100);
+    sprite->setOpacity(255);
     cocos2d::BlendFunc f = { GL_ONE, GL_ONE };
     auto pos = cocos2d::Vec2(sprite->getContentSize().width / 2, sprite->getContentSize().height / 2);
-    auto glowSprite = Sprite::create(GameResources::s_HintImg.getCString());
-    //glowSprite->setColor(cocos2d::Color3B::BLUE);
-    glowSprite->setPosition(pos);
-    glowSprite->setOpacity(200);
-    glowSprite->setBlendFunc(f);
-    sprite->addChild(glowSprite, -1);
+//     auto glowSprite = Sprite::create(GameResources::s_HintImg.getCString());
+//     //glowSprite->setColor(cocos2d::Color3B::BLUE);
+//     glowSprite->setPosition(pos);
+//     glowSprite->setOpacity(200);
+//     glowSprite->setBlendFunc(f);
+//     sprite->addChild(glowSprite, -1);
 
     CC_SAFE_RETAIN(sprite);
     return sprite;

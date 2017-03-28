@@ -17,8 +17,8 @@
 namespace GameResources {
 
     //TODO: move to global info or to json file
-    static const float TileWidth = 32.0 * 2;
-    static const float TileHeight = 36.0 * 2;
+    static const float TileWidth = 34.0 * 2;
+    static const float TileHeight = 38.0 * 2;
 
    static cocos2d::String s_backgroundImg = "Images/Background1@2x.png";
 
