@@ -207,10 +207,15 @@ void CookiesLayer::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
                 removeChainPreviewSprites();
 
                 auto direction = getSwipeDirection(column, row);
-                if (mCanActivateDudeCallback(mSwipeFromColumn, mSwipeFromRow, direction)) {
-                    hideSelectionIndicator();
-                    clearTouchedObj();
-                    return;
+                if (direction != Helper::to_underlying(Direction::Unknown)) {
+                    if (mCanActivateDudeCallback(mSwipeFromColumn, mSwipeFromRow, direction)) {
+                        hideSelectionIndicator();
+                        clearTouchedObj();
+                        return;
+                    }
+                } else {
+                    auto objCtrl = mLevel->getObjectController();
+                    objCtrl->detectDirectionsForDudes();
                 }
             }
         }
@@ -344,10 +349,13 @@ bool CookiesLayer::updateChainPreviewHint(int column, int row)
     bool isDudeObject = mTouchedObj->getType() == BaseObjType::Dude;
     if (isDudeObject) {
 
+        auto objCtrl = mLevel->getObjectController();
         auto direction = getSwipeDirection(column, row);
         if (direction == Helper::to_underlying(Direction::Unknown)) {
             if (direction != Helper::to_underlying(mHintPreviewDirection)) {
                 removeChainPreviewSprites();
+                
+                objCtrl->detectDirectionsForDudes();
                 mHintPreviewDirection = static_cast<CommonTypes::Direction>(direction);
             }
         }
@@ -356,6 +364,7 @@ bool CookiesLayer::updateChainPreviewHint(int column, int row)
             if (direction != Helper::to_underlying(mHintPreviewDirection)) {
                 removeChainPreviewSprites();
 
+                objCtrl->detectDirectionsForDudes();
                 auto set = mUpdateDirectionCallback(mTouchedObj, direction);
                 if (set) {
                     createChainPreviewSprites(set);
@@ -445,7 +454,7 @@ void CookiesLayer::createChainPreviewSprites(CommonTypes::Set* set)
                 dude = dynamic_cast<DudeObj*>(obj);
             }
 
-            auto color = Helper::getScoreColorByObj(dude);
+            auto color = cocos2d::Color4B::WHITE;// Helper::getScoreColorByObj(dude);
             auto sprite = SpritesFactory->createHintSprite(color);
             
             sprite->setPosition(Helper::pointForColumnAndRow(obj->getColumn(), obj->getRow()));

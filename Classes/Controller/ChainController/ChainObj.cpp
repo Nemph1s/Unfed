@@ -76,20 +76,6 @@ bool ChainObj::initWithType(const CommonTypes::ChainType &type)
 }
 
 //--------------------------------------------------------------------
-ChainObj* ChainObj::clone()
-//--------------------------------------------------------------------
-{
-    auto clonnedChain = ChainObj::createWithType(mType);
-    if (!clonnedChain) {
-        return nullptr;
-    }
-    clonnedChain->setUpdateGoalCallback(mUpdateGoalCallback);
-    clonnedChain->addObjectsFromChain(this);
-    clonnedChain->updateChainScore();
-    return clonnedChain;    
-}
-
-//--------------------------------------------------------------------
 std::string ChainObj::description()
 //--------------------------------------------------------------------
 {
@@ -220,6 +206,7 @@ void ChainObj::removeDuplicateObjects(cocos2d::Array* objsToRemove)
 void ChainObj::deactivateObjects()
 //--------------------------------------------------------------------
 {
+    //TODO: refactor
     cocos2d::log("ChainObj::deactivateObjects:");
     if (!mObjects) {
         cocos2d::log("ChainObj::deactivateObjects: empty objects array");
