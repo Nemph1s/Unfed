@@ -76,6 +76,20 @@ bool ChainObj::initWithType(const CommonTypes::ChainType &type)
 }
 
 //--------------------------------------------------------------------
+ChainObj* ChainObj::clone()
+//--------------------------------------------------------------------
+{
+    auto clonnedChain = ChainObj::createWithType(mType);
+    if (!clonnedChain) {
+        return nullptr;
+    }
+    clonnedChain->setUpdateGoalCallback(mUpdateGoalCallback);
+    clonnedChain->addObjectsFromChain(this);
+    clonnedChain->updateChainScore();
+    return clonnedChain;    
+}
+
+//--------------------------------------------------------------------
 std::string ChainObj::description()
 //--------------------------------------------------------------------
 {

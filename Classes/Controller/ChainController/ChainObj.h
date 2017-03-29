@@ -31,6 +31,8 @@ public:
 
     virtual bool initWithType(const CommonTypes::ChainType &type);
 
+    ChainObj* clone();
+
     std::string description();
     std::string typeAsString();
     int getTypeAsInt();

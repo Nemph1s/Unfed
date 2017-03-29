@@ -435,7 +435,6 @@ void CookiesLayer::createChainPreviewSprites(CommonTypes::Set* set)
         auto chain = dynamic_cast<ChainObj*>(*it);
         CC_ASSERT(chain);
 
-//        bool isFirstChain = it == set->begin();
         DudeObj* dude = nullptr;
         auto objects = chain->getChainObjects();
         for (auto itObj = objects->begin(); itObj != objects->end(); itObj++) {
@@ -446,23 +445,9 @@ void CookiesLayer::createChainPreviewSprites(CommonTypes::Set* set)
                 dude = dynamic_cast<DudeObj*>(obj);
             }
 
-            auto sprite = SpritesFactory->createHintSprite();
             auto color = Helper::getScoreColorByObj(dude);
-            sprite->setColor(cocos2d::Color3B(color));
-
-            // Run some animation which scales a bit the glow
-//             auto scaleFactor = 0.80f;
-//             sprite->setScale(scaleFactor);
-//             auto seq1 = cocos2d::Sequence::createWithTwoActions(
-//                 cocos2d::ScaleTo::create(0.9f, scaleFactor*0.75f, scaleFactor*0.75f),
-//                 cocos2d::ScaleTo::create(0.9f, scaleFactor, scaleFactor));
-// 
-//             sprite->runAction(cocos2d::RepeatForever::create(seq1));
-
-//             if (!isFirstChain) {
-//                 sprite->setColor(cocos2d::Color3B::RED);
-//             }
-            sprite->setVisible(true);
+            auto sprite = SpritesFactory->createHintSprite(color);
+            
             sprite->setPosition(Helper::pointForColumnAndRow(obj->getColumn(), obj->getRow()));
 
             auto gameLayer = this->getParent();

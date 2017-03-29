@@ -297,20 +297,21 @@ cocos2d::Color4B Helper::getScoreColorForFieldObj(CommonTypes::FieldType type)
 cocos2d::Color4B Helper::getScoreColorForDudeObj(CommonTypes::FieldType type)
 //--------------------------------------------------------------------
 {
-    auto color = cocos2d::Color4B::WHITE;
+    // see hints on http://www.colorhexa.com/color-names
+    auto color = cocos2d::Color4B(209, 159, 232, 255); //Bright ube  alpha(200)
     switch (type)
     {
     case FieldType::DudeFromAToB:
-        color = cocos2d::Color4B::YELLOW;
+        color = cocos2d::Color4B(255, 255, 53, 200); //Banana yellow  alpha(200)
         break;
     case FieldType::DudeFromAToBx3:
-        color = cocos2d::Color4B::BLUE;
+        color = cocos2d::Color4B(161, 202, 241, 255); //Baby blue eyes  alpha(255)
         break;
     case FieldType::DudeAllOfType:
-        color = cocos2d::Color4B::GREEN;
+        color = cocos2d::Color4B(133, 187, 101, 255); //Dollar bill  alpha(144)
         break;
     case FieldType::DudeChainX:
-        color = cocos2d::Color4B::GREEN;
+        color = cocos2d::Color4B(170, 240, 209, 255); //Magic mint  alpha(204)
         break;
     default:
         break;

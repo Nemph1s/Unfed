@@ -32,7 +32,7 @@ public:
     static _SpritesFactory* getInstance();
 
     Sprite* createWithBaseObject(BaseObj* obj);
-    Sprite* createHintSprite();
+    Sprite* createHintSprite(const cocos2d::Color4B& color);
     
     bool initTilesPool(int poolSize);
     bool initCookiesPool(int poolSize);
@@ -62,7 +62,7 @@ private:
     Sprite* createForDudeObj(BaseObj* obj);
 
     Sprite* createSpriteForObj(BaseObj* obj);
-    Sprite* createNewHintSprite(bool isVisible = false);
+    Sprite* createNewHintSprite(const cocos2d::Color4B& color, bool isVisible = false);
 
     
     void clearPool(TSpriteList* pool);
