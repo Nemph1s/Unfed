@@ -462,8 +462,7 @@ void CookiesLayer::createChainPreviewSprites(CommonTypes::Set* set)
                 continue;
             }
 
-            auto color = Color4B::WHITE;// Helper::getScoreColorByObj(dude);
-            auto sprite = SpritesFactory->createHintSprite(color);
+            auto sprite = SpritesFactory->createHintSprite(chain->getChainColor());
             container->setChainPreviewSprite(sprite);
 
             sprite->setPosition(Helper::pointForColumnAndRow(obj->getColumn(), obj->getRow()));

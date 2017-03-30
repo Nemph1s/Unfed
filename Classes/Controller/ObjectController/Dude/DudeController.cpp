@@ -283,7 +283,7 @@ Set * DudeController::activateDudeAndGetChains(DudeObj* obj, int dir)
             return set;
         }
 
-        updateChainSetWithDudesInChain(direction, chains, set);
+        updateChainSetWithDudesInChain(direction, obj, chains, set);
         // create param without dude obj, to skip all dudes from adding except dude at 0 chain pos
         mChainCtrl->addChainsFromSetToSet(chains, set, true); 
     }
@@ -316,7 +316,7 @@ Set* DudeController::getChainPreviewHint(DudeObj* obj, int dir)
         }
 
         set = Set::create();
-        updateChainSetWithDudesInChain(direction, chains, set);
+        updateChainSetWithDudesInChain(direction, obj, chains, set);
         // create param without dude obj, to skip all dudes from adding except dude at 0 chain pos
         mChainCtrl->addChainsFromSetToSet(chains, set, true); //TODO: Fix this!!!
         mChainCtrl->deactivateChains(set);
@@ -326,18 +326,24 @@ Set* DudeController::getChainPreviewHint(DudeObj* obj, int dir)
 }
 
 //--------------------------------------------------------------------
-void DudeController::updateChainSetWithDudesInChain(const Direction& direction, Set* chains, Set* chainSet)
+void DudeController::updateChainSetWithDudesInChain(const Direction& direction, DudeObj* activeDude, Set* chains, Set* chainSet)
 //--------------------------------------------------------------------
 {
+    CC_ASSERT(activeDude);
+    cocos2d::log("DudeController::updateChainSetWithDudesInChain: direction=%d", Helper::to_underlying(direction));
+
+    mChainCtrl->activateChains(chains);
+
     for (auto itChain = chains->begin(); itChain != chains->end(); ++itChain) {
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
 
+        auto color = Helper::getScoreColorByObj(activeDude);
+        chain->setChainColor(color);
+
         auto objects = chain->getObjects();
         if (!objects) 
             continue;
-
-        mChainCtrl->activateChains(chains);
 
         uint8_t index = 0;
         for (auto it = objects->begin(); it != objects->end(); it++, index++) {
@@ -359,7 +365,10 @@ void DudeController::updateChainSetWithDudesInChain(const Direction& direction, 
 
                     CommonTypes::Set* newChains = nullptr;
                     auto dude = container->getDude();
-                    auto invertedDirection = Helper::invertDirection(direction);
+                    auto realDirection = Helper::getDirectionByTileFromAToB(Helper::to_underlying(direction), activeDude, dude);
+                    auto invertedDirection = Helper::invertDirection(realDirection);
+
+                    cocos2d::log("DudeController::updateChainSetWithDudesInChain: realDirection=%d", Helper::to_underlying(realDirection));
 
                     auto helper = mDudeDirections.at(dude);
                     if (helper && !dude->isActivated()) {
@@ -370,7 +379,7 @@ void DudeController::updateChainSetWithDudesInChain(const Direction& direction, 
                     if (newChains != nullptr) {
                         dude->activate();
 
-                        updateChainSetWithDudesInChain(invertedDirection, newChains, chainSet);
+                        updateChainSetWithDudesInChain(invertedDirection, dude, newChains, chainSet);
                         mChainCtrl->addChainsFromSetToSet(newChains, chainSet, true); //TODO: Fix this!!!
                     }
                 }

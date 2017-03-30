@@ -757,9 +757,9 @@ CommonTypes::Set * ChainController::createChainFromPosToPos(const CommonTypes::D
     auto chain = ChainObj::createWithType(ChainType::ChainFromAToB);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
-    auto dir = Helper::getDirectionByTileFromAToB(fromCol, fromRow, toCol, toRow);
     auto newDirection = direction;
     if (direction == Direction::Unknown) {
+        auto dir = Helper::getDirectionByTileFromAToB(Helper::to_underlying(direction), fromCol, fromRow, toCol, toRow);
         newDirection = static_cast<Direction>(dir);
     }
     chain->setDirection(newDirection);

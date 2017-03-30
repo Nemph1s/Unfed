@@ -39,7 +39,6 @@ ChainObj::~ChainObj()
             auto obj = dynamic_cast<ObjContainer*>(*it);
             if (obj) {
                 obj->setObjectInChain(nullptr);
-                obj->setTmpObjectInChain(nullptr);
                 obj->setChainPreviewSprite(nullptr);
             }
         }
@@ -175,7 +174,6 @@ void ChainObj::activateObjects()
             if (obj->isObjectInChain()) {
                 mObjsToRemove->addObject(obj);
             } else {
-                obj->setTmpObjectInChain(this);
                 obj->setObjectInChain(this);
             }
         }
@@ -227,7 +225,6 @@ void ChainObj::deactivateObjects()
     for (auto it = mObjects->begin(); it != mObjects->end(); ++it) {
         auto obj = dynamic_cast<ObjContainer*>(*it);
         if (obj) {
-            obj->setTmpObjectInChain(nullptr);
             obj->setObjectInChain(nullptr);
             auto dude = obj->getDude();
             if (dude) {

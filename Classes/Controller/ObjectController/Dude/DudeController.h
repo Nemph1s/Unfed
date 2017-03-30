@@ -54,7 +54,7 @@ public:
     Set* activateDudeAndGetChains(DudeObj* obj, int dir);
     Set* getChainPreviewHint(DudeObj* obj, int dir);
 
-    void updateChainSetWithDudesInChain(const Direction& direction, Set* chains, Set* chainSet);
+    void updateChainSetWithDudesInChain(const Direction& direction, DudeObj* activeDude, Set* chains, Set* chainSet);
 
     void activateAllDudes();
 

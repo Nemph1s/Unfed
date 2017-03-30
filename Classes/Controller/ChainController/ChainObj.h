@@ -64,6 +64,7 @@ protected:
     CC_SYNTHESIZE(int, mCookiesScore, CookiesScore); // use this to get multiplier for cookies in chain
     CC_SYNTHESIZE(int, mScore, Score);
     CC_SYNTHESIZE(bool, mIsCreatedByDude, IsCreatedByDude);
+    CC_SYNTHESIZE(cocos2d::Color4B, mChainColor, ChainColor);
 
     CC_SYNTHESIZE_READONLY(CommonTypes::ChainType, mType, Type);
     CC_SYNTHESIZE_READONLY(cocos2d::Array*, mObjsToRemove, ObjsToRemove);

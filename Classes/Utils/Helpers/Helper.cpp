@@ -15,6 +15,7 @@
 #include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include <random>
+#include <cstdlib>
 
 using namespace GameResources;
 using namespace CommonTypes;
@@ -165,17 +166,39 @@ Direction Helper::invertDirection(const Direction & direction)
 }
 
 //--------------------------------------------------------------------
-int Helper::getDirectionByTileFromAToB(int fromCol, int fromRow, int toCol, int toRow)
+CommonTypes::Direction Helper::invertDirection(int direction)
+//--------------------------------------------------------------------
+{
+    auto dir = static_cast<CommonTypes::Direction>(direction);
+    return invertDirection(dir);
+}
+
+//--------------------------------------------------------------------
+int Helper::getDirectionByTileFromAToB(int oldDirection, int fromCol, int fromRow, int toCol, int toRow)
 //--------------------------------------------------------------------
 {
     auto dir = Direction::Unknown;
-    if (fromCol != toCol) {
-        dir = fromCol > toCol ? Direction::Left : Direction::Right;
+    int8_t xDiff = toCol - fromCol;
+    int8_t yDiff = toRow - fromRow;
+    if (std::abs(xDiff) != std::abs(yDiff)) {
+        if (std::abs(xDiff) > std::abs(yDiff)) {
+            dir = xDiff > 0 ? Direction::Left : Direction::Right;
+        } else {
+            dir = yDiff < 0 ? Direction::Up : Direction::Down;
+        }
+    } else {
+        return oldDirection;
     }
-    if (fromRow != toRow) {
-        dir = fromRow > toRow ? Direction::Up : Direction::Down;
-    }
-    return 0;
+    
+    return to_underlying(dir);
+}
+
+//--------------------------------------------------------------------
+CommonTypes::Direction Helper::getDirectionByTileFromAToB(int oldDirection, BaseObj * from, BaseObj * to)
+//--------------------------------------------------------------------
+{
+    auto direction = getDirectionByTileFromAToB(oldDirection, from->getColumn(), from->getRow(), to->getColumn(), to->getRow());
+    return static_cast<CommonTypes::Direction>(direction);
 }
 
 //--------------------------------------------------------------------
