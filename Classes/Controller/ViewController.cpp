@@ -33,13 +33,13 @@ using cocos2d::Director;
 using cocos2d::CallFunc;
 using namespace CommonTypes;
 using namespace std::placeholders;
-
+ 
 #define COCOS2D_DEBUG 1
 #define UNFED_ENABLE_DEBUG 1
 
 const float showHintInterval = 10.0f;
 
-#define CURRENT_LEVEL 668
+#define CURRENT_LEVEL 667
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
