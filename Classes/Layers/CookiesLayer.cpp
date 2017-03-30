@@ -18,6 +18,7 @@
 
 #include "Managers/AnimationsManager.h"
 #include "Controller/ObjectController/ObjectController.h"
+#include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ChainController/ChainObj.h"
 
 #include "GameObjects/Level/LevelObj.h"
@@ -60,7 +61,7 @@ CookiesLayer * CookiesLayer::create()
 CookiesLayer::~CookiesLayer()
 //--------------------------------------------------------------------
 {
-    cocos2d::log("CookiesLayer::~CookiesLayer: deallocing CookiesLayer: %p - tag: %i", this, _tag);
+    log("CookiesLayer::~CookiesLayer: deallocing CookiesLayer: %p - tag: %i", this, _tag);
     CC_SAFE_RELEASE_NULL(mSelectionSprite);
     clearTouchedObj();
     mListener = nullptr;
@@ -73,7 +74,7 @@ bool CookiesLayer::init()
 //--------------------------------------------------------------------
 {
     if (!Layer::init()) {
-        cocos2d::log("CookiesLayer::initWithSize: can't init Scene inctance");
+        log("CookiesLayer::initWithSize: can't init Scene inctance");
         return false;
     }
     clearTouchedObj();
@@ -91,7 +92,7 @@ void CookiesLayer::onEnter()
 //--------------------------------------------------------------------
 {
     Layer::onEnter();
-    cocos2d::log("CookiesLayer::onEnter:");
+    log("CookiesLayer::onEnter:");
 
     auto listener = EventListenerTouchOneByOne::create();
     listener->setSwallowTouches(true);
@@ -109,7 +110,7 @@ void CookiesLayer::onExit()
 //--------------------------------------------------------------------
 {
     Layer::onExit();
-    cocos2d::log("CookiesLayer::onExit:");
+    log("CookiesLayer::onExit:");
 
     _eventDispatcher->removeEventListener(mListener);
     mListener = nullptr;
@@ -119,7 +120,7 @@ void CookiesLayer::onExit()
 void CookiesLayer::addSpritesForObjects(CommonTypes::Set * set)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("CookiesLayer::addSpritesForDudes:");
+    log("CookiesLayer::addSpritesForDudes:");
     auto it = set->begin();
     for (it; it != set->end(); it++) {
         auto obj = dynamic_cast<BaseObj*>(*it);
@@ -140,7 +141,7 @@ void CookiesLayer::addSpritesForObjects(CommonTypes::Set * set)
 }
 
 //--------------------------------------------------------------------
-bool CookiesLayer::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
+bool CookiesLayer::onTouchBegan(Touch* touch, Event* event)
 //--------------------------------------------------------------------
 {
     Vec2 locationInNode = this->convertToNodeSpace(touch->getLocation());
@@ -167,7 +168,7 @@ bool CookiesLayer::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
+void CookiesLayer::onTouchMoved(Touch* touch, Event* event)
 //--------------------------------------------------------------------
 {
     if (!isObjTouched())
@@ -194,7 +195,7 @@ void CookiesLayer::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
+void CookiesLayer::onTouchEnded(Touch* touch, Event* event)
 //--------------------------------------------------------------------
 {
     if (mTouchedObj && mCanActivateDudeCallback) {
@@ -230,10 +231,10 @@ void CookiesLayer::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::onTouchCancelled(cocos2d::Touch* touch, cocos2d::Event* event)
+void CookiesLayer::onTouchCancelled(Touch* touch, Event* event)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("GameplayScene::onTouchCancelled:");
+    log("GameplayScene::onTouchCancelled:");
     onTouchEnded(touch, event);
 }
 
@@ -439,24 +440,32 @@ void CookiesLayer::createSpriteWithFieldObj(FieldObj* obj, int column, int row)
 void CookiesLayer::createChainPreviewSprites(CommonTypes::Set* set)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("CookiesLayer::addSpritesForDudes:");
-    for (auto it = set->begin(); it != set->end(); it++) {
-        auto chain = dynamic_cast<ChainObj*>(*it);
+    log("CookiesLayer::addSpritesForDudes:");
+    for (auto itChain = set->begin(); itChain != set->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
 
         DudeObj* dude = nullptr;
-        auto objects = chain->getChainObjects();
+
+        auto objects = chain->getObjects();
         for (auto itObj = objects->begin(); itObj != objects->end(); itObj++) {
-            auto obj = dynamic_cast<BaseObj*>(*itObj);
+            auto container = dynamic_cast<ObjContainer*>(*itObj);
+            CC_ASSERT(container);
+
+            auto obj = container->getObjectForChain();
             CC_ASSERT(obj);
 
             if (!dude && obj->getType() == BaseObjType::Dude) {
                 dude = dynamic_cast<DudeObj*>(obj);
             }
+            if (container->isContainChainPreviewSprite()) {
+                continue;
+            }
 
-            auto color = cocos2d::Color4B::WHITE;// Helper::getScoreColorByObj(dude);
+            auto color = Color4B::WHITE;// Helper::getScoreColorByObj(dude);
             auto sprite = SpritesFactory->createHintSprite(color);
-            
+            container->setChainPreviewSprite(sprite);
+
             sprite->setPosition(Helper::pointForColumnAndRow(obj->getColumn(), obj->getRow()));
 
             auto gameLayer = this->getParent();
@@ -464,6 +473,7 @@ void CookiesLayer::createChainPreviewSprites(CommonTypes::Set* set)
             CC_ASSERT(scene);
 
             scene->getChainPreviewLayer()->addChild(sprite);
+            
         }
     }
 }

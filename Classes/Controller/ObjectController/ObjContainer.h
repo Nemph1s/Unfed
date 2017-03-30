@@ -57,6 +57,9 @@ public:
     bool isPossibleToAddCookie();
     bool isSameTypeOfCookieAt(int type);
 
+    bool isContainChainPreviewSprite() const;
+    void setChainPreviewSprite(cocos2d::Sprite* sprite);
+
     //---Callbacks-------------------------------------------------
     void onRemoveCookie(BaseObj* obj);
     void onRemoveDude(BaseObj* obj);

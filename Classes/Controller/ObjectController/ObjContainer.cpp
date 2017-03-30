@@ -354,6 +354,20 @@ bool ObjContainer::isSameTypeOfCookieAt(int type)
 }
 
 //--------------------------------------------------------------------
+bool ObjContainer::isContainChainPreviewSprite() const
+//--------------------------------------------------------------------
+{
+    return (mTileObj->getChainPreviewSpriteNode() != nullptr);
+}
+
+//--------------------------------------------------------------------
+void ObjContainer::setChainPreviewSprite(cocos2d::Sprite* sprite)
+//--------------------------------------------------------------------
+{
+    mTileObj->setChainPreviewSpriteNode(sprite);
+}
+
+//--------------------------------------------------------------------
 bool ObjContainer::addDudeObject(BaseObj* obj)
 //--------------------------------------------------------------------
 {
