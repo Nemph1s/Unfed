@@ -46,6 +46,6 @@ protected:
     * @brief A parameter that checks is the dude object was touched
     * If it doesn't, when next dude was founded in chain, then it will create chain for all horizontal or vertical fields
     */
-    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsActivated, Activated);
+    SYNTHESIZE_IS_READONLY(bool, mIsActivated, Activated, false);
 };
 

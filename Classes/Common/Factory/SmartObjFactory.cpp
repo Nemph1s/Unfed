@@ -22,6 +22,14 @@
 using namespace CommonTypes;
 
 //--------------------------------------------------------------------
+_SmartObjFactory & _SmartObjFactory::Instance()
+//--------------------------------------------------------------------
+{
+    static _SmartObjFactory myInstance;
+    return myInstance;
+}
+
+//--------------------------------------------------------------------
 _SmartObjFactory * _SmartObjFactory::getInstance()
 //--------------------------------------------------------------------
 {
@@ -310,3 +318,4 @@ void _SmartObjFactory::clearEntity(BaseObj * obj)
         CC_SAFE_RELEASE_NULL(obj);
     }    
 }
+

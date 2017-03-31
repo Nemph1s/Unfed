@@ -74,11 +74,11 @@ bool LevelObj::initWithId(const int16_t& levelId)
     }
 
     JsonParser->parseLevelInfo(levelId);
-    if (!JsonParser->checkStatus()) {
+    if (!JsonParser->checkLevelInfoStatus()) {
         cocos2d::log("LevelObj::initWithId: can't parse json file");
         return false;
     }
-    mLevelInfo = JsonParser->getLevelInfo();
+    mLevelInfo = JsonParser->getJsonLevelInfo();
 
     return true;
 }

@@ -16,10 +16,6 @@
 
 namespace GameResources {
 
-    //TODO: move to global info or to json file
-    static const float TileWidth = 34.0 * 2;
-    static const float TileHeight = 38.0 * 2;
-
    static cocos2d::String s_backgroundImg = "Images/Background1@2x.png";
 
    static cocos2d::String s_ButtonImg = "Images/Button@2x.png";
@@ -65,6 +61,8 @@ namespace GameResources {
       , "Sprites.atlas/SugarCookie-Highlighted@2x.png"
    };
    
+   static cocos2d::String s_GlobalInfoPath = "info.cfg";
+
    static cocos2d::String s_templateLevelName = "Levels/Level_%d.json";
    //TODO: move to config file
    static int16_t s_levelsCount = 4;

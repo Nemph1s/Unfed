@@ -10,6 +10,8 @@
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
+
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "Controller/ObjectController/Dude/DudeObj.h"
@@ -92,7 +94,9 @@ cocos2d::Vec2 Helper::pointForColumnAndRow(int column, int row)
 {
     float offsetX = 2.5f * column;
     float offsetY = 2.5f * (NumRows - row - 1);
-    return cocos2d::Vec2(offsetX + column * TileWidth + TileWidth / 2, offsetY + (NumRows - row - 1) * TileHeight + TileHeight / 2);
+    auto tileWidth = GlobalInfo->getTileWidth();
+    auto tileHeight = GlobalInfo->getTileHeight();
+    return cocos2d::Vec2(offsetX + column * tileWidth + tileWidth / 2, offsetY + (NumRows - row - 1) * tileHeight + tileHeight / 2);
 }
 
 //--------------------------------------------------------------------
@@ -101,7 +105,8 @@ cocos2d::Vec2 Helper::pointForColumnAndRowWithPriority(int column, int row, int 
 {
     auto pos = pointForColumnAndRow(column, row);
     if (priority > 0) {
-        pos.y += (GameResources::TileHeight / 4) * priority;
+        auto tileHeight = GlobalInfo->getTileHeight();
+        pos.y += (tileHeight / 4) * priority;
     }
     return pos;
 }
@@ -126,9 +131,10 @@ cocos2d::Vec2 Helper::pointForTile(BaseObj * obj)
 bool Helper::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
 //--------------------------------------------------------------------
 {
-    if (point.x >= 0 && point.x < NumColumns*TileWidth && point.y >= 0 && point.y < NumRows*TileHeight) {
-        column = point.x / TileWidth;
-        row = NumColumns - (point.y / TileHeight);
+    if (point.x >= 0 && point.x < NumColumns * GlobalInfo->getTileWidth() &&
+        point.y >= 0 && point.y < NumRows * GlobalInfo->getTileHeight()) {
+        column = point.x / GlobalInfo->getTileWidth();
+        row = NumColumns - (point.y / GlobalInfo->getTileHeight());
         return true;
     }
     return false;

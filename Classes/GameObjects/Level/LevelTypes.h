@@ -28,7 +28,7 @@ namespace CommonTypes {
         int moves = 0; /**< available moves */
         TilesArray tiles = { 0 }; /**< array of tiles */
         TilesArray cookies = { 0 }; /**< array of cookies */
-        std::vector<CommonTypes::FieldJsonInfo> fieldObjects; /**< array of tileObjects */
+        std::vector<CommonTypes::JsonFieldInfo> fieldObjects; /**< array of tileObjects */
         int typesCount = 0; /**< count of types */
         bool isPredefinedCookies = false; /**< availability to load predefined cookies */
         bool skipEmptyHoles = false; /**< availability to skip empty tiles when obj falling */

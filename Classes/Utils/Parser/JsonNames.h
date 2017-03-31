@@ -1,5 +1,5 @@
 /**
-* @file Utils/Parser/JsonHelper.hpp
+* @file Utils/Parser/JsonNames.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -9,8 +9,6 @@
 */
 
 #pragma once
-
-
 
 namespace JsonNames {
 
@@ -41,4 +39,15 @@ namespace JsonNames {
     static const char* targetBaseObjType = "baseObjType";
     static const char* targetObjType = "objType";
     static const char* targetObjectCount = "targetCount";
+
+    //GlobalInfo parameters
+    namespace GlobalInfo {
+        static const char* loadResult = "res";
+        static const char* swVersion = "swVersion";
+        static const char* imgPackType = "imgPackType";
+        static const char* imgPackVersion = "imgPackVersion";
+        static const char* tileWidth = "tileWidth";
+        static const char* tileHeigth = "tileHeigth";
+        static const char* levelsCount = "levelsCount";
+    }
 }

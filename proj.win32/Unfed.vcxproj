@@ -147,6 +147,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\Common\Factory\SmartObjFactory.cpp" />
     <ClCompile Include="..\Classes\Common\Factory\SpritesFactory.cpp" />
+    <ClCompile Include="..\Classes\Common\GlobalInfo\GlobalInfo.cpp" />
     <ClCompile Include="..\Classes\Controller\ChainController\ChainController.cpp" />
     <ClCompile Include="..\Classes\Controller\ChainController\ChainObj.cpp" />
     <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeController.cpp" />
@@ -172,7 +173,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Managers\GuiManager.cpp" />
     <ClCompile Include="..\Classes\Managers\ResourceManager.cpp" />
     <ClCompile Include="..\Classes\Scenes\GameplayScene.cpp" />
-    <ClCompile Include="..\Classes\Utils\GlobalInfo.cpp" />
     <ClCompile Include="..\Classes\Utils\Helpers\Helper.cpp" />
     <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp" />
     <ClCompile Include="..\Classes\Utils\Parser\JsonParser.cpp" />
@@ -183,6 +183,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Common\CommonTypes.h" />
     <ClInclude Include="..\Classes\Common\Factory\SmartObjFactory.h" />
     <ClInclude Include="..\Classes\Common\Factory\SpritesFactory.h" />
+    <ClInclude Include="..\Classes\Common\GlobalInfo\GlobalInfo.h" />
+    <ClInclude Include="..\Classes\Common\GlobalInfo\GlobalInfoTypes.h" />
     <ClInclude Include="..\Classes\Controller\ChainController\ChainController.h" />
     <ClInclude Include="..\Classes\Controller\ChainController\ChainObj.h" />
     <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeController.h" />
@@ -210,7 +212,6 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Managers\ResourceManager.h" />
     <ClInclude Include="..\Classes\Scenes\GameplayScene.h" />
     <ClInclude Include="..\Classes\Utils\GameResources.h" />
-    <ClInclude Include="..\Classes\Utils\GlobalInfo.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\Helper.h" />
     <ClInclude Include="..\Classes\Utils\Helpers\VisibleRect.h" />
     <ClInclude Include="..\Classes\Utils\Localization.h" />
