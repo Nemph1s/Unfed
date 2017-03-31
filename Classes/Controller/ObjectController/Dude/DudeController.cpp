@@ -27,6 +27,7 @@
 #define RequiredCountForDudeFromAToB 4
 #define RequiredCountForDudeFromAToBx3 5
 #define RequiredAmountForOni 5
+#define RequiredAmountForMBO 5
 #define RequiredAmountForPina 5
 
 using namespace CommonTypes;
@@ -177,12 +178,13 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
         horizontalSet = verticalSet = xSet;
     }
     break;
+    case FieldType::DudeSquareBomb:
     case FieldType::DudeAllOfType:
     {
-        topSet = mChainCtrl->createAllOfOneChain(column, row - 1, true);
-        botSet = mChainCtrl->createAllOfOneChain(column, row + 1, true);
-        leftSet = mChainCtrl->createAllOfOneChain(column - 1, row, true);
-        rightSet = mChainCtrl->createAllOfOneChain(column + 1, row, true);
+        topSet = mChainCtrl->createAllOfOneChain(column, row - 1, true, obj);
+        botSet = mChainCtrl->createAllOfOneChain(column, row + 1, true, obj);
+        leftSet = mChainCtrl->createAllOfOneChain(column - 1, row, true, obj);
+        rightSet = mChainCtrl->createAllOfOneChain(column + 1, row, true, obj);
         xSet = mChainCtrl->createXChainAt(column, row, true);
         horizontalSet = verticalSet = xSet;
     }
@@ -465,6 +467,11 @@ FieldType DudeController::getDudeTypeByChain(ChainObj * chain)
     case ChainType::ChainTypeL:
         if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForOni)) {
             type = FieldType::DudeChainX;
+        }
+        break;
+    case ChainType::ChainTypeX:
+        if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForMBO)) {
+            type = FieldType::DudeSquareBomb;
         }
         break;
     case ChainType::ChainTypeT:

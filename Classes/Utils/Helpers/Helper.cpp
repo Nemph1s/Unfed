@@ -47,44 +47,38 @@ CookieType Helper::randomCookieType(int fromRange, int toRange)
 }
 
 //--------------------------------------------------------------------
-cocos2d::String* Helper::getSpriteNameByTileType(int tileType)
+cocos2d::String* Helper::getSpriteNameByFieldType(int fieldType)
 //--------------------------------------------------------------------
 {
     cocos2d::String* str = nullptr;
-    auto type = static_cast<CommonTypes::TileType>(tileType);
-    int firstDudeType = Helper::to_underlying(CommonTypes::TileType::DudeFromAToB);
+    auto type = static_cast<FieldType>(fieldType);
+    int firstDudeType = Helper::to_underlying(FieldType::DudeFromAToB);
     switch (type)
     {
-    case CommonTypes::TileType::Empty:
-    case CommonTypes::TileType::Normal:
-        str = &GameResources::s_TileImg;
-        break;
-    case CommonTypes::TileType::Water:
-        str = &GameResources::s_TileImg;
-        break;
-    case CommonTypes::TileType::Dirt:
+    case FieldType::Dirt:
         str = &GameResources::s_DirtImg;
         break;
-    case CommonTypes::TileType::Dirt_HP2:
-    case CommonTypes::TileType::Dirt_HP3:
+    case FieldType::Dirt_HP2:
+    case FieldType::Dirt_HP3:
         str = &GameResources::s_DirtX2Img;
         break;
-    case CommonTypes::TileType::Bush:
+    case FieldType::Bush:
         str = &GameResources::s_BushCorruptedImg;
         break;
-    case CommonTypes::TileType::Bush_HP2:
+    case FieldType::Bush_HP2:
         str = &GameResources::s_BushNormalImg;
         break;
-    case CommonTypes::TileType::RockWall:
+    case FieldType::RockWall:
         str = &GameResources::s_RockImg;
         break;
-    case CommonTypes::TileType::DudeFromAToB:
-    case CommonTypes::TileType::DudeFromAToBx3:
-    case CommonTypes::TileType::DudeChainX:
-    case CommonTypes::TileType::DudeAllOfType:
-        str = &GameResources::s_dudeSpriteNames.at(tileType - firstDudeType);
+    case FieldType::DudeFromAToB:
+    case FieldType::DudeFromAToBx3:
+    case FieldType::DudeChainX:
+    case FieldType::DudeAllOfType:
+    case FieldType::DudeSquareBomb:
+        str = &GameResources::s_dudeSpriteNames.at(fieldType - firstDudeType);
         break;
-    case CommonTypes::TileType::Unknown:
+    case FieldType::Unknown:
         break;
     default:
         break;
@@ -335,6 +329,9 @@ cocos2d::Color4B Helper::getScoreColorForDudeObj(CommonTypes::FieldType type)
         break;
     case FieldType::DudeChainX:
         color = cocos2d::Color4B(170, 240, 209, 255); //Magic mint 
+        break;
+    case FieldType::DudeSquareBomb:
+        color = cocos2d::Color4B(161, 202, 241, 255); //Baby blue eyes
         break;
     default:
         break;

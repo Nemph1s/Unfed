@@ -154,7 +154,7 @@ bool _SpritesFactory::initDudesPool(int poolSize)
 //--------------------------------------------------------------------
 {
     auto dudeTypeInt = Helper::to_underlying(FieldType::DudeFromAToB);
-    auto dudeTypeMax = Helper::to_underlying(FieldType::DudeAllOfType) + 1;
+    auto dudeTypeMax = Helper::to_underlying(FieldType::Unknown);
     while (dudeTypeInt != dudeTypeMax) {
         auto dudeList = new TSpriteList;
         CCASSERT(dudeList, "error while creating dudeList");
