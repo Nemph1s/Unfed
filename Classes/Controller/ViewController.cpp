@@ -224,7 +224,7 @@ bool ViewController::initDudeController()
 
     auto updateDirectionCallback = [dudeCtrl](BaseObj* obj, int direction) {
         auto dude = dynamic_cast<DudeObj*>(obj);
-        auto set = dudeCtrl->getChainPreviewHint(dude, direction);
+        auto set = dudeCtrl->getChainsForDude(dude, direction, true);
         CC_SAFE_RETAIN(set);
         return set;
     };
@@ -371,7 +371,7 @@ void ViewController::beginNextTurn()
     cocos2d::log("ViewController::beginNextTurn");
     
     float delay = 0.01f;
-    if (!mSwapController->detectPossibleSwaps()) {
+    if (!mSwapController->detectPossibleSwaps() && mDudeController->getDudesCount() == 0) {
         delay = 0.5f;
         shuffle();
     }
@@ -437,19 +437,21 @@ void ViewController::swapCallback(SwapObj * swap)
 void ViewController::activateDudeCallback(DudeObj * obj, int direction)
 //--------------------------------------------------------------------
 {
-    auto set = mDudeController->activateDudeAndGetChains(obj, direction);
-    auto chains = dynamic_cast<ChainObj*>(set->anyObject());
-    if (chains) {
-        if (chains->getChainObjects()) {
-            stopHintTimer();
-            mGameplayScene->userInteractionDisabled();
+    auto set = mDudeController->getChainsForDude(obj, direction);
+    if (set) {
+        auto chains = dynamic_cast<ChainObj*>(set->anyObject());
+        if (chains) {
+            if (chains->getChainObjects()) {
+                stopHintTimer();
+                mGameplayScene->userInteractionDisabled();
 
-            mLevel->removeDudeMatches(set);
- 
-            updateScore(set);
-            animateHandleMatches(set);
+                mLevel->removeDudeMatches(set);
+
+                updateScore(set);
+                animateHandleMatches(set);
+            }
         }
-    }
+    }    
 }
 
 //--------------------------------------------------------------------
