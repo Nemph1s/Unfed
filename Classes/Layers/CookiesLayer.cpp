@@ -217,6 +217,9 @@ void CookiesLayer::onTouchEnded(Touch* touch, Event* event)
                 } else {
                     auto objCtrl = mLevel->getObjectController();
                     objCtrl->detectDirectionsForDudes();
+                    if (isObjTouched()) {
+                        AnimationsManager->animateBouncingObj(mTouchedObj);
+                    }
                 }
             }
         }
