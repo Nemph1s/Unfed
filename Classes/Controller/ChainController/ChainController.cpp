@@ -475,17 +475,25 @@ ChainObj * ChainController::detectTChainMatches(ChainObj * horzChain, ChainObj *
         return chain;
     }
 
-    int horzMiddlePos = firstHorzCookie->getColumn() + horzCookies->count() / 2;
-    int vertMiddlePos = firstVertCookie->getRow() + vertCookies->count() / 2;
-    auto middleHorzCookie = mObjCtrl->cookieAt(horzMiddlePos, firstHorzCookie->getRow());
-    auto middleVertCookie = mObjCtrl->cookieAt(firstVertCookie->getColumn(), vertMiddlePos);
-
-    if (middleHorzCookie == firstVertCookie || middleHorzCookie == lastVertCookie ||
-        middleVertCookie == firstHorzCookie || middleVertCookie == lastHorzCookie) {
-        chain = ChainObj::createWithType(ChainType::ChainTypeT);
-        chain->setUpdateGoalCallback(mUpdateGoalCallback);
-        chain->addObjectsFromChain(horzChain);
-        chain->addObjectsFromChain(vertChain);
+    for (auto itHorz = horzCookies->begin() + 1; itHorz < horzCookies->end() - 1; itHorz++) {
+        auto middleHorzCookie = dynamic_cast<CookieObj*>(*itHorz);
+        if (!middleHorzCookie) {
+            return chain;
+        }
+        for (auto itVert = vertCookies->begin() + 1; itVert < vertCookies->end() - 1; itVert++) {
+            auto middleVertCookie = dynamic_cast<CookieObj*>(*itVert);
+            if (!middleVertCookie) {
+                return chain;
+            }
+            if (middleHorzCookie == firstVertCookie || middleHorzCookie == lastVertCookie ||
+                middleVertCookie == firstHorzCookie || middleVertCookie == lastHorzCookie) {
+                chain = ChainObj::createWithType(ChainType::ChainTypeT);
+                chain->setUpdateGoalCallback(mUpdateGoalCallback);
+                chain->addObjectsFromChain(horzChain);
+                chain->addObjectsFromChain(vertChain);
+                return chain;
+            }
+        }
     }
     return chain;
 }
