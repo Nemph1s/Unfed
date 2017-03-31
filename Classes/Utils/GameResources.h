@@ -29,7 +29,7 @@ namespace GameResources {
 
    static cocos2d::String s_TileImg = "Sprites.atlas/TileShadow@2x.png";
 
-   static cocos2d::String s_HintImg = "Sprites.atlas/HintWhite@2x.png";
+   static cocos2d::String s_HintImg = "Sprites.atlas/HintChainPreview@2x.png";
 
    static cocos2d::String s_RockImg = "Sprites.atlas/Rock@2x.png";
 
