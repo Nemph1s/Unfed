@@ -69,6 +69,8 @@ protected:
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(DudeObj*, int direction)>, mActivateDudeCallback, ActivateDudeCallback);
 
+    CC_SYNTHESIZE(uint8_t, mDudesCount, DudesCount);
+
     CC_SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController);
     CC_SYNTHESIZE(ChainController*, mChainCtrl, ChainController);
     

@@ -371,7 +371,7 @@ void ViewController::beginNextTurn()
     cocos2d::log("ViewController::beginNextTurn");
     
     float delay = 0.01f;
-    if (!mSwapController->detectPossibleSwaps()) {
+    if (!mSwapController->detectPossibleSwaps() && mDudeController->getDudesCount() == 0) {
         delay = 0.5f;
         shuffle();
     }

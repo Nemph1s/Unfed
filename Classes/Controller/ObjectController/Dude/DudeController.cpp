@@ -37,6 +37,7 @@ DudeController::DudeController()
     : mObjCtrl(nullptr)
     , mChainCtrl(nullptr)
     , mDudeDirections()
+    , mDudesCount(0)
 //--------------------------------------------------------------------
 {
 }
@@ -108,6 +109,7 @@ BaseObj * DudeController::createDudeObject(int column, int row, int type)
     auto helper = DudeHelper::createWithDudeObject(obj);
     helper->setDudeController(this);
     mDudeDirections.insert(obj, helper);
+    mDudesCount++;
 
     return obj;
 }
@@ -368,6 +370,7 @@ void DudeController::eraseDirectionsForDude(DudeObj * obj)
         return;
     }
     mDudeDirections.erase(obj);
+    mDudesCount--;
 }
 
 //--------------------------------------------------------------------
