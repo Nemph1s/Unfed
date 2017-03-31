@@ -15,8 +15,13 @@
 
 class LevelObj;
 class SwapObj;
+class DudeObj;
 class GameplayScene;
+class ObjectController;
+class ChainController;
 class SwapController;
+class DudeController;
+class LevelGoalComponent;
 
 class ViewController : public cocos2d::Ref
 {
@@ -38,14 +43,19 @@ protected:
     ViewController();
 
     bool initGameScene();
+    bool initLevel();
+    bool initSpritesFactory();
+    bool initObjectController();
     bool initSwapController();
+    bool initChainController();
+    bool initDudeController();
 
-    void updateScore(cocos2d::Set* chains);
+    void updateScore(CommonTypes::Set* chains);
     void updateInfoLabels();
 
     void shuffle();
     void handleMatches();
-    void animateHandleMatches(cocos2d::Set* chains);
+    void animateHandleMatches(CommonTypes::Set* chains);
 
     void beginNextTurn();
     void decrementMoves();
@@ -53,17 +63,30 @@ protected:
     //---Callbacks-------------------------------------------------------
     void shuffleButtonCallback();
     void swapCallback(SwapObj* swap);
+    //???? something wrong with
+    void activateDudeCallback(DudeObj* obj, int direction);
     void activateChainCallback(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
+
+    void startHintTimer();
+    void stopHintTimer();
+    void showSwapHint(float dt);
     //--------------------------------------------------------------------
 
     //---Class Attributes-------------------------------------------------
     std::function<void()> mShuffleButtonCallback;
 
-    CC_SYNTHESIZE_READONLY(int, mMovesLeft, MovesLeft)
-    CC_SYNTHESIZE_READONLY(int, mScore, Score)
+    CC_SYNTHESIZE_READONLY(uint8_t, mMovesLeft, MovesLeft)
+    CC_SYNTHESIZE_READONLY(uint32_t, mScore, Score)
 
     CC_SYNTHESIZE_READONLY(LevelObj*, mLevel, Level)
-    CC_SYNTHESIZE_READONLY(SwapController*, mSwapController, SwapController)
+    
     CC_SYNTHESIZE_READONLY(GameplayScene*, mGameplayScene, GameplayScene)
+
+    CC_SYNTHESIZE_READONLY(LevelGoalComponent*, mLevelGoals, LevelGoalComponent)
+    
+    CC_SYNTHESIZE_READONLY(ObjectController*, mObjectController, ObjectController)
+    CC_SYNTHESIZE_READONLY(ChainController*, mChainController, ChainController)
+    CC_SYNTHESIZE_READONLY(SwapController*, mSwapController, SwapController)
+    CC_SYNTHESIZE_READONLY(DudeController*, mDudeController, DudeController)
 };
 

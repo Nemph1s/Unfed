@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/Base/BaseObj.cpp
+* @file GameObjects/TileObjects/Base/BaseObj.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -10,18 +10,21 @@
 
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 
+#include "Common/Factory/SpritesFactory.h"
 #include "Utils/Helpers/Helper.h"
 
 //--------------------------------------------------------------------
 BaseObj::BaseObj()
     : mColumn(-1)
     , mRow(-1)
-    , mType(CommonTypes::BaseObjectType::Unknown)
+    , mType(CommonTypes::BaseObjType::Unknown)
     , mIsMovable(false)
-    , mIsPossibleSwap(false)
+    , mIsSwappable(false)
     , mIsRemovable(false)
+    , mIsContainer(false)
     , mSpriteNode(nullptr)
     , mDummyString(nullptr)
+    , mScoreValue(50) //TODO: move to global info
 //--------------------------------------------------------------------
 {
 }
@@ -31,6 +34,7 @@ BaseObj::~BaseObj()
 //--------------------------------------------------------------------
 {
     CC_SAFE_RELEASE(mDummyString);
+    clear();
 }
 
 //--------------------------------------------------------------------
@@ -48,7 +52,7 @@ BaseObj * BaseObj::create()
 }
 
 //--------------------------------------------------------------------
-BaseObj * BaseObj::create(const CommonTypes::BaseObjectInfo & info)
+BaseObj * BaseObj::create(const CommonTypes::BaseObjInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj * ret = new (std::nothrow) BaseObj();
@@ -74,7 +78,7 @@ bool BaseObj::init()
 }
 
 //--------------------------------------------------------------------
-bool BaseObj::init(const CommonTypes::BaseObjectInfo & info)
+bool BaseObj::init(const CommonTypes::BaseObjInfo & info)
 //--------------------------------------------------------------------
 {
     if (!Node::init()) {
@@ -117,7 +121,7 @@ void BaseObj::match()
 }
 
 //--------------------------------------------------------------------
-bool BaseObj::isReadyToRemove() const
+bool BaseObj::isHpEnded() const
 //--------------------------------------------------------------------
 {
     return false;
@@ -129,9 +133,22 @@ void BaseObj::clear()
 {
     mColumn = -1;
     mRow = -1;
-    mType = CommonTypes::BaseObjectType::Unknown;
+    mType = CommonTypes::BaseObjType::Unknown;
     mIsMovable = false;
-    mIsPossibleSwap = false;
+    mIsSwappable = false;
     mIsRemovable = false;
-    mSpriteNode = nullptr;
+    mIsContainer = false;
+    if (getParent()) {
+        removeFromParent();
+    }
+    SpritesFactory->recycle(mSpriteNode, this);
+    if (mSpriteNode) {
+        mSpriteNode = nullptr;
+    }
+}
+
+//--------------------------------------------------------------------
+void BaseObj::updateDebugLabel()
+//--------------------------------------------------------------------
+{
 }

@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObj.hpp
+* @file GameObjects/TileObjects/TileObj.h
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -10,16 +10,12 @@
 
 #pragma once
 
-#include "cocos2d.h"
 #include "GameObjects/TileObjects/Base/BaseObj.h"
-
 
 class TileObj : public BaseObj
 {
 CC_CONSTRUCTOR_ACCESS:
     virtual ~TileObj();
-
-/*    friend SmartFactory;*/
 
 public:
     /**
@@ -31,10 +27,9 @@ public:
     bool init(const CommonTypes::TileInfo &info);
 
     virtual cocos2d::String& spriteName() const override;
+    virtual cocos2d::String& description() const override;
 
     virtual int getTypeAsInt() const override;
-
-    virtual void clear() override;
 
     bool isEmptyTile();
 
@@ -43,6 +38,8 @@ protected:
     TileObj();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE_READONLY(CommonTypes::TileType, mTileType, TileType);  
+    CC_SYNTHESIZE_READONLY(CommonTypes::TileType, mTileType, TileType);
+
+    CC_SYNTHESIZE(cocos2d::Sprite*, mChainPreviewSpriteNode, ChainPreviewSpriteNode);
 };
 

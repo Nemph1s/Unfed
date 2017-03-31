@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/Base/BaseObj.hpp
+* @file GameObjects/TileObjects/Base/BaseObj.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -12,6 +12,7 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
+#include "Utils/PlatformMacros.h"
 
 class BaseObj : public cocos2d::Node
 {
@@ -24,10 +25,10 @@ public:
     * @return A initialized node which is marked as "autorelease".
     */
     static BaseObj * create();
-    static BaseObj * create(const CommonTypes::BaseObjectInfo &info);
+    static BaseObj * create(const CommonTypes::BaseObjInfo &info);
 
     virtual bool init();
-    bool init(const CommonTypes::BaseObjectInfo &info);
+    bool init(const CommonTypes::BaseObjInfo &info);
 
     virtual cocos2d::String& spriteName() const;
     virtual cocos2d::String& description() const;
@@ -35,24 +36,30 @@ public:
     virtual int getTypeAsInt() const;
 
     virtual void match();
-    virtual bool isReadyToRemove() const;
+    virtual bool isHpEnded() const;
 
     virtual void clear();
+
+    virtual void updateDebugLabel();
 
 protected:
     // Nodes should be created using create();
     BaseObj();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE_READONLY(bool, mIsMovable, IsMovable);
-    CC_SYNTHESIZE_READONLY(bool, mIsRemovable, IsRemovable);
-    CC_SYNTHESIZE_READONLY(bool, mIsPossibleSwap, IsPossibleSwap);
+
+    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsMovable, Movable);
+    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsRemovable, Removable);
+    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsSwappable, Swappable);
+    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsContainer, Container);
+
+    CC_SYNTHESIZE(uint16_t, mScoreValue, ScoreValue);
 
     cocos2d::String* mDummyString;
 
     CC_SYNTHESIZE(int, mColumn, Column);
     CC_SYNTHESIZE(int, mRow, Row);
-    CC_SYNTHESIZE(CommonTypes::BaseObjectType, mType, Type);
+    CC_SYNTHESIZE(CommonTypes::BaseObjType, mType, Type);
     CC_SYNTHESIZE(cocos2d::Sprite*, mSpriteNode, SpriteNode);
 
 };

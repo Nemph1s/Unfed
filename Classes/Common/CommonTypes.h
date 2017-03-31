@@ -12,6 +12,9 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <vector>
+
+namespace cocos2d { class __Set; }
 
 namespace CommonTypes {
 
@@ -20,31 +23,32 @@ namespace CommonTypes {
     static const int NumColumns = 9;
     static const int NumRows = 9;
 
-    typedef int TilesArray[CommonTypes::NumColumns][CommonTypes::NumRows];
+    typedef cocos2d::__Set Set;
 
     /**
     * @brief GameObjectType enum.
     * Type of the cookie object
     */
-    enum class BaseObjectType : int {
-        TileObj = 0 /**< enum value TileObj. */
-        , CookieObj = 1 /**< enum value CookieObj. */
-        , FieldObj = 2 /**< enum value FieldObj. */
+    enum class BaseObjType : int {
+        Tile = 0 /**< enum value TileObj. */
+        , Cookie = 1 /**< enum value CookieObj. */
+        , Field = 2 /**< enum value FieldObj. */
+        , Dude = 3 /**< enum value DudeObj. */
         , Unknown /**< enum value unknown. */
     };
 
     /**
     * @brief GameObjectInfo struct.
     */
-    struct BaseObjectInfo
+    struct BaseObjInfo
     {
-        BaseObjectType type; /**< type of game object */
+        BaseObjType type; /**< type of game object */
         int column; /**< vertical series of cells in a table */
         int row; /**< horizontal series of cells in a table */
 
-        BaseObjectInfo(BaseObjectType _type) 
+        BaseObjInfo(BaseObjType _type) 
             : type(_type), column(-1), row(-1) {}
-        BaseObjectInfo(BaseObjectType _type, int _column, int _row) 
+        BaseObjInfo(BaseObjType _type, int _column, int _row) 
             : type(_type), column(_column), row(_row) {}
     };
 
@@ -68,21 +72,53 @@ namespace CommonTypes {
    */
    struct CookieInfo
    {
-       BaseObjectInfo baseInfo; /**< type of GaneInfoObject struct */
+       BaseObjInfo baseInfo; /**< type of GaneInfoObject struct */
        CookieType cookieType; /**< type of Cookie object */
    };
 
+   enum class FieldType : int {
+         Dirt = 10 /**< enum value Dirt. */
+       , Dirt_HP2 = 11 /**< enum value DirtX2. */
+       , Dirt_HP3 = 12 /**< enum value DirtX3. */
+       , Bush = 20 /**< enum value DirtX3. */
+       , Bush_HP2 = 21 /**< enum value DirtX3. */
+       , RockWall = 30 /**< enum value RockWall. */
+       , DudeFromAToB = 200 /**< enum value DudeLightr. */
+       , DudeFromAToBx3 = 201 /**< enum value DudeBulbr. */
+       , DudeChainX = 202 /**< enum value DudeOni. */
+       , DudeAllOfType = 203 /**< enum value DudePina. */
+       , Unknown /**< enum value unknown. */
+   };
+
+
    /**
-   * @brief LevelInfo struct.
+   * @brief FieldInfo struct.
    */
-   struct LevelInfo
+   struct FieldInfo
    {
-      int16_t id; /**< current level ID */
-      int16_t targetScore; /**< Goal score */
-      int moves; /**< available moves */
-	  TilesArray tiles; /**< array of tiles */
-      int typesCount; /**< count of types */
-      TilesArray fieldObjects; /**< array of tileObjects */
+       BaseObjInfo baseInfo; /**< type of BaseObjectInfo struct */
+       FieldType fieldType; /**< type of Field object */
+       int priority; /**< priority for z level of Field object. 0 - low priority; 3 - high priority */
+   };
+
+   /**
+   * @brief FieldInfo struct.
+   */
+   struct FieldJsonInfo
+   {
+       BaseObjInfo baseInfo = BaseObjInfo(BaseObjType::Field); /**< type of BaseObjectInfo struct */
+       std::vector<int> fieldType; /**< type of Field object */
+   };
+
+   /**
+   * @brief ChainType enum.
+   * Type of the sound object
+   */
+   enum class SearchEmptyHoles : int {
+       ObjFounded = 0 /**< enum value ObjFounded. */
+       , ContinueSearch = 1 /**< enum value ContinueSearch. */
+       , BreakSearch = 2 /**< enum value BreakSearch. */
+       , Unknown /**< enum value unknown. */
    };
 
    /**
@@ -96,6 +132,8 @@ namespace CommonTypes {
        , ChainTypeT = 3 /**< enum value ChainTypeT. */
        , ChainTypeX = 4 /**< enum value ChainTypeX. */
        , ChainTypeAllOfOne = 5 /**< enum value ChainTypeAllOfOne. */
+       , ChainFromAToB = 6 /**< enum value ChainTypeAllOfOne. */
+       , ChainFieldObjects = 7 /**< enum value ChainFieldObjects. */
        , Unknown /**< enum value unknown. */
    };
 
@@ -107,10 +145,16 @@ namespace CommonTypes {
        Empty = 0 /**< enum value Empty. */
        , Normal = 1 /**< enum value Normal. */
        , Water = 2 /**< enum value Water. */
-       , SandWall = 10 /**< enum value SandWall. */
-       , Dirt = 11 /**< enum value Dirt. */
-       , DirtX2 = 12 /**< enum value DirtX2. */
-       , DirtX3 = 13 /**< enum value DirtX3. */
+       , Dirt = 10 /**< enum value Dirt. */
+       , Dirt_HP2 = 11 /**< enum value DirtX2. */
+       , Dirt_HP3 = 12 /**< enum value DirtX3. */
+       , Bush = 20 /**< enum value DirtX3. */
+       , Bush_HP2 = 21 /**< enum value DirtX3. */
+       , RockWall = 30 /**< enum value RockWall. */
+       , DudeFromAToB = 200 /**< enum value DudeLightr. */
+       , DudeFromAToBx3 = 201 /**< enum value DudeBulbr. */
+       , DudeChainX = 202 /**< enum value DudeOni. */
+       , DudeAllOfType = 203 /**< enum value DudePina. */
        , Unknown /**< enum value unknown. */
    };
 
@@ -119,8 +163,20 @@ namespace CommonTypes {
    */
    struct TileInfo
    {
-       BaseObjectInfo baseInfo; /**< type of GaneInfoObject struct */
+       BaseObjInfo baseInfo; /**< type of GaneInfoObject struct */
        TileType tileType; /**< type of Tile object */
+   };
+
+   /**
+   * @brief Direction enum.
+   * Type of direction
+   */
+   enum class Direction : int {
+       Down = 0 /**< enum value Down. */
+       , Up = 1 /**< enum value Up. */
+       , Left = 2 /**< enum value Left. */
+       , Right = 3 /**< enum value Right. */
+       , Unknown /**< enum value unknown. */
    };
 
    /**

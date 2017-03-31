@@ -10,21 +10,21 @@
 
 #include "Scenes/GameplayScene.h"
 
-#include "GameObjects/Swap/SwapObj.h"
-#include "GameObjects/LevelObj.h"
-#include "GameObjects/TileObjects/CookieObj.h"
+#include "Common/Factory/SpritesFactory.h"
+
+#include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
-#include "GameObjects/Chain/ChainObj.h"
+#include "GameObjects/TileObjects/CookieObj.h"
+#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 #include "Utils/Helpers/VisibleRect.h"
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
 
+#include "Layers/CookiesLayer.h"
+
 #include "Managers/AudioManager.h"
-#include "Managers/AnimationsManager.h"
-#include "Managers/GuiManager.h"
-#include "Controller/ObjectController.h"
-#include <math.h>
+#include "Controller/ObjectController/ObjectController.h"
 
 #include "cocos2d/cocos/ui/UIScale9Sprite.h"
 
@@ -34,12 +34,11 @@ using namespace GameResources;
 //--------------------------------------------------------------------
 GameplayScene::GameplayScene()
     : mLevel(nullptr)
-    , mListener(nullptr)
-    , mSelectionSprite(nullptr)
     , mCookiesLayer(nullptr)
     , mGameLayer(nullptr)
     , mTilesLayer(nullptr)
-   //--------------------------------------------------------------------
+    , mInfoLayer(nullptr)
+ //--------------------------------------------------------------------
 {
 }
 
@@ -65,7 +64,6 @@ GameplayScene::~GameplayScene()
 //--------------------------------------------------------------------
 {
     cocos2d::log("GameplayScene::~GameplayScene: deallocing CookieObj: %p - tag: %i", this, _tag);
-    CC_SAFE_RELEASE_NULL(mSelectionSprite);
 }
 
 //--------------------------------------------------------------------
@@ -76,7 +74,6 @@ bool GameplayScene::initWithSize(const Size& size)
         cocos2d::log("GameplayScene::initWithSize: can't init Scene inctance");
         return false;
     }
-    clearTouchedCookie();
 
     this->setAnchorPoint(Vec2(0.5, 0.5));
     this->setPosition(VisibleRect::leftBottom());
@@ -105,45 +102,25 @@ bool GameplayScene::initWithSize(const Size& size)
     mTilesLayer->setPosition(layerPos);
     mGameLayer->addChild(mTilesLayer);
 
-    mCookiesLayer = Layer::create();
+    mChainPreviewLayer = Layer::create();
+    mChainPreviewLayer->setPosition(layerPos);
+    mGameLayer->addChild(mChainPreviewLayer);
+
+    mCookiesLayer = CookiesLayer::create();
     mCookiesLayer->setPosition(layerPos);
     mGameLayer->addChild(mCookiesLayer);
 
-    mSelectionSprite = new Sprite();
-    mSelectionSprite->retain();
+    mFieldObjectsLayer = Layer::create();
+    mFieldObjectsLayer->setPosition(layerPos);
+    mGameLayer->addChild(mFieldObjectsLayer);
+
+    mInfoLayer = Layer::create();
+    mInfoLayer->setPosition(layerPos);
+    mGameLayer->addChild(mInfoLayer);
 
     AudioManager->playBGMusic();
 
     return true;
-}
-
-//--------------------------------------------------------------------
-void GameplayScene::onEnter()
-//--------------------------------------------------------------------
-{
-	Scene::onEnter();
-	cocos2d::log("GameplayScene::onEnter:");
-
-	auto listener = EventListenerTouchOneByOne::create();
-	listener->setSwallowTouches(true);
-
-    listener->onTouchBegan = CC_CALLBACK_2(GameplayScene::onTouchBegan, this);
-    listener->onTouchMoved = CC_CALLBACK_2(GameplayScene::onTouchMoved, this);
-    listener->onTouchEnded = CC_CALLBACK_2(GameplayScene::onTouchEnded, this);
-    listener->onTouchCancelled = CC_CALLBACK_2(GameplayScene::onTouchCancelled, this);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, mCookiesLayer);
-	mListener = listener;
-}
-
-//--------------------------------------------------------------------
-void GameplayScene::onExit()
-//--------------------------------------------------------------------
-{
-	Scene::onExit();
-	cocos2d::log("GameplayScene::onExit:");
-
-	_eventDispatcher->removeEventListener(mListener);
-	mListener = nullptr;
 }
 
 //--------------------------------------------------------------------
@@ -157,102 +134,48 @@ void GameplayScene::addTiles()
 			if (objCtrl->isEmptyTileAt(column, row)) {
 				continue;
 			}
-			auto tileSprite = Sprite::create(GameResources::s_TileImg.getCString());
+            auto tile = objCtrl->tileAt(column, row);
+            auto tileSprite = SpritesFactory->createWithBaseObject(tile);
+            tileSprite->setVisible(true);
             tileSprite->setPosition(Helper::pointForColumnAndRow(column, row));
             tileSprite->setOpacity(127);
+            tile->setSpriteNode(tileSprite);
 			mTilesLayer->addChild(tileSprite);
 
-            // Create Field objects
-            auto fieldObj = objCtrl->fieldObjectAt(column, row);
-            if (!fieldObj) {
-                continue;
-            }
-            createSpriteWithFieldObj(fieldObj);
 		}
 	}
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::addSpritesForCookies(Set* cookies)
+void GameplayScene::addFieldObjectsAt(int column, int row)
 //--------------------------------------------------------------------
 {
-	cocos2d::log("GameplayScene::addSpritesForCookies:");
-	auto it = cookies->begin();
-	for (it; it != cookies->end(); it++) {
-		auto cookie = dynamic_cast<CookieObj*>(*it);
-        CC_ASSERT(cookie);
-
-        createSpriteWithCookie(cookie, cookie->getColumn(), cookie->getRow());
-
-        auto sprite = cookie->getSpriteNode();
-        AnimationsManager->animateNewCookieSprite(sprite);
-	}
-}
-
-//--------------------------------------------------------------------
-bool GameplayScene::onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event)
-//--------------------------------------------------------------------
-{
-    Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
-
-    if (Helper::convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {
-        auto objCtrl = mLevel->getObjectController();
-        CookieObj* cookie = objCtrl->cookieAt(mSwipeFromColumn, mSwipeFromRow);
-        if (cookie) {
-            showSelectionIndicatorForCookie(cookie);
-            return true;
-        }
-    }
-    return false;
-}
-
-//--------------------------------------------------------------------
-void GameplayScene::onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event)
-//--------------------------------------------------------------------
-{
-    if (!isCookieTouched())
+    // Create Field objects
+    auto objCtrl = mLevel->getObjectController();
+    auto fieldObjects = objCtrl->fieldObjectsAt(column, row);
+    if (fieldObjects.size() == 0) {
         return;
-
-    Vec2 locationInNode = mCookiesLayer->convertToNodeSpace(touch->getLocation());
-
-    int column = -1, row = -1;
-    if (Helper::convertPointToTilePos(locationInNode, column, row)) {
-
-        int horzDelta = 0, vertDelta = 0;
-        updateSwipeDelta(column, row, horzDelta, vertDelta);
-
-        if (horzDelta != 0 || vertDelta != 0) {
-            if (!mTrySwapCookieCallback) {
-                return;
-            }
-
-            if (mTrySwapCookieCallback(horzDelta, vertDelta)) {
-                hideSelectionIndicator();
-                clearTouchedCookie();
-            }
-        }
+    }
+    for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
+        auto fieldObj = dynamic_cast<FieldObj*>(*it);    
+        createSpriteWithFieldObj(fieldObj);
+        fieldObj->updateDebugLabel();
     }
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event)
+void GameplayScene::addSpritesForObjects(CommonTypes::Set* set)
 //--------------------------------------------------------------------
 {
-    if (mSelectionSprite->getParent() != nullptr && isCookieTouched()) {
-        hideSelectionIndicator();
-    }
-    if (!isCookieTouched())
-        return;
-
-    clearTouchedCookie();
+    cocos2d::log("GameplayScene::addSpritesForObjects:");
+    mCookiesLayer->addSpritesForObjects(set);
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::onTouchCancelled(cocos2d::Touch* touch, cocos2d::Event* event)
+void GameplayScene::createChainPreviewSprites(CommonTypes::Set * set)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("GameplayScene::onTouchCancelled:");
-    onTouchEnded(touch, event);
+    mCookiesLayer->createChainPreviewSprites(set);
 }
 
 //--------------------------------------------------------------------
@@ -266,87 +189,53 @@ void GameplayScene::userInteractionEnabled()
 void GameplayScene::userInteractionDisabled()
 //--------------------------------------------------------------------
 {
+    mCookiesLayer->hideSelectionIndicator();
     Director::getInstance()->getEventDispatcher()->pauseEventListenersForTarget(mCookiesLayer);
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::showSelectionIndicatorForCookie(CookieObj* cookie)
+void GameplayScene::setUpdateDirectionCallback(std::function<CommonTypes::Set*(BaseObj* obj, int direction)> func)
 //--------------------------------------------------------------------
 {
-    if (mSelectionSprite->getParent() != nullptr) {
-        mSelectionSprite->removeFromParent();
-    }
-
-    auto img = new Image();
-    img->initWithImageFile(cookie->highlightedSpriteName().getCString());
-
-    auto texture = new Texture2D();
-    texture->initWithImage(img);
-    mSelectionSprite->initWithTexture(texture);
-
-    auto size = cookie->getSpriteNode()->getContentSize();
-    mSelectionSprite->setPosition(Vec2(size.width / 2, size.height / 2));
-    mSelectionSprite->setAnchorPoint(Vec2::ANCHOR_MIDDLE);
-    mSelectionSprite->setContentSize(size);
-   
-    cookie->getSpriteNode()->addChild(mSelectionSprite);
+    mCookiesLayer->setUpdateDirectionCallback(func);
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::hideSelectionIndicator()
+void GameplayScene::setSwapCookieCallback(std::function<bool(int fromCol, int fromRow, int direction)> func)
 //--------------------------------------------------------------------
 {
-    auto sprite = mSelectionSprite;
-    auto callbackFunc = CallFunc::create([sprite]() {
-        if (sprite->getParent() != nullptr) {
-            sprite->removeFromParent();
-        }
-    });
-    const float duration = 0.3f;
-    auto seq = Sequence::create(FadeOut::create(duration), DelayTime::create(0.5f), callbackFunc, nullptr);
-    //TODO: fix fade animation
-    mSelectionSprite->runAction(seq);
+    mCookiesLayer->setTrySwapCookieCallback(func);
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::setDudeActivationCallback(std::function<bool(int fromCol, int fromRow, int direction)> func)
+//--------------------------------------------------------------------
+{
+    mCookiesLayer->setCanActivateDudeCallback(func);
 }
 
 //--------------------------------------------------------------------
 void GameplayScene::removeAllCookieSprites()
 //--------------------------------------------------------------------
 {
-    mCookiesLayer->removeAllChildren();
+    mCookiesLayer->removeAllCookieSprites();
 }
 
 //--------------------------------------------------------------------
-bool GameplayScene::isCookieTouched()
+void GameplayScene::removeAllChainPreviewSprites()
 //--------------------------------------------------------------------
 {
-    if (mSwipeFromColumn == -1 || mSwipeFromRow == -1) 
-        return false;
-    return true;
-}
-
-//--------------------------------------------------------------------
-void GameplayScene::clearTouchedCookie()
-//--------------------------------------------------------------------
-{
-    mSwipeFromColumn = -1;
-    mSwipeFromRow = -1;
-}
-
-//--------------------------------------------------------------------
-void GameplayScene::updateSwipeDelta(int column, int row, int& horzDelta, int& vertDelta)
-//--------------------------------------------------------------------
-{
-    if (column < mSwipeFromColumn) { // swipe left
-        horzDelta = -1;
+    std::vector<Sprite*> sprites;
+    auto childs = mChainPreviewLayer->getChildren();
+    for (auto it = childs.begin(); it != childs.end(); ++it) {
+        auto sprite = dynamic_cast<Sprite*>(*it);
+        if (sprite) {
+            sprites.push_back(sprite);
+        }
     }
-    else if (column > mSwipeFromColumn) { // swipe right
-        horzDelta = 1;
-    }
-    else if (row < mSwipeFromRow) { // swipe down
-        vertDelta = -1;
-    }
-    else if (row > mSwipeFromRow) { // swipe up
-        vertDelta = 1;
+    for (auto it = sprites.begin(); it != sprites.end(); ++it) {
+        auto sprite = *it;
+        SpritesFactory->recycleHintSprite(sprite);
     }
 }
 
@@ -354,24 +243,28 @@ void GameplayScene::updateSwipeDelta(int column, int row, int& horzDelta, int& v
 void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int row)
 //--------------------------------------------------------------------
 {
-    auto sprite = Sprite::create(cookie->spriteName().getCString());
-    sprite->setPosition(Helper::pointForColumnAndRow(column, row));
-    cookie->setSpriteNode(sprite);
-    cookie->updateDebugTileLabel();
-
-    mCookiesLayer->addChild(sprite);
-    mCookiesLayer->addChild(cookie);
+    mCookiesLayer->createSpriteWithObj(cookie, column, row);
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::createSpriteWithFieldObj(BaseObj * fieldObj)
+void GameplayScene::createSpriteWithDude(BaseObj * dudeObj)
 //--------------------------------------------------------------------
 {
-    auto sprite = Sprite::create(fieldObj->spriteName().getCString());
-    sprite->setPosition(Helper::pointForColumnAndRow(fieldObj->getColumn(), fieldObj->getRow()));
-    sprite->setScale(2.0f);
-    fieldObj->setSpriteNode(sprite);
-    mTilesLayer->addChild(sprite);
+    mCookiesLayer->createSpriteWithObj(dudeObj, dudeObj->getColumn(), dudeObj->getRow());
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::createSpriteWithFieldObj(FieldObj * obj)
+//--------------------------------------------------------------------
+{
+    mCookiesLayer->createSpriteWithFieldObj(obj, obj->getColumn(), obj->getRow());
+}
+
+//--------------------------------------------------------------------
+bool GameplayScene::isObjTouched()
+//--------------------------------------------------------------------
+{
+    return mCookiesLayer->isObjTouched();
 }
 
 //--------------------------------------------------------------------
@@ -391,5 +284,6 @@ void GameplayScene::setLevel(LevelObj* var)
         this->removeChildByName("Level");
         this->addChild(var);
     }
-   mLevel = var;
+    mCookiesLayer->setLevel(var);
+    mLevel = var;
 }

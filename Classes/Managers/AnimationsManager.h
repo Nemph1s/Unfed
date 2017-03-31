@@ -12,9 +12,14 @@
 
 #include "cocos2d.h"
 #include "Utils/PlatformMacros.h"
+#include "Common/CommonTypes.h"
 
 class SwapObj;
 class ChainObj;
+class BaseObj;
+class CookieObj;
+class FieldObj;
+class DudeObj;
 
 class _AnimationsManager
 {
@@ -25,17 +30,23 @@ public:
     
     void animateSwap(SwapObj* swap, cocos2d::CallFunc* completion);
     void animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* completion);
-    void animateMatching(cocos2d::Set* chains, cocos2d::CallFunc* completion);
-    void animateFallingCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion);
+    void animateMatching(CommonTypes::Set* chains, cocos2d::CallFunc* completion);
+    void animateFallingObjects(cocos2d::Array* colums, cocos2d::CallFunc* completion);
     void animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion);
 
     void animateNewCookieSprite(cocos2d::Sprite* sprite);
 
     void animateScoreForChain(ChainObj* chain);
+    void animateScoreForFieldObj(BaseObj* obj);
 
-    void animateRemovingFieldObjects(cocos2d::Set* fieldObjects, cocos2d::CallFunc* completion);
-
+    void animateBouncingObj(BaseObj* obj);
+    void animateJumpingObj(BaseObj* obj);
+    void animateHintSwap(CommonTypes::Set* objects, cocos2d::CallFunc* completion);
+    
 protected:
+    void animateMatchCookie(CookieObj* obj);
+    void animateMatchFieldObj(FieldObj* obj);
+    void animateMatchDude(DudeObj* obj);
 
     cocos2d::Scene* mCurrentScene;
 };

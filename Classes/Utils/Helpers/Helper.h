@@ -15,6 +15,7 @@
 #include "Utils/PlatformMacros.h"
 
 class CookieObj;
+class BaseObj;
 class Helper 
 {
     CREATE_SINGLETON(Helper);
@@ -31,8 +32,26 @@ public:
     static int random(int fromRange, int toRange);
     static CommonTypes::CookieType randomCookieType(int fromRange, int toRange);
 
+    static cocos2d::String* getSpriteNameByTileType(int tileType);
+
     static cocos2d::Vec2 pointForColumnAndRow(int column, int row);
-    static cocos2d::Vec2 pointForCookie(CookieObj* cookie);
+    static cocos2d::Vec2 pointForColumnAndRowWithPriority(int column, int row, int priority);
+    static cocos2d::Vec2 pointForTile(BaseObj* obj);
 
     static bool convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row);
+
+    static CommonTypes::Direction invertDirection(const CommonTypes::Direction& direction);
+    static CommonTypes::Direction invertDirection(int direction);
+
+    static int getDirectionByTileFromAToB(int oldDirection, int fromCol, int fromRow, int toCol, int toRow);
+    static CommonTypes::Direction getDirectionByTileFromAToB(int oldDirection, BaseObj* from, BaseObj* to);
+    
+    static bool convertDirectionToSwipeDelta(int dir, int& horzDelta, int& vertDelta);
+
+    static cocos2d::Color4B getScoreColorByObj(BaseObj* obj);
+
+private:
+    static cocos2d::Color4B getScoreColorByCookieType(CommonTypes::CookieType type);
+    static cocos2d::Color4B getScoreColorForFieldObj(CommonTypes::FieldType type);
+    static cocos2d::Color4B getScoreColorForDudeObj(CommonTypes::FieldType type);
 };

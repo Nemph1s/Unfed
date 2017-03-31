@@ -1,0 +1,31 @@
+{
+	"res" : "OK",
+	"tiles" : [ [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+              [1, 1, 1, 0, 0, 0, 0, 0, 0 ],
+              [1, 1, 1, 0, 0, 0, 0, 0, 0 ],
+              [1, 1, 1, 0, 0, 1, 1, 1, 1 ],
+              [1, 1, 1, 0, 0, 1, 1, 1, 1 ],
+              [1, 1, 1, 0, 0, 1, 1, 1, 1 ],
+              [1, 1, 1, 0, 0, 1, 1, 1, 1 ] ],
+
+	"targetScore" : 20000,
+	"moves" : 30,
+	"typesCount" : 4,
+	"fieldObjects": {
+        "objects" : [ { "col": 5, "row": 5, "types": [ 30, 30 ] },
+					{ "col": 5, "row": 6, "types": [ 11 ] },
+					{ "col": 5, "row": 7, "types": [ 11 ] },
+					{ "col": 5, "row": 8, "types": [ 11 ] },
+					{ "col": 6, "row": 6, "types": [ 30, 30 ] },
+					{ "col": 7, "row": 7, "types": [ 30, 30 ] },
+					{ "col": 8, "row": 8, "types": [ 30, 30 ] } ]
+    },
+    "levelGoals": {
+        "goalsCount" : 3,
+        "collect" : [ { "baseObjType": 1, "objType": 1, "targetCount": 20 }, 
+                     { "baseObjType": 1, "objType": 3, "targetCount": 20 },
+					{ "baseObjType": 1, "objType": 0, "targetCount": 20 } ]
+    }
+}

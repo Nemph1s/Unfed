@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include "cocos2d.h"
-
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 
 class CookieObj : public BaseObj
@@ -19,7 +17,7 @@ class CookieObj : public BaseObj
 CC_CONSTRUCTOR_ACCESS:
     virtual ~CookieObj();
 
-/*    friend SmartFactory;*/
+/*    friend SmartObjFactory;*/
 
 public:
    /**
@@ -34,11 +32,14 @@ public:
    cocos2d::String& highlightedSpriteName() const;
    cocos2d::String& description() const;
 
+   virtual void setSpriteNode(cocos2d::Sprite* var) override;
+   virtual void setColumn(int var) override;
+   virtual void setRow(int var) override;
    virtual int getTypeAsInt() const override;
 
    virtual void clear() override;
 
-   void updateDebugTileLabel();
+   virtual void updateDebugLabel();
 
 protected: 
     // Nodes should be created using create();
@@ -47,5 +48,7 @@ protected:
     //---Class Attributes-------------------------------------------------
    CC_SYNTHESIZE_READONLY(CommonTypes::CookieType, mCookieType, CookieType);
    CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);
+
+   CC_SYNTHESIZE(std::function<void(BaseObj*)>, mRemoveCookieCallback, RemoveCookieCallback);
 };
 

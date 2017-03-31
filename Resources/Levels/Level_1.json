@@ -1,6 +1,6 @@
 {
-  "res" : "OK",
-  "tiles" : [ [0, 1, 1, 0, 0, 0, 1, 1, 0 ],
+    "res" : "OK",
+    "tiles" : [ [0, 1, 1, 0, 0, 0, 1, 1, 0 ],
               [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
               [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
               [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
@@ -10,7 +10,30 @@
               [1, 1, 1, 1, 1, 1, 1, 1, 1 ],
               [0, 1, 1, 0, 0, 0, 1, 1, 0 ] ],
 
-  "targetScore" : 1000,
-  "moves" : 15,
-  "typesCount" : 5,
+    "targetScore" : 1000,
+    "moves" : 15,
+    "typesCount" : 5,
+	"fieldObjects": {
+        "objects" : [ { "col": 0, "row": 1, "types": [ 20 ] },
+					{ "col": 0, "row": 2, "types": [ 20 ] },
+					{ "col": 0, "row": 6, "types": [ 20 ] },
+					{ "col": 0, "row": 7, "types": [ 20 ] },
+					{ "col": 3, "row": 3, "types": [ 30, 30 ] },
+					{ "col": 3, "row": 4, "types": [ 30, 30 ] },
+					{ "col": 3, "row": 5, "types": [ 30, 30 ] },
+					{ "col": 4, "row": 5, "types": [ 30, 30 ] },
+					{ "col": 5, "row": 5, "types": [ 30, 30 ] },
+					{ "col": 5, "row": 4, "types": [ 30, 30 ] },
+					{ "col": 5, "row": 3, "types": [ 30, 30 ] },
+					{ "col": 4, "row": 3, "types": [ 30, 30 ] },
+					{ "col": 8, "row": 1, "types": [ 20 ] },
+					{ "col": 8, "row": 2, "types": [ 20 ] },
+					{ "col": 8, "row": 6, "types": [ 20 ] },
+					{ "col": 8, "row": 7, "types": [ 20 ] } ]
+    },
+    "levelGoals": {
+        "goalsCount" : 3,
+        "collect" : [ { "baseObjType": 1, "objType": 1, "targetCount": 20 }, 
+                     { "baseObjType": 2, "objType": 20, "targetCount": 4 } ]
+    }
 }

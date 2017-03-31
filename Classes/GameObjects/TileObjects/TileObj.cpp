@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObj.cpp
+* @file GameObjects/TileObjects/TileObj.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -9,6 +9,7 @@
 */
 
 #include "GameObjects/TileObjects/TileObj.h"
+
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
@@ -16,6 +17,7 @@
 TileObj::TileObj()
     : BaseObj()
     , mTileType(CommonTypes::TileType::Unknown)
+    , mChainPreviewSpriteNode(nullptr)
 //--------------------------------------------------------------------
 {
 }
@@ -61,18 +63,17 @@ cocos2d::String& TileObj::spriteName() const
 }
 
 //--------------------------------------------------------------------
+cocos2d::String & TileObj::description() const
+//--------------------------------------------------------------------
+{
+    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
+}
+
+//--------------------------------------------------------------------
 int TileObj::getTypeAsInt() const
 //--------------------------------------------------------------------
 {
     return Helper::getInstance()->to_underlying(mTileType);
-}
-
-//--------------------------------------------------------------------
-void TileObj::clear()
-//--------------------------------------------------------------------
-{
-    BaseObj::clear();
-    mTileType = CommonTypes::TileType::Unknown;
 }
 
 //--------------------------------------------------------------------
