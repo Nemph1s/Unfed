@@ -239,7 +239,7 @@ cocos2d::Sprite * _GuiManager::createSprite(int baseType, int objType)
         break;
     case CommonTypes::BaseObjType::Field:
     case CommonTypes::BaseObjType::Dude:
-        str = Helper::getSpriteNameByTileType(objType);
+        str = Helper::getSpriteNameByFieldType(objType);
         break;
     case CommonTypes::BaseObjType::Tile:
     case CommonTypes::BaseObjType::Unknown:

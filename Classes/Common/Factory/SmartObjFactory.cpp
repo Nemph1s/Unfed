@@ -267,6 +267,7 @@ BaseObj * _SmartObjFactory::createDudeObj(const FieldInfo & info)
     case FieldType::DudeFromAToBx3:
     case FieldType::DudeChainX:
     case FieldType::DudeAllOfType:
+    case FieldType::DudeSquareBomb:
         baseObject = DudeObj::create(info);
         CC_SAFE_RETAIN(baseObject);
         CCASSERT(baseObject, "error while creating DudeObj");
