@@ -40,6 +40,8 @@ public:
     void createSpriteWithDude(BaseObj* dudeObj);
     void createSpriteWithFieldObj(FieldObj* fieldObj);
 
+    bool isObjTouched();
+
     void userInteractionEnabled();
     void userInteractionDisabled();
 

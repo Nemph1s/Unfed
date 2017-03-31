@@ -15,6 +15,7 @@
 #include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include <random>
+#include <cstdlib>
 
 using namespace GameResources;
 using namespace CommonTypes;
@@ -165,17 +166,39 @@ Direction Helper::invertDirection(const Direction & direction)
 }
 
 //--------------------------------------------------------------------
-int Helper::getDirectionByTileFromAToB(int fromCol, int fromRow, int toCol, int toRow)
+CommonTypes::Direction Helper::invertDirection(int direction)
+//--------------------------------------------------------------------
+{
+    auto dir = static_cast<CommonTypes::Direction>(direction);
+    return invertDirection(dir);
+}
+
+//--------------------------------------------------------------------
+int Helper::getDirectionByTileFromAToB(int oldDirection, int fromCol, int fromRow, int toCol, int toRow)
 //--------------------------------------------------------------------
 {
     auto dir = Direction::Unknown;
-    if (fromCol != toCol) {
-        dir = fromCol > toCol ? Direction::Left : Direction::Right;
+    int8_t xDiff = toCol - fromCol;
+    int8_t yDiff = toRow - fromRow;
+    if (std::abs(xDiff) != std::abs(yDiff)) {
+        if (std::abs(xDiff) > std::abs(yDiff)) {
+            dir = xDiff > 0 ? Direction::Left : Direction::Right;
+        } else {
+            dir = yDiff < 0 ? Direction::Up : Direction::Down;
+        }
+    } else {
+        return oldDirection;
     }
-    if (fromRow != toRow) {
-        dir = fromRow > toRow ? Direction::Up : Direction::Down;
-    }
-    return 0;
+    
+    return to_underlying(dir);
+}
+
+//--------------------------------------------------------------------
+CommonTypes::Direction Helper::getDirectionByTileFromAToB(int oldDirection, BaseObj * from, BaseObj * to)
+//--------------------------------------------------------------------
+{
+    auto direction = getDirectionByTileFromAToB(oldDirection, from->getColumn(), from->getRow(), to->getColumn(), to->getRow());
+    return static_cast<CommonTypes::Direction>(direction);
 }
 
 //--------------------------------------------------------------------
@@ -224,13 +247,13 @@ cocos2d::Color4B Helper::getScoreColorByObj(BaseObj * obj)
     else if (obj->getType() == BaseObjType::Field) {
         auto tileObj = dynamic_cast<FieldObj*>(obj);
         if (tileObj) {
-            color = getScoreColorByFieldType(tileObj->getFieldType());
+            color = getScoreColorForFieldObj(tileObj->getFieldType());
         }
     }
     else if (obj->getType() == BaseObjType::Dude) {
         auto dudeObj = dynamic_cast<DudeObj*>(obj);
         if (dudeObj) {
-            color = cocos2d::Color4B::MAGENTA;
+            color = getScoreColorForDudeObj(dudeObj->getFieldType());
         }
     }
 
@@ -269,7 +292,7 @@ cocos2d::Color4B Helper::getScoreColorByCookieType(CommonTypes::CookieType type)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorByFieldType(CommonTypes::FieldType type)
+cocos2d::Color4B Helper::getScoreColorForFieldObj(CommonTypes::FieldType type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
@@ -286,6 +309,32 @@ cocos2d::Color4B Helper::getScoreColorByFieldType(CommonTypes::FieldType type)
         break;
     case FieldType::RockWall:
         color = cocos2d::Color4B::BLACK;
+        break;
+    default:
+        break;
+    }
+    return color;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Color4B Helper::getScoreColorForDudeObj(CommonTypes::FieldType type)
+//--------------------------------------------------------------------
+{
+    // see hints on http://www.colorhexa.com/color-names
+    auto color = cocos2d::Color4B(209, 159, 232, 255); //Bright ube  alpha(200)
+    switch (type)
+    {
+    case FieldType::DudeFromAToB:
+        color = cocos2d::Color4B(255, 255, 53, 200); //Banana yellow  alpha(200)
+        break;
+    case FieldType::DudeFromAToBx3:
+        color = cocos2d::Color4B(161, 202, 241, 255); //Baby blue eyes  alpha(255)
+        break;
+    case FieldType::DudeAllOfType:
+        color = cocos2d::Color4B(133, 187, 101, 255); //Dollar bill  alpha(144)
+        break;
+    case FieldType::DudeChainX:
+        color = cocos2d::Color4B(170, 240, 209, 255); //Magic mint  alpha(204)
         break;
     default:
         break;

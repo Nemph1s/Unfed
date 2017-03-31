@@ -45,6 +45,8 @@ public:
 
     CommonTypes::Set* createInitialFieldObjects();
     CommonTypes::Set* createInitialCookies();
+
+    void detectDirectionsForDudes();
     
     BaseObj* createRandomCookie(int column, int row);
     int getRandomCookieType(int column, int row);

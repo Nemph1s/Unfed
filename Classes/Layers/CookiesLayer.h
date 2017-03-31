@@ -36,6 +36,8 @@ public:
     void createSpriteWithFieldObj(FieldObj* fieldObj, int column, int row);
     void createChainPreviewSprites(CommonTypes::Set* set);
 
+    bool isObjTouched();
+
     bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
@@ -50,8 +52,7 @@ public:
 protected:
     // Nodes should be created using create();
     CookiesLayer();
-
-    bool isObjTouched();
+        
     void clearTouchedObj();
     int getSwipeDirection(int newCol, int newRow);
 

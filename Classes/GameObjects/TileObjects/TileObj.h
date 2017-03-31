@@ -39,5 +39,7 @@ protected:
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE_READONLY(CommonTypes::TileType, mTileType, TileType);
+
+    CC_SYNTHESIZE(cocos2d::Sprite*, mChainPreviewSpriteNode, ChainPreviewSpriteNode);
 };
 

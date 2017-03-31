@@ -17,6 +17,7 @@
 TileObj::TileObj()
     : BaseObj()
     , mTileType(CommonTypes::TileType::Unknown)
+    , mChainPreviewSpriteNode(nullptr)
 //--------------------------------------------------------------------
 {
 }

@@ -10,12 +10,14 @@
 
 #include "Controller/ChainController/ChainObj.h"
 #include "Controller/ObjectController/ObjContainer.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "Utils/Helpers/Helper.h"
 
 //--------------------------------------------------------------------
 ChainObj::ChainObj()
     : mObjects(nullptr)
+    , mObjsToRemove(nullptr)
     , mIsCreatedByDude(false)
     , mCookiesScore(0)
     , mScore(0)
@@ -28,7 +30,7 @@ ChainObj::ChainObj()
 ChainObj::~ChainObj()
 //--------------------------------------------------------------------
 {   
-    cocos2d::log("ChainObj::~ChainObj: deallocing ChainObj: %p - tag: %i", this, _tag);
+    //cocos2d::log("ChainObj::~ChainObj: deallocing ChainObj: %p - tag: %i", this, _tag);
     if (getParent()) {
         removeFromParent();
     }
@@ -37,10 +39,12 @@ ChainObj::~ChainObj()
             auto obj = dynamic_cast<ObjContainer*>(*it);
             if (obj) {
                 obj->setObjectInChain(nullptr);
+                obj->setChainPreviewSprite(nullptr);
             }
         }
     }
     CC_SAFE_RELEASE_NULL(mObjects);
+    CC_SAFE_RELEASE_NULL(mObjsToRemove);
 }
 
 //--------------------------------------------------------------------
@@ -158,29 +162,76 @@ void ChainObj::activateObjects()
         return;
     }
     cocos2d::log("ChainObj::activateObjects: objects size before removing=%d", mObjects->count());
-    auto objsToRemove = cocos2d::Array::create();
+    if (mObjsToRemove == nullptr) {
+        mObjsToRemove = cocos2d::Array::createWithCapacity(CommonTypes::NumColumns * CommonTypes::NumRows);
+        CC_SAFE_RETAIN(mObjsToRemove);
+    }
     auto it = mObjects->begin();
     while (it != mObjects->end())
     {
         auto obj = dynamic_cast<ObjContainer*>(*it);
         if (obj) {
             if (obj->isObjectInChain()) {
-                objsToRemove->addObject(obj);
+                mObjsToRemove->addObject(obj);
             } else {
                 obj->setObjectInChain(this);
             }
         }
         it++;
     };
+    removeDuplicateObjects(mObjsToRemove);
+    cocos2d::log("ChainObj::activateObjects: objects size after removing=%d", mObjects->count());
+}
 
+//--------------------------------------------------------------------
+void ChainObj::removeDuplicateObjects(cocos2d::Array* objsToRemove)
+//--------------------------------------------------------------------
+{
+    if (!objsToRemove) {
+        cocos2d::log("ChainObj::removeDuplicateObjects: empty objsToRemove array");
+        return;
+    }
+    cocos2d::log("ChainObj::removeDuplicateObjects: objsToRemove.size=%d", objsToRemove->count());
     for (auto itToRemove = objsToRemove->begin(); itToRemove != objsToRemove->end(); ++itToRemove) {
         auto obj = dynamic_cast<ObjContainer*>(*itToRemove);
         if (obj) {
-            mScore = mScore - obj->getScoreValueForGameObjects();// obj->getObjectForChain()->getScoreValue();
+            mScore = mScore - obj->getScoreValueForGameObjects();
             mObjects->removeObject(obj);
         }
     }
-    cocos2d::log("ChainObj::activateObjects: objects size after removing=%d", mObjects->count());
+}
+
+//--------------------------------------------------------------------
+void ChainObj::deactivateObjects()
+//--------------------------------------------------------------------
+{
+    //TODO: refactor
+    cocos2d::log("ChainObj::deactivateObjects:");
+    if (!mObjects) {
+        cocos2d::log("ChainObj::deactivateObjects: empty objects array");
+        return;
+    }
+    if (mObjsToRemove) {
+        for (auto itToRemove = mObjsToRemove->begin(); itToRemove != mObjsToRemove->end(); ++itToRemove) {
+            auto obj = dynamic_cast<ObjContainer*>(*itToRemove);
+            if (obj) {
+                mScore = mScore - obj->getScoreValueForGameObjects();
+                addObjectToChain(obj);
+            }
+        }
+        mObjsToRemove->removeAllObjects();
+        CC_SAFE_RELEASE_NULL(mObjsToRemove);
+    }
+    for (auto it = mObjects->begin(); it != mObjects->end(); ++it) {
+        auto obj = dynamic_cast<ObjContainer*>(*it);
+        if (obj) {
+            obj->setObjectInChain(nullptr);
+            auto dude = obj->getDude();
+            if (dude) {
+                dude->deactivate();
+            }
+        }
+    }
 }
 
 //--------------------------------------------------------------------

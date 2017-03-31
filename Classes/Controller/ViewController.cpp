@@ -33,13 +33,13 @@ using cocos2d::Director;
 using cocos2d::CallFunc;
 using namespace CommonTypes;
 using namespace std::placeholders;
-
+ 
 #define COCOS2D_DEBUG 1
 #define UNFED_ENABLE_DEBUG 1
 
 const float showHintInterval = 10.0f;
 
-#define CURRENT_LEVEL 6
+#define CURRENT_LEVEL 667
 
 //--------------------------------------------------------------------
 ViewController::ViewController()
@@ -488,7 +488,9 @@ void ViewController::showSwapHint(float dt)
 //--------------------------------------------------------------------
 {
     CommonTypes::Set* set = nullptr;
-
+    if (mGameplayScene->isObjTouched()) {
+        return;
+    }
     auto swapObj = dynamic_cast<SwapObj*>(mSwapController->getPossibleSwaps()->anyObject());
     if (swapObj) {
         mGameplayScene->userInteractionDisabled();

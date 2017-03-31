@@ -59,6 +59,7 @@ public:
     * @param chains The set with the chains.
     */
     void activateChains(CommonTypes::Set* chains);
+    void deactivateChains(CommonTypes::Set* chains);
 
     void matchChains(CommonTypes::Set* chains);
 

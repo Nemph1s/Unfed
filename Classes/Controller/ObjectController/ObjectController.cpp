@@ -133,6 +133,12 @@ CommonTypes::Set * ObjectController::createInitialCookies()
     cocos2d::log("ObjectController::createInitialCookies: created array=%s", createdString->getCString());
     return set;
 }
+//--------------------------------------------------------------------
+void ObjectController::detectDirectionsForDudes()
+//--------------------------------------------------------------------
+{
+    mDudeCtrl->detectDirectionsForDudes();
+}
 
 //--------------------------------------------------------------------
 BaseObj * ObjectController::createTile(int column, int row, int type)

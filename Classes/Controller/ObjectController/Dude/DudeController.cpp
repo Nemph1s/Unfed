@@ -275,15 +275,15 @@ Set * DudeController::activateDudeAndGetChains(DudeObj* obj, int dir)
 
     auto helper = mDudeDirections.at(obj);
     if (helper) {
-        obj->activate();
 
+        obj->activate();
         auto chains = helper->getChainByDirection(direction);
         if (!chains) {
             cocos2d::log("DudeController::activateDudeAndGetChains: empty chain from helper! direction=%d", dir);
             return set;
         }
 
-        updateChainSetWithDudesInChain(direction, chains, set);
+        updateChainSetWithDudesInChain(direction, obj, chains, set);
         // create param without dude obj, to skip all dudes from adding except dude at 0 chain pos
         mChainCtrl->addChainsFromSetToSet(chains, set, true); 
     }
@@ -307,34 +307,43 @@ Set* DudeController::getChainPreviewHint(DudeObj* obj, int dir)
 
     auto helper = mDudeDirections.at(obj);
     if (helper) {
-        
+
+        obj->activate();
         auto chains = helper->getChainByDirection(direction, true);
         if (!chains) {
             cocos2d::log("DudeController::getHintPreviewChains: empty chain from helper! direction=%d", dir);
             return set;
         }
+
         set = Set::create();
-        //updateChainSetWithDudesInChain(direction, chains, set);
+        updateChainSetWithDudesInChain(direction, obj, chains, set);
         // create param without dude obj, to skip all dudes from adding except dude at 0 chain pos
-        mChainCtrl->addChainsFromSetToSet(chains, set, true);
+        mChainCtrl->addChainsFromSetToSet(chains, set, true); //TODO: Fix this!!!
+        mChainCtrl->deactivateChains(set);
     }
 
     return set;
 }
 
 //--------------------------------------------------------------------
-void DudeController::updateChainSetWithDudesInChain(const Direction& direction, Set* chains, Set* chainSet)
+void DudeController::updateChainSetWithDudesInChain(const Direction& direction, DudeObj* activeDude, Set* chains, Set* chainSet)
 //--------------------------------------------------------------------
 {
+    CC_ASSERT(activeDude);
+    cocos2d::log("DudeController::updateChainSetWithDudesInChain: direction=%d", Helper::to_underlying(direction));
+
+    mChainCtrl->activateChains(chains);
+
     for (auto itChain = chains->begin(); itChain != chains->end(); ++itChain) {
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
 
+        auto color = Helper::getScoreColorByObj(activeDude);
+        chain->setChainColor(color);
+
         auto objects = chain->getObjects();
         if (!objects) 
             continue;
-
-        mChainCtrl->activateChains(chains);
 
         uint8_t index = 0;
         for (auto it = objects->begin(); it != objects->end(); it++, index++) {
@@ -356,7 +365,10 @@ void DudeController::updateChainSetWithDudesInChain(const Direction& direction, 
 
                     CommonTypes::Set* newChains = nullptr;
                     auto dude = container->getDude();
-                    auto invertedDirection = Helper::invertDirection(direction);
+                    auto realDirection = Helper::getDirectionByTileFromAToB(Helper::to_underlying(direction), activeDude, dude);
+                    auto invertedDirection = Helper::invertDirection(realDirection);
+
+                    cocos2d::log("DudeController::updateChainSetWithDudesInChain: realDirection=%d", Helper::to_underlying(realDirection));
 
                     auto helper = mDudeDirections.at(dude);
                     if (helper && !dude->isActivated()) {
@@ -367,8 +379,8 @@ void DudeController::updateChainSetWithDudesInChain(const Direction& direction, 
                     if (newChains != nullptr) {
                         dude->activate();
 
-                        updateChainSetWithDudesInChain(invertedDirection, newChains, chainSet);
-                        mChainCtrl->addChainsFromSetToSet(newChains, chainSet, true);
+                        updateChainSetWithDudesInChain(invertedDirection, dude, newChains, chainSet);
+                        mChainCtrl->addChainsFromSetToSet(newChains, chainSet, true); //TODO: Fix this!!!
                     }
                 }
             }

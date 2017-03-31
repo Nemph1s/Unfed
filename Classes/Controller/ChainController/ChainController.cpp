@@ -172,7 +172,7 @@ CommonTypes::Set* ChainController::detectChainAt(int column, int row)
 }
 
 //--------------------------------------------------------------------
-void ChainController::activateChains(CommonTypes::Set * chains)
+void ChainController::activateChains(CommonTypes::Set* chains)
 //--------------------------------------------------------------------
 {
     cocos2d::log("ChainController::activateChains:");
@@ -180,6 +180,18 @@ void ChainController::activateChains(CommonTypes::Set * chains)
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
         chain->activateObjects();
+    }
+}
+
+//--------------------------------------------------------------------
+void ChainController::deactivateChains(CommonTypes::Set* chains)
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ChainController::deactivateChains:");
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+        chain->deactivateObjects();
     }
 }
 
@@ -463,17 +475,25 @@ ChainObj * ChainController::detectTChainMatches(ChainObj * horzChain, ChainObj *
         return chain;
     }
 
-    int horzMiddlePos = firstHorzCookie->getColumn() + horzCookies->count() / 2;
-    int vertMiddlePos = firstVertCookie->getRow() + vertCookies->count() / 2;
-    auto middleHorzCookie = mObjCtrl->cookieAt(horzMiddlePos, firstHorzCookie->getRow());
-    auto middleVertCookie = mObjCtrl->cookieAt(firstVertCookie->getColumn(), vertMiddlePos);
-
-    if (middleHorzCookie == firstVertCookie || middleHorzCookie == lastVertCookie ||
-        middleVertCookie == firstHorzCookie || middleVertCookie == lastHorzCookie) {
-        chain = ChainObj::createWithType(ChainType::ChainTypeT);
-        chain->setUpdateGoalCallback(mUpdateGoalCallback);
-        chain->addObjectsFromChain(horzChain);
-        chain->addObjectsFromChain(vertChain);
+    for (auto itHorz = horzCookies->begin() + 1; itHorz < horzCookies->end() - 1; itHorz++) {
+        auto middleHorzCookie = dynamic_cast<CookieObj*>(*itHorz);
+        if (!middleHorzCookie) {
+            return chain;
+        }
+        for (auto itVert = vertCookies->begin() + 1; itVert < vertCookies->end() - 1; itVert++) {
+            auto middleVertCookie = dynamic_cast<CookieObj*>(*itVert);
+            if (!middleVertCookie) {
+                return chain;
+            }
+            if (middleHorzCookie == firstVertCookie || middleHorzCookie == lastVertCookie ||
+                middleVertCookie == firstHorzCookie || middleVertCookie == lastHorzCookie) {
+                chain = ChainObj::createWithType(ChainType::ChainTypeT);
+                chain->setUpdateGoalCallback(mUpdateGoalCallback);
+                chain->addObjectsFromChain(horzChain);
+                chain->addObjectsFromChain(vertChain);
+                return chain;
+            }
+        }
     }
     return chain;
 }
@@ -745,9 +765,9 @@ CommonTypes::Set * ChainController::createChainFromPosToPos(const CommonTypes::D
     auto chain = ChainObj::createWithType(ChainType::ChainFromAToB);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
-    auto dir = Helper::getDirectionByTileFromAToB(fromCol, fromRow, toCol, toRow);
     auto newDirection = direction;
     if (direction == Direction::Unknown) {
+        auto dir = Helper::getDirectionByTileFromAToB(Helper::to_underlying(direction), fromCol, fromRow, toCol, toRow);
         newDirection = static_cast<Direction>(dir);
     }
     chain->setDirection(newDirection);

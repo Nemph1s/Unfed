@@ -41,13 +41,17 @@ public:
     static bool convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row);
 
     static CommonTypes::Direction invertDirection(const CommonTypes::Direction& direction);
-    static int getDirectionByTileFromAToB(int fromCol, int fromRow, int toCol, int toRow);
+    static CommonTypes::Direction invertDirection(int direction);
 
+    static int getDirectionByTileFromAToB(int oldDirection, int fromCol, int fromRow, int toCol, int toRow);
+    static CommonTypes::Direction getDirectionByTileFromAToB(int oldDirection, BaseObj* from, BaseObj* to);
+    
     static bool convertDirectionToSwipeDelta(int dir, int& horzDelta, int& vertDelta);
 
     static cocos2d::Color4B getScoreColorByObj(BaseObj* obj);
 
 private:
     static cocos2d::Color4B getScoreColorByCookieType(CommonTypes::CookieType type);
-    static cocos2d::Color4B getScoreColorByFieldType(CommonTypes::FieldType type);
+    static cocos2d::Color4B getScoreColorForFieldObj(CommonTypes::FieldType type);
+    static cocos2d::Color4B getScoreColorForDudeObj(CommonTypes::FieldType type);
 };

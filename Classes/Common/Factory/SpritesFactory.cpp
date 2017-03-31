@@ -21,6 +21,9 @@
 
 using namespace CommonTypes;
 
+const int kSpriteTag = 3;
+const int kGlowingSpriteTag = 4;
+
 const std::map<FieldType, cocos2d::String*> FieldTypeNames = {
     { FieldType::Bush, &GameResources::s_BushCorruptedImg }
     , { FieldType::Bush_HP2, &GameResources::s_BushNormalImg }
@@ -188,7 +191,7 @@ bool _SpritesFactory::initHintPool(int poolSize)
         CCASSERT(mHintSpritesPool, "error while creating mHintSpritesPool");
 
         while (poolSize--) {
-            auto sprite = createNewHintSprite();
+            auto sprite = createNewHintSprite(cocos2d::Color4B::WHITE);
             CCASSERT(sprite, "error while creating sprite for Hint");
 
             mHintSpritesPool->push_back(sprite);
@@ -209,6 +212,7 @@ void _SpritesFactory::recycleHintSprite(Sprite* spriteNode)
     }
     spriteNode->setScale(1);
     spriteNode->setVisible(false);
+    spriteNode->stopAllActions();
     if (spriteNode->getParent()) {
         spriteNode->removeFromParent();
     }
@@ -381,46 +385,44 @@ Sprite* _SpritesFactory::createSpriteForObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-Sprite* _SpritesFactory::createNewHintSprite(bool isVisible)
+Sprite* _SpritesFactory::createNewHintSprite(const cocos2d::Color4B& color, bool isVisible)
 //--------------------------------------------------------------------
 {
+    auto color3b = cocos2d::Color3B(color);
     auto sprite = Sprite::create(GameResources::s_HintImg.getCString());
     sprite->setVisible(isVisible);
-    sprite->setOpacity(100);
+    sprite->setOpacity(255);
+    sprite->setColor(color3b);
+
     cocos2d::BlendFunc f = { GL_ONE, GL_ONE };
     auto pos = cocos2d::Vec2(sprite->getContentSize().width / 2, sprite->getContentSize().height / 2);
     auto glowSprite = Sprite::create(GameResources::s_HintImg.getCString());
-    //glowSprite->setColor(cocos2d::Color3B::BLUE);
+
+    glowSprite->setColor(color3b);
     glowSprite->setPosition(pos);
     glowSprite->setOpacity(200);
     glowSprite->setBlendFunc(f);
-    sprite->addChild(glowSprite, -1);
-
-    // Run some animation which scales a bit the glow
-    auto scaleFactor = 0.80f;
-    sprite->setScale(scaleFactor);
-    auto seq1 = cocos2d::Sequence::createWithTwoActions(
-        cocos2d::ScaleTo::create(0.9f, scaleFactor*0.75f, scaleFactor*0.75f),
-        cocos2d::ScaleTo::create(0.9f, scaleFactor, scaleFactor));
-
-    sprite->runAction(cocos2d::RepeatForever::create(seq1));
+    sprite->addChild(glowSprite, -1, kGlowingSpriteTag);
 
     CC_SAFE_RETAIN(sprite);
     return sprite;
 }
 
 //--------------------------------------------------------------------
-Sprite* _SpritesFactory::createHintSprite()
+Sprite* _SpritesFactory::createHintSprite(const cocos2d::Color4B& color)
 //--------------------------------------------------------------------
 {
     Sprite* sprite = nullptr;
     if (mHintSpritesPool->size() > 0) {
+        auto color3b = cocos2d::Color3B(color);
         sprite = mHintSpritesPool->front();
         mHintSpritesPool->pop_front();
         sprite->setVisible(true);
+        sprite->setColor(color3b);
+        sprite->getChildByTag(kGlowingSpriteTag)->setColor(color3b);
     }
     else {
-        sprite = createNewHintSprite(true);
+        sprite = createNewHintSprite(color, true);
     }
     return sprite;
 }
