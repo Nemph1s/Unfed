@@ -41,4 +41,15 @@ namespace JsonNames {
     static const char* targetBaseObjType = "baseObjType";
     static const char* targetObjType = "objType";
     static const char* targetObjectCount = "targetCount";
+
+    //GlobalInfo parameters
+    namespace GlobalInfo {
+        static const char* loadResult = "res";
+        static const char* swVersion = "swVersion";
+        static const char* imgPackType = "imgPackType";
+        static const char* imgPackVersion = "imgPackVersion";
+        static const char* tileWidth = "tileWidth";
+        static const char* tileHeigth = "tileHeight";
+        static const char* levelsCount = "levelsCount";
+    }
 }

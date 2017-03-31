@@ -65,6 +65,8 @@ namespace GameResources {
       , "Sprites.atlas/SugarCookie-Highlighted@2x.png"
    };
    
+   static cocos2d::String s_GlobalInfoPath = "info.cfg";
+
    static cocos2d::String s_templateLevelName = "Levels/Level_%d.json";
    //TODO: move to config file
    static int16_t s_levelsCount = 4;

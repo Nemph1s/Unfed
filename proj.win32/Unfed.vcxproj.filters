@@ -67,6 +67,9 @@
     <Filter Include="src\Controller\SwapController">
       <UniqueIdentifier>{4570b908-1ce4-4f22-bec0-a559f41e3580}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Common\GlobalInfo">
+      <UniqueIdentifier>{eb77aec4-df4a-436b-87fb-77a76eb3a4e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -80,9 +83,6 @@
     </ClCompile>
     <ClCompile Include="..\Classes\Scenes\GameplayScene.cpp">
       <Filter>src\Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Utils\GlobalInfo.cpp">
-      <Filter>src\Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp">
       <Filter>src\Utils\Helper</Filter>
@@ -168,6 +168,9 @@
     <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeObj.cpp">
       <Filter>src\Controller\ObjectController\Dude</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Common\GlobalInfo\GlobalInfo.cpp">
+      <Filter>src\Common\GlobalInfo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -186,9 +189,6 @@
       <Filter>src\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Utils\GameResources.h">
-      <Filter>src\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Utils\GlobalInfo.h">
       <Filter>src\Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Utils\Helpers\Helper.h">
@@ -286,6 +286,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeObj.h">
       <Filter>src\Controller\ObjectController\Dude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Common\GlobalInfo\GlobalInfo.h">
+      <Filter>src\Common\GlobalInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Common\GlobalInfo\GlobalInfoTypes.h">
+      <Filter>src\Common\GlobalInfo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
