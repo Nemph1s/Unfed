@@ -22,8 +22,8 @@ namespace CommonTypes {
         const char* swVersion = nullptr; /**< Software Version */
         const char* imgPackType = nullptr; /**< Image Pack Type (SD/HD/HDR) */
         const char* imgPackVersion = nullptr; /**< Image Pack Version */
-        float tileWidth = 0.0f; /**< width of the Tile */
-        float tileHeigth = 0.0f; /**< height of the Tile */
+        double tileWidth = 0.0f; /**< width of the Tile */
+        double tileHeigth = 0.0f; /**< height of the Tile */
         uint16_t levelsCount = 0; /**< actual level count */
     };
 }

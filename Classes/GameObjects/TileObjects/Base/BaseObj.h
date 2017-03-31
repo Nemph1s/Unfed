@@ -48,10 +48,10 @@ protected:
 
     //---Class Attributes-------------------------------------------------
 
-    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsMovable, Movable);
-    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsRemovable, Removable);
-    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsSwappable, Swappable);
-    CC_SYNTHESIZE_BOOL_READONLY(bool, mIsContainer, Container);
+    SYNTHESIZE_IS_READONLY(bool, mIsMovable, Movable, false);
+    SYNTHESIZE_IS_READONLY(bool, mIsRemovable, Removable, false);
+    SYNTHESIZE_IS_READONLY(bool, mIsSwappable, Swappable, false);
+    SYNTHESIZE_IS_READONLY(bool, mIsContainer, Container, false);
 
     CC_SYNTHESIZE(uint16_t, mScoreValue, ScoreValue);
 

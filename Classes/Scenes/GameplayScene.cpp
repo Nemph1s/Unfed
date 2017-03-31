@@ -11,6 +11,7 @@
 #include "Scenes/GameplayScene.h"
 
 #include "Common/Factory/SpritesFactory.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
 
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
@@ -95,8 +96,8 @@ bool GameplayScene::initWithSize(const Size& size)
     this->addChild(mGameLayer);
 
     auto offset = -2.5f * CommonTypes::NumColumns / 2;
-    Vec2 layerPos = Vec2(offset - TileWidth * CommonTypes::NumColumns / 2
-        , offset - TileHeight * CommonTypes::NumRows / 2);
+    Vec2 layerPos = Vec2(offset - GlobalInfo->getTileWidth() * CommonTypes::NumColumns / 2
+        , offset - GlobalInfo->getTileHeight() * CommonTypes::NumRows / 2);
 
     mTilesLayer = Layer::create();
     mTilesLayer->setPosition(layerPos);

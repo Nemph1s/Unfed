@@ -10,7 +10,7 @@
 
 #pragma once
 
-/** @def CC_SYNTHESIZE_BOOL_READONLY
+/** @def SYNTHESIZE_BOOL_READONLY
 * It is used to declare a protected variable. We can use getter to read the variable.
 *
 * @param varType     The type of variable.
@@ -20,8 +20,8 @@
 *            The variables and methods declared after CC_SYNTHESIZE_READONLY are all public.
 *            If you need protected or private, please declare.
 */
-#define CC_SYNTHESIZE_BOOL_READONLY(varType, varName, funName)\
-protected: varType varName;\
+#define SYNTHESIZE_IS_READONLY(varType, varName, funName, defaultVal)\
+protected: varType varName = defaultVal;\
 public: virtual varType is##funName(void) const { return varName; }
 
 /** @def CC_SYNTHESIZE
@@ -36,10 +36,28 @@ public: virtual varType is##funName(void) const { return varName; }
 *            The variables and methods declared after CC_SYNTHESIZE are all public.
 *            If you need protected or private, please declare.
 */
-#define CC_SYNTHESIZE_BOOL(varType, varName, funName)\
-protected: varType varName;\
+#define SYNTHESIZE_IS(varType, varName, funName, defaultVal)\
+protected: varType varName = defaultVal;\
 public: virtual varType is##funName(void) const { return varName; }\
 public: virtual void set##funName(varType var){ varName = var; }
+
+/** @def SYNTHESIZE_READONLY
+* It is used to declare a protected variable. We can use getter to read the variable.
+*
+* @param varType     The type of variable.
+* @param varName     Variable name.
+* @param funName     "get + funName" will be the name of the getter.
+* @warning   The getter is a public inline function.
+*            The variables and methods declared after CC_SYNTHESIZE_READONLY are all public.
+*            If you need protected or private, please declare.
+*/
+#define SYNTHESIZE_READONLY(varType, varName, funName, defaultVal)\
+protected: varType varName = defaultVal;\
+public: virtual varType get##funName(void) const { return varName; }
+
+#define SYNTHESIZE_READONLY_PASS_BY_REF(varType, varName, funName, defaultVal)\
+protected: varType varName = defaultVal;\
+public: virtual const varType& get##funName(void) const { return varName; }
 
 /** @def CREATE_SINGLETON(__TYPE__)
 * Define a singleton functions for a specific type

@@ -18,17 +18,7 @@
 #include "Common/Factory/SmartObjFactory.h"
 #include "Common/Factory/SpritesFactory.h"
 
-// #include "Controller/ObjectController/Dude/DudeController.h"
-// 
-// #include "Common/Factory/SmartObjFactory.h"
-// #include "GameObjects/Level/LevelObj.h"
-// 
-// #include "Utils/Parser/JsonParser.h"
-// #include "Utils/Helpers/Helper.h"
-
-
 using namespace CommonTypes;
-
 
 //--------------------------------------------------------------------
 ObjContainer::ObjContainer()
@@ -37,7 +27,6 @@ ObjContainer::ObjContainer()
     , mCookieObj(nullptr)
     , mDudeObj(nullptr)
     , mFieldObjects()
-    , mObjectInChain(false)
 //--------------------------------------------------------------------
 {
 }

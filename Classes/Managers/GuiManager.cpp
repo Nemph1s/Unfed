@@ -10,6 +10,8 @@
 
 #include "Managers/GuiManager.h"
 
+#include "Common/GlobalInfo/GlobalInfo.h"
+
 #include "Utils/Helpers/Helper.h"
 #include "Scenes/GameplayScene.h"
 #include "GameObjects/Level/LevelGoalComponent.h"
@@ -58,7 +60,7 @@ void _GuiManager::crateInfoLayer()
 
     Vec2 viewOrigin = Director::getInstance()->getVisibleOrigin();
     Size viewSize = Director::getInstance()->getVisibleSize();
-    auto height = (viewSize.height - (GameResources::TileHeight * CommonTypes::NumColumns)) / 3;
+    auto height = (viewSize.height - (GlobalInfo->getTileHeight() * CommonTypes::NumColumns)) / 3;
 
     mTopGuiLayer = LayerColor::create(Color4B(53, 53, 53, 0));
     mTopGuiLayer->setAnchorPoint(Vec2(0.5f, 0.5f));

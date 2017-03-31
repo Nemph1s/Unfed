@@ -1,5 +1,5 @@
 /**
-* @file Utils/JsonParser.cpp
+* @file Utils/Parser/JsonParser.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -42,11 +42,79 @@ bool _JsonParser::checkGlobalInfoStatus()
 CommonTypes::JsonGlobalInfo _JsonParser::getJsonGlobalInfo()
 //--------------------------------------------------------------------
 {
-    return CommonTypes::JsonGlobalInfo();
+    auto globalInfo = CommonTypes::JsonGlobalInfo();
+    globalInfo.swVersion = getSwVersion();
+    globalInfo.imgPackType = getImagePackType();
+    globalInfo.imgPackVersion = getImagePackVersion();
+    globalInfo.tileWidth = getTileWidth();
+    globalInfo.tileHeigth = getTileHeight();
+    globalInfo.levelsCount = getLevelsCount();
+
+    return globalInfo;
 }
 
 //--------------------------------------------------------------------
-void _JsonParser::parseLevelInfo(const int16_t & level)
+const char* _JsonParser::getSwVersion() const
+//--------------------------------------------------------------------
+{
+    const char* res = nullptr;
+    if (mGlobalInfoRootNode[JsonNames::GlobalInfo::swVersion].isString()) {
+        res = mGlobalInfoRootNode[JsonNames::GlobalInfo::swVersion].asCString();
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
+const char* _JsonParser::getImagePackType() const
+//--------------------------------------------------------------------
+{
+    const char* res = nullptr;
+    if (mGlobalInfoRootNode[JsonNames::GlobalInfo::imgPackType].isString()) {
+        res = mGlobalInfoRootNode[JsonNames::GlobalInfo::imgPackType].asCString();
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
+const char* _JsonParser::getImagePackVersion() const
+//--------------------------------------------------------------------
+{
+    const char* res = nullptr;
+    if (mGlobalInfoRootNode[JsonNames::GlobalInfo::imgPackVersion].isString()) {
+        res = mGlobalInfoRootNode[JsonNames::GlobalInfo::imgPackVersion].asCString();
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
+const double& _JsonParser::getTileWidth() const
+//--------------------------------------------------------------------
+{
+    if (mGlobalInfoRootNode[JsonNames::GlobalInfo::tileWidth].isDouble()) {
+        return mGlobalInfoRootNode[JsonNames::GlobalInfo::tileWidth].asDouble();
+    }
+}
+
+//--------------------------------------------------------------------
+const double& _JsonParser::getTileHeight() const
+//--------------------------------------------------------------------
+{
+    if (mGlobalInfoRootNode[JsonNames::GlobalInfo::tileHeigth].isDouble()) {
+        return mGlobalInfoRootNode[JsonNames::GlobalInfo::tileHeigth].asDouble();
+    }
+}
+
+//--------------------------------------------------------------------
+const uint16_t& _JsonParser::getLevelsCount() const
+//--------------------------------------------------------------------
+{
+    if (mGlobalInfoRootNode[JsonNames::GlobalInfo::levelsCount].isUInt()) {
+        return mGlobalInfoRootNode[JsonNames::GlobalInfo::levelsCount].asUInt();
+    }
+}
+
+//--------------------------------------------------------------------
+void _JsonParser::parseLevelInfo(const int16_t& level)
 //--------------------------------------------------------------------
 {
 	cocos2d::log("JsonParser::parseLevelInfo: parsing level=%d", level);
@@ -221,7 +289,7 @@ uint8_t _JsonParser::getGoalsCount(const Json::Value & node)
 }
 
 //--------------------------------------------------------------------
-const Json::Value & _JsonParser::getGoalTypeCollect(const Json::Value & node)
+const Json::Value& _JsonParser::getGoalTypeCollect(const Json::Value& node)
 //--------------------------------------------------------------------
 {
     const Json::Value& value = node[JsonNames::collectGoal];
@@ -232,7 +300,7 @@ const Json::Value & _JsonParser::getGoalTypeCollect(const Json::Value & node)
 }
 
 //--------------------------------------------------------------------
-uint8_t _JsonParser::getTargetBaseObjType(const Json::Value & node)
+uint8_t _JsonParser::getTargetBaseObjType(const Json::Value& node)
 //--------------------------------------------------------------------
 {
     uint8_t res = 0;
@@ -243,7 +311,7 @@ uint8_t _JsonParser::getTargetBaseObjType(const Json::Value & node)
 }
 
 //--------------------------------------------------------------------
-uint8_t _JsonParser::getTargetObjType(const Json::Value & node)
+uint8_t _JsonParser::getTargetObjType(const Json::Value& node)
 //--------------------------------------------------------------------
 {
     uint8_t res = 0;
@@ -254,7 +322,7 @@ uint8_t _JsonParser::getTargetObjType(const Json::Value & node)
 }
 
 //--------------------------------------------------------------------
-uint8_t _JsonParser::getTargetObjectCount(const Json::Value & node)
+uint8_t _JsonParser::getTargetObjectCount(const Json::Value& node)
 //--------------------------------------------------------------------
 {
     uint8_t res = 0;
@@ -265,7 +333,7 @@ uint8_t _JsonParser::getTargetObjectCount(const Json::Value & node)
 }
 
 //--------------------------------------------------------------------
-void _JsonParser::updateTiles(CommonTypes::LevelInfo & levelInfo)
+void _JsonParser::updateTiles(CommonTypes::LevelInfo& levelInfo)
 //--------------------------------------------------------------------
 {
     const Json::Value& node = getTiles();
@@ -282,7 +350,7 @@ void _JsonParser::updateTiles(CommonTypes::LevelInfo & levelInfo)
 }
 
 //--------------------------------------------------------------------
-void _JsonParser::updatePredefinedCookies(CommonTypes::LevelInfo & levelInfo)
+void _JsonParser::updatePredefinedCookies(CommonTypes::LevelInfo& levelInfo)
 //--------------------------------------------------------------------
 {
     if (!mLevelInfoRootNode[JsonNames::cookiesArray].isNull()) {
@@ -301,7 +369,7 @@ void _JsonParser::updatePredefinedCookies(CommonTypes::LevelInfo & levelInfo)
 }
 
 //--------------------------------------------------------------------
-void _JsonParser::updateAllowedCookieTypes(CommonTypes::LevelInfo & levelInfo)
+void _JsonParser::updateAllowedCookieTypes(CommonTypes::LevelInfo& levelInfo)
 //--------------------------------------------------------------------
 {
     if (!mLevelInfoRootNode[JsonNames::allowedCookieTypes].isNull()) {
@@ -316,7 +384,7 @@ void _JsonParser::updateAllowedCookieTypes(CommonTypes::LevelInfo & levelInfo)
 }
 
 //--------------------------------------------------------------------
-void _JsonParser::updateFieldObjects(CommonTypes::LevelInfo & levelInfo)
+void _JsonParser::updateFieldObjects(CommonTypes::LevelInfo& levelInfo)
 //--------------------------------------------------------------------
 {
     if (mLevelInfoRootNode[JsonNames::fieldObjectsArray].isNull()) {
@@ -345,7 +413,7 @@ void _JsonParser::updateFieldObjects(CommonTypes::LevelInfo & levelInfo)
 }
 
 //--------------------------------------------------------------------
-const Json::Value & _JsonParser::getFieldObjects(const Json::Value & node)
+const Json::Value& _JsonParser::getFieldObjects(const Json::Value& node)
 //--------------------------------------------------------------------
 {
     const Json::Value& value = node[JsonNames::fieldObject_objects];
@@ -356,7 +424,7 @@ const Json::Value & _JsonParser::getFieldObjects(const Json::Value & node)
 }
 
 //--------------------------------------------------------------------
-uint8_t _JsonParser::getFieldObjectCol(const Json::Value & node)
+uint8_t _JsonParser::getFieldObjectCol(const Json::Value& node)
 //--------------------------------------------------------------------
 {
     uint8_t res = 0;
@@ -367,7 +435,7 @@ uint8_t _JsonParser::getFieldObjectCol(const Json::Value & node)
 }
 
 //--------------------------------------------------------------------
-uint8_t _JsonParser::getFieldObjectRow(const Json::Value & node)
+uint8_t _JsonParser::getFieldObjectRow(const Json::Value& node)
 //--------------------------------------------------------------------
 {
     uint8_t res = 0;
@@ -378,7 +446,7 @@ uint8_t _JsonParser::getFieldObjectRow(const Json::Value & node)
 }
 
 //--------------------------------------------------------------------
-const Json::Value & _JsonParser::getFieldObjectTypes(const Json::Value & node)
+const Json::Value& _JsonParser::getFieldObjectTypes(const Json::Value& node)
 //--------------------------------------------------------------------
 {
     const Json::Value& value = node[JsonNames::fieldObject_types];

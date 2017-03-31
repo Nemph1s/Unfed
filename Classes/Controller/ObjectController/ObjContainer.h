@@ -77,7 +77,7 @@ protected:
     //---Class Attributes-------------------------------------------------
     std::list<FieldObj*> mFieldObjects;
 
-    CC_SYNTHESIZE_BOOL(ChainObj*, mObjectInChain, ObjectInChain);
+    SYNTHESIZE_IS(ChainObj*, mObjectInChain, ObjectInChain, nullptr);
 
     CC_SYNTHESIZE_READONLY(DudeObj*, mDudeObj, Dude);
     CC_SYNTHESIZE_READONLY(TileObj*, mTileObj, Tile);

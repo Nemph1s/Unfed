@@ -1,5 +1,5 @@
 /**
-* @file Utils/JsonParser.hpp
+* @file Utils/Parser/JsonParser.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -42,6 +42,12 @@ public:
 protected:
 
     //---Global Info--------------------------------------------------
+    const char* getSwVersion() const;
+    const char* getImagePackType() const;
+    const char* getImagePackVersion() const;
+    const double& getTileWidth() const;   
+    const double& getTileHeight() const;
+    const uint16_t& getLevelsCount() const;
 
     Json::Value mGlobalInfoRootNode;
 

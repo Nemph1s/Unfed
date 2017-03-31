@@ -26,7 +26,6 @@
 #include "Controller/ObjectController/Dude/DudeObj.h"
 
 USING_NS_CC;
-using namespace GameResources;
 using namespace CommonTypes;
 
 //--------------------------------------------------------------------
