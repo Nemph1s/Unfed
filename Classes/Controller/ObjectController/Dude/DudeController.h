@@ -51,16 +51,10 @@ public:
     void detectDirectionsForDudes();
 
     bool canActivateDudeTo(int fromCol, int fromRow, int direction);
-    Set* activateDudeAndGetChains(DudeObj* obj, int dir);
-    Set* getChainPreviewHint(DudeObj* obj, int dir);
+    Set* getChainsForDude(DudeObj* obj, int dir, bool isPreview = false);
 
     void updateChainSetWithDudesInChain(const Direction& direction, DudeObj* activeDude, Set* chains, Set* chainSet);
-
-    void activateAllDudes();
-
-    void removeDude(int column, int row, bool removeWithCleanup = true);
     void eraseDirectionsForDude(DudeObj* obj);
-    void removeAllDudes();
 
 protected:
     // Nodes should be created using create();
