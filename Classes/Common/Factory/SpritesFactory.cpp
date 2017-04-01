@@ -97,7 +97,7 @@ bool _SpritesFactory::initCookiesPool(int poolSize)
 //--------------------------------------------------------------------
 {
     auto cookieTypeInt = Helper::to_underlying(CookieType::Croissant);
-    auto cookieTypeMax = Helper::to_underlying(CommonTypes::CookieType::CookieMax);
+    auto cookieTypeMax = Helper::to_underlying(CookieType::CookieMax);
     while(cookieTypeInt != cookieTypeMax) {
         auto cookieList = new TSpriteList;
         CCASSERT(cookieList, "error while creating cookieLis");
@@ -268,8 +268,17 @@ void _SpritesFactory::recycle(Sprite* spriteNode, BaseObj* obj)
 _SpritesFactory::~_SpritesFactory()
 //--------------------------------------------------------------------
 {
-//     clearPool(mBaseObjPool);
-//     clearPool(mTileObjPool);
+     clearPool(mTileSpritesPool);
+     clearPool(mHintSpritesPool);
+     for (auto it = mCookieSpritesPool.begin(); it != mCookieSpritesPool.end(); it++) {
+         clearPool(it->second);
+     }
+     for (auto it = mDudeSpritesPool.begin(); it != mDudeSpritesPool.end(); it++) {
+         clearPool(it->second);
+     }
+     for (auto it = mFieldSpritesPool.begin(); it != mFieldSpritesPool.end(); it++) {
+         clearPool(it->second);
+     }
 //     clearPool(mCookieObjPool);
 }
 
