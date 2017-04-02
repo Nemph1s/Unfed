@@ -174,7 +174,7 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
 
             // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
             // You can tweak these numbers to change the feel of the animation.
-            float timeToTile = (obj->getSpriteNode()->getPositionY() - newPos.y) / GlobalInfo->getTileHeight();
+            float timeToTile = (obj->getSpriteNode()->getPositionY() - newPos.y) / GlobInfo->getTileHeight();
             float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
 
             // Calculate which animation is the longest. This is the time the game has to wait before it may continue.

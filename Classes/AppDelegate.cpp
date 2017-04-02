@@ -43,7 +43,7 @@ static int register_all_packages()
 bool AppDelegate::applicationDidFinishLaunching()
 //-------------------------------------------------------------------- 
 {
-    GlobalInfo->init();
+    GlobInfo->init();
 
     register_all_packages();
 

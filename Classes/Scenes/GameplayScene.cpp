@@ -95,9 +95,9 @@ bool GameplayScene::initWithSize(const Size& size)
     mGameLayer->setPosition(VisibleRect::center());
     this->addChild(mGameLayer);
 
-    auto offset = -2.5f * CommonTypes::NumColumns / 2;
-    Vec2 layerPos = Vec2(offset - GlobalInfo->getTileWidth() * CommonTypes::NumColumns / 2
-        , offset - GlobalInfo->getTileHeight() * CommonTypes::NumRows / 2);
+    auto offset = -2.5f * _GlobalInfo::NumColumns / 2;
+    Vec2 layerPos = Vec2(offset - GlobInfo->getTileWidth() * _GlobalInfo::NumColumns / 2
+        , offset - GlobInfo->getTileHeight() * _GlobalInfo::NumRows / 2);
 
     mTilesLayer = Layer::create();
     mTilesLayer->setPosition(layerPos);
@@ -129,8 +129,8 @@ void GameplayScene::addTiles()
 //--------------------------------------------------------------------
 {
 	cocos2d::log("GameplayScene::addTiles:");
-	for (int row = 0; row < CommonTypes::NumRows; row++) {
-		for (int column = 0; column < CommonTypes::NumColumns; column++) {
+	for (int row = 0; row < _GlobalInfo::NumRows; row++) {
+		for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
             auto objCtrl = mLevel->getObjectController();
 			if (objCtrl->isEmptyTileAt(column, row)) {
 				continue;

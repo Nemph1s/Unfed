@@ -34,6 +34,8 @@ public:
 
     static cocos2d::String* getSpriteNameByFieldType(int fieldType);
 
+    static bool isValidColumnAndRow(int column, int row);
+
     static cocos2d::Vec2 pointForColumnAndRow(int column, int row);
     static cocos2d::Vec2 pointForColumnAndRowWithPriority(int column, int row, int priority);
     static cocos2d::Vec2 pointForTile(BaseObj* obj);

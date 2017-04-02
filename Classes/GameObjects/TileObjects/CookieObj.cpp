@@ -69,7 +69,7 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
         mDebugLabel->setDimensions(32, 32);
         mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::LEFT);
         mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::TOP);
-        mDebugLabel->setPosition(cocos2d::Vec2(GlobalInfo->getTileWidth() / 4, (GlobalInfo->getTileHeight() / 1.25f)));
+        mDebugLabel->setPosition(cocos2d::Vec2(GlobInfo->getTileWidth() / 4, (GlobInfo->getTileHeight() / 1.25f)));
         mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
         CC_SAFE_RETAIN(mDebugLabel);
         //mSpriteNode->addChild(mDebugLabel, 10);

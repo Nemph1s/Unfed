@@ -126,8 +126,8 @@ bool ViewController::initGameScene()
     AudioManager->init();
     AnimationsManager->initWithScene(mGameplayScene);
 
-    SmartObjFactory->initTilesPool(NumColumns * NumRows);
-    SmartObjFactory->initCookiesPool((NumColumns * NumRows) * 2);
+    SmartObjFactory->initTilesPool(_GlobalInfo::NumColumns * _GlobalInfo::NumRows);
+    SmartObjFactory->initCookiesPool((_GlobalInfo::NumColumns * _GlobalInfo::NumRows) * 2);
 
     return true;
 }
@@ -158,13 +158,13 @@ bool ViewController::initSpritesFactory()
 //--------------------------------------------------------------------
 {
     SpritesFactory->setLevel(mLevel);
-    SpritesFactory->initTilesPool(NumColumns * NumRows);
-    auto cookiesPoolSize = (NumColumns * NumRows);
+    SpritesFactory->initTilesPool(_GlobalInfo::NumColumns * _GlobalInfo::NumRows);
+    auto cookiesPoolSize = (_GlobalInfo::NumColumns * _GlobalInfo::NumRows);
     SpritesFactory->initCookiesPool(cookiesPoolSize / 2);
-    SpritesFactory->initDudesPool(NumRows / 2);
+    SpritesFactory->initDudesPool(_GlobalInfo::NumRows / 2);
     auto fieldObjsPoolSize = mLevel->getLevelInfo().fieldObjects.size();
     SpritesFactory->initFieldObjectsPool(fieldObjsPoolSize);
-    SpritesFactory->initHintPool(NumColumns * NumRows);
+    SpritesFactory->initHintPool(_GlobalInfo::NumColumns * _GlobalInfo::NumRows);
 
     return true;
 }

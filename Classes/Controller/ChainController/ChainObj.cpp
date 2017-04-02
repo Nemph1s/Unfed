@@ -13,6 +13,7 @@
 #include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "Utils/Helpers/Helper.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
 
 //--------------------------------------------------------------------
 ChainObj::ChainObj()
@@ -131,7 +132,7 @@ void ChainObj::addObjectToChain(ObjContainer * obj)
 //--------------------------------------------------------------------
 {
     if (mObjects == nullptr) {
-        mObjects = cocos2d::Array::createWithCapacity(CommonTypes::NumColumns * CommonTypes::NumRows);
+        mObjects = cocos2d::Array::createWithCapacity(_GlobalInfo::NumColumns * _GlobalInfo::NumRows);
         CC_SAFE_RETAIN(mObjects);
     }
     mObjects->addObject(obj);
@@ -163,7 +164,7 @@ void ChainObj::activateObjects()
     }
     cocos2d::log("ChainObj::activateObjects: objects size before removing=%d", mObjects->count());
     if (mObjsToRemove == nullptr) {
-        mObjsToRemove = cocos2d::Array::createWithCapacity(CommonTypes::NumColumns * CommonTypes::NumRows);
+        mObjsToRemove = cocos2d::Array::createWithCapacity(_GlobalInfo::NumColumns * _GlobalInfo::NumRows);
         CC_SAFE_RETAIN(mObjsToRemove);
     }
     auto it = mObjects->begin();
