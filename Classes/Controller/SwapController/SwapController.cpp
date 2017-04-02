@@ -69,21 +69,21 @@ bool SwapController::detectPossibleSwaps()
     clearPossibleSwaps();
     CommonTypes::Set* set = CommonTypes::Set::create();
 
-    for (int row = 0; row < CommonTypes::NumRows; row++) {
-        for (int column = 0; column < CommonTypes::NumColumns; column++) {
+    for (int row = 0; row < _GlobalInfo::NumRows; row++) {
+        for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
             auto objCtrl = mLevel->getObjectController();
             auto container = objCtrl->getObject(column, row);
             if (nullptr == container->getObjectForChain()) {
                 continue;
             }
             // Is it possible to swap this cookie with the one on the right?
-            if (column < CommonTypes::NumColumns - 1) {
+            if (column < _GlobalInfo::NumColumns - 1) {
                 auto checker = new SwapChecker(set, column, row, column + 1, row);
                 detectSwap(checker);
                 CC_SAFE_DELETE(checker);
             }
             // This does exactly the same thing, but for the cookie above instead of on the right.
-            if (row < CommonTypes::NumRows - 1) {
+            if (row < _GlobalInfo::NumRows - 1) {
                 auto checker = new SwapChecker(set, column, row, column, row + 1);
                 detectSwap(checker);
                 CC_SAFE_DELETE(checker);
@@ -201,9 +201,9 @@ bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
     int toColumn = fromCol + horzDelta;
     int toRow = fromRow + vertDelta;
 
-    if (toColumn < 0 || toColumn >= CommonTypes::NumColumns)
+    if (toColumn < 0 || toColumn >= _GlobalInfo::NumColumns)
         return false;
-    if (toRow < 0 || toRow >= CommonTypes::NumRows)
+    if (toRow < 0 || toRow >= _GlobalInfo::NumRows)
         return false;
 
     auto objCtrl = mLevel->getObjectController();

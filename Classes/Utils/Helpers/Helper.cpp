@@ -89,14 +89,25 @@ cocos2d::String* Helper::getSpriteNameByFieldType(int fieldType)
 }
 
 //--------------------------------------------------------------------
+bool Helper::isValidColumnAndRow(int column, int row)
+//--------------------------------------------------------------------
+{
+    bool result = true;
+    if (column < 0 || column >= _GlobalInfo::NumColumns || row < 0 || row >= _GlobalInfo::NumColumns) {
+        result = false;
+    }
+    return result;
+}
+
+//--------------------------------------------------------------------
 cocos2d::Vec2 Helper::pointForColumnAndRow(int column, int row)
 //--------------------------------------------------------------------
 {
     float offsetX = 2.5f * column;
-    float offsetY = 2.5f * (NumRows - row - 1);
-    auto tileWidth = GlobalInfo->getTileWidth();
-    auto tileHeight = GlobalInfo->getTileHeight();
-    return cocos2d::Vec2(offsetX + column * tileWidth + tileWidth / 2, offsetY + (NumRows - row - 1) * tileHeight + tileHeight / 2);
+    float offsetY = 2.5f * (_GlobalInfo::NumRows - row - 1);
+    auto tileWidth = GlobInfo->getTileWidth();
+    auto tileHeight = GlobInfo->getTileHeight();
+    return cocos2d::Vec2(offsetX + column * tileWidth + tileWidth / 2, offsetY + (_GlobalInfo::NumRows - row - 1) * tileHeight + tileHeight / 2);
 }
 
 //--------------------------------------------------------------------
@@ -105,7 +116,7 @@ cocos2d::Vec2 Helper::pointForColumnAndRowWithPriority(int column, int row, int 
 {
     auto pos = pointForColumnAndRow(column, row);
     if (priority > 0) {
-        auto tileHeight = GlobalInfo->getTileHeight();
+        auto tileHeight = GlobInfo->getTileHeight();
         pos.y += (tileHeight / 4) * priority;
     }
     return pos;
@@ -131,10 +142,10 @@ cocos2d::Vec2 Helper::pointForTile(BaseObj * obj)
 bool Helper::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
 //--------------------------------------------------------------------
 {
-    if (point.x >= 0 && point.x < NumColumns * GlobalInfo->getTileWidth() &&
-        point.y >= 0 && point.y < NumRows * GlobalInfo->getTileHeight()) {
-        column = point.x / GlobalInfo->getTileWidth();
-        row = NumColumns - (point.y / GlobalInfo->getTileHeight());
+    if (point.x >= 0 && point.x < _GlobalInfo::NumColumns * GlobInfo->getTileWidth() &&
+        point.y >= 0 && point.y < _GlobalInfo::NumRows * GlobInfo->getTileHeight()) {
+        column = point.x / GlobInfo->getTileWidth();
+        row = _GlobalInfo::NumColumns - (point.y / GlobInfo->getTileHeight());
         return true;
     }
     return false;

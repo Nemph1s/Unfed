@@ -86,7 +86,7 @@ cocos2d::String& DirtObject::spriteName() const
 bool DirtObject::checkMatchingCondition(int column, int row)
 //--------------------------------------------------------------------
 {
-    if (column < 0 || column >= CommonTypes::NumColumns || row < 0 || row >= CommonTypes::NumColumns) {
+    if (!Helper::isValidColumnAndRow(column, row)) {
         return false;
     }
     return (mColumn == column && mRow == row);

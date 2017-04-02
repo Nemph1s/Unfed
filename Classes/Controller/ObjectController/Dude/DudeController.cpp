@@ -16,6 +16,7 @@
 #include "Controller/ChainController/ChainController.h"
 
 #include "Common/Factory/SmartObjFactory.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
 
 #include "Utils/Parser/JsonParser.h"
 #include "Utils/Helpers/Helper.h"
@@ -118,7 +119,7 @@ BaseObj * DudeController::createDudeObject(int column, int row, int type)
 BaseObj* DudeController::objectAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    if (!(column >= 0 && column < NumColumns) || !(row >= 0 && row < NumColumns)) {
+    if (!(column >= 0 && column < _GlobalInfo::NumColumns) || !(row >= 0 && row < _GlobalInfo::NumColumns)) {
         cocos2d::log("DudeController::objectAt: wrong pos at column=%d, row=%d", column, row);
         return nullptr;
     }
@@ -138,8 +139,8 @@ DudeObj* DudeController::dudeObjectAt(int column, int row)
 void DudeController::detectDirectionsForDudes()
 //--------------------------------------------------------------------
 {
-    for (int row = 0; row < NumRows; row++) {
-        for (int column = 0; column < NumColumns; column++) {
+    for (int row = 0; row < _GlobalInfo::NumRows; row++) {
+        for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
             
             auto dude = dudeObjectAt(column, row);
             if (dude) {
@@ -195,9 +196,9 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
     default:
     {
         topSet = mChainCtrl->createChainFromPosToPos(Direction::Up, column, row, column, 0, true);
-        botSet = mChainCtrl->createChainFromPosToPos(Direction::Down, column, row, column, NumRows - 1, true);
+        botSet = mChainCtrl->createChainFromPosToPos(Direction::Down, column, row, column, _GlobalInfo::NumRows - 1, true);
         leftSet = mChainCtrl->createChainFromPosToPos(Direction::Left, column, row, 0, row, true);
-        rightSet = mChainCtrl->createChainFromPosToPos(Direction::Right, column, row, NumColumns - 1, row, true);
+        rightSet = mChainCtrl->createChainFromPosToPos(Direction::Right, column, row, _GlobalInfo::NumColumns - 1, row, true);
         horizontalSet = mChainCtrl->createHorizontalChainAt(column, row, true);
         verticalSet = mChainCtrl->createVerticalChainAt(column, row, true);
     }
@@ -210,9 +211,9 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
                 continue;
             }
             auto newTopSet = mChainCtrl->createChainFromPosToPos(Direction::Up, column + i, row, column + i, 0, true);
-            auto newBotSet = mChainCtrl->createChainFromPosToPos(Direction::Down, column + i, row, column + i, NumRows - 1, true);
+            auto newBotSet = mChainCtrl->createChainFromPosToPos(Direction::Down, column + i, row, column + i, _GlobalInfo::NumRows - 1, true);
             auto newLeftSet = mChainCtrl->createChainFromPosToPos(Direction::Left, column, row + i, 0, row + i, true);
-            auto newRightSet = mChainCtrl->createChainFromPosToPos(Direction::Right, column, row + i, NumColumns - 1, row + i, true);
+            auto newRightSet = mChainCtrl->createChainFromPosToPos(Direction::Right, column, row + i, _GlobalInfo::NumColumns - 1, row + i, true);
             auto newHorizontalSet = mChainCtrl->createHorizontalChainAt(column, row + i, true);
             auto newVerticalSet = mChainCtrl->createVerticalChainAt(column + i, row, true);
             mChainCtrl->addObjectsFromChainToChain(newTopSet, topSet);
@@ -244,7 +245,7 @@ bool DudeController::canActivateDudeTo(int fromCol, int fromRow, int direction)
     int toColumn = fromCol + horzDelta;
     int toRow = fromRow + vertDelta;
 
-    if (toColumn < 0 || toColumn >= NumColumns || toRow < 0 || toRow >= NumRows)
+    if (toColumn < 0 || toColumn >= _GlobalInfo::NumColumns || toRow < 0 || toRow >= _GlobalInfo::NumRows)
         return false;
 
     auto fromObj = dudeObjectAt(fromCol, fromRow);

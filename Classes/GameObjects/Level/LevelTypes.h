@@ -13,10 +13,11 @@
 #include <stdint.h>
 #include <vector>
 #include "Common/CommonTypes.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
 
 namespace CommonTypes {
 
-    typedef int TilesArray[CommonTypes::NumColumns][CommonTypes::NumRows];
+    typedef int TilesArray[_GlobalInfo::NumColumns][_GlobalInfo::NumRows];
 
     /**
     * @brief LevelInfo struct.

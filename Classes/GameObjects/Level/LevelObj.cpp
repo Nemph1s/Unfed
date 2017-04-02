@@ -110,7 +110,7 @@ SearchEmptyHoles LevelObj::skipFillTopUpHoles(int column, int row, bool& filledT
         res = SearchEmptyHoles::ObjFounded;
     }
     else {
-        if ((row <= (NumRows / 2) + 2)  && !filledTileFouned) {
+        if ((row <= (_GlobalInfo::NumRows / 2) + 2)  && !filledTileFouned) {
             res = SearchEmptyHoles::ContinueSearch;
         }
         else {
@@ -149,7 +149,7 @@ bool LevelObj::useGravityOnObject(cocos2d::Array * colArr, cocos2d::Array * rowA
 
         // Lazy creation of array
         if (rowArr == nullptr) {
-            rowArr = cocos2d::Array::createWithCapacity(NumRows);
+            rowArr = cocos2d::Array::createWithCapacity(_GlobalInfo::NumRows);
             colArr->addObject(rowArr);
         }
         rowArr->addObject(obj);
@@ -166,8 +166,8 @@ CommonTypes::Set* LevelObj::detectFieldObjects(CommonTypes::Set * chains)
 {
     auto set = CommonTypes::Set::create();
 
-    for (int row = 0; row < NumRows; row++) {
-        for (int column = 0; column < NumColumns; column++) {
+    for (int row = 0; row < _GlobalInfo::NumRows; row++) {
+        for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
 
             auto obj = mObjCtrl->fieldObjectAt(column, row);
             if (!obj) {
@@ -192,12 +192,12 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
 //--------------------------------------------------------------------
 {
     cocos2d::log("LevelObj::useGravityToFillHoles:");
-    auto columns = cocos2d::Array::createWithCapacity(NumColumns);
+    auto columns = cocos2d::Array::createWithCapacity(_GlobalInfo::NumColumns);
     // loop through the rows, from bottom to top
-    for (int column = 0; column < NumColumns; column++) {
+    for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
 
         cocos2d::Array* array = nullptr;
-        for (int row = NumRows - 1; row >= 0; row--) {
+        for (int row = _GlobalInfo::NumRows - 1; row >= 0; row--) {
 
             auto fieldObjects = mObjCtrl->fieldObjectsAt(column, row);
             for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
@@ -205,7 +205,7 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
                 if (obj->getReadyToUpdatePriority()) {
                     // Lazy creation of array
                     if (array == nullptr) {
-                        array = cocos2d::Array::createWithCapacity(NumRows);
+                        array = cocos2d::Array::createWithCapacity(_GlobalInfo::NumRows);
                         columns->addObject(array);
                     }
                     array->addObject(obj);
@@ -245,16 +245,16 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
 //--------------------------------------------------------------------
 {
     cocos2d::log("LevelObj::fillTopUpHoles:");
-    auto columns = cocos2d::Array::createWithCapacity(NumColumns);
+    auto columns = cocos2d::Array::createWithCapacity(_GlobalInfo::NumColumns);
     //auto createdString = cocos2d::String::create("");
     int cookieType = -1;
     // loop through the rows, from top to bottom
-    for (int column = 0; column < NumColumns; column++) {
+    for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
 
         bool filledTileFouned = false;
 
         cocos2d::Array* array = nullptr;
-        for (int row = 0; row < NumRows; row++) {
+        for (int row = 0; row < _GlobalInfo::NumRows; row++) {
                         
  //--------------------------------------------------------------------       
             if (!mLevelInfo.skipEmptyHoles) {
@@ -277,7 +277,7 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
                 BaseObj* cookie = mObjCtrl->createRandomCookie(column, row);
 
                 if (array == nullptr) {
-                    array = cocos2d::Array::createWithCapacity(NumRows);
+                    array = cocos2d::Array::createWithCapacity(_GlobalInfo::NumRows);
                     columns->addObject(array);
                 }
                 array->addObject(cookie);

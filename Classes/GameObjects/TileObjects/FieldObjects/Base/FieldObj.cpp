@@ -63,7 +63,7 @@ bool FieldObj::init(const CommonTypes::FieldInfo &info)
         mDebugLabel->setDimensions(32, 32);
         mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::RIGHT);
         mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::BOTTOM);
-        mDebugLabel->setPosition(cocos2d::Vec2(GlobalInfo->getTileWidth() * 0.8f, GlobalInfo->getTileHeight() * 0.2f));
+        mDebugLabel->setPosition(cocos2d::Vec2(GlobInfo->getTileWidth() * 0.8f, GlobInfo->getTileHeight() * 0.2f));
         mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
         mDebugLabel->setTextColor(cocos2d::Color4B::MAGENTA);
         mDebugLabel->setGlobalZOrder(1000);

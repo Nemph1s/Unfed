@@ -44,9 +44,14 @@ private:
 
     SYNTHESIZE_READONLY_PASS_BY_REF(float, mScaleFactor, ScaleFactor, 0.0f)
     SYNTHESIZE_READONLY_PASS_BY_REF(cocos2d::Size, mDesignResolutionSize, DesignResolutionSize, cocos2d::Size::ZERO)
+
     const cocos2d::Size mSmallResolutionSize = cocos2d::Size(480, 320);
     const cocos2d::Size mMediumResolutionSize = cocos2d::Size(768, 1024);
     const cocos2d::Size mLargeResolutionSize = cocos2d::Size(2048, 1536);
+
+public:
+    static const uint8_t NumColumns = 9;
+    static const uint8_t NumRows = 9;
 };
 
-#define GlobalInfo _GlobalInfo::getInstance()
+#define GlobInfo _GlobalInfo::getInstance()

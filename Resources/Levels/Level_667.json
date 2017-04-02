@@ -21,7 +21,7 @@
                   [0, 0, 0, 0, 0, 0, 0, 0, 0 ] ],
     "targetScore" : 3000,
     "moves" : 15,
-    "typesCount" : 4,
+    "typesCount" : 6,
     "allowedCookieTypes" : [2, 3, 4, 5 ],
     "fieldObjects": {
         "objects" : [ { "col": 6, "row": 6, "types": [ 30 ] },
