@@ -201,10 +201,9 @@ bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
     int toColumn = fromCol + horzDelta;
     int toRow = fromRow + vertDelta;
 
-    if (toColumn < 0 || toColumn >= _GlobalInfo::NumColumns)
+    if (!Helper::isValidColumnAndRow(toColumn, toRow)) {
         return false;
-    if (toRow < 0 || toRow >= _GlobalInfo::NumRows)
-        return false;
+    }
 
     auto objCtrl = mLevel->getObjectController();
     auto toCookie = objCtrl->getObject(toColumn, toRow)->getObjectForChain();
@@ -218,6 +217,11 @@ bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
     cocos2d::log("GameplayScene::trySwapCookieTo: swap type:%d square:(%d,%d) with type:%d square:(%d,%d),"
         , fromCookie->getTypeAsInt(), fromCookie->getColumn(), fromCookie->getRow(), toCookie->getTypeAsInt()
         , toCookie->getColumn(), toCookie->getRow());
+
+    if (!fromCookie->isSwappable() || !toCookie->isSwappable()) {
+        cocos2d::log("GameplayScene::trySwapCookieTo: cant swap non swapable objecs");
+        return false;
+    }
 
     auto cookieType = CommonTypes::BaseObjType::Cookie;
 
