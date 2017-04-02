@@ -34,14 +34,8 @@
     <Filter Include="src\Utils\Parser">
       <UniqueIdentifier>{7f1e1815-5657-4f5f-bcfa-4abfe7227a43}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\GameObjects\Swap">
-      <UniqueIdentifier>{dfdb385a-7a3f-419d-b52f-55b7e0a9b257}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Common\Factory">
       <UniqueIdentifier>{803b3e4b-ba9a-43e2-acdc-604156b7dfda}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\GameObjects\Chain">
-      <UniqueIdentifier>{0902fdd0-1642-47dd-8c43-c23c91c505f4}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\GameObjects\TileObjects">
       <UniqueIdentifier>{6ec1ddab-f643-40a9-8ca0-6e1ab4f6a2bb}</UniqueIdentifier>
@@ -67,6 +61,15 @@
     <Filter Include="src\GameObjects\TileObjects\FieldObjects\Base">
       <UniqueIdentifier>{6470741f-e713-49a0-86bb-8702502d6256}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Controller\ChainController">
+      <UniqueIdentifier>{a3d0dcc8-d25e-4d69-b635-f5f06cf3cc85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Controller\SwapController">
+      <UniqueIdentifier>{4570b908-1ce4-4f22-bec0-a559f41e3580}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Common\GlobalInfo">
+      <UniqueIdentifier>{eb77aec4-df4a-436b-87fb-77a76eb3a4e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -80,9 +83,6 @@
     </ClCompile>
     <ClCompile Include="..\Classes\Scenes\GameplayScene.cpp">
       <Filter>src\Scenes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Utils\GlobalInfo.cpp">
-      <Filter>src\Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\Utils\Helpers\VisibleRect.cpp">
       <Filter>src\Utils\Helper</Filter>
@@ -105,18 +105,6 @@
     <ClCompile Include="..\Classes\Utils\Parser\JsonParser.cpp">
       <Filter>src\Utils\Parser</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Controller\SwapController.cpp">
-      <Filter>src\Controller</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\GameObjects\Swap\SwapObj.cpp">
-      <Filter>src\GameObjects\Swap</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Common\Factory\SmartFactory.cpp">
-      <Filter>src\Common\Factory</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\GameObjects\Chain\ChainObj.cpp">
-      <Filter>src\GameObjects\Chain</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\GameObjects\TileObjects\CookieObj.cpp">
       <Filter>src\GameObjects\TileObjects</Filter>
     </ClCompile>
@@ -126,14 +114,8 @@
     <ClCompile Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.cpp">
       <Filter>src\GameObjects\TileObjects\Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Controller\ChainController.cpp">
-      <Filter>src\Controller</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\Layers\CookiesLayer.cpp">
       <Filter>src\Layers</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\GameObjects\TileObjects\DudeObj.cpp">
-      <Filter>src\GameObjects\TileObjects</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\Controller\ObjectController\ObjectController.cpp">
       <Filter>src\Controller\ObjectController</Filter>
@@ -165,6 +147,30 @@
     <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeController.cpp">
       <Filter>src\Controller\ObjectController\Dude</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Common\Factory\SmartObjFactory.cpp">
+      <Filter>src\Common\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Common\Factory\SpritesFactory.cpp">
+      <Filter>src\Common\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ChainController\ChainController.cpp">
+      <Filter>src\Controller\ChainController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ChainController\ChainObj.cpp">
+      <Filter>src\Controller\ChainController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\SwapController\SwapController.cpp">
+      <Filter>src\Controller\SwapController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\SwapController\SwapObj.cpp">
+      <Filter>src\Controller\SwapController</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeObj.cpp">
+      <Filter>src\Controller\ObjectController\Dude</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Common\GlobalInfo\GlobalInfo.cpp">
+      <Filter>src\Common\GlobalInfo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -183,9 +189,6 @@
       <Filter>src\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Utils\GameResources.h">
-      <Filter>src\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Utils\GlobalInfo.h">
       <Filter>src\Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Utils\Helpers\Helper.h">
@@ -215,18 +218,6 @@
     <ClInclude Include="..\Classes\Utils\Parser\JsonParser.h">
       <Filter>src\Utils\Parser</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Controller\SwapController.h">
-      <Filter>src\Controller</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\GameObjects\Swap\SwapObj.h">
-      <Filter>src\GameObjects\Swap</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Common\Factory\SmartFactory.h">
-      <Filter>src\Common\Factory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\GameObjects\Chain\ChainObj.h">
-      <Filter>src\GameObjects\Chain</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\GameObjects\TileObjects\CookieObj.h">
       <Filter>src\GameObjects\TileObjects</Filter>
     </ClInclude>
@@ -236,14 +227,8 @@
     <ClInclude Include="..\Classes\GameObjects\TileObjects\Base\BaseObj.h">
       <Filter>src\GameObjects\TileObjects\Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Controller\ChainController.h">
-      <Filter>src\Controller</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\Layers\CookiesLayer.h">
       <Filter>src\Layers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\GameObjects\TileObjects\DudeObj.h">
-      <Filter>src\GameObjects\TileObjects</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Controller\ObjectController\ObjectController.h">
       <Filter>src\Controller\ObjectController</Filter>
@@ -280,6 +265,33 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeController.h">
       <Filter>src\Controller\ObjectController\Dude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Common\Factory\SmartObjFactory.h">
+      <Filter>src\Common\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Common\Factory\SpritesFactory.h">
+      <Filter>src\Common\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ChainController\ChainController.h">
+      <Filter>src\Controller\ChainController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ChainController\ChainObj.h">
+      <Filter>src\Controller\ChainController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\SwapController\SwapController.h">
+      <Filter>src\Controller\SwapController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\SwapController\SwapObj.h">
+      <Filter>src\Controller\SwapController</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeObj.h">
+      <Filter>src\Controller\ObjectController\Dude</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Common\GlobalInfo\GlobalInfo.h">
+      <Filter>src\Common\GlobalInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Common\GlobalInfo\GlobalInfoTypes.h">
+      <Filter>src\Common\GlobalInfo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

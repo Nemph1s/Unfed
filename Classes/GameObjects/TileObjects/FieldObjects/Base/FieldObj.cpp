@@ -9,6 +9,7 @@
 */
 
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
@@ -62,7 +63,7 @@ bool FieldObj::init(const CommonTypes::FieldInfo &info)
         mDebugLabel->setDimensions(32, 32);
         mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::RIGHT);
         mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::BOTTOM);
-        mDebugLabel->setPosition(cocos2d::Vec2(GameResources::TileWidth * 0.8f, GameResources::TileHeight * 0.2f));
+        mDebugLabel->setPosition(cocos2d::Vec2(GlobInfo->getTileWidth() * 0.8f, GlobInfo->getTileHeight() * 0.2f));
         mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
         mDebugLabel->setTextColor(cocos2d::Color4B::MAGENTA);
         mDebugLabel->setGlobalZOrder(1000);

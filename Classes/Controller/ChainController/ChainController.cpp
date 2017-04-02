@@ -1,5 +1,5 @@
 /**
-* @file Scenes/SwapController.cpp
+* @file Controller/ChainController/ChainController.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,18 +8,19 @@
 * @author VMartyniuk
 */
 
-#include "Controller/ChainController.h"
+#include "Controller/ChainController/ChainController.h"
 #include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/ObjectController.h"
 
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
-#include "GameObjects/Chain/ChainObj.h"
+#include "Controller/ChainController/ChainObj.h"
 #include "GameObjects/Level/LevelObj.h"
 
 #include "Utils/Helpers/Helper.h"
 
 #include "Common/CommonTypes.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
 
 using namespace CommonTypes;
 
@@ -40,7 +41,7 @@ ChainController::~ChainController()
 }
 
 //--------------------------------------------------------------------
-ChainController * ChainController::create()
+ChainController* ChainController::create()
 //--------------------------------------------------------------------
 {
     ChainController * ret = new (std::nothrow) ChainController();
@@ -62,7 +63,7 @@ bool ChainController::init()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set * ChainController::removeMatches()
+Set* ChainController::removeMatches()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ChainController::removeMatches:");
@@ -70,7 +71,7 @@ CommonTypes::Set * ChainController::removeMatches()
     auto verticalChains = detectVerticalMatches();
     auto difficultChains = detectDifficultMatches(horizontalChains, verticalChains);
 
-    auto set = CommonTypes::Set::create();
+    auto set = Set::create();
 
     activateChains(horizontalChains);
     activateChains(verticalChains);
@@ -92,14 +93,14 @@ CommonTypes::Set * ChainController::removeMatches()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set * ChainController::removeChainAt(CommonTypes::ChainType & type, cocos2d::Vec2 & pos)
+Set* ChainController::removeChainAt(ChainType& type, cocos2d::Vec2& pos)
 //--------------------------------------------------------------------
 {
-    auto set = CommonTypes::Set::create();
+    auto set = Set::create();
 
     int column = -1, row = -1;
     if (Helper::convertPointToTilePos(pos, column, row)) {
-        CommonTypes::Set* chainSet = nullptr;
+        Set* chainSet = nullptr;
         switch (type)
         {
         case ChainType::ChainTypeHorizontal:
@@ -128,7 +129,51 @@ CommonTypes::Set * ChainController::removeChainAt(CommonTypes::ChainType & type,
 }
 
 //--------------------------------------------------------------------
-void ChainController::activateChains(CommonTypes::Set * chains)
+Set* ChainController::detectChainAt(int column, int row)
+//--------------------------------------------------------------------
+{
+    Set* set = nullptr;
+    if (!mObjCtrl->cookieAt(column, row))
+        return set;
+
+    set = Set::create();
+    int type = mObjCtrl->cookieAt(column, row)->getTypeAsInt();
+    int fieldSize = _GlobalInfo::NumColumns;
+
+    int horzLength = 1;
+    for (int i = column - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(i, row, type); i--, horzLength++) {
+        set->addObject(mObjCtrl->cookieAt(i, row));
+    };
+    for (int i = column + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(i, row, type); i++, horzLength++) {
+        set->addObject(mObjCtrl->cookieAt(i, row));
+    };
+    if (horzLength >= 3) {
+        set->addObject(mObjCtrl->cookieAt(column, row));
+        return set;
+    }
+    set->removeAllObjects();
+
+    int vertLength = 1;
+
+    for (int i = row - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(column, i, type); i--, vertLength++) {
+        set->addObject(mObjCtrl->cookieAt(column, i));
+    };
+    for (int i = row + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(column, i, type); i++, vertLength++) {
+        set->addObject(mObjCtrl->cookieAt(column, i));
+    };
+    if (vertLength >= 3) {
+        set->addObject(mObjCtrl->cookieAt(column, row));
+    }
+    else {
+        set->removeAllObjects();
+        set = nullptr;
+    }
+
+    return set;
+}
+
+//--------------------------------------------------------------------
+void ChainController::activateChains(Set* chains)
 //--------------------------------------------------------------------
 {
     cocos2d::log("ChainController::activateChains:");
@@ -140,7 +185,19 @@ void ChainController::activateChains(CommonTypes::Set * chains)
 }
 
 //--------------------------------------------------------------------
-void ChainController::matchChains(CommonTypes::Set* chains)
+void ChainController::deactivateChains(Set* chains)
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ChainController::deactivateChains:");
+    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        CC_ASSERT(chain);
+        chain->deactivateObjects();
+    }
+}
+
+//--------------------------------------------------------------------
+void ChainController::matchChains(Set* chains)
 //--------------------------------------------------------------------
 {
     for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
@@ -154,19 +211,24 @@ void ChainController::matchChains(CommonTypes::Set* chains)
             auto container = dynamic_cast<ObjContainer*>(*it);
             CC_ASSERT(container);
 
-            auto object = container->getObjectForChain();
-            if (!object) {
+            auto objects = container->getObjectsForChain();
+            if (!objects) {
                 continue;
             }
-            if (object->getType() == BaseObjType::Cookie) {
-                mObjCtrl->matchCookieObject(object);
-            }
-            else if (object->getType() == BaseObjType::Field) {
-                mObjCtrl->matchFieldObject(object);
-            }
-            else if (object->getType() == BaseObjType::Dude) {
-                mObjCtrl->matchDudeObject(object);
-            }
+            for (auto itObj = objects->begin(); itObj != objects->end(); ++itObj) {
+                auto object = dynamic_cast<BaseObj*>(*itObj);
+                CC_ASSERT(object);
+
+                if (object->getType() == BaseObjType::Cookie) {
+                    mObjCtrl->matchCookieObject(object);
+                }
+                else if (object->getType() == BaseObjType::Field) {
+                    mObjCtrl->matchFieldObject(object);
+                }
+                else if (object->getType() == BaseObjType::Dude) {
+                    mObjCtrl->matchDudeObject(object);
+                }
+            }            
         }
     }
 }
@@ -193,7 +255,7 @@ void ChainController::calculateChainScore(ChainObj* chain)
             default:
                 break;
             }
-            int score = obj->getType() == CommonTypes::BaseObjType::Cookie ? obj->getScoreValue() : 0;
+            int score = obj->getType() == BaseObjType::Cookie ? obj->getScoreValue() : 0;
             cookiesValue = cookiesValue + score;
             chainValue = chainValue + obj->getScoreValue();
         }
@@ -204,7 +266,7 @@ void ChainController::calculateChainScore(ChainObj* chain)
 }
 
 //--------------------------------------------------------------------
-void ChainController::executeCollectGoalCallback(CommonTypes::Set * chains)
+void ChainController::executeCollectGoalCallback(Set * chains)
 //--------------------------------------------------------------------
 {
     for (auto it = chains->begin(); it != chains->end(); it++) {
@@ -233,13 +295,13 @@ void ChainController::addObjToChain(ChainObj* chain, int col, int row)
     CC_ASSERT(chain);
     auto container = mObjCtrl->getObject(col, row);
     CC_ASSERT(container);
-    if (container->isContainObjForChain()) {
+    if (container->isContainGameObj()) {
         chain->addObjectToChain(container);
     }    
 }
 
 //--------------------------------------------------------------------
-void ChainController::addChainToSet(ChainObj* chain, CommonTypes::Set* set)
+void ChainController::addChainToSet(ChainObj* chain, Set* set)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(set);
@@ -252,12 +314,12 @@ void ChainController::addChainToSet(ChainObj* chain, CommonTypes::Set* set)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set * ChainController::detectVerticalMatches()
+Set* ChainController::detectVerticalMatches()
 //--------------------------------------------------------------------
 {
-    auto set = CommonTypes::Set::create();
-    for (int column = 0; column < NumColumns; column++) {
-        for (int row = 0; row < NumRows - 2;) {
+    auto set = Set::create();
+    for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
+        for (int row = 0; row < _GlobalInfo::NumRows - 2;) {
 
             if (isNextTwoCookieSuitable(ChainType::ChainTypeVertical, column, row)) {
                 int matchType = mObjCtrl->cookieAt(column, row)->getTypeAsInt();
@@ -270,7 +332,7 @@ CommonTypes::Set * ChainController::detectVerticalMatches()
                         addObjToChain(chain, column, row);
                         row += 1;
                     }
-                } while (row < NumColumns && newMatchType == matchType);
+                } while (row < _GlobalInfo::NumRows && newMatchType == matchType);
                 addChainToSet(chain, set);
                 continue;
             }
@@ -284,12 +346,12 @@ CommonTypes::Set * ChainController::detectVerticalMatches()
 
 
 //--------------------------------------------------------------------
-CommonTypes::Set * ChainController::detectHorizontalMatches()
+Set* ChainController::detectHorizontalMatches()
 //--------------------------------------------------------------------
 {
-    auto set = CommonTypes::Set::create();
-    for (int row = 0; row < NumRows; row++) {
-        for (int column = 0; column < NumColumns - 2; ) {
+    auto set = Set::create();
+    for (int row = 0; row < _GlobalInfo::NumRows; row++) {
+        for (int column = 0; column < _GlobalInfo::NumColumns - 2; ) {
 
             if (isNextTwoCookieSuitable(ChainType::ChainTypeHorizontal, column, row)) {
                 int matchType = mObjCtrl->cookieAt(column, row)->getTypeAsInt();
@@ -302,7 +364,7 @@ CommonTypes::Set * ChainController::detectHorizontalMatches()
                         addObjToChain(chain, column, row);
                         column += 1;
                     }
-                } while (column < NumColumns && newMatchType == matchType);
+                } while (column < _GlobalInfo::NumColumns && newMatchType == matchType);
                 addChainToSet(chain, set);
                 continue;
             }
@@ -315,12 +377,13 @@ CommonTypes::Set * ChainController::detectHorizontalMatches()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set * ChainController::detectDifficultMatches(CommonTypes::Set * horizontal, CommonTypes::Set * vertical)
+Set* ChainController::detectDifficultMatches(Set* horizontal, Set* vertical)
 //--------------------------------------------------------------------
 {
-    auto set = CommonTypes::Set::create();
+    auto set = Set::create();
     ChainObj* chainL = nullptr;
-    ChainObj* chainT = nullptr;
+    ChainObj* chainX = nullptr;
+    ChainObj* chainT = nullptr;    
 
     for (auto horzIt = horizontal->begin(); horzIt != horizontal->end(); ) {
         auto horzChain = dynamic_cast<ChainObj*>(*horzIt);
@@ -331,16 +394,20 @@ CommonTypes::Set * ChainController::detectDifficultMatches(CommonTypes::Set * ho
             CC_ASSERT(vertChain);
 
             chainL = detectLChainMatches(horzChain, vertChain);
+            chainX = detectXChainMatches(horzChain, vertChain);
             chainT = detectTChainMatches(horzChain, vertChain);
 
             if (chainL) {
                 addChainToSet(chainL, set);
             }
+            if (chainX) {
+                addChainToSet(chainX, set);
+            }
             if (chainT) {
                 addChainToSet(chainT, set);
             }
 
-            if (chainL || chainT) {
+            if (chainL || chainX || chainT) {
                 vertIt++;
                 vertical->removeObject(vertChain);
                 continue;
@@ -348,10 +415,11 @@ CommonTypes::Set * ChainController::detectDifficultMatches(CommonTypes::Set * ho
             vertIt++;
         }
 
-        if (chainL || chainT) {
+        if (chainL || chainX || chainT) {
             horzIt++;
             horizontal->removeObject(horzChain);
             chainL = nullptr;
+            chainX = nullptr;
             chainT = nullptr;
             continue;
         }
@@ -361,7 +429,7 @@ CommonTypes::Set * ChainController::detectDifficultMatches(CommonTypes::Set * ho
 }
 
 //--------------------------------------------------------------------
-ChainObj * ChainController::detectLChainMatches(ChainObj * horzChain, ChainObj * vertChain)
+ChainObj* ChainController::detectLChainMatches(ChainObj * horzChain, ChainObj * vertChain)
 //--------------------------------------------------------------------
 {
     ChainObj* chain = nullptr;
@@ -393,7 +461,7 @@ ChainObj * ChainController::detectLChainMatches(ChainObj * horzChain, ChainObj *
 }
 
 //--------------------------------------------------------------------
-ChainObj * ChainController::detectTChainMatches(ChainObj * horzChain, ChainObj * vertChain)
+ChainObj* ChainController::detectTChainMatches(ChainObj* horzChain, ChainObj* vertChain)
 //--------------------------------------------------------------------
 {
     ChainObj* chain = nullptr;
@@ -414,17 +482,60 @@ ChainObj * ChainController::detectTChainMatches(ChainObj * horzChain, ChainObj *
         return chain;
     }
 
-    int horzMiddlePos = firstHorzCookie->getColumn() + horzCookies->count() / 2;
-    int vertMiddlePos = firstVertCookie->getRow() + vertCookies->count() / 2;
-    auto middleHorzCookie = mObjCtrl->cookieAt(horzMiddlePos, firstHorzCookie->getRow());
-    auto middleVertCookie = mObjCtrl->cookieAt(firstVertCookie->getColumn(), vertMiddlePos);
+    for (auto itHorz = horzCookies->begin() + 1; itHorz < horzCookies->end() - 1; itHorz++) {
+        auto middleHorzCookie = dynamic_cast<CookieObj*>(*itHorz);
+        if (!middleHorzCookie) {
+            return chain;
+        }
+        for (auto itVert = vertCookies->begin() + 1; itVert < vertCookies->end() - 1; itVert++) {
+            auto middleVertCookie = dynamic_cast<CookieObj*>(*itVert);
+            if (!middleVertCookie) {
+                return chain;
+            }
+            if (middleHorzCookie == firstVertCookie || middleHorzCookie == lastVertCookie ||
+                middleVertCookie == firstHorzCookie || middleVertCookie == lastHorzCookie) {
+                chain = ChainObj::createWithType(ChainType::ChainTypeT);
+                chain->setUpdateGoalCallback(mUpdateGoalCallback);
+                chain->addObjectsFromChain(horzChain);
+                chain->addObjectsFromChain(vertChain);
+                return chain;
+            }
+        }
+    }
+    return chain;
+}
 
-    if (middleHorzCookie == firstVertCookie || middleHorzCookie == lastVertCookie ||
-        middleVertCookie == firstHorzCookie || middleVertCookie == lastHorzCookie) {
-        chain = ChainObj::createWithType(ChainType::ChainTypeT);
-        chain->setUpdateGoalCallback(mUpdateGoalCallback);
-        chain->addObjectsFromChain(horzChain);
-        chain->addObjectsFromChain(vertChain);
+//--------------------------------------------------------------------
+ChainObj* ChainController::detectXChainMatches(ChainObj* horzChain, ChainObj* vertChain)
+//--------------------------------------------------------------------
+{
+    ChainObj* chain = nullptr;
+    auto horzCookies = horzChain->getChainObjects();
+    CC_ASSERT(horzCookies);
+    auto vertCookies = vertChain->getChainObjects();
+    CC_ASSERT(vertCookies);
+
+    for (auto itHorz = horzCookies->begin() + 1; itHorz < horzCookies->end() - 1; itHorz++) {
+        auto middleHorzCookie = dynamic_cast<CookieObj*>(*itHorz);
+        if (!middleHorzCookie) {
+            return chain;
+        }
+        for (auto itVert = vertCookies->begin() + 1; itVert < vertCookies->end() - 1; itVert++) {
+            auto middleVertCookie = dynamic_cast<CookieObj*>(*itVert);
+            if (!middleVertCookie) {
+                return chain;
+            }
+            if (middleHorzCookie->getTypeAsInt() != middleVertCookie->getTypeAsInt()) {
+                return chain;
+            }
+            if (middleHorzCookie == middleVertCookie ) {
+                chain = ChainObj::createWithType(ChainType::ChainTypeX);
+                chain->setUpdateGoalCallback(mUpdateGoalCallback);
+                chain->addObjectsFromChain(horzChain);
+                chain->addObjectsFromChain(vertChain);
+                return chain;
+            }
+        }
     }
     return chain;
 }
@@ -462,7 +573,7 @@ bool ChainController::isNextTwoCookieSuitable(const ChainType& type, int col, in
 }
 
 //--------------------------------------------------------------------
-void ChainController::addChainsFromSetToSet(CommonTypes::Set* from, CommonTypes::Set* to, bool skipDudes)
+void ChainController::addChainsFromSetToSet(Set* from, Set* to, bool skipDudes)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(from);
@@ -479,7 +590,7 @@ void ChainController::addChainsFromSetToSet(CommonTypes::Set* from, CommonTypes:
 }
 
 //--------------------------------------------------------------------
-void ChainController::addObjectsFromChainToChain(CommonTypes::Set * from, CommonTypes::Set * to)
+void ChainController::addObjectsFromChainToChain(Set* from, Set* to)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(from);
@@ -493,14 +604,13 @@ void ChainController::addObjectsFromChainToChain(CommonTypes::Set * from, Common
             toChain->addObjectsFromChain(chain);
             toChain->updateChainScore();
         }
-        
     } else {
         addChainsFromSetToSet(from, to);
     }
 }
 
 //--------------------------------------------------------------------
-void ChainController::addFieldOjbectsToChainSet(CommonTypes::Set* fieldObjects, CommonTypes::Set* chainSet)
+void ChainController::addFieldOjbectsToChainSet(Set* fieldObjects, Set* chainSet)
 //--------------------------------------------------------------------
 {
     auto chain = ChainObj::createWithType(ChainType::ChainFieldObjects);
@@ -511,12 +621,11 @@ void ChainController::addFieldOjbectsToChainSet(CommonTypes::Set* fieldObjects, 
         if (obj)
             addObjToChain(chain, obj->getColumn(), obj->getRow());
     }
-
     addChainToSet(chain, chainSet);
 }
 
 //--------------------------------------------------------------------
-bool ChainController::checkMathicngFieldObjWithChain(CommonTypes::Set * chains, BaseObj * obj)
+bool ChainController::checkMathicngFieldObjWithChain(Set* chains, BaseObj* obj)
 //--------------------------------------------------------------------
 {
     auto result = false;
@@ -550,12 +659,13 @@ bool ChainController::checkMathicngFieldObjWithChain(CommonTypes::Set * chains, 
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* ChainController::createHorizontalChainAt(int startColumn, int startRow, bool isCreatedByDude)
+Set* ChainController::createHorizontalChainAt(int startColumn, int startRow, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
-    auto set = CommonTypes::Set::create();
+    auto set = Set::create();
 
-    if (!(startColumn >= 0 && startColumn < NumColumns) || !(startRow >= 0 && startRow < NumRows)) {
+    if (!(startColumn >= 0 && startColumn < _GlobalInfo::NumColumns) 
+        || !(startRow >= 0 && startRow < _GlobalInfo::NumRows)) {
         cocos2d::log("ChainController::createHorizontalChainAt: wrong destinationPos at column=%d, row=%d", startColumn, startRow);
         return set;
     }
@@ -567,7 +677,7 @@ CommonTypes::Set* ChainController::createHorizontalChainAt(int startColumn, int 
         addObjToChain(chain, startColumn, startRow);
         chain->setIsCreatedByDude(true);
     }
-    for (int i = 0; i < NumRows; i++) {
+    for (int i = 0; i < _GlobalInfo::NumRows; i++) {
         if (startColumn == i && isCreatedByDude) {
             continue;
         }
@@ -578,12 +688,13 @@ CommonTypes::Set* ChainController::createHorizontalChainAt(int startColumn, int 
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* ChainController::createVerticalChainAt(int startColumn, int startRow, bool isCreatedByDude)
+Set* ChainController::createVerticalChainAt(int startColumn, int startRow, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
-    auto set = CommonTypes::Set::create();
+    auto set = Set::create();
 
-    if (!(startColumn >= 0 && startColumn < NumColumns) || !(startRow >= 0 && startRow < NumRows)) {
+    if (!(startColumn >= 0 && startColumn < _GlobalInfo::NumColumns) 
+        || !(startRow >= 0 && startRow < _GlobalInfo::NumRows)) {
         cocos2d::log("ChainController::createVerticalChainAt: wrong destinationPos at column=%d, row=%d", startColumn, startRow);
         return set;
     }
@@ -595,7 +706,7 @@ CommonTypes::Set* ChainController::createVerticalChainAt(int startColumn, int st
         addObjToChain(chain, startColumn, startRow);
         chain->setIsCreatedByDude(true);
     }
-    for (int i = 0; i < NumRows; i++) {
+    for (int i = 0; i < _GlobalInfo::NumRows; i++) {
         if (startRow == i && isCreatedByDude) {
             continue;
         }
@@ -606,16 +717,16 @@ CommonTypes::Set* ChainController::createVerticalChainAt(int startColumn, int st
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* ChainController::createXChainAt(int column, int row, bool isCreatedByDude)
+Set* ChainController::createXChainAt(int column, int row, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
-    auto set = CommonTypes::Set::create();
+    auto set = Set::create();
     auto chain = ChainObj::createWithType(ChainType::ChainTypeX);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
     addObjToChain(chain, column, row);
-    for (int i = 0; i < NumColumns; i++) {
-        for (int j = 0; j < NumRows; j++) {
+    for (int i = 0; i < _GlobalInfo::NumColumns; i++) {
+        for (int j = 0; j < _GlobalInfo::NumRows; j++) {
             if (column == i && row == j) {
                 continue;
             }
@@ -634,10 +745,10 @@ CommonTypes::Set* ChainController::createXChainAt(int column, int row, bool isCr
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* ChainController::createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude)
+Set* ChainController::createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude, BaseObj* dudeObj)
 //--------------------------------------------------------------------
 {
-    auto set = CommonTypes::Set::create();
+    auto set = Set::create();
     auto entryCookie = mObjCtrl->cookieAt(entryColumn, entryRow);
     if (!entryCookie) {
         return set;
@@ -645,8 +756,12 @@ CommonTypes::Set* ChainController::createAllOfOneChain(int entryColumn, int entr
 
     auto chain = ChainObj::createWithType(ChainType::ChainTypeAllOfOne);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
-    for (int column = 0; column < NumColumns; column++) {
-        for (int row = NumRows - 1; row >= 0; row--) {
+    if (isCreatedByDude && dudeObj) {
+        addObjToChain(chain, dudeObj->getColumn(), dudeObj->getRow());
+    }    
+
+    for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
+        for (int row = _GlobalInfo::NumRows - 1; row >= 0; row--) {
             auto cookie = mObjCtrl->cookieAt(row, column);
             // skip over any gaps in the level design.
             if (!cookie)
@@ -663,12 +778,12 @@ CommonTypes::Set* ChainController::createAllOfOneChain(int entryColumn, int entr
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set * ChainController::createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to, bool isCreatedByDude)
+Set* ChainController::createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
     int fromCol = -1; int fromRow = -1;
     int toCol = -1; int toRow = -1;
-    auto set = CommonTypes::Set::create();
+    auto set = Set::create();
     if (!Helper::convertPointToTilePos(from, fromCol, fromRow)) {
         return set;
     }
@@ -680,12 +795,12 @@ CommonTypes::Set * ChainController::createChainFromPosToPos(cocos2d::Vec2 from, 
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set * ChainController::createChainFromPosToPos(const CommonTypes::Direction& direction, int fromCol, int fromRow, int toCol, int toRow, bool isCreatedByDude)
+Set* ChainController::createChainFromPosToPos(const Direction& direction, int fromCol, int fromRow, int toCol, int toRow, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
-    auto set = CommonTypes::Set::create();
+    auto set = Set::create();
 
-    if (!(toCol >= 0 && toCol < NumColumns) || !(toRow >= 0 && toRow < NumColumns)) {
+    if (!(toCol >= 0 && toCol < _GlobalInfo::NumColumns) || !(toRow >= 0 && toRow < _GlobalInfo::NumColumns)) {
         cocos2d::log("ChainController::createChainFromPosToPos: wrong destinationPos at column=%d, row=%d", toCol, toRow);
         return set;
     }
@@ -696,9 +811,9 @@ CommonTypes::Set * ChainController::createChainFromPosToPos(const CommonTypes::D
     auto chain = ChainObj::createWithType(ChainType::ChainFromAToB);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
-    auto dir = Helper::getDirectionByTileFromAToB(fromCol, fromRow, toCol, toRow);
     auto newDirection = direction;
     if (direction == Direction::Unknown) {
+        auto dir = Helper::getDirectionByTileFromAToB(Helper::to_underlying(direction), fromCol, fromRow, toCol, toRow);
         newDirection = static_cast<Direction>(dir);
     }
     chain->setDirection(newDirection);

@@ -11,9 +11,9 @@
 #include "Controller/ObjectController/Dude/DudeHelper.h"
 
 #include "Controller/ObjectController/Dude/DudeController.h"
-#include "Controller/ChainController.h"
+#include "Controller/ChainController/ChainController.h"
 
-#include "GameObjects/TileObjects/DudeObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 
 #include "Utils/Helpers/Helper.h"
 
@@ -70,7 +70,7 @@ bool DudeHelper::initWithDudeObject(DudeObj * obj)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set * DudeHelper::getChainByDirection(const CommonTypes::Direction & direction)
+CommonTypes::Set * DudeHelper::getChainByDirection(const CommonTypes::Direction & direction, bool isPreview)
 //--------------------------------------------------------------------
 {
     CommonTypes::Set* set = nullptr;
@@ -84,21 +84,22 @@ CommonTypes::Set * DudeHelper::getChainByDirection(const CommonTypes::Direction 
         || mDudeObj->getFieldType() == FieldType::DudeAllOfType) {
         set = mXChain;
     }
+    bool isActivated = isPreview ? true : mDudeObj->isActivated();
 
     if (!set) {
         switch (direction)
         {
         case CommonTypes::Direction::Up:
-            set = mDudeObj->isActivated() ? mTopChain : mVerticalChain;
+            set = isActivated ? mTopChain : mVerticalChain;
             break;
         case CommonTypes::Direction::Down:
-            set = mDudeObj->isActivated() ? mBottomChain : mVerticalChain;
+            set = isActivated ? mBottomChain : mVerticalChain;
             break;
         case CommonTypes::Direction::Left:
-            set = mDudeObj->isActivated() ? mLeftChain : mHorizontalChain;
+            set = isActivated ? mLeftChain : mHorizontalChain;
             break;
         case CommonTypes::Direction::Right:
-            set = mDudeObj->isActivated() ? mRightChain : mHorizontalChain;
+            set = isActivated ? mRightChain : mHorizontalChain;
             break;
         default:
             break;

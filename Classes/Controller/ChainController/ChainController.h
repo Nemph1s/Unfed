@@ -1,5 +1,5 @@
 /**
-* @file Controller/ChainController.hpp
+* @file Controller/ChainController/ChainController.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -52,11 +52,14 @@ public:
     CommonTypes::Set* removeMatches();
     CommonTypes::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
 
+    CommonTypes::Set* detectChainAt(int column, int row);
+
     /**
     * Add chain to objectContainer and remove duplicate containers from other chains
     * @param chains The set with the chains.
     */
     void activateChains(CommonTypes::Set* chains);
+    void deactivateChains(CommonTypes::Set* chains);
 
     void matchChains(CommonTypes::Set* chains);
 
@@ -77,6 +80,7 @@ protected:
 
     ChainObj* detectLChainMatches(ChainObj* horzChain, ChainObj* vertChain);
     ChainObj* detectTChainMatches(ChainObj* horzChain, ChainObj* vertChain);
+    ChainObj* detectXChainMatches(ChainObj* horzChain, ChainObj* vertChain);
 
     bool isNextTwoCookieSuitable(const CommonTypes::ChainType& type, int col, int row);
 
@@ -84,7 +88,7 @@ protected:
     CommonTypes::Set* createVerticalChainAt(int startColumn, int row, bool isCreatedByDude = false);
     CommonTypes::Set* createXChainAt(int column, int row, bool isCreatedByDude = false);
 
-    CommonTypes::Set* createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude = false);
+    CommonTypes::Set* createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude = false, BaseObj* dudeObj = nullptr);
     CommonTypes::Set* createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to, bool isCreatedByDude = false);
     CommonTypes::Set* createChainFromPosToPos(const CommonTypes::Direction& direction, int fromCol, int fromRow, int toCol, int toRow, bool isCreatedByDude = false);
 

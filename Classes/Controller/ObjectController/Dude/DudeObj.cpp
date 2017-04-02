@@ -8,7 +8,7 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/TileObjects/DudeObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
@@ -17,7 +17,6 @@ using CommonTypes::FieldType;
 //--------------------------------------------------------------------
 DudeObj::DudeObj()
     : FieldObj()
-    , mIsActivated(false)
 //--------------------------------------------------------------------
 {
 }
@@ -72,4 +71,11 @@ void DudeObj::activate()
 //--------------------------------------------------------------------
 {
     mIsActivated = true;
+}
+
+//--------------------------------------------------------------------
+void DudeObj::deactivate()
+//--------------------------------------------------------------------
+{
+    mIsActivated = false;
 }

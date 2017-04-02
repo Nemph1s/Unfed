@@ -1,5 +1,5 @@
 /**
-* @file Scenes/SwapController.cpp
+* @file Controller/SwapController/SwapController.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,11 +8,12 @@
 * @author VMartyniuk
 */
 
-#include "Controller/SwapController.h"
+#include "Controller/SwapController/SwapController.h"
+#include "Controller/ChainController/ChainController.h"
 #include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/ObjectController.h"
 
-#include "GameObjects/Swap/SwapObj.h"
+#include "Controller/SwapController/SwapObj.h"
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 
@@ -68,21 +69,21 @@ bool SwapController::detectPossibleSwaps()
     clearPossibleSwaps();
     CommonTypes::Set* set = CommonTypes::Set::create();
 
-    for (int row = 0; row < CommonTypes::NumRows; row++) {
-        for (int column = 0; column < CommonTypes::NumColumns; column++) {
+    for (int row = 0; row < _GlobalInfo::NumRows; row++) {
+        for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
             auto objCtrl = mLevel->getObjectController();
             auto container = objCtrl->getObject(column, row);
             if (nullptr == container->getObjectForChain()) {
                 continue;
             }
             // Is it possible to swap this cookie with the one on the right?
-            if (column < CommonTypes::NumColumns - 1) {
+            if (column < _GlobalInfo::NumColumns - 1) {
                 auto checker = new SwapChecker(set, column, row, column + 1, row);
                 detectSwap(checker);
                 CC_SAFE_DELETE(checker);
             }
             // This does exactly the same thing, but for the cookie above instead of on the right.
-            if (row < CommonTypes::NumRows - 1) {
+            if (row < _GlobalInfo::NumRows - 1) {
                 auto checker = new SwapChecker(set, column, row, column, row + 1);
                 detectSwap(checker);
                 CC_SAFE_DELETE(checker);
@@ -117,14 +118,23 @@ void SwapController::detectSwap(SwapChecker * checker)
     auto nextObject = nextContainer->getObjectForChain();
     // Have a cookie in this spot? If there is no tile, there is no cookie.
     if (currObject && nextObject) {
+        
         // Swap them
         currContainer->updateObjectWith(currObject, nextObject);
         nextContainer->updateObjectWith(nextObject, currObject);
 
         // Is either cookie now part of a chain?
-        if (objCtrl->hasChainAt(checker->nextCol, checker->nextRow) || objCtrl->hasChainAt(checker->curCol, checker->curRow)) {
-
-            SwapObj *swap = SwapObj::createWithObjects(currObject, nextObject);
+        bool hasChainFromNextTile = objCtrl->hasChainAt(checker->nextCol, checker->nextRow);
+        bool hasChainFromCurrTile = objCtrl->hasChainAt(checker->curCol, checker->curRow);
+        if (hasChainFromNextTile || hasChainFromCurrTile) {
+            auto chainCtrl = mLevel->getChainController();
+            SwapObj* swap = SwapObj::createWithObjects(currObject, nextObject);
+            if (hasChainFromNextTile) {
+                swap->setObjectsForHint(chainCtrl->detectChainAt(checker->nextCol, checker->nextRow));
+            }
+            else if (hasChainFromCurrTile) {
+                swap->setObjectsForHint(chainCtrl->detectChainAt(checker->curCol, checker->curRow));
+            }
             checker->set->addObject(swap);
         }
         // Swap them back
@@ -191,9 +201,9 @@ bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
     int toColumn = fromCol + horzDelta;
     int toRow = fromRow + vertDelta;
 
-    if (toColumn < 0 || toColumn >= CommonTypes::NumColumns)
+    if (toColumn < 0 || toColumn >= _GlobalInfo::NumColumns)
         return false;
-    if (toRow < 0 || toRow >= CommonTypes::NumRows)
+    if (toRow < 0 || toRow >= _GlobalInfo::NumRows)
         return false;
 
     auto objCtrl = mLevel->getObjectController();

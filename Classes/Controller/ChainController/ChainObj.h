@@ -1,5 +1,5 @@
 #/**
-* @file GameObjects/ChainObj.hpp
+* @file Controller/ChainController/ChainObj.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -38,12 +38,15 @@ public:
     void addObjectToChain(ObjContainer* obj);
 
     cocos2d::Array* getChainObjects();
+    cocos2d::Array* getChainObjectsForScoreAnimation();
     int getCookiesCount();
     void updateChainScore();
 
     void addObjectsFromChain(ChainObj* chain);
 
     void activateObjects();
+    void removeDuplicateObjects(cocos2d::Array* objsToRemove);
+    void deactivateObjects();
 
     void removeDudeObjectsFromChain(bool skipFirst = true);
 
@@ -61,8 +64,10 @@ protected:
     CC_SYNTHESIZE(int, mCookiesScore, CookiesScore); // use this to get multiplier for cookies in chain
     CC_SYNTHESIZE(int, mScore, Score);
     CC_SYNTHESIZE(bool, mIsCreatedByDude, IsCreatedByDude);
+    CC_SYNTHESIZE(cocos2d::Color4B, mChainColor, ChainColor);
 
     CC_SYNTHESIZE_READONLY(CommonTypes::ChainType, mType, Type);
+    CC_SYNTHESIZE_READONLY(cocos2d::Array*, mObjsToRemove, ObjsToRemove);
     CC_SYNTHESIZE_READONLY(cocos2d::Array*, mObjects, Objects);
 };
 

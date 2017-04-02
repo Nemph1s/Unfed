@@ -34,16 +34,24 @@ public:
     void addFieldObjectsAt(int column, int row);
     void addSpritesForObjects(CommonTypes::Set* set);
 
+    void createChainPreviewSprites(CommonTypes::Set* set);
+
     void createSpriteWithCookie(CookieObj* cookie, int column, int row);
     void createSpriteWithDude(BaseObj* dudeObj);
     void createSpriteWithFieldObj(FieldObj* fieldObj);
 
+    bool isObjTouched();
+
     void userInteractionEnabled();
     void userInteractionDisabled();
+
+    void setUpdateDirectionCallback(std::function<CommonTypes::Set*(BaseObj* obj, int direction)> func);
 
     void setSwapCookieCallback(std::function<bool(int fromCol, int fromRow, int direction)> func);
     void setDudeActivationCallback(std::function<bool(int fromCol, int fromRow, int direction)> func);
     void removeAllCookieSprites();
+
+    void removeAllChainPreviewSprites();
 
 protected:
     // Nodes should be created using create();
@@ -55,7 +63,10 @@ protected:
 
     CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mGameLayer, GameLayer);
     CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mTilesLayer, TilesLayer);
+    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mChainPreviewLayer, ChainPreviewLayer);
     CC_SYNTHESIZE_READONLY(CookiesLayer*, mCookiesLayer, CookiesLayer);
     CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mFieldObjectsLayer, FieldObjectsLayer);
+
+    CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mInfoLayer, InfoLayer);
 };
 

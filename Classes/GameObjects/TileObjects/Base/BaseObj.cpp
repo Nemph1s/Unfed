@@ -10,6 +10,7 @@
 
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 
+#include "Common/Factory/SpritesFactory.h"
 #include "Utils/Helpers/Helper.h"
 
 //--------------------------------------------------------------------
@@ -17,10 +18,6 @@ BaseObj::BaseObj()
     : mColumn(-1)
     , mRow(-1)
     , mType(CommonTypes::BaseObjType::Unknown)
-    , mIsMovable(false)
-    , mIsSwappable(false)
-    , mIsRemovable(false)
-    , mIsContainer(false)
     , mSpriteNode(nullptr)
     , mDummyString(nullptr)
     , mScoreValue(50) //TODO: move to global info
@@ -140,10 +137,8 @@ void BaseObj::clear()
     if (getParent()) {
         removeFromParent();
     }
+    SpritesFactory->recycle(mSpriteNode, this);
     if (mSpriteNode) {
-        if (mSpriteNode->getParent()) {
-            mSpriteNode->removeFromParent();
-        }
         mSpriteNode = nullptr;
     }
 }

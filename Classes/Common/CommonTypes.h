@@ -18,11 +18,6 @@ namespace cocos2d { class __Set; }
 
 namespace CommonTypes {
 
-    //temporary variables
-    //TODO: move to globalInfo or to json file
-    static const int NumColumns = 9;
-    static const int NumRows = 9;
-
     typedef cocos2d::__Set Set;
 
     /**
@@ -87,9 +82,9 @@ namespace CommonTypes {
        , DudeFromAToBx3 = 201 /**< enum value DudeBulbr. */
        , DudeChainX = 202 /**< enum value DudeOni. */
        , DudeAllOfType = 203 /**< enum value DudePina. */
+       , DudeSquareBomb = 204 /**< enum value DudeMBO. */
        , Unknown /**< enum value unknown. */
    };
-
 
    /**
    * @brief FieldInfo struct.
@@ -104,7 +99,7 @@ namespace CommonTypes {
    /**
    * @brief FieldInfo struct.
    */
-   struct FieldJsonInfo
+   struct JsonFieldInfo
    {
        BaseObjInfo baseInfo = BaseObjInfo(BaseObjType::Field); /**< type of BaseObjectInfo struct */
        std::vector<int> fieldType; /**< type of Field object */
@@ -145,16 +140,6 @@ namespace CommonTypes {
        Empty = 0 /**< enum value Empty. */
        , Normal = 1 /**< enum value Normal. */
        , Water = 2 /**< enum value Water. */
-       , Dirt = 10 /**< enum value Dirt. */
-       , Dirt_HP2 = 11 /**< enum value DirtX2. */
-       , Dirt_HP3 = 12 /**< enum value DirtX3. */
-       , Bush = 20 /**< enum value DirtX3. */
-       , Bush_HP2 = 21 /**< enum value DirtX3. */
-       , RockWall = 30 /**< enum value RockWall. */
-       , DudeFromAToB = 200 /**< enum value DudeLightr. */
-       , DudeFromAToBx3 = 201 /**< enum value DudeBulbr. */
-       , DudeChainX = 202 /**< enum value DudeOni. */
-       , DudeAllOfType = 203 /**< enum value DudePina. */
        , Unknown /**< enum value unknown. */
    };
 

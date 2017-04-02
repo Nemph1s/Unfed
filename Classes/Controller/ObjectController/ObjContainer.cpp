@@ -11,23 +11,14 @@
 #include "Controller/ObjectController/ObjContainer.h"
 
 #include "GameObjects/TileObjects/TileObj.h"
-#include "GameObjects/TileObjects/DudeObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
-#include "Common/Factory/SmartFactory.h"
-
-// #include "Controller/ObjectController/Dude/DudeController.h"
-// 
-// #include "Common/Factory/SmartFactory.h"
-// #include "GameObjects/Level/LevelObj.h"
-// 
-// #include "Utils/Parser/JsonParser.h"
-// #include "Utils/Helpers/Helper.h"
-
+#include "Common/Factory/SmartObjFactory.h"
+#include "Common/Factory/SpritesFactory.h"
 
 using namespace CommonTypes;
-
 
 //--------------------------------------------------------------------
 ObjContainer::ObjContainer()
@@ -36,7 +27,6 @@ ObjContainer::ObjContainer()
     , mCookieObj(nullptr)
     , mDudeObj(nullptr)
     , mFieldObjects()
-    , mObjectInChain(false)
 //--------------------------------------------------------------------
 {
 }
@@ -46,23 +36,23 @@ ObjContainer::~ObjContainer()
 //--------------------------------------------------------------------
 {
     if (mTileObj) {
-        SmartFactory->recycle(mTileObj);
+        SmartObjFactory->recycle(mTileObj);
         mTileObj = nullptr;
     }
     
     if (mCookieObj) {
-        SmartFactory->recycle(mCookieObj);
+        SmartObjFactory->recycle(mCookieObj);
         mCookieObj = nullptr;
     }
     
     if (mDudeObj) {
-        SmartFactory->recycle(mDudeObj);
+        SmartObjFactory->recycle(mDudeObj);
         mDudeObj = nullptr;
     }
     
     while (mFieldObjects.size() > 0) {
         if (mFieldObjects.front()) {
-            SmartFactory->recycle(mFieldObjects.front());
+            SmartObjFactory->recycle(mFieldObjects.front());
         }        
         mFieldObjects.pop_front();
     }
@@ -164,7 +154,7 @@ std::list<FieldObj*>& ObjContainer::getFieldObjects()
 }
 
 //--------------------------------------------------------------------
-bool ObjContainer::isContainObjForChain()
+bool ObjContainer::isContainGameObj()
 //--------------------------------------------------------------------
 {
     if (mCookieObj || mDudeObj || getFieldObject()) {
@@ -182,13 +172,62 @@ BaseObj* ObjContainer::getObjectForChain()
     if (mCookieObj) {
         obj = mCookieObj;
     }
-    else if (fieldObj) {
-        obj = fieldObj;
-    }
     else if (mDudeObj) {
         obj = mDudeObj;
     }
+    else if (fieldObj) {
+        obj = fieldObj;
+    }
+    
     return obj;
+}
+
+//--------------------------------------------------------------------
+CommonTypes::Set* ObjContainer::getObjectsForChain()
+//--------------------------------------------------------------------
+{
+    auto set = CommonTypes::Set::create();
+    auto fieldObj = getFieldObject();
+
+    if (mCookieObj) set->addObject(mCookieObj);
+    if (fieldObj) set->addObject(fieldObj);
+    if (mDudeObj) set->addObject(mDudeObj);
+
+    if (set->count() == 0) {
+        set = nullptr;
+    }
+    return set;
+}
+
+//--------------------------------------------------------------------
+int16_t ObjContainer::getScoreValueForObject() const
+//--------------------------------------------------------------------
+{
+    int16_t score = 0;
+    auto fieldObj = getFieldObject();
+    if (mCookieObj) {
+        score = mCookieObj->getScoreValue();
+    }
+    else if (fieldObj) {
+        score = fieldObj->getScoreValue();
+    }
+    else if (mDudeObj) {
+        score = mDudeObj->getScoreValue();
+    }
+    return score;
+}
+
+//--------------------------------------------------------------------
+int16_t ObjContainer::getScoreValueForGameObjects() const
+//--------------------------------------------------------------------
+{
+    int16_t score = 0;
+    auto fieldObj = getFieldObject();
+
+    if (mCookieObj) score += mCookieObj->getScoreValue();
+    if (fieldObj) score += fieldObj->getScoreValue();
+    if (mDudeObj) score += mDudeObj->getScoreValue();
+    return score;
 }
 
 //--------------------------------------------------------------------
@@ -304,6 +343,20 @@ bool ObjContainer::isSameTypeOfCookieAt(int type)
 }
 
 //--------------------------------------------------------------------
+bool ObjContainer::isContainChainPreviewSprite() const
+//--------------------------------------------------------------------
+{
+    return (mTileObj->getChainPreviewSpriteNode() != nullptr);
+}
+
+//--------------------------------------------------------------------
+void ObjContainer::setChainPreviewSprite(cocos2d::Sprite* sprite)
+//--------------------------------------------------------------------
+{
+    mTileObj->setChainPreviewSpriteNode(sprite);
+}
+
+//--------------------------------------------------------------------
 bool ObjContainer::addDudeObject(BaseObj* obj)
 //--------------------------------------------------------------------
 {
@@ -360,16 +413,15 @@ void ObjContainer::onRemoveCookie(BaseObj* obj)
 //--------------------------------------------------------------------
 {
     if (mCookieObj == obj) {
-        if (mCookieObj->getSpriteNode()) {
-            mCookieObj->getSpriteNode()->removeFromParent();
-            mCookieObj->setSpriteNode(nullptr);
-        }
-
         if (mCookieObj->getParent()) {
             mCookieObj->removeFromParent();
         }
         mObjectInChain = nullptr;
-        SmartFactory->recycle(mCookieObj);
+        SpritesFactory->recycle(mCookieObj->getSpriteNode(), mCookieObj);
+        if (mCookieObj->getSpriteNode()) {
+            mCookieObj->setSpriteNode(nullptr);
+        }
+        SmartObjFactory->recycle(mCookieObj);        
         removeObject(BaseObjType::Cookie);
     }
 }
@@ -379,11 +431,6 @@ void ObjContainer::onRemoveDude(BaseObj * obj)
 //--------------------------------------------------------------------
 {
     if (mDudeObj == obj) {
-        if (mDudeObj->getSpriteNode()) {
-            mDudeObj->getSpriteNode()->removeFromParent();
-            mDudeObj->setSpriteNode(nullptr);
-        }
-
         if (mDudeObj->getParent()) {
             mDudeObj->removeFromParent();
         }
@@ -393,7 +440,11 @@ void ObjContainer::onRemoveDude(BaseObj * obj)
             eraseDirectionsFunc(obj);
         }
         mObjectInChain = nullptr;
-        SmartFactory->recycle(mDudeObj);
+        SpritesFactory->recycle(mDudeObj->getSpriteNode(), mDudeObj);
+        if (mDudeObj->getSpriteNode()) {
+            mDudeObj->setSpriteNode(nullptr);
+        }
+        SmartObjFactory->recycle(mDudeObj);        
         removeObject(BaseObjType::Dude);
     }
 }
@@ -404,17 +455,16 @@ void ObjContainer::onFieldObjChangeState(BaseObj* obj, std::function<void(FieldO
 {
     auto fieldObj = getFieldObject();
     if (fieldObj == obj) {
-        if (fieldObj->getSpriteNode()) {
-            fieldObj->getSpriteNode()->removeFromParent();
-            fieldObj->setSpriteNode(nullptr);
-        }
         mObjectInChain = nullptr;
         if (fieldObj->getHP() > 0) {
             createSpriteFunc(fieldObj);
         }
         else if (fieldObj->isHpEnded()) {
-            SmartFactory->recycle(fieldObj);
-
+            SpritesFactory->recycle(fieldObj->getSpriteNode(), fieldObj);
+            if (fieldObj->getSpriteNode()) {
+                fieldObj->setSpriteNode(nullptr);
+            }
+            SmartObjFactory->recycle(fieldObj);
             removeObject(BaseObjType::Field);
 
             for (auto it = mFieldObjects.begin(); it != mFieldObjects.end(); ++it) {

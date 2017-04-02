@@ -46,12 +46,19 @@ public:
     FieldObj* getFieldObject() const;
     std::list<FieldObj*>& getFieldObjects();
 
-    bool isContainObjForChain(); //TODO: rename it
+    bool isContainGameObj();
     BaseObj* getObjectForChain();
+    CommonTypes::Set* getObjectsForChain();
+
+    int16_t getScoreValueForObject() const;
+    int16_t getScoreValueForGameObjects() const;
 
     bool isEmptyTileAt();
     bool isPossibleToAddCookie();
     bool isSameTypeOfCookieAt(int type);
+
+    bool isContainChainPreviewSprite() const;
+    void setChainPreviewSprite(cocos2d::Sprite* sprite);
 
     //---Callbacks-------------------------------------------------
     void onRemoveCookie(BaseObj* obj);
@@ -70,7 +77,7 @@ protected:
     //---Class Attributes-------------------------------------------------
     std::list<FieldObj*> mFieldObjects;
 
-    CC_SYNTHESIZE_BOOL(ChainObj*, mObjectInChain, ObjectInChain);
+    SYNTHESIZE_IS(ChainObj*, mObjectInChain, ObjectInChain, nullptr);
 
     CC_SYNTHESIZE_READONLY(DudeObj*, mDudeObj, Dude);
     CC_SYNTHESIZE_READONLY(TileObj*, mTileObj, Tile);

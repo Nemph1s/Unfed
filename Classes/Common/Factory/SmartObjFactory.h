@@ -1,5 +1,5 @@
 /**
-* @file Common/Factory/SmartFactory.hpp
+* @file Common/Factory/SmartObjFactory.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -17,15 +17,11 @@
 
 class BaseObj;
 
-class _SmartFactory
+class _SmartObjFactory
 {
 public:
-    static _SmartFactory& Instance()
-    {
-        static _SmartFactory myInstance;
-        return myInstance;
-    }
-    static _SmartFactory* getInstance();
+    static _SmartObjFactory& Instance();
+    static _SmartObjFactory* getInstance();
 
     BaseObj* create(const CommonTypes::BaseObjInfo &info);
 
@@ -42,12 +38,12 @@ public:
     void recycle(BaseObj* obj);
 
 protected:
-    explicit _SmartFactory() {};
-    ~_SmartFactory();
-    _SmartFactory(_SmartFactory const&) = delete;
-    _SmartFactory(_SmartFactory &&) = delete;
-    _SmartFactory & operator=(_SmartFactory const&) = delete;
-    _SmartFactory & operator=(_SmartFactory &&) = delete;
+    explicit _SmartObjFactory() {};
+    ~_SmartObjFactory();
+    _SmartObjFactory(_SmartObjFactory const&) = delete;
+    _SmartObjFactory(_SmartObjFactory &&) = delete;
+    _SmartObjFactory & operator=(_SmartObjFactory const&) = delete;
+    _SmartObjFactory & operator=(_SmartObjFactory &&) = delete;
 
 private:
     typedef typename std::list<BaseObj*> TBaseObjList; 
@@ -62,4 +58,4 @@ private:
 
 };
 
-#define SmartFactory _SmartFactory::getInstance()
+#define SmartObjFactory _SmartObjFactory::getInstance()

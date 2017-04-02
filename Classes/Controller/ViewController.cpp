@@ -9,8 +9,8 @@
 */
 
 #include "Controller/ViewController.h"
-#include "Controller/SwapController.h"
-#include "Controller/ChainController.h"
+#include "Controller/SwapController/SwapController.h"
+#include "Controller/ChainController/ChainController.h"
 #include "Controller/ObjectController/Dude/DudeController.h"
 #include "Controller/ObjectController/ObjectController.h"
 
@@ -18,13 +18,14 @@
 #include "Managers/AudioManager.h"
 #include "Managers/GuiManager.h"
 
-#include "Common/Factory/SmartFactory.h"
+#include "Common/Factory/SmartObjFactory.h"
+#include "Common/Factory/SpritesFactory.h"
 
-#include "GameObjects/Swap/SwapObj.h"
+#include "Controller/SwapController/SwapObj.h"
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/Level/LevelGoalComponent.h"
-#include "GameObjects/TileObjects/DudeObj.h"
-#include "GameObjects/Chain/ChainObj.h"
+#include "Controller/ObjectController/Dude/DudeObj.h"
+#include "Controller/ChainController/ChainObj.h"
 
 #include "Scenes/GameplayScene.h"
 
@@ -32,9 +33,11 @@ using cocos2d::Director;
 using cocos2d::CallFunc;
 using namespace CommonTypes;
 using namespace std::placeholders;
-
+ 
 #define COCOS2D_DEBUG 1
 #define UNFED_ENABLE_DEBUG 1
+
+const float showHintInterval = 10.0f;
 
 #define CURRENT_LEVEL 667
 
@@ -92,6 +95,7 @@ bool ViewController::init()
 
     initGameScene();
     initLevel();
+    initSpritesFactory();
     initObjectController();
     initChainController();
     initSwapController();
@@ -122,8 +126,8 @@ bool ViewController::initGameScene()
     AudioManager->init();
     AnimationsManager->initWithScene(mGameplayScene);
 
-    SmartFactory->initTilesPool(NumColumns * NumRows);
-    SmartFactory->initCookiesPool((NumColumns * NumRows) * 2);
+    SmartObjFactory->initTilesPool(_GlobalInfo::NumColumns * _GlobalInfo::NumRows);
+    SmartObjFactory->initCookiesPool((_GlobalInfo::NumColumns * _GlobalInfo::NumRows) * 2);
 
     return true;
 }
@@ -145,6 +149,22 @@ bool ViewController::initLevel()
     mLevelGoals = LevelGoalComponent::create();
 
     GuiManager->initWithScene(mGameplayScene, mLevelGoals);
+
+    return true;
+}
+
+//--------------------------------------------------------------------
+bool ViewController::initSpritesFactory()
+//--------------------------------------------------------------------
+{
+    SpritesFactory->setLevel(mLevel);
+    SpritesFactory->initTilesPool(_GlobalInfo::NumColumns * _GlobalInfo::NumRows);
+    auto cookiesPoolSize = (_GlobalInfo::NumColumns * _GlobalInfo::NumRows);
+    SpritesFactory->initCookiesPool(cookiesPoolSize / 2);
+    SpritesFactory->initDudesPool(_GlobalInfo::NumRows / 2);
+    auto fieldObjsPoolSize = mLevel->getLevelInfo().fieldObjects.size();
+    SpritesFactory->initFieldObjectsPool(fieldObjsPoolSize);
+    SpritesFactory->initHintPool(_GlobalInfo::NumColumns * _GlobalInfo::NumRows);
 
     return true;
 }
@@ -202,6 +222,14 @@ bool ViewController::initDudeController()
     };
     mGameplayScene->setDudeActivationCallback(dudeActivationCallback);
 
+    auto updateDirectionCallback = [dudeCtrl](BaseObj* obj, int direction) {
+        auto dude = dynamic_cast<DudeObj*>(obj);
+        auto set = dudeCtrl->getChainsForDude(dude, direction, true);
+        CC_SAFE_RETAIN(set);
+        return set;
+    };
+    mGameplayScene->setUpdateDirectionCallback(updateDirectionCallback);
+
     return true;
 }
 
@@ -242,6 +270,8 @@ void ViewController::startGame()
    mLevel->resetComboMultiplier();
 
    shuffle();
+
+   startHintTimer();
 }
 
 //--------------------------------------------------------------------
@@ -286,6 +316,7 @@ void ViewController::handleMatches()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ViewController::handleMatches");
+
     auto chains = mChainController->removeMatches();
     auto dudes = mDudeController->createDudeObectsFromChains(chains);
     mGameplayScene->addSpritesForObjects(dudes);
@@ -307,6 +338,7 @@ void ViewController::animateHandleMatches(CommonTypes::Set* chains)
 {
     CC_ASSERT(chains);
 
+    stopHintTimer();
     mChainController->executeCollectGoalCallback(chains);
 
     auto completion = CallFunc::create([&]() {
@@ -339,13 +371,15 @@ void ViewController::beginNextTurn()
     cocos2d::log("ViewController::beginNextTurn");
     
     float delay = 0.01f;
-    if (!mSwapController->detectPossibleSwaps()) {
+    if (!mSwapController->detectPossibleSwaps() && mDudeController->getDudesCount() == 0) {
         delay = 0.5f;
         shuffle();
     }
 
     auto callback = cocos2d::CallFunc::create([=]() {
         mGameplayScene->userInteractionEnabled();
+
+        startHintTimer();
     });
 
     mLevel->resetComboMultiplier();
@@ -403,18 +437,21 @@ void ViewController::swapCallback(SwapObj * swap)
 void ViewController::activateDudeCallback(DudeObj * obj, int direction)
 //--------------------------------------------------------------------
 {
-    auto set = mDudeController->activateDudeAndGetChains(obj, direction);
-    auto chains = dynamic_cast<ChainObj*>(set->anyObject());
-    if (chains) {
-        if (chains->getChainObjects()) {
-            mGameplayScene->userInteractionDisabled();
+    auto set = mDudeController->getChainsForDude(obj, direction);
+    if (set) {
+        auto chains = dynamic_cast<ChainObj*>(set->anyObject());
+        if (chains) {
+            if (chains->getChainObjects()) {
+                stopHintTimer();
+                mGameplayScene->userInteractionDisabled();
 
-            mLevel->removeDudeMatches(set);
- 
-            updateScore(set);
-            animateHandleMatches(set);
+                mLevel->removeDudeMatches(set);
+
+                updateScore(set);
+                animateHandleMatches(set);
+            }
         }
-    }
+    }    
 }
 
 //--------------------------------------------------------------------
@@ -430,4 +467,42 @@ void ViewController::activateChainCallback(CommonTypes::ChainType & type, cocos2
         updateScore(chains);
         animateHandleMatches(chains);
     }    
+}
+
+//--------------------------------------------------------------------
+void ViewController::startHintTimer()
+//--------------------------------------------------------------------
+{
+    auto selector = schedule_selector(ViewController::showSwapHint);
+    Director::getInstance()->getScheduler()->schedule(selector, this, showHintInterval, 0);
+}
+
+//--------------------------------------------------------------------
+void ViewController::stopHintTimer()
+//--------------------------------------------------------------------
+{
+    auto selector = schedule_selector(ViewController::showSwapHint);
+    Director::getInstance()->getScheduler()->unschedule(selector, this);
+}
+
+//--------------------------------------------------------------------
+void ViewController::showSwapHint(float dt)
+//--------------------------------------------------------------------
+{
+    CommonTypes::Set* set = nullptr;
+    if (mGameplayScene->isObjTouched()) {
+        return;
+    }
+    auto swapObj = dynamic_cast<SwapObj*>(mSwapController->getPossibleSwaps()->anyObject());
+    if (swapObj) {
+        mGameplayScene->userInteractionDisabled();
+        set = swapObj->getObjectsForHint();
+        auto callback = CallFunc::create([=]() {
+            // enable touches on layer.
+            mGameplayScene->userInteractionEnabled();
+        });
+        if (set) {
+            AnimationsManager->animateHintSwap(set, callback);
+        }        
+    }
 }

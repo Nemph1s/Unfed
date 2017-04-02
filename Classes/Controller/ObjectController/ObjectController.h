@@ -13,6 +13,7 @@
 #include <queue>
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
  
 class DudeObj;
 class BaseObj;
@@ -45,6 +46,8 @@ public:
 
     CommonTypes::Set* createInitialFieldObjects();
     CommonTypes::Set* createInitialCookies();
+
+    void detectDirectionsForDudes();
     
     BaseObj* createRandomCookie(int column, int row);
     int getRandomCookieType(int column, int row);
@@ -87,5 +90,5 @@ protected:
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
     CC_SYNTHESIZE(DudeController*, mDudeCtrl, DudeController);
 
-    ObjContainer* mObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
+    ObjContainer* mObjects[_GlobalInfo::NumColumns][_GlobalInfo::NumRows] = { nullptr };
 };
