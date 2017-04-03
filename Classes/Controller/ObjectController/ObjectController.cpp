@@ -92,6 +92,7 @@ ObjContainer* ObjectController::getObject(int column, int row)
     if (Helper::isValidColumnAndRow(column, row)) {
         return mObjects[column][row];
     }
+    cocos2d::log("ObjectController::getObject: not valid column=%d or row=%d", column, row);
     return nullptr;    
 }
 
@@ -179,13 +180,13 @@ BaseObj * ObjectController::createFieldObject(int column, int row, int type, int
 {
     BaseObjInfo baseInfo = { BaseObjType::Field, column, row };
     FieldInfo info = { baseInfo, static_cast<FieldType>(type), priority };
-    auto obj = SmartObjFactory->createFieldObj(info);
-    CC_ASSERT(obj);
+    auto fieldObj = SmartObjFactory->createFieldObj(info);
+    CC_ASSERT(fieldObj);
     auto obj = getObject(column, row);
     if (obj) {
-        obj->addObject(obj);
+        obj->addObject(fieldObj);
     }
-    return obj;
+    return fieldObj;
 }
 
 //--------------------------------------------------------------------
@@ -307,29 +308,29 @@ BaseObj* ObjectController::fieldObjectAt(int column, int row)
 {
     auto obj = getObject(column, row);
     if (obj) {
-        return obj->getObject(BaseObjType::Field);
+        return obj->getFieldObject();
     }
     return nullptr;
 }
 
 //--------------------------------------------------------------------
-std::list<FieldObj*>& ObjectController::fieldObjectsAt(int column, int row)
+std::list<FieldObj*>* ObjectController::fieldObjectsAt(int column, int row)
 //--------------------------------------------------------------------
 {
     auto obj = getObject(column, row);
     if (obj) {
-        return obj->FieldObjects();
+        return &obj->getFieldObjects();
     }
     return nullptr;
 }
 
 //--------------------------------------------------------------------
-DudeObj* ObjectController::dudeObjectAt(int column, int row)
+DudeObj* ObjectController::dudeAt(int column, int row)
 //--------------------------------------------------------------------
 {
     auto obj = getObject(column, row);
     if (obj) {
-        return obj->Dude();
+        return obj->getDude();
     }
     return nullptr;
 }
@@ -442,12 +443,12 @@ void ObjectController::updateCookieObjectAt(int column, int row, BaseObj* cookie
 }
 
 //--------------------------------------------------------------------
-void ObjectController::updateObjectAt(int column, int row, BaseObj * obj)
+void ObjectController::updateObjectAt(int column, int row, BaseObj* baseObj)
 //--------------------------------------------------------------------
 {
     auto obj = getObject(column, row);
     if (obj) {
-        obj->addObject(obj);
+        obj->addObject(baseObj);
     }
 }
 

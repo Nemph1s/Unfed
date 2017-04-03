@@ -231,7 +231,7 @@ BaseObj * _SmartObjFactory::createCookieObj(const CookieInfo & info)
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartObjFactory::createFieldObj(const FieldInfo & info)
+BaseObj* _SmartObjFactory::createFieldObj(const FieldInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj* baseObject = nullptr;

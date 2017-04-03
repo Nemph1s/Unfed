@@ -73,7 +73,10 @@ bool SwapController::detectPossibleSwaps()
         for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
             auto objCtrl = mLevel->getObjectController();
             auto container = objCtrl->getObject(column, row);
-            if (nullptr == container->getObjectForChain()) {
+            if (!container) {
+                continue;
+            }
+            if (!container->getObjectForChain()) {
                 continue;
             }
             // Is it possible to swap this cookie with the one on the right?
@@ -113,7 +116,9 @@ void SwapController::detectSwap(SwapChecker * checker)
 
     auto currContainer = objCtrl->getObject(checker->curCol, checker->curRow);
     auto nextContainer = objCtrl->getObject(checker->nextCol, checker->nextRow);
-
+    if (!currContainer || !nextContainer) {
+        return;
+    }
     auto currObject = currContainer->getObjectForChain();
     auto nextObject = nextContainer->getObjectForChain();
     // Have a cookie in this spot? If there is no tile, there is no cookie.
@@ -204,14 +209,15 @@ bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
     if (!Helper::isValidColumnAndRow(toColumn, toRow)) {
         return false;
     }
-
     auto objCtrl = mLevel->getObjectController();
-    auto toCookie = objCtrl->getObject(toColumn, toRow)->getObjectForChain();
-    if (!toCookie)
+    auto toContainer = objCtrl->getObject(toColumn, toRow);
+    auto fromContainer = objCtrl->getObject(fromCol, fromRow);
+    if (!toContainer || !fromContainer)
         return false;
 
-    auto fromCookie = objCtrl->getObject(fromCol, fromRow)->getObjectForChain();
-    if (!fromCookie)
+    auto toCookie = toContainer->getObjectForChain();
+    auto fromCookie = fromContainer->getObjectForChain();
+    if (!toCookie || !fromCookie)
         return false;
 
     cocos2d::log("GameplayScene::trySwapCookieTo: swap type:%d square:(%d,%d) with type:%d square:(%d,%d),"
@@ -224,12 +230,10 @@ bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
     }
 
     auto cookieType = CommonTypes::BaseObjType::Cookie;
-
     if (fromCookie->getType() != cookieType && toCookie->getType() != cookieType) {
         cocos2d::log("GameplayScene::trySwapCookieTo: cant swap non cookies obj");
         return false;
-    } 
-
+    }
     if (!mSwapCallback)
         return false;
 

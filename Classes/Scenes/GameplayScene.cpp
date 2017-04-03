@@ -154,10 +154,13 @@ void GameplayScene::addFieldObjectsAt(int column, int row)
     // Create Field objects
     auto objCtrl = mLevel->getObjectController();
     auto fieldObjects = objCtrl->fieldObjectsAt(column, row);
-    if (fieldObjects.size() == 0) {
+    if (fieldObjects) {
         return;
     }
-    for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
+    if (fieldObjects->size() == 0) {
+        return;
+    }
+    for (auto it = fieldObjects->begin(); it != fieldObjects->end(); ++it) {
         auto fieldObj = dynamic_cast<FieldObj*>(*it);    
         createSpriteWithFieldObj(fieldObj);
         fieldObj->updateDebugLabel();

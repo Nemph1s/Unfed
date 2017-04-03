@@ -155,7 +155,7 @@ bool CookiesLayer::onTouchBegan(Touch* touch, Event* event)
                 return true;
             }            
         }
-        BaseObj* dudeObj = objCtrl->dudeObjectAt(mSwipeFromColumn, mSwipeFromRow);
+        BaseObj* dudeObj = objCtrl->dudeAt(mSwipeFromColumn, mSwipeFromRow);
         if (dudeObj) {
             if (dudeObj->isSwappable()) {
                 mTouchedObj = dudeObj;

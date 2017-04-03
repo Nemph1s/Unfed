@@ -105,8 +105,10 @@ BaseObj * DudeController::createDudeObject(int column, int row, int type)
     FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
     auto obj = dynamic_cast<DudeObj*>(SmartObjFactory->createDudeObj(info));
     CC_ASSERT(obj);
-    mObjCtrl->getObject(column, row)->addObject(obj);
-
+    auto container = mObjCtrl->getObject(column, row);
+    if (container) {
+        container->addObject(obj);
+    }
     auto helper = DudeHelper::createWithDudeObject(obj);
     helper->setDudeController(this);
     mDudeDirections.insert(obj, helper);
@@ -116,33 +118,13 @@ BaseObj * DudeController::createDudeObject(int column, int row, int type)
 }
 
 //--------------------------------------------------------------------
-BaseObj* DudeController::objectAt(int column, int row)
-//--------------------------------------------------------------------
-{
-    if (!(column >= 0 && column < _GlobalInfo::NumColumns) || !(row >= 0 && row < _GlobalInfo::NumColumns)) {
-        cocos2d::log("DudeController::objectAt: wrong pos at column=%d, row=%d", column, row);
-        return nullptr;
-    }
-    auto container = mObjCtrl->getObject(column, row);
-    return container->getObject(BaseObjType::Dude);
-}
-
-//--------------------------------------------------------------------
-DudeObj* DudeController::dudeObjectAt(int column, int row)
-//--------------------------------------------------------------------
-{
-    auto container = mObjCtrl->getObject(column, row);
-    return container->getDude();
-}
-
-//--------------------------------------------------------------------
 void DudeController::detectDirectionsForDudes()
 //--------------------------------------------------------------------
 {
     for (int row = 0; row < _GlobalInfo::NumRows; row++) {
         for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
             
-            auto dude = dudeObjectAt(column, row);
+            auto dude = mObjCtrl->dudeAt(column, row);
             if (dude) {
                 auto helper = mDudeDirections.at(dude);
                 if (helper) {
@@ -248,7 +230,7 @@ bool DudeController::canActivateDudeTo(int fromCol, int fromRow, int direction)
     if (toColumn < 0 || toColumn >= _GlobalInfo::NumColumns || toRow < 0 || toRow >= _GlobalInfo::NumRows)
         return false;
 
-    auto fromObj = dudeObjectAt(fromCol, fromRow);
+    auto fromObj = mObjCtrl->dudeAt(fromCol, fromRow);
     if (!fromObj)
         return false;
 

@@ -45,9 +45,6 @@ public:
 
     BaseObj* createDudeObject(int column, int row, int type);
 
-    BaseObj* objectAt(int column, int row);
-    DudeObj* dudeObjectAt(int column, int row);
-
     void detectDirectionsForDudes();
 
     bool canActivateDudeTo(int fromCol, int fromRow, int direction);

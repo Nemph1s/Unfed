@@ -42,7 +42,7 @@ public:
     bool init();
 
     void createObjects();
-    inline ObjContainer* getObject(int column, int row);
+    ObjContainer* getObject(int column, int row);
 
     CommonTypes::Set* createInitialFieldObjects();
     CommonTypes::Set* createInitialCookies();
@@ -57,8 +57,8 @@ public:
     bool hasChainAt(int column, int row);
 
     BaseObj* fieldObjectAt(int column, int row);
-    std::list<FieldObj*>& fieldObjectsAt(int column, int row);
-    DudeObj* dudeObjectAt(int column, int row);
+    std::list<FieldObj*>* fieldObjectsAt(int column, int row);
+    DudeObj* dudeAt(int column, int row);
 
     bool isEmptyTileAt(int column, int row);
     bool isPossibleToAddCookie(int column, int row);

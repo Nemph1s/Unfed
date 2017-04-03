@@ -200,19 +200,20 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
         for (int row = _GlobalInfo::NumRows - 1; row >= 0; row--) {
 
             auto fieldObjects = mObjCtrl->fieldObjectsAt(column, row);
-            for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
-                auto obj = dynamic_cast<FieldObj*>(*it);
-                if (obj->getReadyToUpdatePriority()) {
-                    // Lazy creation of array
-                    if (array == nullptr) {
-                        array = cocos2d::Array::createWithCapacity(_GlobalInfo::NumRows);
-                        columns->addObject(array);
+            if (fieldObjects) {
+                for (auto it = fieldObjects->begin(); it != fieldObjects->end(); ++it) {
+                    auto obj = dynamic_cast<FieldObj*>(*it);
+                    if (obj->getReadyToUpdatePriority()) {
+                        // Lazy creation of array
+                        if (array == nullptr) {
+                            array = cocos2d::Array::createWithCapacity(_GlobalInfo::NumRows);
+                            columns->addObject(array);
+                        }
+                        array->addObject(obj);
+                        obj->setReadyToUpdatePriority(false);
                     }
-                    array->addObject(obj);
-                    obj->setReadyToUpdatePriority(false);
                 }
             }
-
             if (isPossibleToAddCookie(column, row)) {
 
                 // Scan upward to find the cookie that sits directly above the hole
@@ -221,7 +222,7 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
                     if (!mLevelInfo.skipEmptyHoles && mObjCtrl->isEmptyTileAt(column, lookup)) {
                         continue;
                     }
-                    auto dudeObj = mObjCtrl->dudeObjectAt(column, lookup);
+                    auto dudeObj = mObjCtrl->dudeAt(column, lookup);
                     if (useGravityOnObject(columns, array, dudeObj, row)) {
                         break;
                     }
