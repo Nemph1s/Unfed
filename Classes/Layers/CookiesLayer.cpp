@@ -178,10 +178,13 @@ void CookiesLayer::onTouchMoved(Touch* touch, Event* event)
     int column = -1, row = -1;
     if (Helper::convertPointToTilePos(locationInNode, column, row)) {
 
-        if (updateChainPreviewHint(column, row)) {
+        auto direction = getSwipeDirection(column, row);
+        if (isSameDirection(direction)) {
             return;
         }
-        auto direction = getSwipeDirection(column, row);
+        if (updateChainPreviewHint(column, row, direction)) {
+            return;
+        }
         if (direction != Helper::to_underlying(Direction::Unknown)) {
             if (mTrySwapCookieCallback) {
                 if (mTrySwapCookieCallback(mSwipeFromColumn, mSwipeFromRow, direction)) {
@@ -346,34 +349,32 @@ int CookiesLayer::getSwipeDirection(int column, int row)
 }
 
 //--------------------------------------------------------------------
-bool CookiesLayer::updateChainPreviewHint(int column, int row)
+bool CookiesLayer::isSameDirection(int direction)
+//--------------------------------------------------------------------
+{
+    if (direction == Helper::to_underlying(mPreviousDirection)) {
+        return true;
+    }
+    mPreviousDirection = static_cast<CommonTypes::Direction>(direction);
+    return false;
+}
+
+//--------------------------------------------------------------------
+bool CookiesLayer::updateChainPreviewHint(int column, int row, int direction)
 //--------------------------------------------------------------------
 {
     bool isDudeObject = mTouchedObj->getType() == BaseObjType::Dude;
     if (isDudeObject) {
 
         auto objCtrl = mLevel->getObjectController();
-        auto direction = getSwipeDirection(column, row);
-        if (direction == Helper::to_underlying(Direction::Unknown)) {
-            if (direction != Helper::to_underlying(mHintPreviewDirection)) {
-                removeChainPreviewSprites();
-                
-                objCtrl->detectDirectionsForDudes();
-                mHintPreviewDirection = static_cast<CommonTypes::Direction>(direction);
-            }
-        }
-        else if (direction != Helper::to_underlying(Direction::Unknown)) {
+        removeChainPreviewSprites();
+        objCtrl->detectDirectionsForDudes();
 
-            if (direction != Helper::to_underlying(mHintPreviewDirection)) {
-                removeChainPreviewSprites();
-
-                objCtrl->detectDirectionsForDudes();
-                auto set = mUpdateDirectionCallback(mTouchedObj, direction);
-                if (set) {
-                    createChainPreviewSprites(set);
-                    CC_SAFE_RELEASE_NULL(set);
-                }
-                mHintPreviewDirection = static_cast<CommonTypes::Direction>(direction);
+        if (direction != Helper::to_underlying(Direction::Unknown)) {
+            auto set = mUpdateDirectionCallback(mTouchedObj, direction);
+            if (set) {
+                createChainPreviewSprites(set);
+                CC_SAFE_RELEASE_NULL(set);
             }
         }
     }   
