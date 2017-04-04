@@ -39,14 +39,17 @@ public:
     void animateScoreForChain(ChainObj* chain);
     void animateScoreForFieldObj(BaseObj* obj);
 
+    void animateJumpWithBouncing(BaseObj* obj, float heigthInPixel);
     void animateBouncingObj(BaseObj* obj);
-    void animateJumpingObj(BaseObj* obj);
+    
     void animateHintSwap(CommonTypes::Set* objects, cocos2d::CallFunc* completion);
     
 protected:
     void animateMatchCookie(CookieObj* obj);
     void animateMatchFieldObj(FieldObj* obj);
     void animateMatchDude(DudeObj* obj);
+
+    void animateHintJump(BaseObj* obj);
 
     cocos2d::Scene* mCurrentScene;
 };

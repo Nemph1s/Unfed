@@ -406,6 +406,28 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
+void _AnimationsManager::animateJumpWithBouncing(BaseObj* obj, float heigthInPixel)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+
+    auto animMgr = this;
+    auto bounceCallback = CallFunc::create([obj, animMgr]() {
+        if (obj) {
+            animMgr->animateBouncingObj(obj);
+        }
+    });
+
+    auto speed = 2.0f;
+    float duration = heigthInPixel / 100.0f;
+
+    auto sprite = obj->getSpriteNode();
+    auto jumpAction = cocos2d::JumpBy::create(duration, Vec2::ZERO, heigthInPixel, 1);
+    auto seq = Sequence::create(jumpAction, bounceCallback, nullptr);
+    sprite->runAction(Speed::create(seq, speed));
+}
+
+//--------------------------------------------------------------------
 void _AnimationsManager::animateBouncingObj(BaseObj * obj)
 //--------------------------------------------------------------------
 {
@@ -450,7 +472,7 @@ void _AnimationsManager::animateBouncingObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateJumpingObj(BaseObj * obj)
+void _AnimationsManager::animateHintJump(BaseObj * obj)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
@@ -506,7 +528,7 @@ void _AnimationsManager::animateHintSwap(CommonTypes::Set* objects, cocos2d::Cal
     for (auto itObj = objects->begin(); itObj != objects->end(); itObj++) {
         auto obj = dynamic_cast<BaseObj*>(*itObj);
         if (obj) {
-            animateJumpingObj(obj);
+            animateHintJump(obj);
         }
     }
 
