@@ -54,6 +54,8 @@ public:
 
     CommonTypes::Set* detectChainAt(int column, int row);
 
+    bool getCellFromChainAndPrevSwapSet(int& column, int& row, ChainObj* chain, CommonTypes::Set* prevSwapObjs);
+
     /**
     * Add chain to objectContainer and remove duplicate containers from other chains
     * @param chains The set with the chains.

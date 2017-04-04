@@ -41,6 +41,23 @@ protected: varType varName = defaultVal;\
 public: virtual varType is##funName(void) const { return varName; }\
 public: virtual void set##funName(varType var){ varName = var; }
 
+/** @def CC_SYNTHESIZE
+* It is used to declare a protected variable.
+* We can use getter to read the variable, and use the setter to change the variable.
+*
+* @param varType     The type of variable.
+* @param varName     Variable name.
+* @param funName     "get + funName" will be the name of the getter.
+*                    "set + funName" will be the name of the setter.
+* @warning   The getter and setter are public inline functions.
+*            The variables and methods declared after CC_SYNTHESIZE are all public.
+*            If you need protected or private, please declare.
+*/
+#define SYNTHESIZE(varType, varName, funName, defaultVal)\
+protected: varType varName = defaultVal;\
+public: virtual varType get##funName(void) const { return varName; }\
+public: virtual void set##funName(varType var){ varName = var; }
+
 /** @def SYNTHESIZE_READONLY
 * It is used to declare a protected variable. We can use getter to read the variable.
 *

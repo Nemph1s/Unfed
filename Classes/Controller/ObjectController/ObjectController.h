@@ -42,7 +42,7 @@ public:
     bool init();
 
     void createObjects();
-    ObjContainer* getObject(int column, int row);
+    ObjContainer* getContainer(int column, int row);
 
     CommonTypes::Set* createInitialFieldObjects();
     CommonTypes::Set* createInitialCookies();
