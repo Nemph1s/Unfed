@@ -173,6 +173,49 @@ Set* ChainController::detectChainAt(int column, int row)
 }
 
 //--------------------------------------------------------------------
+bool ChainController::getCellFromChainAndPrevSwapSet(int& column, int& row, ChainObj* chain, CommonTypes::Set* prevSwapObjs)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(chain);
+    if (!prevSwapObjs) {
+        auto objects = chain->getChainObjects();
+        auto randomObject = dynamic_cast<BaseObj*>(objects->getRandomObject());
+        if (randomObject) {
+            row = randomObject->getRow();
+            column = randomObject->getColumn();
+        }
+    } 
+    else {
+        auto objects = chain->getObjects();
+        for (auto it = prevSwapObjs->begin(); it != prevSwapObjs->end(); it++) {
+            for (auto itChain = objects->begin(); itChain != objects->end(); itChain++) {
+            
+                if (*itChain == *it) {
+                    auto container = dynamic_cast<ObjContainer*>(*itChain);
+                    if (!container)
+                        continue;
+
+                    auto baseObj = container->getObjectForChain();
+                    if (!baseObj)
+                        continue;
+
+                    row = baseObj->getRow();
+                    column = baseObj->getColumn();
+                    break;
+                }
+            }
+            if (column != -1 && row != -1) {
+                break;
+            }
+        }        
+    }
+    if (column == -1 || row == -1) {
+        return false;
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------
 void ChainController::activateChains(Set* chains)
 //--------------------------------------------------------------------
 {
@@ -293,7 +336,7 @@ void ChainController::addObjToChain(ChainObj* chain, int col, int row)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chain);
-    auto container = mObjCtrl->getObject(col, row);
+    auto container = mObjCtrl->getContainer(col, row);
     if (container) {
         if (container->isContainGameObj()) {
             chain->addObjectToChain(container);

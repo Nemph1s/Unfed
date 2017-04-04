@@ -23,14 +23,6 @@
 #include "Layers/CookiesLayer.h"
 
 //--------------------------------------------------------------------
-SwapController::SwapController()
-    : mLevel(nullptr)
-    , mPossibleSwaps(nullptr)
-//--------------------------------------------------------------------
-{
-}
-
-//--------------------------------------------------------------------
 SwapController::~SwapController()
 //--------------------------------------------------------------------
 {
@@ -72,7 +64,7 @@ bool SwapController::detectPossibleSwaps()
     for (int row = 0; row < _GlobalInfo::NumRows; row++) {
         for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
             auto objCtrl = mLevel->getObjectController();
-            auto container = objCtrl->getObject(column, row);
+            auto container = objCtrl->getContainer(column, row);
             if (!container) {
                 continue;
             }
@@ -114,8 +106,8 @@ void SwapController::detectSwap(SwapChecker * checker)
     CC_ASSERT(checker);
     auto objCtrl = mLevel->getObjectController();
 
-    auto currContainer = objCtrl->getObject(checker->curCol, checker->curRow);
-    auto nextContainer = objCtrl->getObject(checker->nextCol, checker->nextRow);
+    auto currContainer = objCtrl->getContainer(checker->curCol, checker->curRow);
+    auto nextContainer = objCtrl->getContainer(checker->nextCol, checker->nextRow);
     if (!currContainer || !nextContainer) {
         return;
     }
@@ -169,7 +161,7 @@ bool SwapController::isPossibleSwap(SwapObj * swap)
 }
 
 //--------------------------------------------------------------------
-void SwapController::performSwap(SwapObj * swap)
+void SwapController::performSwap(SwapObj* swap)
 //--------------------------------------------------------------------
 {
     if (!swap)
@@ -183,8 +175,8 @@ void SwapController::performSwap(SwapObj * swap)
 
     auto objCtrl = mLevel->getObjectController();
 
-    auto currContainer = objCtrl->getObject(columnA, rowA);
-    auto nextContainer = objCtrl->getObject(columnB, rowB);
+    auto currContainer = objCtrl->getContainer(columnA, rowA);
+    auto nextContainer = objCtrl->getContainer(columnB, rowB);
 
     auto currObject = currContainer->getObjectForChain();
     auto nextObject = nextContainer->getObjectForChain();
@@ -193,6 +185,9 @@ void SwapController::performSwap(SwapObj * swap)
     nextContainer->updateObjectWith(nextObject, currObject);
     currContainer->synchronizeTilePos();
     nextContainer->synchronizeTilePos();
+
+    mPreviousSwap = swap;
+    CC_SAFE_RETAIN(mPreviousSwap);
 }
 
 //--------------------------------------------------------------------
@@ -210,8 +205,8 @@ bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
         return false;
     }
     auto objCtrl = mLevel->getObjectController();
-    auto toContainer = objCtrl->getObject(toColumn, toRow);
-    auto fromContainer = objCtrl->getObject(fromCol, fromRow);
+    auto toContainer = objCtrl->getContainer(toColumn, toRow);
+    auto fromContainer = objCtrl->getContainer(fromCol, fromRow);
     if (!toContainer || !fromContainer)
         return false;
 
@@ -250,9 +245,34 @@ bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
 void SwapController::clearPossibleSwaps()
 //--------------------------------------------------------------------
 {
-    if (!mPossibleSwaps) {
-        return;
+    if (mPreviousSwap) {
+        CC_SAFE_RELEASE_NULL(mPreviousSwap);
     }
-    mPossibleSwaps->removeAllObjects();
-    CC_SAFE_RELEASE_NULL(mPossibleSwaps);
+    if (mPossibleSwaps) {
+        mPossibleSwaps->removeAllObjects();
+        CC_SAFE_RELEASE_NULL(mPossibleSwaps);
+    }    
+}
+
+//--------------------------------------------------------------------
+CommonTypes::Set* SwapController::getPreviousSwapContainers()
+//--------------------------------------------------------------------
+{
+    if (!mPreviousSwap) {
+        return nullptr;
+    }
+    CommonTypes::Set* set = CommonTypes::Set::create();
+    auto objCtrl = mLevel->getObjectController();
+    auto objA = mPreviousSwap->getObjectA();
+    if (objA) {
+        auto containerA = objCtrl->getContainer(objA->getColumn(), objA->getRow());
+        set->addObject(containerA);
+    }
+    auto objB = mPreviousSwap->getObjectB();
+    if (objB) {
+        auto containerB = objCtrl->getContainer(objB->getColumn(), objB->getRow());
+        set->addObject(containerB);
+    }
+    CC_SAFE_RELEASE_NULL(mPreviousSwap);
+    return set;
 }

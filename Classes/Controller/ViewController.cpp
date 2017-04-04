@@ -318,7 +318,8 @@ void ViewController::handleMatches()
     cocos2d::log("ViewController::handleMatches");
 
     auto chains = mChainController->removeMatches();
-    auto dudes = mDudeController->createDudeObectsFromChains(chains);
+    auto prevSwapContainers = mSwapController->getPreviousSwapContainers();
+    auto dudes = mDudeController->createDudeObectsFromChains(chains, prevSwapContainers);
     mGameplayScene->addSpritesForObjects(dudes);
 
     if (chains->count() == 0) {

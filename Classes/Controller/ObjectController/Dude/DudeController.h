@@ -41,7 +41,7 @@ public:
 
     bool init();
 
-    Set* createDudeObectsFromChains(Set* chains);
+    Set* createDudeObectsFromChains(Set* chains, Set* prevSwapContainers);
 
     BaseObj* createDudeObject(int column, int row, int type);
 

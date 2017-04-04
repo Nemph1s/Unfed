@@ -86,7 +86,7 @@ void ObjectController::createObjects()
 }
 
 //--------------------------------------------------------------------
-ObjContainer* ObjectController::getObject(int column, int row)
+ObjContainer* ObjectController::getContainer(int column, int row)
 //--------------------------------------------------------------------
 {
     if (Helper::isValidColumnAndRow(column, row)) {
@@ -152,7 +152,7 @@ BaseObj * ObjectController::createTile(int column, int row, int type)
     TileInfo info = { baseInfo, static_cast<TileType>(type) };
     auto tile = SmartObjFactory->createTileObj(info);
     CC_ASSERT(tile);
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         obj->addObject(tile);
     }
@@ -167,7 +167,7 @@ BaseObj * ObjectController::createCookie(int column, int row, int type)
     CookieInfo info = { baseInfo, static_cast<CookieType>(type) };
     auto cookie = SmartObjFactory->createCookieObj(info);
     CC_ASSERT(cookie);
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         obj->addObject(cookie);
     }
@@ -182,7 +182,7 @@ BaseObj * ObjectController::createFieldObject(int column, int row, int type, int
     FieldInfo info = { baseInfo, static_cast<FieldType>(type), priority };
     auto fieldObj = SmartObjFactory->createFieldObj(info);
     CC_ASSERT(fieldObj);
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         obj->addObject(fieldObj);
     }
@@ -259,7 +259,7 @@ int ObjectController::getRandomCookieType(int column, int row)
 TileObj* ObjectController::tileAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         return obj->getTile();
     }
@@ -270,7 +270,7 @@ TileObj* ObjectController::tileAt(int column, int row)
 CookieObj* ObjectController::cookieAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         return obj->getCookie();
     }
@@ -306,7 +306,7 @@ bool ObjectController::hasChainAt(int column, int row)
 BaseObj* ObjectController::fieldObjectAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         return obj->getFieldObject();
     }
@@ -317,7 +317,7 @@ BaseObj* ObjectController::fieldObjectAt(int column, int row)
 std::list<FieldObj*>* ObjectController::fieldObjectsAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         return &obj->getFieldObjects();
     }
@@ -328,7 +328,7 @@ std::list<FieldObj*>* ObjectController::fieldObjectsAt(int column, int row)
 DudeObj* ObjectController::dudeAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         return obj->getDude();
     }
@@ -339,7 +339,7 @@ DudeObj* ObjectController::dudeAt(int column, int row)
 bool ObjectController::isEmptyTileAt(int column, int row)
 //--------------------------------------------------------------------
 {
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         return obj->isEmptyTileAt();
     }
@@ -350,7 +350,7 @@ bool ObjectController::isEmptyTileAt(int column, int row)
 bool ObjectController::isPossibleToAddCookie(int column, int row)
 //--------------------------------------------------------------------
 {
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         return obj->isPossibleToAddCookie();
     }
@@ -361,7 +361,7 @@ bool ObjectController::isPossibleToAddCookie(int column, int row)
 bool ObjectController::isSameTypeOfCookieAt(int column, int row, int type)
 //--------------------------------------------------------------------
 {
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         return obj->isSameTypeOfCookieAt(type);
     }
@@ -374,7 +374,7 @@ bool ObjectController::matchFieldObject(BaseObj * obj)
 {
     obj->match();
 
-    auto objContainer = getObject(obj->getColumn(), obj->getRow());
+    auto objContainer = getContainer(obj->getColumn(), obj->getRow());
     if (!objContainer) {
         return false;
     }
@@ -392,7 +392,7 @@ bool ObjectController::matchFieldObject(BaseObj * obj)
 bool ObjectController::matchCookieObject(BaseObj * obj)
 //--------------------------------------------------------------------
 {
-    auto objContainer = getObject(obj->getColumn(), obj->getRow());
+    auto objContainer = getContainer(obj->getColumn(), obj->getRow());
     if (!objContainer) {
         return false;
     }
@@ -410,7 +410,7 @@ bool ObjectController::matchCookieObject(BaseObj * obj)
 bool ObjectController::matchDudeObject(BaseObj * obj)
 //--------------------------------------------------------------------
 {
-    auto objContainer = getObject(obj->getColumn(), obj->getRow());
+    auto objContainer = getContainer(obj->getColumn(), obj->getRow());
     if (!objContainer) {
         return false;
     }
@@ -436,7 +436,7 @@ bool ObjectController::matchDudeObject(BaseObj * obj)
 void ObjectController::updateCookieObjectAt(int column, int row, BaseObj* cookie)
 //--------------------------------------------------------------------
 {
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         obj->addObject(cookie);
     }
@@ -446,7 +446,7 @@ void ObjectController::updateCookieObjectAt(int column, int row, BaseObj* cookie
 void ObjectController::updateObjectAt(int column, int row, BaseObj* baseObj)
 //--------------------------------------------------------------------
 {
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         obj->addObject(baseObj);
     }
@@ -456,7 +456,7 @@ void ObjectController::updateObjectAt(int column, int row, BaseObj* baseObj)
 void ObjectController::removeObjectAt(int column, int row, CommonTypes::BaseObjType type)
 //--------------------------------------------------------------------
 {
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         obj->removeObject(type);
     }
@@ -477,7 +477,7 @@ void ObjectController::removeCookie(int column, int row)
         cookie->removeFromParent();
     }
     SmartObjFactory->recycle(cookie);
-    auto obj = getObject(column, row);
+    auto obj = getContainer(column, row);
     if (obj) {
         obj->removeObject(BaseObjType::Cookie);
     }

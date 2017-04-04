@@ -74,7 +74,7 @@ bool DudeController::init()
 }
 
 //--------------------------------------------------------------------
-Set* DudeController::createDudeObectsFromChains(Set* chains)
+Set* DudeController::createDudeObectsFromChains(Set* chains, Set* prevSwapContainers)
 //--------------------------------------------------------------------
 {
     auto set = Set::create();
@@ -84,14 +84,13 @@ Set* DudeController::createDudeObectsFromChains(Set* chains)
 
         auto dudeType = getDudeTypeByChain(chain);
         if (dudeType != FieldType::Unknown) {
-            auto objects = chain->getChainObjects();
-            auto obj = dynamic_cast<BaseObj*>(objects->getRandomObject());
-            if (!obj) {
-                continue;
-            }
-            int type = Helper::to_underlying(dudeType);
-            auto dude = createDudeObject(obj->getColumn(), obj->getRow(), type);
-            set->addObject(dude);
+            int column = -1;
+            int row = -1;
+            if (mChainCtrl->getCellFromChainAndPrevSwapSet(column, row, chain, prevSwapContainers)) {
+                int type = Helper::to_underlying(dudeType);
+                auto dude = createDudeObject(column, row, type);
+                set->addObject(dude);
+            }            
         }
     }
     return set;
@@ -105,7 +104,7 @@ BaseObj * DudeController::createDudeObject(int column, int row, int type)
     FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
     auto obj = dynamic_cast<DudeObj*>(SmartObjFactory->createDudeObj(info));
     CC_ASSERT(obj);
-    auto container = mObjCtrl->getObject(column, row);
+    auto container = mObjCtrl->getContainer(column, row);
     if (container) {
         container->addObject(obj);
     }
