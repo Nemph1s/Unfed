@@ -178,7 +178,7 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
             // Perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
 
-                obj->updateDebugLabel();
+                obj->updateZOrder();
 
                 auto moveCallback = CallFunc::create([=]() {
                     AnimationsManager->animateBouncingObj(obj);
@@ -246,7 +246,7 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
             // You perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
 
-                cookie->updateDebugLabel();
+                cookie->updateZOrder();
 
                 auto moveCallback = CallFunc::create([=]() {
                     AnimationsManager->animateBouncingObj(cookie);
@@ -429,7 +429,6 @@ void _AnimationsManager::animateBouncingObj(BaseObj* obj)
     sprite->runAction(bounceIn);
     auto seq = Sequence::create(DelayTime::create(0.2f), bounceOut, nullptr);
     sprite->runAction(seq);
-
 }
 
 //--------------------------------------------------------------------
@@ -447,7 +446,7 @@ void _AnimationsManager::animateHintJump(BaseObj* obj)
     sprite->runAction(seq);
 
     auto speed = 2.0f;
-    auto jumpAction = cocos2d::JumpBy::create(0.4f, Vec2::ZERO, 30.0f, 1);
+    auto jumpAction = cocos2d::JumpBy::create(0.4f, Vec2::ZERO, 40.0f, 1);
     auto seq1 = Sequence::create(DelayTime::create(0.5f), jumpAction, nullptr);
     sprite->runAction(Speed::create(seq1, speed));
 }
@@ -466,7 +465,6 @@ void _AnimationsManager::animateHintSwap(CommonTypes::Set* objects, cocos2d::Cal
     }
 
     const float duration = 0.4f;
-
     mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
 }
 
@@ -477,7 +475,6 @@ void _AnimationsManager::animateMatchCookie(CookieObj * obj)
     if (!obj) {
         return;
     }
-
     const float duration = 0.3f;
     const float scaleFactor = 0.1f;
 
@@ -502,7 +499,6 @@ void _AnimationsManager::animateMatchFieldObj(FieldObj * obj)
     if (!obj) {
         return;
     }
-
     const float duration = 0.3f;
 
     auto fadeOut = FadeOut::create(duration);
@@ -532,7 +528,6 @@ void _AnimationsManager::animateMatchDude(DudeObj * obj)
     if (!obj) {
         return;
     }
-
     const float duration = 0.3f;
     const float scaleFactor = 0.1f;
 

@@ -41,6 +41,7 @@ public:
     virtual void clear();
 
     virtual void updateDebugLabel();
+    virtual void updateZOrder();
 
 protected:
     // Nodes should be created using create();

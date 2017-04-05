@@ -148,3 +148,15 @@ void BaseObj::updateDebugLabel()
 //--------------------------------------------------------------------
 {
 }
+
+//--------------------------------------------------------------------
+void BaseObj::updateZOrder()
+//--------------------------------------------------------------------
+{
+    auto zOrder = (mRow * 10);
+    setLocalZOrder(zOrder);
+    if (mSpriteNode) {
+        mSpriteNode->setLocalZOrder(zOrder);
+    }
+    updateDebugLabel();
+}

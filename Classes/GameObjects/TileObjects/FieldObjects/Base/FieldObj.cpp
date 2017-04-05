@@ -60,7 +60,7 @@ bool FieldObj::init(const CommonTypes::FieldInfo &info)
 #ifdef COCOS2D_DEBUG
         mDebugLabel = cocos2d::Label::create();
         mDebugLabel->setBMFontSize(16);
-        mDebugLabel->setDimensions(32, 32);
+        mDebugLabel->setDimensions(42, 32);
         mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::RIGHT);
         mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::BOTTOM);
         mDebugLabel->setPosition(cocos2d::Vec2(GlobInfo->getTileWidth() * 0.8f, GlobInfo->getTileHeight() * 0.2f));
@@ -162,7 +162,7 @@ void FieldObj::updateDebugLabel()
         int col = mColumn == -1 ? 0 : mColumn;
         int row = mRow == -1 ? 0 : mRow;
 
-        auto text = cocos2d::StringUtils::format("[%d,%d]", col, row);
+        auto text = cocos2d::StringUtils::format("[%d,%d]z%d", col, row, mSpriteNode->getLocalZOrder());
         mDebugLabel->setString(text);
     }
 }

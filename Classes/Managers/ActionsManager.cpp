@@ -98,17 +98,14 @@ cocos2d::ActionInstant* _ActionsManager::actionSwapObj(BaseObj* objA, BaseObj* o
 
     auto swapCallback = CallFunc::create([objA, objB, isFirstSwapObject]() {
 
-        auto spriteA = objA->getSpriteNode();
-        auto spriteB = objB->getSpriteNode();
-        auto oldZOrderB = spriteB->getLocalZOrder();
-
-        auto updateZOrderCallback = CallFunc::create([objA, spriteA, oldZOrderB]() {
-            if (objA && spriteA) {
-                spriteA->setLocalZOrder(oldZOrderB);
-                objA->updateDebugLabel();
+        auto updateZOrderCallback = CallFunc::create([objA]() {
+            if (objA) {
+                objA->updateZOrder();                
             }
         });
 
+        auto spriteA = objA->getSpriteNode();
+        auto spriteB = objB->getSpriteNode();
         const float duration = 0.3f;
         auto movingCallback = CallFunc::create([objA, spriteA, spriteB, duration, isFirstSwapObject]() {
             // Put the cookie you started with on top.

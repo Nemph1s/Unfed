@@ -66,7 +66,7 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
 #ifdef COCOS2D_DEBUG
         mDebugLabel = cocos2d::Label::create();
         mDebugLabel->setBMFontSize(16);
-        mDebugLabel->setDimensions(32, 32);
+        mDebugLabel->setDimensions(42, 32);
         mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::LEFT);
         mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::TOP);
         mDebugLabel->setPosition(cocos2d::Vec2(GlobInfo->getTileWidth() / 4, (GlobInfo->getTileHeight() / 1.25f)));
@@ -115,7 +115,7 @@ void CookieObj::setColumn(int var)
 //--------------------------------------------------------------------
 {
     BaseObj::setColumn(var);
-    updateDebugLabel();
+    updateZOrder();
 }
 
 //--------------------------------------------------------------------
@@ -123,7 +123,7 @@ void CookieObj::setRow(int var)
 //--------------------------------------------------------------------
 {
     BaseObj::setRow(var);
-    updateDebugLabel();
+    updateZOrder();  
 }
 
 //--------------------------------------------------------------------
@@ -153,7 +153,7 @@ void CookieObj::updateDebugLabel()
         int col = mColumn == -1 ? 0 : mColumn;
         int row = mRow == -1 ? 0 : mRow;
      
-        auto text = cocos2d::StringUtils::format("[%d,%d]", col, row);
+        auto text = cocos2d::StringUtils::format("[%d,%d]z%d", col, row, mSpriteNode->getLocalZOrder());
         mDebugLabel->setString(text);
     }
 }

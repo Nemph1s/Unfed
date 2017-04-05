@@ -163,7 +163,7 @@ void GameplayScene::addFieldObjectsAt(int column, int row)
     for (auto it = fieldObjects->begin(); it != fieldObjects->end(); ++it) {
         auto fieldObj = dynamic_cast<FieldObj*>(*it);    
         createSpriteWithFieldObj(fieldObj);
-        fieldObj->updateDebugLabel();
+        fieldObj->updateZOrder();
     }
 }
 

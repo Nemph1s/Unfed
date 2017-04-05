@@ -132,7 +132,7 @@ void CookiesLayer::addSpritesForObjects(CommonTypes::Set * set)
             createSpriteWithObj(obj, obj->getColumn(), obj->getRow());
         }
 
-        obj->updateDebugLabel();
+        obj->updateZOrder();
 
         auto sprite = obj->getSpriteNode();
         AnimationsManager->animateNewCookieSprite(sprite);
@@ -402,7 +402,7 @@ void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
             }
         }
         if (obj->getType() != BaseObjType::Tile) {
-            obj->updateDebugLabel();
+            obj->updateZOrder();
         }
     }    
 }

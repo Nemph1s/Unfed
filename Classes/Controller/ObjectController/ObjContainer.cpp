@@ -286,12 +286,13 @@ void ObjContainer::synchronizeTilePos()
         if (mDudeObj) {
             mDudeObj->setColumn(mTileObj->getColumn());
             mDudeObj->setRow(mTileObj->getRow());
-            mDudeObj->updateDebugLabel();
+            mDudeObj->updateZOrder();
+            
         }
         if (mCookieObj) {
             mCookieObj->setColumn(mTileObj->getColumn());
             mCookieObj->setRow(mTileObj->getRow());
-            mCookieObj->updateDebugLabel();
+            mCookieObj->updateZOrder();          
         }
     }
 }
@@ -324,7 +325,6 @@ bool ObjContainer::isPossibleToAddCookie()
                 return true;
             }
         }
-
     }
     return false;
 }
