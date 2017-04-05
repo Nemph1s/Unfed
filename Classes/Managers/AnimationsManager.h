@@ -48,10 +48,7 @@ protected:
     void animateMatchCookie(CookieObj* obj);
     void animateMatchFieldObj(FieldObj* obj);
     void animateMatchDude(DudeObj* obj);
-
-    cocos2d::ActionInstant* actionObjBounceIn(BaseObj* obj);
-    cocos2d::ActionInstant* actionObjBounceOut(BaseObj* obj);
-
+    
     void animateHintJump(BaseObj* obj);
 
     cocos2d::Scene* mCurrentScene;
