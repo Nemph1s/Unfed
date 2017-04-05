@@ -171,6 +171,9 @@
     <ClCompile Include="..\Classes\Common\GlobalInfo\GlobalInfo.cpp">
       <Filter>src\Common\GlobalInfo</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Managers\ActionsManager.cpp">
+      <Filter>src\Managers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -292,6 +295,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Common\GlobalInfo\GlobalInfoTypes.h">
       <Filter>src\Common\GlobalInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Managers\ActionsManager.h">
+      <Filter>src\Managers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
