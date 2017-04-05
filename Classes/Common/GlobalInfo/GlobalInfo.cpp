@@ -45,6 +45,14 @@ void _GlobalInfo::init()
 
     initGlView();
     initGlobalInfo();
+    initScoreValues();
+}
+
+//--------------------------------------------------------------------
+const std::map<uint16_t, uint16_t>& _GlobalInfo::getDudeScoreMap() const
+//--------------------------------------------------------------------
+{
+    return mDudeScoreMap;
 }
 
 //--------------------------------------------------------------------
@@ -122,5 +130,25 @@ void _GlobalInfo::initGlobalInfo()
     cocos2d::log(" - tileWidth: %.2f", mTileWidth);
     cocos2d::log(" - tileHeigth: %.2f", mTileHeight);
     cocos2d::log(" - levelsCount: %d", mLevelsCount);
+    cocos2d::log("//--------------------------------------------------------------------");
+}
+
+//--------------------------------------------------------------------
+void _GlobalInfo::initScoreValues()
+//--------------------------------------------------------------------
+{
+    cocos2d::log("//--------------------------------------------------------------------");
+    cocos2d::log("GlobalInfo::initScoreValues:");
+    JsonParser->parseScoreValues();
+    CC_ASSERT(JsonParser->checkScoreValuesStatus());
+    JsonParser->updateScoreValues();
+
+    cocos2d::log(" - cookieMinimalScore: %d", mCookieMinScore);
+    cocos2d::log(" - cookieDefaultScore: %d", mCookieDefaultScore);
+    cocos2d::log(" - fieldObjScore: %d", mFieldObjScore);
+    cocos2d::log(" - enemyScore: %d", mEnemyScore);
+    for (auto dudeScore : mDudeScoreMap) {
+        cocos2d::log(" - dude%d: %d", dudeScore.first, dudeScore.second);
+    }
     cocos2d::log("//--------------------------------------------------------------------");
 }

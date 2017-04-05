@@ -11,6 +11,7 @@
 #include "Utils/Parser/JsonParser.h"
 #include "Utils/Parser/JsonNames.h"
 #include "Utils/GameResources.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
 
 //--------------------------------------------------------------------
 void _JsonParser::parseGlobalInfo()
@@ -39,10 +40,10 @@ bool _JsonParser::checkGlobalInfoStatus()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::JsonGlobalInfo _JsonParser::getJsonGlobalInfo()
+CommonTypes::SGlobalInfo _JsonParser::getJsonGlobalInfo()
 //--------------------------------------------------------------------
 {
-    auto globalInfo = CommonTypes::JsonGlobalInfo();
+    auto globalInfo = CommonTypes::SGlobalInfo();
     globalInfo.swVersion = getSwVersion();
     globalInfo.imgPackType = getImagePackType();
     globalInfo.imgPackVersion = getImagePackVersion();
@@ -51,6 +52,41 @@ CommonTypes::JsonGlobalInfo _JsonParser::getJsonGlobalInfo()
     globalInfo.levelsCount = getLevelsCount();
 
     return globalInfo;
+}
+
+//--------------------------------------------------------------------
+void _JsonParser::parseScoreValues()
+//--------------------------------------------------------------------
+{
+    cocos2d::log("JsonParser::parseScoreValues:");
+    mScoreValuesRootNode = mGlobalInfoRootNode[JsonNames::GlobalInfo::scoreValues];
+
+    if (!checkScoreValuesStatus()) {
+        throw std::invalid_argument("json parse error");
+    }
+}
+
+//--------------------------------------------------------------------
+bool _JsonParser::checkScoreValuesStatus()
+//--------------------------------------------------------------------
+{
+    Json::Value& status = mGlobalInfoRootNode[JsonNames::GlobalInfo::scoreValues];
+    if (!status.isObject())
+        return false;
+
+    return true;
+}
+
+//--------------------------------------------------------------------
+void _JsonParser::updateScoreValues()
+//--------------------------------------------------------------------
+{
+    auto globInfo = _GlobalInfo::getInstance();
+    globInfo->mCookieMinScore = getCookieMinimalScore();
+    globInfo->mCookieDefaultScore = getCookieDefaultScore();
+    globInfo->mFieldObjScore = getFieldObjScore();
+    globInfo->mEnemyScore = getEnemyScore();
+    updateDudeScoreMap();
 }
 
 //--------------------------------------------------------------------
@@ -111,6 +147,92 @@ const uint16_t& _JsonParser::getLevelsCount() const
     if (mGlobalInfoRootNode[JsonNames::GlobalInfo::levelsCount].isUInt()) {
         return mGlobalInfoRootNode[JsonNames::GlobalInfo::levelsCount].asUInt();
     }
+}
+
+//--------------------------------------------------------------------
+const uint16_t& _JsonParser::getCookieMinimalScore() const
+//--------------------------------------------------------------------
+{
+    if (mScoreValuesRootNode[JsonNames::GlobalInfo::ScoreValues::cookieMinimal].isUInt()) {
+        return mScoreValuesRootNode[JsonNames::GlobalInfo::ScoreValues::cookieMinimal].asUInt();
+    }
+}
+
+//--------------------------------------------------------------------
+const uint16_t& _JsonParser::getCookieDefaultScore() const
+//--------------------------------------------------------------------
+{
+    if (mScoreValuesRootNode[JsonNames::GlobalInfo::ScoreValues::cookieDefault].isUInt()) {
+        return mScoreValuesRootNode[JsonNames::GlobalInfo::ScoreValues::cookieDefault].asUInt();
+    }
+}
+
+//--------------------------------------------------------------------
+const uint16_t& _JsonParser::getFieldObjScore() const
+//--------------------------------------------------------------------
+{
+    if (mScoreValuesRootNode[JsonNames::GlobalInfo::ScoreValues::fieldObject].isUInt()) {
+        return mScoreValuesRootNode[JsonNames::GlobalInfo::ScoreValues::fieldObject].asUInt();
+    }
+}
+
+//--------------------------------------------------------------------
+const uint16_t& _JsonParser::getEnemyScore() const
+//--------------------------------------------------------------------
+{
+    if (mScoreValuesRootNode[JsonNames::GlobalInfo::ScoreValues::enemy].isUInt()) {
+        return mScoreValuesRootNode[JsonNames::GlobalInfo::ScoreValues::enemy].asUInt();
+    }
+}
+
+//--------------------------------------------------------------------
+void _JsonParser::updateDudeScoreMap()
+//--------------------------------------------------------------------
+{
+    auto globInfo = _GlobalInfo::getInstance();
+    const Json::Value& subNode = getScoreDudes();
+
+    for (uint16_t i = 0; i < subNode.size(); ++i) {
+        const Json::Value& dudesNode = subNode[i];
+        CC_ASSERT(dudesNode.isObject());
+
+        auto dudeType = getScoreDudeType(dudesNode);
+        auto dudeValue = getScoreDudeValue(dudesNode);
+        globInfo->mDudeScoreMap[dudeType] = dudeValue;
+    }
+}
+
+//--------------------------------------------------------------------
+const Json::Value & _JsonParser::getScoreDudes()
+//--------------------------------------------------------------------
+{
+    const Json::Value& value = mScoreValuesRootNode[JsonNames::GlobalInfo::ScoreValues::dudes];
+    if (!value.isArray())
+        throw std::logic_error("bad collect array");
+
+    return value;
+}
+
+//--------------------------------------------------------------------
+uint16_t _JsonParser::getScoreDudeType(const Json::Value & node)
+//--------------------------------------------------------------------
+{
+    uint16_t res = 0;
+    if (node[JsonNames::GlobalInfo::ScoreValues::dudeType].isInt()) {
+        res = node[JsonNames::GlobalInfo::ScoreValues::dudeType].asInt();
+    }
+    return res;
+}
+
+//--------------------------------------------------------------------
+uint16_t _JsonParser::getScoreDudeValue(const Json::Value & node)
+//--------------------------------------------------------------------
+{
+    uint16_t res = 0;
+    if (node[JsonNames::GlobalInfo::ScoreValues::dudeValue].isInt()) {
+        res = node[JsonNames::GlobalInfo::ScoreValues::dudeValue].asInt();
+    }
+    return res;
 }
 
 //--------------------------------------------------------------------
