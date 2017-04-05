@@ -20,6 +20,7 @@
 #include "Controller/SwapController/SwapObj.h"
 
 #include "Utils/Helpers/Helper.h"
+#include "Utils/Helpers/ScoreHelper.h"
 #include "Utils/Parser/JsonParser.h"
 
 #include "Common/Factory/SmartObjFactory.h"
@@ -292,38 +293,6 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
 }
 
 //--------------------------------------------------------------------
-void LevelObj::calculateScore(CommonTypes::Set * chains)
-//--------------------------------------------------------------------
-{
-    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
-        auto chain = dynamic_cast<ChainObj*>(*itChain);
-        CC_ASSERT(chain);
-
-        if (chain->getChainObjects()) {
-            chain->updateChainScore();
-            auto chainScore = chain->getScore();
-            auto cookieScore = chain->getCookiesScore();
-            chain->setScore(chainScore * mComboMultiplier);
-            chain->setCookiesScore(cookieScore * mComboMultiplier);
-        }
-    }
-}
-
-//--------------------------------------------------------------------
-void LevelObj::increaseComboMultiplier()
-//--------------------------------------------------------------------
-{
-    mComboMultiplier++;
-}
-
-//--------------------------------------------------------------------
-void LevelObj::resetComboMultiplier()
-//--------------------------------------------------------------------
-{
-    mComboMultiplier = 1;
-}
-
-//--------------------------------------------------------------------
 void LevelObj::disablePredefinedCookies()
 //--------------------------------------------------------------------
 {
@@ -338,7 +307,7 @@ void LevelObj::removeDudeMatches(CommonTypes::Set* set)
 {
     cocos2d::log("LevelObj::removeDudeMatches:");
     if (set) {
-        calculateScore(set);
+        ScoreHelper::calculateScore(set);
         mChainCtrl->matchChains(set);
     }
 }

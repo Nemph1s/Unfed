@@ -26,6 +26,9 @@ public:
 
     void init();
 
+    void increaseComboMultiplier();
+    void resetComboMultiplier();
+
     const std::map<uint16_t, uint16_t>& getDudeScoreMap() const;
 
 protected:
@@ -66,7 +69,8 @@ private:
     std::map<uint16_t, uint16_t> mDudeScoreMap;
 
     // Multipliers
-    SYNTHESIZE_READONLY_PASS_BY_REF(uint16_t, mCookieScoreMultiplier, CookieScoreMultiplier, 0)
+    SYNTHESIZE_READONLY_PASS_BY_REF(uint16_t, mComboMultiplier, ComboMultiplier, 1);
+    SYNTHESIZE_READONLY_PASS_BY_REF(uint16_t, mCookieScoreMultiplier, CookieScoreMultiplier, 1)
     //TODO: make multiplier for dude chain objects
 
 public:

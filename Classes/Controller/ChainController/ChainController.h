@@ -65,7 +65,6 @@ public:
 
     void matchChains(CommonTypes::Set* chains);
 
-    void calculateChainScore(ChainObj* chain);
     void executeCollectGoalCallback(CommonTypes::Set* chains);
 
 protected:

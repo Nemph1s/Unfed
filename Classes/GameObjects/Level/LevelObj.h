@@ -44,8 +44,6 @@ public:
     cocos2d::Array* useGravityToFillHoles();
     cocos2d::Array* fillTopUpHoles();
 
-    void increaseComboMultiplier();
-    void resetComboMultiplier();
     void disablePredefinedCookies();
 
     //TODO: move to callback
@@ -54,9 +52,7 @@ public:
 protected:
     // Nodes should be created using create();
     LevelObj();
-
-    void calculateScore(CommonTypes::Set* chains);
-
+    
     CommonTypes::SearchEmptyHoles skipFillTopUpHoles(int column, int row, bool& filledTileFouned);
 
     bool isPossibleToAddCookie(int column, int row);
@@ -65,7 +61,6 @@ protected:
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<bool()>, mDetectPossibleSwapsCallback, DetectPossibleSwapsCallback);
 
-    CC_SYNTHESIZE_READONLY(int, mComboMultiplier, ComboMultiplier);
     CC_SYNTHESIZE_READONLY(CommonTypes::LevelInfo, mLevelInfo, LevelInfo);
 
     CC_SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController);
