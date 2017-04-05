@@ -55,7 +55,7 @@ namespace JsonNames {
         //ScoreValues parameters
         namespace ScoreValues {
             static const char* cookieMinimal = "cookieMinimal";
-            static const char* cookieDefault = "fieldObject";
+            static const char* cookieDefault = "cookieDefault";
             static const char* fieldObject = "fieldObject";
             static const char* enemy = "enemy";
 

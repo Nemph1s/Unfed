@@ -89,7 +89,7 @@ Set* DudeController::createDudeObectsFromChains(Set* chains, Set* prevSwapContai
             if (mChainCtrl->getCellFromChainAndPrevSwapSet(column, row, chain, prevSwapContainers)) {
                 int type = Helper::to_underlying(dudeType);
                 auto dude = createDudeObject(column, row, type);
-                set->addObject(dude);
+                set->addObject(dude); //TODO: WTF?!
             }            
         }
     }

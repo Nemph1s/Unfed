@@ -27,12 +27,11 @@ public:
 
     static void calculateScore(CommonTypes::Set* chains);
 
+    static uint16_t getScoreByObj(BaseObj* obj, bool isInDudeCain);
     static uint16_t getScoreForContainer(ObjContainer* container);
 
 private:
-
     
-
     static uint16_t getScoreByCookieObj(BaseObj* obj, bool isInDudeCain);
     static uint16_t getScoreByFieldObj(BaseObj* obj);
     static uint16_t getScoreByDudeObj(BaseObj* obj);

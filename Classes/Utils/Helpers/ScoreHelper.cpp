@@ -16,8 +16,6 @@
 #include "Controller/ChainController/ChainObj.h"
 #include "Controller/ObjectController/ObjContainer.h"
 
-
-
 using namespace CommonTypes;
 
 static uint16_t EmptyScoreValue = 0;
@@ -29,17 +27,20 @@ void ScoreHelper::updateChainScore(ChainObj* chain)
     CC_ASSERT(chain);
     int score = 0;
     int cookiesScore = 0;
-    auto objs = chain->getChainObjects();
-    for (auto it = objs->begin(); it != objs->end(); it++) {
-        auto obj = dynamic_cast<BaseObj*>(*it);
-        CC_ASSERT(obj);
-        if (obj->getType() == BaseObjType::Cookie) {
-            cookiesScore += obj->getScoreValue();
+    auto objs = chain->getObjects();
+    if (objs) {
+        for (auto it = objs->begin(); it != objs->end(); it++) {
+            auto container = dynamic_cast<ObjContainer*>(*it);
+            auto obj = container->getObjectForChain();
+            CC_ASSERT(obj);
+            if (obj->getType() == BaseObjType::Cookie) {
+                cookiesScore += getScoreForContainer(container);
+            }
+            score += getScoreForContainer(container);
         }
-        score += obj->getScoreValue();
-    }
-    chain->setScore(score);
-    chain->setCookiesScore(cookiesScore);
+        chain->setScore(score);
+        chain->setCookiesScore(cookiesScore);
+    }    
 }
 
 //--------------------------------------------------------------------
@@ -59,6 +60,26 @@ void ScoreHelper::calculateScore(CommonTypes::Set* chains)
             chain->setCookiesScore(cookieScore * GlobInfo->getComboMultiplier());
         }
     }
+}
+
+//--------------------------------------------------------------------
+uint16_t ScoreHelper::getScoreByObj(BaseObj * obj, bool isInDudeCain)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+    uint16_t score = 0;
+    auto type = obj->getType();
+    if (type == BaseObjType::Cookie) {
+        score = getScoreByCookieObj(obj, isInDudeCain);
+    }
+    else if (type == BaseObjType::Field) {
+        score = getScoreByFieldObj(obj);
+    }
+    else if (type == BaseObjType::Dude) {
+        score = getScoreByDudeObj(obj);
+    }
+    // TODO: add enemy type
+    return score;
 }
 
 //--------------------------------------------------------------------
