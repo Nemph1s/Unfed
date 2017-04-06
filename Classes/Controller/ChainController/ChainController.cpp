@@ -89,8 +89,6 @@ Set* ChainController::removeMatches()
     ScoreHelper::calculateScore(set);
     matchChains(set);
 
-    GlobInfo->increaseComboMultiplier();
-
     return set;
 }
 

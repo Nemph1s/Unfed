@@ -57,7 +57,6 @@ bool DirtObject::init(const CommonTypes::FieldInfo & info)
     mIsRemovable = true;
     mIsContainer = true;
     mPriority = -1;
-    mScoreValue = 100;
 
     return true;
 }

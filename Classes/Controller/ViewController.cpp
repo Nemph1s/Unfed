@@ -330,6 +330,7 @@ void ViewController::handleMatches()
 
     updateScore(chains);
     animateHandleMatches(chains);
+    GlobInfo->increaseComboMultiplier();
 }
 
 

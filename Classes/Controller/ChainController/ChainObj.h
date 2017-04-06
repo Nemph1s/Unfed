@@ -38,7 +38,6 @@ public:
     void addObjectToChain(ObjContainer* obj);
 
     cocos2d::Array* getChainObjects();
-    cocos2d::Array* getChainObjectsForScoreAnimation();
     int getCookiesCount();
 
     void addObjectsFromChain(ChainObj* chain);
@@ -60,7 +59,7 @@ protected:
     CC_SYNTHESIZE(std::function<void(BaseObj* obj)>, mUpdateGoalCallback, UpdateGoalCallback);
 
     CC_SYNTHESIZE_PASS_BY_REF(CommonTypes::Direction, mDirection, Direction);
-    CC_SYNTHESIZE(int, mCookiesScore, CookiesScore); // use this to get multiplier for cookies in chain
+    
     CC_SYNTHESIZE(int, mScore, Score);
     CC_SYNTHESIZE(bool, mIsCreatedByDude, IsCreatedByDude);
     CC_SYNTHESIZE(cocos2d::Color4B, mChainColor, ChainColor);

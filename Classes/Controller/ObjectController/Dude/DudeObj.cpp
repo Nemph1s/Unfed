@@ -54,7 +54,6 @@ bool DudeObj::init(const CommonTypes::FieldInfo & info)
     mIsMovable = true;
     mIsSwappable = true;
     mIsContainer = false;
-    mScoreValue = 500;
 
     return true;
 }

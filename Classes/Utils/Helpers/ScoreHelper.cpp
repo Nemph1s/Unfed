@@ -26,20 +26,15 @@ void ScoreHelper::updateChainScore(ChainObj* chain)
 {
     CC_ASSERT(chain);
     int score = 0;
-    int cookiesScore = 0;
     auto objs = chain->getObjects();
     if (objs) {
         for (auto it = objs->begin(); it != objs->end(); it++) {
             auto container = dynamic_cast<ObjContainer*>(*it);
             auto obj = container->getObjectForChain();
             CC_ASSERT(obj);
-            if (obj->getType() == BaseObjType::Cookie) {
-                cookiesScore += getScoreForContainer(container);
-            }
             score += getScoreForContainer(container);
         }
         chain->setScore(score);
-        chain->setCookiesScore(cookiesScore);
     }    
 }
 
@@ -54,10 +49,6 @@ void ScoreHelper::calculateScore(CommonTypes::Set* chains)
 
         if (chain->getChainObjects()) {
             updateChainScore(chain);
-            auto chainScore = chain->getScore();
-            auto cookieScore = chain->getCookiesScore();
-            chain->setScore(chainScore * GlobInfo->getComboMultiplier());
-            chain->setCookiesScore(cookieScore * GlobInfo->getComboMultiplier());
         }
     }
 }
@@ -70,7 +61,7 @@ uint16_t ScoreHelper::getScoreByObj(BaseObj * obj, bool isInDudeCain)
     uint16_t score = 0;
     auto type = obj->getType();
     if (type == BaseObjType::Cookie) {
-        score = getScoreByCookieObj(obj, isInDudeCain);
+        score = getScoreByCookieObj(obj, isInDudeCain) * GlobInfo->getComboMultiplier();
     }
     else if (type == BaseObjType::Field) {
         score = getScoreByFieldObj(obj);
@@ -97,7 +88,7 @@ uint16_t ScoreHelper::getScoreForContainer(ObjContainer* container)
             if (chain) {
                 isInDudeCain = chain->getIsCreatedByDude();
             }
-            score = getScoreByCookieObj(baseObj, isInDudeCain);
+            score = getScoreByCookieObj(baseObj, isInDudeCain) * GlobInfo->getComboMultiplier();
         }
         else if (type == BaseObjType::Field) {
             score = getScoreByFieldObj(baseObj);

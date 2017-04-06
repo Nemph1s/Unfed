@@ -13,6 +13,7 @@
 #include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "Utils/Helpers/Helper.h"
+#include "Utils/Helpers/ScoreHelper.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
 
 //--------------------------------------------------------------------
@@ -20,7 +21,6 @@ ChainObj::ChainObj()
     : mObjects(nullptr)
     , mObjsToRemove(nullptr)
     , mIsCreatedByDude(false)
-    , mCookiesScore(0)
     , mScore(0)
     , mDirection(CommonTypes::Direction::Unknown)
 //--------------------------------------------------------------------
@@ -196,7 +196,7 @@ void ChainObj::removeDuplicateObjects(cocos2d::Array* objsToRemove)
     for (auto itToRemove = objsToRemove->begin(); itToRemove != objsToRemove->end(); ++itToRemove) {
         auto obj = dynamic_cast<ObjContainer*>(*itToRemove);
         if (obj) {
-            mScore = mScore - obj->getScoreValueForGameObjects();
+            mScore = mScore - ScoreHelper::getScoreForContainer(obj);
             mObjects->removeObject(obj);
         }
     }
@@ -216,7 +216,7 @@ void ChainObj::deactivateObjects()
         for (auto itToRemove = mObjsToRemove->begin(); itToRemove != mObjsToRemove->end(); ++itToRemove) {
             auto obj = dynamic_cast<ObjContainer*>(*itToRemove);
             if (obj) {
-                mScore = mScore - obj->getScoreValueForGameObjects();
+                mScore = mScore - ScoreHelper::getScoreForContainer(obj);
                 addObjectToChain(obj);
             }
         }
@@ -257,7 +257,7 @@ void ChainObj::removeDudeObjectsFromChain(bool skipFirst)
         if (obj) {
             if (obj->getObjectForChain()->getType() == CommonTypes::BaseObjType::Dude) {
                 if (!skipFirst && index != 0) { // skip first dude in chain
-                    mScore = mScore - obj->getScoreValueForGameObjects();//obj->getObjectForChain()->getScoreValue();
+                    mScore = mScore - ScoreHelper::getScoreForContainer(obj);
                     itToRemove = *it;
                 }
             }
@@ -300,34 +300,6 @@ cocos2d::Array* ChainObj::getChainObjects()
             CC_ASSERT(object);
             arr->addObject(object);
         }
-    }
-    return arr;
-}
-
-//--------------------------------------------------------------------
-cocos2d::Array * ChainObj::getChainObjectsForScoreAnimation()
-//--------------------------------------------------------------------
-{
-    auto arr = cocos2d::Array::create();
-    if (!mObjects) {
-        return arr;
-    }
-    for (auto it = mObjects->begin(); it != mObjects->end(); it++) {
-        auto container = dynamic_cast<ObjContainer*>(*it);
-        CC_ASSERT(container);
-
-        int score = 0;
-        auto objects = container->getObjectsForChain();
-        
-        for (auto itObj = objects->begin(); itObj != objects->end(); ++itObj) {
-            auto object = dynamic_cast<BaseObj*>(*itObj);
-            CC_ASSERT(object);
-            score += object->getScoreValue();
-        }
-
-        auto object = container->getObjectForChain();
-        object->setScoreValue(score);
-        arr->addObject(object);        
     }
     return arr;
 }
