@@ -57,7 +57,6 @@ bool BushObj::init(const CommonTypes::FieldInfo & info)
     mIsRemovable = true;
     mIsMovable = false;
     mIsContainer = false;
-    mScoreValue = 100;
 
     return true;
 }

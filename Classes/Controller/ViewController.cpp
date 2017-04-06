@@ -267,7 +267,7 @@ void ViewController::startGame()
    mMovesLeft = mLevel->getLevelInfo().moves;
    mScore = 0;
    updateInfoLabels();
-   mLevel->resetComboMultiplier();
+   GlobInfo->resetComboMultiplier();
 
    shuffle();
 
@@ -330,6 +330,7 @@ void ViewController::handleMatches()
 
     updateScore(chains);
     animateHandleMatches(chains);
+    GlobInfo->increaseComboMultiplier();
 }
 
 
@@ -383,7 +384,7 @@ void ViewController::beginNextTurn()
         startHintTimer();
     });
 
-    mLevel->resetComboMultiplier();
+    GlobInfo->resetComboMultiplier();
     decrementMoves();
   
     mGameplayScene->runAction(cocos2d::Sequence::create(cocos2d::DelayTime::create(delay), callback, nullptr));

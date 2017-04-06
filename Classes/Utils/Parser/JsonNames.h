@@ -49,5 +49,21 @@ namespace JsonNames {
         static const char* tileWidth = "tileWidth";
         static const char* tileHeigth = "tileHeigth";
         static const char* levelsCount = "levelsCount";
+
+        static const char* scoreValues = "scoreValues";
+
+        //ScoreValues parameters
+        namespace ScoreValues {
+            static const char* cookieMinimal = "cookieMinimal";
+            static const char* cookieDefault = "cookieDefault";
+            static const char* fieldObject = "fieldObject";
+            static const char* enemy = "enemy";
+
+            static const char* dudes = "dudes";
+            static const char* dudeType = "dudeType";
+            static const char* dudeValue = "dudeValue";
+
+
+        }
     }
 }

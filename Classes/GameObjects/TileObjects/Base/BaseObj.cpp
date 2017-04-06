@@ -20,7 +20,6 @@ BaseObj::BaseObj()
     , mType(CommonTypes::BaseObjType::Unknown)
     , mSpriteNode(nullptr)
     , mDummyString(nullptr)
-    , mScoreValue(50) //TODO: move to global info
 //--------------------------------------------------------------------
 {
 }

@@ -18,6 +18,7 @@
 #include "GameObjects/Level/LevelObj.h"
 
 #include "Utils/Helpers/Helper.h"
+#include "Utils/Helpers/ScoreHelper.h"
 
 #include "Common/CommonTypes.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
@@ -85,10 +86,9 @@ Set* ChainController::removeMatches()
     //logDebugChains(horizontalChains, verticalChains, difficultChains);
 #endif //COCOS2D_DEBUG
 
-    mLevel->calculateScore(set);
+    ScoreHelper::calculateScore(set);
     matchChains(set);
 
-    mLevel->increaseComboMultiplier();
     return set;
 }
 
@@ -121,7 +121,7 @@ Set* ChainController::removeChainAt(ChainType& type, cocos2d::Vec2& pos)
         if (chainSet) {
             addChainsFromSetToSet(chainSet, set);
 
-            mLevel->calculateScore(chainSet);
+            ScoreHelper::calculateScore(chainSet);
             matchChains(chainSet);
         }
     }
@@ -277,38 +277,6 @@ void ChainController::matchChains(Set* chains)
 }
 
 //--------------------------------------------------------------------
-void ChainController::calculateChainScore(ChainObj* chain)
-//--------------------------------------------------------------------
-{
-    CC_ASSERT(chain);
-    int cookiesValue = 0;
-    int chainValue = 0;
-    auto objects = chain->getChainObjects();
-    if (objects) {
-        for (auto itObj = objects->begin(); itObj != objects->end(); itObj++) {
-            auto obj = dynamic_cast<BaseObj*>(*itObj);
-            int chainTypeMultiplier = 1;
-            switch (chain->getType())
-            {
-            case ChainType::ChainTypeL:
-                chainTypeMultiplier = 2;
-                break;
-            case ChainType::ChainTypeT:
-                chainTypeMultiplier = 3;
-            default:
-                break;
-            }
-            int score = obj->getType() == BaseObjType::Cookie ? obj->getScoreValue() : 0;
-            cookiesValue = cookiesValue + score;
-            chainValue = chainValue + obj->getScoreValue();
-        }
-        auto multiplier = !chain->getIsCreatedByDude() && objects->count() > 2 ? objects->count() - 2 : 1;
-        chain->setCookiesScore(cookiesValue);// *multiplier);
-        chain->setScore(chainValue);// *multiplier);
-    }
-}
-
-//--------------------------------------------------------------------
 void ChainController::executeCollectGoalCallback(Set * chains)
 //--------------------------------------------------------------------
 {
@@ -351,8 +319,7 @@ void ChainController::addChainToSet(ChainObj* chain, Set* set)
     CC_ASSERT(set);
     CC_ASSERT(chain);
     if (chain->getChainObjects()) {
-
-        chain->updateChainScore();
+        ScoreHelper::updateChainScore(chain);
         set->addObject(chain);
     }
 }
@@ -646,7 +613,7 @@ void ChainController::addObjectsFromChainToChain(Set* from, Set* to)
             CC_ASSERT(chain);
             CC_ASSERT(toChain);
             toChain->addObjectsFromChain(chain);
-            toChain->updateChainScore();
+            ScoreHelper::updateChainScore(toChain);
         }
     } else {
         addChainsFromSetToSet(from, to);

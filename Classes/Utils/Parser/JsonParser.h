@@ -28,7 +28,12 @@ public:
     void parseGlobalInfo();
     bool checkGlobalInfoStatus();
 
-    CommonTypes::JsonGlobalInfo getJsonGlobalInfo();
+    CommonTypes::SGlobalInfo getJsonGlobalInfo();
+
+    void parseScoreValues();
+    bool checkScoreValuesStatus();
+
+    void updateScoreValues();
 
     //---Level Info--------------------------------------------------
 
@@ -49,6 +54,17 @@ protected:
     const double& getTileHeight() const;
     const uint16_t& getLevelsCount() const;
 
+    const uint16_t& getCookieMinimalScore() const;
+    const uint16_t& getCookieDefaultScore() const;
+    const uint16_t& getFieldObjScore() const;
+    const uint16_t& getEnemyScore() const;
+    void updateDudeScoreMap();
+
+    const Json::Value& getScoreDudes();
+    uint16_t getScoreDudeType(const Json::Value & node);
+    uint16_t getScoreDudeValue(const Json::Value & node);
+
+    Json::Value mScoreValuesRootNode;
     Json::Value mGlobalInfoRootNode;
 
     //---Level Info--------------------------------------------------

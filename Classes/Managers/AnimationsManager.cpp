@@ -28,6 +28,8 @@
 #include "Common/Factory/SmartObjFactory.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
 
+#include "Utils/Helpers/ScoreHelper.h"
+
 #include "Scenes/GameplayScene.h"
 #include "Layers/CookiesLayer.h"
 
@@ -296,11 +298,7 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
     CC_ASSERT(chain);
     // Figure out what the midpoint of the chain is.
 
-    auto objects = chain->getChainObjectsForScoreAnimation();
-    auto cookiesCount = chain->getCookiesCount();
-    if (cookiesCount == 0) {
-        return;
-    }
+    auto objects = chain->getChainObjects(); //chain->getChainObjectsForScoreAnimation();
     CC_ASSERT(objects);
 
     for (auto itObj = objects->begin(); itObj != objects->end(); itObj++) {
@@ -323,11 +321,7 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
         Vec2 centerPosition = Vec2(spritePos.x, spritePos.y);// - 8);
 
         auto color = Helper::getScoreColorByObj(obj);
-
-        int score = obj->getScoreValue();
-        if (cookiesCount != 0 && (obj->getType() != BaseObjType::Field && obj->getType() != BaseObjType::Dude)) {
-            score = chain->getCookiesScore() / cookiesCount;
-        }
+        int score = ScoreHelper::getScoreByObj(obj, chain->getIsCreatedByDude());
 
         // Add a label for the score that slowly floats up.
         auto fontSize = 80;
@@ -367,10 +361,11 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
     Vec2 centerPosition = obj->getSpriteNode()->getPosition();
 
     auto color = Helper::getScoreColorByObj(obj);
+    auto score = ScoreHelper::getScoreByObj(obj, false);
 
     // Add a label for the score that slowly floats up.
     auto fontSize = 80;
-    auto str = StringUtils::format("%d", obj->getScoreValue());
+    auto str = StringUtils::format("%d", score);
     Text* scoreLabel = Text::create(str, GameResources::s_fontYellow.getCString(), fontSize);
     scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
     scoreLabel->setPosition(centerPosition);
