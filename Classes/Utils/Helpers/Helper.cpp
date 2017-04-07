@@ -342,13 +342,13 @@ cocos2d::Color4B Helper::getScoreColorForDudeObj(CommonTypes::FieldType type)
         color = cocos2d::Color4B(161, 202, 241, 255); //Baby blue eyes
         break;
     case FieldType::DudeAllOfType:
-        color = cocos2d::Color4B(80, 200, 120, 255); // Emerald 
+        color = cocos2d::Color4B(161, 202, 241, 255); //Baby blue eyes
         break;
     case FieldType::DudeChainX:
         color = cocos2d::Color4B(170, 240, 209, 255); //Magic mint 
         break;
     case FieldType::DudeSquareBomb:
-        color = cocos2d::Color4B(161, 202, 241, 255); //Baby blue eyes
+        color = cocos2d::Color4B(175, 64, 53, 255); // Pale Carmine 
         break;
     default:
         break;

@@ -78,11 +78,11 @@ namespace CommonTypes {
        , Bush = 20 /**< enum value DirtX3. */
        , Bush_HP2 = 21 /**< enum value DirtX3. */
        , RockWall = 30 /**< enum value RockWall. */
-       , DudeFromAToB = 200 /**< enum value DudeLightr. */
-       , DudeFromAToBx3 = 201 /**< enum value DudeBulbr. */
-       , DudeChainX = 202 /**< enum value DudeOni. */
-       , DudeAllOfType = 203 /**< enum value DudePina. */
-       , DudeSquareBomb = 204 /**< enum value DudeMBO. */
+       , DudeFromAToB = 200 /**< enum value DudeFromAToB. */
+       , DudeFromAToBx3 = 201 /**< enum value DudeFromAToBx3. */
+       , DudeChainX = 202 /**< enum value DudeChainX. */
+       , DudeAllOfType = 203 /**< enum value DudeAllOfType. */
+       , DudeSquareBomb = 204 /**< enum value DudeSquareBomb. */
        , Unknown /**< enum value unknown. */
    };
 
@@ -127,6 +127,7 @@ namespace CommonTypes {
        , ChainTypeT = 3 /**< enum value ChainTypeT. */
        , ChainTypeX = 4 /**< enum value ChainTypeX. */
        , ChainTypeAllOfOne = 5 /**< enum value ChainTypeAllOfOne. */
+       , ChainExplosion = 7 /**< enum value ChainExplosion. */
        , ChainFromAToB = 6 /**< enum value ChainTypeAllOfOne. */
        , ChainFieldObjects = 7 /**< enum value ChainFieldObjects. */
        , Unknown /**< enum value unknown. */

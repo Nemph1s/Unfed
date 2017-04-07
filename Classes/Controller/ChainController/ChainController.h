@@ -88,6 +88,7 @@ protected:
     CommonTypes::Set* createHorizontalChainAt(int column, int startRow, bool isCreatedByDude = false);
     CommonTypes::Set* createVerticalChainAt(int startColumn, int row, bool isCreatedByDude = false);
     CommonTypes::Set* createXChainAt(int column, int row, bool isCreatedByDude = false);
+    CommonTypes::Set* createExplosionChainAt(int column, int row, bool isCreatedByDude = false);
 
     CommonTypes::Set* createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude = false, BaseObj* dudeObj = nullptr);
     CommonTypes::Set* createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to, bool isCreatedByDude = false);
