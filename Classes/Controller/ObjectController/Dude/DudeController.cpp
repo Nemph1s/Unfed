@@ -27,9 +27,9 @@
 
 #define RequiredCountForDudeFromAToB 4
 #define RequiredCountForDudeFromAToBx3 5
-#define RequiredAmountForOni 5
-#define RequiredAmountForMBO 5
-#define RequiredAmountForPina 5
+#define RequiredAmountForDudeChainX 5
+#define RequiredAmountForDudeAllOfType 5
+#define RequiredAmountForDudeSquareBomb 5
 
 using namespace CommonTypes;
 
@@ -89,7 +89,7 @@ Set* DudeController::createDudeObectsFromChains(Set* chains, Set* prevSwapContai
             if (mChainCtrl->getCellFromChainAndPrevSwapSet(column, row, chain, prevSwapContainers)) {
                 int type = Helper::to_underlying(dudeType);
                 auto dude = createDudeObject(column, row, type);
-                set->addObject(dude); //TODO: WTF?!
+                set->addObject(dude);
             }            
         }
     }
@@ -156,12 +156,14 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
     {
     case FieldType::DudeChainX:
     {
-        topSet = botSet = leftSet = rightSet = mChainCtrl->createXChainAt(column, row, true);
-        xSet = mChainCtrl->createXChainAt(column, row, true);
-        horizontalSet = verticalSet = xSet;
+        horizontalSet = verticalSet = xSet = topSet = botSet = leftSet = rightSet = mChainCtrl->createXChainAt(column, row, true);
     }
     break;
     case FieldType::DudeSquareBomb:
+    {
+        horizontalSet = verticalSet = xSet = topSet = botSet = leftSet = rightSet = mChainCtrl->createExplosionChainAt(column, row, true);
+    }
+    break;
     case FieldType::DudeAllOfType:
     {
         topSet = mChainCtrl->createAllOfOneChain(column, row - 1, true, obj);
@@ -379,19 +381,19 @@ FieldType DudeController::getDudeTypeByChain(ChainObj * chain)
         }
         break;
     case ChainType::ChainTypeL:
-        if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForOni)) {
-            type = FieldType::DudeChainX;
+        if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForDudeAllOfType)) {
+            type = FieldType::DudeAllOfType;
         }
         break;
     case ChainType::ChainTypeX:
-        if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForMBO)) {
+        if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForDudeSquareBomb)) {
             type = FieldType::DudeSquareBomb;
         }
         break;
     case ChainType::ChainTypeT:
-        if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForPina)) {
-            type = FieldType::DudeAllOfType;
-        }
+        if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForDudeChainX)) {
+            type = FieldType::DudeChainX;
+        }        
         break;
     default:
         break;

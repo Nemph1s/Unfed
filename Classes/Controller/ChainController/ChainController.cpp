@@ -184,8 +184,7 @@ bool ChainController::getCellFromChainAndPrevSwapSet(int& column, int& row, Chai
             row = randomObject->getRow();
             column = randomObject->getColumn();
         }
-    } 
-    else {
+    } else {
         auto objects = chain->getObjects();
         for (auto it = prevSwapObjs->begin(); it != prevSwapObjs->end(); it++) {
             for (auto itChain = objects->begin(); itChain != objects->end(); itChain++) {
@@ -318,10 +317,8 @@ void ChainController::addChainToSet(ChainObj* chain, Set* set)
 {
     CC_ASSERT(set);
     CC_ASSERT(chain);
-    if (chain->getChainObjects()) {
-        ScoreHelper::updateChainScore(chain);
-        set->addObject(chain);
-    }
+    ScoreHelper::updateChainScore(chain);
+    set->addObject(chain);
 }
 
 //--------------------------------------------------------------------
@@ -675,8 +672,7 @@ Set* ChainController::createHorizontalChainAt(int startColumn, int startRow, boo
 {
     auto set = Set::create();
 
-    if (!(startColumn >= 0 && startColumn < _GlobalInfo::NumColumns) 
-        || !(startRow >= 0 && startRow < _GlobalInfo::NumRows)) {
+    if (!Helper::isValidColumnAndRow(startColumn, startRow)) {
         cocos2d::log("ChainController::createHorizontalChainAt: wrong destinationPos at column=%d, row=%d", startColumn, startRow);
         return set;
     }
@@ -704,8 +700,7 @@ Set* ChainController::createVerticalChainAt(int startColumn, int startRow, bool 
 {
     auto set = Set::create();
 
-    if (!(startColumn >= 0 && startColumn < _GlobalInfo::NumColumns) 
-        || !(startRow >= 0 && startRow < _GlobalInfo::NumRows)) {
+    if (!Helper::isValidColumnAndRow(startColumn, startRow)) {
         cocos2d::log("ChainController::createVerticalChainAt: wrong destinationPos at column=%d, row=%d", startColumn, startRow);
         return set;
     }
@@ -749,6 +744,29 @@ Set* ChainController::createXChainAt(int column, int row, bool isCreatedByDude)
             }
         }
     }
+    chain->setIsCreatedByDude(isCreatedByDude);
+    addChainToSet(chain, set);
+
+    return set;
+}
+
+//--------------------------------------------------------------------
+Set* ChainController::createExplosionChainAt(int column, int row, bool isCreatedByDude)
+//--------------------------------------------------------------------
+{
+    //TODO: move to global info to modify in future
+    uint8_t explisionSize = 1; // amount of circles around the dude
+
+    auto set = Set::create();
+    auto chain = ChainObj::createWithType(ChainType::ChainExplosion);
+    chain->setUpdateGoalCallback(mUpdateGoalCallback);
+
+    for (int i = column - explisionSize; i <= column + explisionSize; i++) {
+        for (int j = row - explisionSize; j <= row + explisionSize; j++) {
+            addObjToChain(chain, i, j);
+        }
+    }
+
     chain->setIsCreatedByDude(isCreatedByDude);
     addChainToSet(chain, set);
 
@@ -810,8 +828,8 @@ Set* ChainController::createChainFromPosToPos(const Direction& direction, int fr
 //--------------------------------------------------------------------
 {
     auto set = Set::create();
-
-    if (!(toCol >= 0 && toCol < _GlobalInfo::NumColumns) || !(toRow >= 0 && toRow < _GlobalInfo::NumColumns)) {
+        
+    if (!Helper::isValidColumnAndRow(toCol, toRow)) {
         cocos2d::log("ChainController::createChainFromPosToPos: wrong destinationPos at column=%d, row=%d", toCol, toRow);
         return set;
     }

@@ -127,9 +127,11 @@ void SwapController::detectSwap(SwapChecker * checker)
             auto chainCtrl = mLevel->getChainController();
             SwapObj* swap = SwapObj::createWithObjects(currObject, nextObject);
             if (hasChainFromNextTile) {
+                //TODO: use lazy detecting for each swap
                 swap->setObjectsForHint(chainCtrl->detectChainAt(checker->nextCol, checker->nextRow));
             }
             else if (hasChainFromCurrTile) {
+                //TODO: use lazy detecting for each swap
                 swap->setObjectsForHint(chainCtrl->detectChainAt(checker->curCol, checker->curRow));
             }
             checker->set->addObject(swap);
