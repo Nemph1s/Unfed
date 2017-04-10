@@ -12,6 +12,7 @@
 
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
+#include "Utils/PlatformMacros.h"
 
 class SwapObj;
 class LevelObj;
@@ -57,18 +58,21 @@ public:
     bool trySwapCookieTo(int fromCol, int fromRow, int direction);
 
     void clearPossibleSwaps();
+
+    CommonTypes::Set* getPreviousSwapContainers();
                           
 protected:
     // Nodes should be created using create();
-    SwapController();
+    SwapController() {};
 
     void detectSwap(SwapChecker* checker);
  
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(SwapObj* swap)>, mSwapCallback, SwapCallback);
 
-    CC_SYNTHESIZE(LevelObj*, mLevel, Level);
-    CC_SYNTHESIZE_READONLY(CommonTypes::Set*, mPossibleSwaps, PossibleSwaps);
+    SYNTHESIZE(LevelObj*, mLevel, Level, nullptr);
+    SYNTHESIZE_READONLY(CommonTypes::Set*, mPossibleSwaps, PossibleSwaps, nullptr);
+    SYNTHESIZE_READONLY(SwapObj*, mPreviousSwap, PreviousSwap, nullptr);
 };
 
 

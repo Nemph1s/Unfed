@@ -22,6 +22,14 @@
 using namespace CommonTypes;
 
 //--------------------------------------------------------------------
+_SmartObjFactory & _SmartObjFactory::Instance()
+//--------------------------------------------------------------------
+{
+    static _SmartObjFactory myInstance;
+    return myInstance;
+}
+
+//--------------------------------------------------------------------
 _SmartObjFactory * _SmartObjFactory::getInstance()
 //--------------------------------------------------------------------
 {
@@ -223,7 +231,7 @@ BaseObj * _SmartObjFactory::createCookieObj(const CookieInfo & info)
 }
 
 //--------------------------------------------------------------------
-BaseObj * _SmartObjFactory::createFieldObj(const FieldInfo & info)
+BaseObj* _SmartObjFactory::createFieldObj(const FieldInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj* baseObject = nullptr;
@@ -267,6 +275,7 @@ BaseObj * _SmartObjFactory::createDudeObj(const FieldInfo & info)
     case FieldType::DudeFromAToBx3:
     case FieldType::DudeChainX:
     case FieldType::DudeAllOfType:
+    case FieldType::DudeSquareBomb:
         baseObject = DudeObj::create(info);
         CC_SAFE_RETAIN(baseObject);
         CCASSERT(baseObject, "error while creating DudeObj");
@@ -309,3 +318,4 @@ void _SmartObjFactory::clearEntity(BaseObj * obj)
         CC_SAFE_RELEASE_NULL(obj);
     }    
 }
+

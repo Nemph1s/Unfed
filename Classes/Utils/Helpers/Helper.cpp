@@ -10,11 +10,14 @@
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
+
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include <random>
+#include <cstdlib>
 
 using namespace GameResources;
 using namespace CommonTypes;
@@ -46,44 +49,38 @@ CookieType Helper::randomCookieType(int fromRange, int toRange)
 }
 
 //--------------------------------------------------------------------
-cocos2d::String* Helper::getSpriteNameByTileType(int tileType)
+cocos2d::String* Helper::getSpriteNameByFieldType(int fieldType)
 //--------------------------------------------------------------------
 {
     cocos2d::String* str = nullptr;
-    auto type = static_cast<CommonTypes::TileType>(tileType);
-    int firstDudeType = Helper::to_underlying(CommonTypes::TileType::DudeFromAToB);
+    auto type = static_cast<FieldType>(fieldType);
+    int firstDudeType = Helper::to_underlying(FieldType::DudeFromAToB);
     switch (type)
     {
-    case CommonTypes::TileType::Empty:
-    case CommonTypes::TileType::Normal:
-        str = &GameResources::s_TileImg;
-        break;
-    case CommonTypes::TileType::Water:
-        str = &GameResources::s_TileImg;
-        break;
-    case CommonTypes::TileType::Dirt:
+    case FieldType::Dirt:
         str = &GameResources::s_DirtImg;
         break;
-    case CommonTypes::TileType::Dirt_HP2:
-    case CommonTypes::TileType::Dirt_HP3:
+    case FieldType::Dirt_HP2:
+    case FieldType::Dirt_HP3:
         str = &GameResources::s_DirtX2Img;
         break;
-    case CommonTypes::TileType::Bush:
+    case FieldType::Bush:
         str = &GameResources::s_BushCorruptedImg;
         break;
-    case CommonTypes::TileType::Bush_HP2:
+    case FieldType::Bush_HP2:
         str = &GameResources::s_BushNormalImg;
         break;
-    case CommonTypes::TileType::RockWall:
+    case FieldType::RockWall:
         str = &GameResources::s_RockImg;
         break;
-    case CommonTypes::TileType::DudeFromAToB:
-    case CommonTypes::TileType::DudeFromAToBx3:
-    case CommonTypes::TileType::DudeChainX:
-    case CommonTypes::TileType::DudeAllOfType:
-        str = &GameResources::s_dudeSpriteNames.at(tileType - firstDudeType);
+    case FieldType::DudeFromAToB:
+    case FieldType::DudeFromAToBx3:
+    case FieldType::DudeChainX:
+    case FieldType::DudeAllOfType:
+    case FieldType::DudeSquareBomb:
+        str = &GameResources::s_dudeSpriteNames.at(fieldType - firstDudeType);
         break;
-    case CommonTypes::TileType::Unknown:
+    case FieldType::Unknown:
         break;
     default:
         break;
@@ -92,12 +89,25 @@ cocos2d::String* Helper::getSpriteNameByTileType(int tileType)
 }
 
 //--------------------------------------------------------------------
+bool Helper::isValidColumnAndRow(int column, int row)
+//--------------------------------------------------------------------
+{
+    bool result = true;
+    if (column < 0 || column >= _GlobalInfo::NumColumns || row < 0 || row >= _GlobalInfo::NumColumns) {
+        result = false;
+    }
+    return result;
+}
+
+//--------------------------------------------------------------------
 cocos2d::Vec2 Helper::pointForColumnAndRow(int column, int row)
 //--------------------------------------------------------------------
 {
     float offsetX = 2.5f * column;
-    float offsetY = 2.5f * (NumRows - row - 1);
-    return cocos2d::Vec2(offsetX + column * TileWidth + TileWidth / 2, offsetY + (NumRows - row - 1) * TileHeight + TileHeight / 2);
+    float offsetY = 2.5f * (_GlobalInfo::NumRows - row - 1);
+    auto tileWidth = GlobInfo->getTileWidth();
+    auto tileHeight = GlobInfo->getTileHeight();
+    return cocos2d::Vec2(offsetX + column * tileWidth + tileWidth / 2, offsetY + (_GlobalInfo::NumRows - row - 1) * tileHeight + tileHeight / 2);
 }
 
 //--------------------------------------------------------------------
@@ -106,7 +116,8 @@ cocos2d::Vec2 Helper::pointForColumnAndRowWithPriority(int column, int row, int 
 {
     auto pos = pointForColumnAndRow(column, row);
     if (priority > 0) {
-        pos.y += (GameResources::TileHeight / 4) * priority;
+        auto tileHeight = GlobInfo->getTileHeight();
+        pos.y += (tileHeight / 4) * priority;
     }
     return pos;
 }
@@ -131,9 +142,10 @@ cocos2d::Vec2 Helper::pointForTile(BaseObj * obj)
 bool Helper::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
 //--------------------------------------------------------------------
 {
-    if (point.x >= 0 && point.x < NumColumns*TileWidth && point.y >= 0 && point.y < NumRows*TileHeight) {
-        column = point.x / TileWidth;
-        row = NumColumns - (point.y / TileHeight);
+    if (point.x >= 0 && point.x < _GlobalInfo::NumColumns * GlobInfo->getTileWidth() &&
+        point.y >= 0 && point.y < _GlobalInfo::NumRows * GlobInfo->getTileHeight()) {
+        column = point.x / GlobInfo->getTileWidth();
+        row = _GlobalInfo::NumColumns - (point.y / GlobInfo->getTileHeight());
         return true;
     }
     return false;
@@ -165,17 +177,39 @@ Direction Helper::invertDirection(const Direction & direction)
 }
 
 //--------------------------------------------------------------------
-int Helper::getDirectionByTileFromAToB(int fromCol, int fromRow, int toCol, int toRow)
+CommonTypes::Direction Helper::invertDirection(int direction)
+//--------------------------------------------------------------------
+{
+    auto dir = static_cast<CommonTypes::Direction>(direction);
+    return invertDirection(dir);
+}
+
+//--------------------------------------------------------------------
+int Helper::getDirectionByTileFromAToB(int oldDirection, int fromCol, int fromRow, int toCol, int toRow)
 //--------------------------------------------------------------------
 {
     auto dir = Direction::Unknown;
-    if (fromCol != toCol) {
-        dir = fromCol > toCol ? Direction::Left : Direction::Right;
+    int8_t xDiff = toCol - fromCol;
+    int8_t yDiff = toRow - fromRow;
+    if (std::abs(xDiff) != std::abs(yDiff)) {
+        if (std::abs(xDiff) > std::abs(yDiff)) {
+            dir = xDiff > 0 ? Direction::Left : Direction::Right;
+        } else {
+            dir = yDiff < 0 ? Direction::Up : Direction::Down;
+        }
+    } else {
+        return oldDirection;
     }
-    if (fromRow != toRow) {
-        dir = fromRow > toRow ? Direction::Up : Direction::Down;
-    }
-    return 0;
+    
+    return to_underlying(dir);
+}
+
+//--------------------------------------------------------------------
+CommonTypes::Direction Helper::getDirectionByTileFromAToB(int oldDirection, BaseObj * from, BaseObj * to)
+//--------------------------------------------------------------------
+{
+    auto direction = getDirectionByTileFromAToB(oldDirection, from->getColumn(), from->getRow(), to->getColumn(), to->getRow());
+    return static_cast<CommonTypes::Direction>(direction);
 }
 
 //--------------------------------------------------------------------
@@ -224,13 +258,13 @@ cocos2d::Color4B Helper::getScoreColorByObj(BaseObj * obj)
     else if (obj->getType() == BaseObjType::Field) {
         auto tileObj = dynamic_cast<FieldObj*>(obj);
         if (tileObj) {
-            color = getScoreColorByFieldType(tileObj->getFieldType());
+            color = getScoreColorForFieldObj(tileObj->getFieldType());
         }
     }
     else if (obj->getType() == BaseObjType::Dude) {
         auto dudeObj = dynamic_cast<DudeObj*>(obj);
         if (dudeObj) {
-            color = cocos2d::Color4B::MAGENTA;
+            color = getScoreColorForDudeObj(dudeObj->getFieldType());
         }
     }
 
@@ -269,7 +303,7 @@ cocos2d::Color4B Helper::getScoreColorByCookieType(CommonTypes::CookieType type)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorByFieldType(CommonTypes::FieldType type)
+cocos2d::Color4B Helper::getScoreColorForFieldObj(CommonTypes::FieldType type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
@@ -286,6 +320,35 @@ cocos2d::Color4B Helper::getScoreColorByFieldType(CommonTypes::FieldType type)
         break;
     case FieldType::RockWall:
         color = cocos2d::Color4B::BLACK;
+        break;
+    default:
+        break;
+    }
+    return color;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Color4B Helper::getScoreColorForDudeObj(CommonTypes::FieldType type)
+//--------------------------------------------------------------------
+{
+    // see hints on http://www.colorhexa.com/color-names
+    auto color = cocos2d::Color4B(209, 159, 232, 255); //Bright ube 
+    switch (type)
+    {
+    case FieldType::DudeFromAToB:
+        color = cocos2d::Color4B(193, 154, 107, 150); //Desert 
+        break;
+    case FieldType::DudeFromAToBx3:
+        color = cocos2d::Color4B(161, 202, 241, 255); //Baby blue eyes
+        break;
+    case FieldType::DudeAllOfType:
+        color = cocos2d::Color4B(161, 202, 241, 255); //Baby blue eyes
+        break;
+    case FieldType::DudeChainX:
+        color = cocos2d::Color4B(170, 240, 209, 255); //Magic mint 
+        break;
+    case FieldType::DudeSquareBomb:
+        color = cocos2d::Color4B(175, 64, 53, 255); // Pale Carmine 
         break;
     default:
         break;

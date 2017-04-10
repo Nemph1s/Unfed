@@ -80,8 +80,7 @@ CommonTypes::Set * DudeHelper::getChainByDirection(const CommonTypes::Direction 
         return set;
     }
 
-    if (mDudeObj->getFieldType() == FieldType::DudeChainX 
-        || mDudeObj->getFieldType() == FieldType::DudeAllOfType) {
+    if (mDudeObj->getFieldType() == FieldType::DudeChainX) {
         set = mXChain;
     }
     bool isActivated = isPreview ? true : mDudeObj->isActivated();

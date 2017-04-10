@@ -56,11 +56,11 @@ bool LevelGoalComponent::init()
         return false;
     }
 
-    if (!JsonParser->checkStatus()) {
+    if (!JsonParser->checkLevelInfoStatus()) {
         cocos2d::log("LevelGoalComponent::init: can't parse json file");
         return false;
     }
-    mLevelGoals = JsonParser->getLevelGoals();
+    mLevelGoals = JsonParser->getJsonLevelGoals();
 
     return true;
 }

@@ -20,6 +20,7 @@
 #include "Controller/SwapController/SwapObj.h"
 
 #include "Utils/Helpers/Helper.h"
+#include "Utils/Helpers/ScoreHelper.h"
 #include "Utils/Parser/JsonParser.h"
 
 #include "Common/Factory/SmartObjFactory.h"
@@ -74,11 +75,11 @@ bool LevelObj::initWithId(const int16_t& levelId)
     }
 
     JsonParser->parseLevelInfo(levelId);
-    if (!JsonParser->checkStatus()) {
+    if (!JsonParser->checkLevelInfoStatus()) {
         cocos2d::log("LevelObj::initWithId: can't parse json file");
         return false;
     }
-    mLevelInfo = JsonParser->getLevelInfo();
+    mLevelInfo = JsonParser->getJsonLevelInfo();
 
     return true;
 }
@@ -110,7 +111,7 @@ SearchEmptyHoles LevelObj::skipFillTopUpHoles(int column, int row, bool& filledT
         res = SearchEmptyHoles::ObjFounded;
     }
     else {
-        if ((row <= (NumRows / 2) + 2)  && !filledTileFouned) {
+        if ((row <= (_GlobalInfo::NumRows / 2) + 2)  && !filledTileFouned) {
             res = SearchEmptyHoles::ContinueSearch;
         }
         else {
@@ -149,7 +150,7 @@ bool LevelObj::useGravityOnObject(cocos2d::Array * colArr, cocos2d::Array * rowA
 
         // Lazy creation of array
         if (rowArr == nullptr) {
-            rowArr = cocos2d::Array::createWithCapacity(NumRows);
+            rowArr = cocos2d::Array::createWithCapacity(_GlobalInfo::NumRows);
             colArr->addObject(rowArr);
         }
         rowArr->addObject(obj);
@@ -166,8 +167,8 @@ CommonTypes::Set* LevelObj::detectFieldObjects(CommonTypes::Set * chains)
 {
     auto set = CommonTypes::Set::create();
 
-    for (int row = 0; row < NumRows; row++) {
-        for (int column = 0; column < NumColumns; column++) {
+    for (int row = 0; row < _GlobalInfo::NumRows; row++) {
+        for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
 
             auto obj = mObjCtrl->fieldObjectAt(column, row);
             if (!obj) {
@@ -192,27 +193,28 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
 //--------------------------------------------------------------------
 {
     cocos2d::log("LevelObj::useGravityToFillHoles:");
-    auto columns = cocos2d::Array::createWithCapacity(NumColumns);
+    auto columns = cocos2d::Array::createWithCapacity(_GlobalInfo::NumColumns);
     // loop through the rows, from bottom to top
-    for (int column = 0; column < NumColumns; column++) {
+    for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
 
         cocos2d::Array* array = nullptr;
-        for (int row = NumRows - 1; row >= 0; row--) {
+        for (int row = _GlobalInfo::NumRows - 1; row >= 0; row--) {
 
             auto fieldObjects = mObjCtrl->fieldObjectsAt(column, row);
-            for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
-                auto obj = dynamic_cast<FieldObj*>(*it);
-                if (obj->getReadyToUpdatePriority()) {
-                    // Lazy creation of array
-                    if (array == nullptr) {
-                        array = cocos2d::Array::createWithCapacity(NumRows);
-                        columns->addObject(array);
+            if (fieldObjects) {
+                for (auto it = fieldObjects->begin(); it != fieldObjects->end(); ++it) {
+                    auto obj = dynamic_cast<FieldObj*>(*it);
+                    if (obj->getReadyToUpdatePriority()) {
+                        // Lazy creation of array
+                        if (array == nullptr) {
+                            array = cocos2d::Array::createWithCapacity(_GlobalInfo::NumRows);
+                            columns->addObject(array);
+                        }
+                        array->addObject(obj);
+                        obj->setReadyToUpdatePriority(false);
                     }
-                    array->addObject(obj);
-                    obj->setReadyToUpdatePriority(false);
                 }
             }
-
             if (isPossibleToAddCookie(column, row)) {
 
                 // Scan upward to find the cookie that sits directly above the hole
@@ -221,7 +223,7 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
                     if (!mLevelInfo.skipEmptyHoles && mObjCtrl->isEmptyTileAt(column, lookup)) {
                         continue;
                     }
-                    auto dudeObj = mObjCtrl->dudeObjectAt(column, lookup);
+                    auto dudeObj = mObjCtrl->dudeAt(column, lookup);
                     if (useGravityOnObject(columns, array, dudeObj, row)) {
                         break;
                     }
@@ -245,16 +247,16 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
 //--------------------------------------------------------------------
 {
     cocos2d::log("LevelObj::fillTopUpHoles:");
-    auto columns = cocos2d::Array::createWithCapacity(NumColumns);
+    auto columns = cocos2d::Array::createWithCapacity(_GlobalInfo::NumColumns);
     //auto createdString = cocos2d::String::create("");
     int cookieType = -1;
     // loop through the rows, from top to bottom
-    for (int column = 0; column < NumColumns; column++) {
+    for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
 
         bool filledTileFouned = false;
 
         cocos2d::Array* array = nullptr;
-        for (int row = 0; row < NumRows; row++) {
+        for (int row = 0; row < _GlobalInfo::NumRows; row++) {
                         
  //--------------------------------------------------------------------       
             if (!mLevelInfo.skipEmptyHoles) {
@@ -277,7 +279,7 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
                 BaseObj* cookie = mObjCtrl->createRandomCookie(column, row);
 
                 if (array == nullptr) {
-                    array = cocos2d::Array::createWithCapacity(NumRows);
+                    array = cocos2d::Array::createWithCapacity(_GlobalInfo::NumRows);
                     columns->addObject(array);
                 }
                 array->addObject(cookie);
@@ -288,38 +290,6 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
     }
     //cocos2d::log("LevelObj::fillTopUpHoles:  new created cookies: {\n%s", createdString->getCString());
     return columns;
-}
-
-//--------------------------------------------------------------------
-void LevelObj::calculateScore(CommonTypes::Set * chains)
-//--------------------------------------------------------------------
-{
-    for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
-        auto chain = dynamic_cast<ChainObj*>(*itChain);
-        CC_ASSERT(chain);
-
-        if (chain->getChainObjects()) {
-            chain->updateChainScore();
-            auto chainScore = chain->getScore();
-            auto cookieScore = chain->getCookiesScore();
-            chain->setScore(chainScore * mComboMultiplier);
-            chain->setCookiesScore(cookieScore * mComboMultiplier);
-        }
-    }
-}
-
-//--------------------------------------------------------------------
-void LevelObj::increaseComboMultiplier()
-//--------------------------------------------------------------------
-{
-    mComboMultiplier++;
-}
-
-//--------------------------------------------------------------------
-void LevelObj::resetComboMultiplier()
-//--------------------------------------------------------------------
-{
-    mComboMultiplier = 1;
 }
 
 //--------------------------------------------------------------------
@@ -337,7 +307,7 @@ void LevelObj::removeDudeMatches(CommonTypes::Set* set)
 {
     cocos2d::log("LevelObj::removeDudeMatches:");
     if (set) {
-        calculateScore(set);
+        ScoreHelper::calculateScore(set);
         mChainCtrl->matchChains(set);
     }
 }

@@ -18,13 +18,8 @@ BaseObj::BaseObj()
     : mColumn(-1)
     , mRow(-1)
     , mType(CommonTypes::BaseObjType::Unknown)
-    , mIsMovable(false)
-    , mIsSwappable(false)
-    , mIsRemovable(false)
-    , mIsContainer(false)
     , mSpriteNode(nullptr)
     , mDummyString(nullptr)
-    , mScoreValue(50) //TODO: move to global info
 //--------------------------------------------------------------------
 {
 }
@@ -151,4 +146,16 @@ void BaseObj::clear()
 void BaseObj::updateDebugLabel()
 //--------------------------------------------------------------------
 {
+}
+
+//--------------------------------------------------------------------
+void BaseObj::updateZOrder()
+//--------------------------------------------------------------------
+{
+    auto zOrder = (mRow * 10);
+    setLocalZOrder(zOrder);
+    if (mSpriteNode) {
+        mSpriteNode->setLocalZOrder(zOrder);
+    }
+    updateDebugLabel();
 }

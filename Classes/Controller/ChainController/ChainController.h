@@ -54,15 +54,17 @@ public:
 
     CommonTypes::Set* detectChainAt(int column, int row);
 
+    bool getCellFromChainAndPrevSwapSet(int& column, int& row, ChainObj* chain, CommonTypes::Set* prevSwapObjs);
+
     /**
     * Add chain to objectContainer and remove duplicate containers from other chains
     * @param chains The set with the chains.
     */
     void activateChains(CommonTypes::Set* chains);
+    void deactivateChains(CommonTypes::Set* chains);
 
     void matchChains(CommonTypes::Set* chains);
 
-    void calculateChainScore(ChainObj* chain);
     void executeCollectGoalCallback(CommonTypes::Set* chains);
 
 protected:
@@ -79,14 +81,16 @@ protected:
 
     ChainObj* detectLChainMatches(ChainObj* horzChain, ChainObj* vertChain);
     ChainObj* detectTChainMatches(ChainObj* horzChain, ChainObj* vertChain);
+    ChainObj* detectXChainMatches(ChainObj* horzChain, ChainObj* vertChain);
 
     bool isNextTwoCookieSuitable(const CommonTypes::ChainType& type, int col, int row);
 
     CommonTypes::Set* createHorizontalChainAt(int column, int startRow, bool isCreatedByDude = false);
     CommonTypes::Set* createVerticalChainAt(int startColumn, int row, bool isCreatedByDude = false);
     CommonTypes::Set* createXChainAt(int column, int row, bool isCreatedByDude = false);
+    CommonTypes::Set* createExplosionChainAt(int column, int row, bool isCreatedByDude = false);
 
-    CommonTypes::Set* createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude = false);
+    CommonTypes::Set* createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude = false, BaseObj* dudeObj = nullptr);
     CommonTypes::Set* createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to, bool isCreatedByDude = false);
     CommonTypes::Set* createChainFromPosToPos(const CommonTypes::Direction& direction, int fromCol, int fromRow, int toCol, int toRow, bool isCreatedByDude = false);
 

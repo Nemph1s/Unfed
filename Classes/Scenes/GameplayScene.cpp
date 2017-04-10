@@ -11,6 +11,7 @@
 #include "Scenes/GameplayScene.h"
 
 #include "Common/Factory/SpritesFactory.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
 
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
@@ -94,9 +95,9 @@ bool GameplayScene::initWithSize(const Size& size)
     mGameLayer->setPosition(VisibleRect::center());
     this->addChild(mGameLayer);
 
-    auto offset = -2.5f * CommonTypes::NumColumns / 2;
-    Vec2 layerPos = Vec2(offset - TileWidth * CommonTypes::NumColumns / 2
-        , offset - TileHeight * CommonTypes::NumRows / 2);
+    auto offset = -2.5f * _GlobalInfo::NumColumns / 2;
+    Vec2 layerPos = Vec2(offset - GlobInfo->getTileWidth() * _GlobalInfo::NumColumns / 2
+        , offset - GlobInfo->getTileHeight() * _GlobalInfo::NumRows / 2);
 
     mTilesLayer = Layer::create();
     mTilesLayer->setPosition(layerPos);
@@ -128,8 +129,8 @@ void GameplayScene::addTiles()
 //--------------------------------------------------------------------
 {
 	cocos2d::log("GameplayScene::addTiles:");
-	for (int row = 0; row < CommonTypes::NumRows; row++) {
-		for (int column = 0; column < CommonTypes::NumColumns; column++) {
+	for (int row = 0; row < _GlobalInfo::NumRows; row++) {
+		for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
             auto objCtrl = mLevel->getObjectController();
 			if (objCtrl->isEmptyTileAt(column, row)) {
 				continue;
@@ -153,13 +154,16 @@ void GameplayScene::addFieldObjectsAt(int column, int row)
     // Create Field objects
     auto objCtrl = mLevel->getObjectController();
     auto fieldObjects = objCtrl->fieldObjectsAt(column, row);
-    if (fieldObjects.size() == 0) {
+    if (fieldObjects) {
         return;
     }
-    for (auto it = fieldObjects.begin(); it != fieldObjects.end(); ++it) {
+    if (fieldObjects->size() == 0) {
+        return;
+    }
+    for (auto it = fieldObjects->begin(); it != fieldObjects->end(); ++it) {
         auto fieldObj = dynamic_cast<FieldObj*>(*it);    
         createSpriteWithFieldObj(fieldObj);
-        fieldObj->updateDebugLabel();
+        fieldObj->updateZOrder();
     }
 }
 
@@ -258,6 +262,13 @@ void GameplayScene::createSpriteWithFieldObj(FieldObj * obj)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->createSpriteWithFieldObj(obj, obj->getColumn(), obj->getRow());
+}
+
+//--------------------------------------------------------------------
+bool GameplayScene::isObjTouched()
+//--------------------------------------------------------------------
+{
+    return mCookiesLayer->isObjTouched();
 }
 
 //--------------------------------------------------------------------

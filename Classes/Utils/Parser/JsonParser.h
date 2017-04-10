@@ -1,5 +1,5 @@
 /**
-* @file Utils/JsonParser.hpp
+* @file Utils/Parser/JsonParser.hpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -12,6 +12,7 @@
 
 #include "cocos2d.h"
 #include "GameObjects/Level/LevelTypes.h"
+#include "Common/GlobalInfo/GlobalInfoTypes.h"
 
 #include "Utils/PlatformMacros.h"
 
@@ -22,15 +23,51 @@ class _JsonParser
     CREATE_SINGLETON(_JsonParser);
 
 public:
-   void parseLevelInfo(const int16_t& level);
+    //---Global Info--------------------------------------------------
 
-   bool checkStatus();
+    void parseGlobalInfo();
+    bool checkGlobalInfoStatus();
 
-   CommonTypes::LevelInfo getLevelInfo();
-   CommonTypes::LevelGoals getLevelGoals();
+    CommonTypes::SGlobalInfo getJsonGlobalInfo();
+
+    void parseScoreValues();
+    bool checkScoreValuesStatus();
+
+    void updateScoreValues();
+
+    //---Level Info--------------------------------------------------
+
+    void parseLevelInfo(const int16_t& level);
+    bool checkLevelInfoStatus();
+
+    CommonTypes::LevelInfo getJsonLevelInfo();
+    CommonTypes::LevelGoals getJsonLevelGoals();
+    //---------------------------------------------------------------
 
 protected:
 
+    //---Global Info--------------------------------------------------
+    const char* getSwVersion() const;
+    const char* getImagePackType() const;
+    const char* getImagePackVersion() const;
+    const double& getTileWidth() const;   
+    const double& getTileHeight() const;
+    const uint16_t& getLevelsCount() const;
+
+    const uint16_t& getCookieMinimalScore() const;
+    const uint16_t& getCookieDefaultScore() const;
+    const uint16_t& getFieldObjScore() const;
+    const uint16_t& getEnemyScore() const;
+    void updateDudeScoreMap();
+
+    const Json::Value& getScoreDudes();
+    uint16_t getScoreDudeType(const Json::Value & node);
+    uint16_t getScoreDudeValue(const Json::Value & node);
+
+    Json::Value mScoreValuesRootNode;
+    Json::Value mGlobalInfoRootNode;
+
+    //---Level Info--------------------------------------------------
     void updateTiles(CommonTypes::LevelInfo& levelInfo);
     void updatePredefinedCookies(CommonTypes::LevelInfo& levelInfo);
     void updateAllowedCookieTypes(CommonTypes::LevelInfo& levelInfo);
@@ -56,8 +93,10 @@ protected:
     uint8_t getFieldObjectRow(const Json::Value & node);
     const Json::Value& getFieldObjectTypes(const Json::Value & node);
 
-   Json::Value mRootNode;
-   int16_t mLoadedLevel = -1;
+    Json::Value mLevelInfoRootNode;
+    int16_t mLoadedLevel = -1;
+    //---------------------------------------------------------------
+
 };
 
 #define JsonParser _JsonParser::getInstance()

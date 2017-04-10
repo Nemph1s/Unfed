@@ -41,26 +41,17 @@ public:
 
     bool init();
 
-    Set* createDudeObectsFromChains(Set* chains);
+    Set* createDudeObectsFromChains(Set* chains, Set* prevSwapContainers);
 
     BaseObj* createDudeObject(int column, int row, int type);
-
-    BaseObj* objectAt(int column, int row);
-    DudeObj* dudeObjectAt(int column, int row);
 
     void detectDirectionsForDudes();
 
     bool canActivateDudeTo(int fromCol, int fromRow, int direction);
-    Set* activateDudeAndGetChains(DudeObj* obj, int dir);
-    Set* getChainPreviewHint(DudeObj* obj, int dir);
+    Set* getChainsForDude(DudeObj* obj, int dir, bool isPreview = false);
 
-    void updateChainSetWithDudesInChain(const Direction& direction, Set* chains, Set* chainSet);
-
-    void activateAllDudes();
-
-    void removeDude(int column, int row, bool removeWithCleanup = true);
+    void updateChainSetWithDudesInChain(const Direction& direction, DudeObj* activeDude, Set* chains, Set* chainSet);
     void eraseDirectionsForDude(DudeObj* obj);
-    void removeAllDudes();
 
 protected:
     // Nodes should be created using create();
@@ -74,6 +65,8 @@ protected:
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(DudeObj*, int direction)>, mActivateDudeCallback, ActivateDudeCallback);
+
+    CC_SYNTHESIZE(uint8_t, mDudesCount, DudesCount);
 
     CC_SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController);
     CC_SYNTHESIZE(ChainController*, mChainCtrl, ChainController);

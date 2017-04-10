@@ -20,11 +20,7 @@ class BaseObj;
 class _SmartObjFactory
 {
 public:
-    static _SmartObjFactory& Instance()
-    {
-        static _SmartObjFactory myInstance;
-        return myInstance;
-    }
+    static _SmartObjFactory& Instance();
     static _SmartObjFactory* getInstance();
 
     BaseObj* create(const CommonTypes::BaseObjInfo &info);

@@ -18,17 +18,7 @@
 #include "Common/Factory/SmartObjFactory.h"
 #include "Common/Factory/SpritesFactory.h"
 
-// #include "Controller/ObjectController/Dude/DudeController.h"
-// 
-// #include "Common/Factory/SmartObjFactory.h"
-// #include "GameObjects/Level/LevelObj.h"
-// 
-// #include "Utils/Parser/JsonParser.h"
-// #include "Utils/Helpers/Helper.h"
-
-
 using namespace CommonTypes;
-
 
 //--------------------------------------------------------------------
 ObjContainer::ObjContainer()
@@ -37,7 +27,6 @@ ObjContainer::ObjContainer()
     , mCookieObj(nullptr)
     , mDudeObj(nullptr)
     , mFieldObjects()
-    , mObjectInChain(false)
 //--------------------------------------------------------------------
 {
 }
@@ -201,44 +190,13 @@ CommonTypes::Set* ObjContainer::getObjectsForChain()
     auto fieldObj = getFieldObject();
 
     if (mCookieObj) set->addObject(mCookieObj);
-    if (fieldObj) set->addObject(fieldObj);
-    if (mDudeObj) set->addObject(mDudeObj);
+    else if (mDudeObj) set->addObject(mDudeObj);
+    if (fieldObj) set->addObject(fieldObj);    
 
     if (set->count() == 0) {
         set = nullptr;
     }
     return set;
-}
-
-//--------------------------------------------------------------------
-int16_t ObjContainer::getScoreValueForObject() const
-//--------------------------------------------------------------------
-{
-    int16_t score = 0;
-    auto fieldObj = getFieldObject();
-    if (mCookieObj) {
-        score = mCookieObj->getScoreValue();
-    }
-    else if (fieldObj) {
-        score = fieldObj->getScoreValue();
-    }
-    else if (mDudeObj) {
-        score = mDudeObj->getScoreValue();
-    }
-    return score;
-}
-
-//--------------------------------------------------------------------
-int16_t ObjContainer::getScoreValueForGameObjects() const
-//--------------------------------------------------------------------
-{
-    int16_t score = 0;
-    auto fieldObj = getFieldObject();
-
-    if (mCookieObj) score += mCookieObj->getScoreValue();
-    if (fieldObj) score += fieldObj->getScoreValue();
-    if (mDudeObj) score += mDudeObj->getScoreValue();
-    return score;
 }
 
 //--------------------------------------------------------------------
@@ -297,12 +255,13 @@ void ObjContainer::synchronizeTilePos()
         if (mDudeObj) {
             mDudeObj->setColumn(mTileObj->getColumn());
             mDudeObj->setRow(mTileObj->getRow());
-            mDudeObj->updateDebugLabel();
+            mDudeObj->updateZOrder();
+            
         }
         if (mCookieObj) {
             mCookieObj->setColumn(mTileObj->getColumn());
             mCookieObj->setRow(mTileObj->getRow());
-            mCookieObj->updateDebugLabel();
+            mCookieObj->updateZOrder();          
         }
     }
 }
@@ -335,7 +294,6 @@ bool ObjContainer::isPossibleToAddCookie()
                 return true;
             }
         }
-
     }
     return false;
 }
@@ -351,6 +309,20 @@ bool ObjContainer::isSameTypeOfCookieAt(int type)
         return false;
 
     return true;
+}
+
+//--------------------------------------------------------------------
+bool ObjContainer::isContainChainPreviewSprite() const
+//--------------------------------------------------------------------
+{
+    return (mTileObj->getChainPreviewSpriteNode() != nullptr);
+}
+
+//--------------------------------------------------------------------
+void ObjContainer::setChainPreviewSprite(cocos2d::Sprite* sprite)
+//--------------------------------------------------------------------
+{
+    mTileObj->setChainPreviewSpriteNode(sprite);
 }
 
 //--------------------------------------------------------------------

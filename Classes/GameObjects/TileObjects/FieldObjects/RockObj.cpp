@@ -57,7 +57,6 @@ bool RockObj::init(const CommonTypes::FieldInfo & info)
     mIsRemovable = true;
     mIsMovable = false;
     mIsContainer = false;
-    mScoreValue = 100;
 
     return true;
 }
@@ -82,7 +81,7 @@ cocos2d::String& RockObj::spriteName() const
 bool RockObj::checkMatchingCondition(int column, int row)
 //--------------------------------------------------------------------
 {
-    if (column < 0 || column >= CommonTypes::NumColumns || row < 0 || row >= CommonTypes::NumColumns) {
+    if (!Helper::isValidColumnAndRow(column, row)) {
         return false;
     }
     bool objectOnTop = (mColumn == column && mRow == row - 1);

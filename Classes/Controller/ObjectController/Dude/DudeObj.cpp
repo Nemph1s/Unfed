@@ -17,7 +17,6 @@ using CommonTypes::FieldType;
 //--------------------------------------------------------------------
 DudeObj::DudeObj()
     : FieldObj()
-    , mIsActivated(false)
 //--------------------------------------------------------------------
 {
 }
@@ -55,7 +54,6 @@ bool DudeObj::init(const CommonTypes::FieldInfo & info)
     mIsMovable = true;
     mIsSwappable = true;
     mIsContainer = false;
-    mScoreValue = 500;
 
     return true;
 }
@@ -72,4 +70,11 @@ void DudeObj::activate()
 //--------------------------------------------------------------------
 {
     mIsActivated = true;
+}
+
+//--------------------------------------------------------------------
+void DudeObj::deactivate()
+//--------------------------------------------------------------------
+{
+    mIsActivated = false;
 }

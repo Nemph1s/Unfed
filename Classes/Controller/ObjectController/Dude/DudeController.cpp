@@ -16,6 +16,7 @@
 #include "Controller/ChainController/ChainController.h"
 
 #include "Common/Factory/SmartObjFactory.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
 
 #include "Utils/Parser/JsonParser.h"
 #include "Utils/Helpers/Helper.h"
@@ -26,8 +27,9 @@
 
 #define RequiredCountForDudeFromAToB 4
 #define RequiredCountForDudeFromAToBx3 5
-#define RequiredAmountForOni 5
-#define RequiredAmountForPina 5
+#define RequiredAmountForDudeChainX 5
+#define RequiredAmountForDudeAllOfType 5
+#define RequiredAmountForDudeSquareBomb 5
 
 using namespace CommonTypes;
 
@@ -36,6 +38,7 @@ DudeController::DudeController()
     : mObjCtrl(nullptr)
     , mChainCtrl(nullptr)
     , mDudeDirections()
+    , mDudesCount(0)
 //--------------------------------------------------------------------
 {
 }
@@ -71,7 +74,7 @@ bool DudeController::init()
 }
 
 //--------------------------------------------------------------------
-Set* DudeController::createDudeObectsFromChains(Set* chains)
+Set* DudeController::createDudeObectsFromChains(Set* chains, Set* prevSwapContainers)
 //--------------------------------------------------------------------
 {
     auto set = Set::create();
@@ -81,14 +84,13 @@ Set* DudeController::createDudeObectsFromChains(Set* chains)
 
         auto dudeType = getDudeTypeByChain(chain);
         if (dudeType != FieldType::Unknown) {
-            auto objects = chain->getChainObjects();
-            auto obj = dynamic_cast<BaseObj*>(objects->getRandomObject());
-            if (!obj) {
-                continue;
-            }
-            int type = Helper::to_underlying(dudeType);
-            auto dude = createDudeObject(obj->getColumn(), obj->getRow(), type);
-            set->addObject(dude);
+            int column = -1;
+            int row = -1;
+            if (mChainCtrl->getCellFromChainAndPrevSwapSet(column, row, chain, prevSwapContainers)) {
+                int type = Helper::to_underlying(dudeType);
+                auto dude = createDudeObject(column, row, type);
+                set->addObject(dude);
+            }            
         }
     }
     return set;
@@ -102,44 +104,26 @@ BaseObj * DudeController::createDudeObject(int column, int row, int type)
     FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
     auto obj = dynamic_cast<DudeObj*>(SmartObjFactory->createDudeObj(info));
     CC_ASSERT(obj);
-    mObjCtrl->getObject(column, row)->addObject(obj);
-    //mDudeObjects[column][row] = obj;
-
+    auto container = mObjCtrl->getContainer(column, row);
+    if (container) {
+        container->addObject(obj);
+    }
     auto helper = DudeHelper::createWithDudeObject(obj);
     helper->setDudeController(this);
     mDudeDirections.insert(obj, helper);
+    mDudesCount++;
 
     return obj;
-}
-
-//--------------------------------------------------------------------
-BaseObj* DudeController::objectAt(int column, int row)
-//--------------------------------------------------------------------
-{
-    if (!(column >= 0 && column < NumColumns) || !(row >= 0 && row < NumColumns)) {
-        cocos2d::log("DudeController::objectAt: wrong pos at column=%d, row=%d", column, row);
-        return nullptr;
-    }
-    auto container = mObjCtrl->getObject(column, row);
-    return container->getObject(BaseObjType::Dude);
-}
-
-//--------------------------------------------------------------------
-DudeObj* DudeController::dudeObjectAt(int column, int row)
-//--------------------------------------------------------------------
-{
-    auto container = mObjCtrl->getObject(column, row);
-    return container->getDude();
 }
 
 //--------------------------------------------------------------------
 void DudeController::detectDirectionsForDudes()
 //--------------------------------------------------------------------
 {
-    for (int row = 0; row < NumRows; row++) {
-        for (int column = 0; column < NumColumns; column++) {
+    for (int row = 0; row < _GlobalInfo::NumRows; row++) {
+        for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
             
-            auto dude = dudeObjectAt(column, row);
+            auto dude = mObjCtrl->dudeAt(column, row);
             if (dude) {
                 auto helper = mDudeDirections.at(dude);
                 if (helper) {
@@ -172,17 +156,20 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
     {
     case FieldType::DudeChainX:
     {
-        topSet = botSet = leftSet = rightSet = mChainCtrl->createXChainAt(column, row, true);
-        xSet = mChainCtrl->createXChainAt(column, row, true);
-        horizontalSet = verticalSet = xSet;
+        horizontalSet = verticalSet = xSet = topSet = botSet = leftSet = rightSet = mChainCtrl->createXChainAt(column, row, true);
+    }
+    break;
+    case FieldType::DudeSquareBomb:
+    {
+        horizontalSet = verticalSet = xSet = topSet = botSet = leftSet = rightSet = mChainCtrl->createExplosionChainAt(column, row, true);
     }
     break;
     case FieldType::DudeAllOfType:
     {
-        topSet = mChainCtrl->createAllOfOneChain(column, row - 1, true);
-        botSet = mChainCtrl->createAllOfOneChain(column, row + 1, true);
-        leftSet = mChainCtrl->createAllOfOneChain(column - 1, row, true);
-        rightSet = mChainCtrl->createAllOfOneChain(column + 1, row, true);
+        topSet = mChainCtrl->createAllOfOneChain(column, row - 1, true, obj);
+        botSet = mChainCtrl->createAllOfOneChain(column, row + 1, true, obj);
+        leftSet = mChainCtrl->createAllOfOneChain(column - 1, row, true, obj);
+        rightSet = mChainCtrl->createAllOfOneChain(column + 1, row, true, obj);
         xSet = mChainCtrl->createXChainAt(column, row, true);
         horizontalSet = verticalSet = xSet;
     }
@@ -192,9 +179,9 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
     default:
     {
         topSet = mChainCtrl->createChainFromPosToPos(Direction::Up, column, row, column, 0, true);
-        botSet = mChainCtrl->createChainFromPosToPos(Direction::Down, column, row, column, NumRows - 1, true);
+        botSet = mChainCtrl->createChainFromPosToPos(Direction::Down, column, row, column, _GlobalInfo::NumRows - 1, true);
         leftSet = mChainCtrl->createChainFromPosToPos(Direction::Left, column, row, 0, row, true);
-        rightSet = mChainCtrl->createChainFromPosToPos(Direction::Right, column, row, NumColumns - 1, row, true);
+        rightSet = mChainCtrl->createChainFromPosToPos(Direction::Right, column, row, _GlobalInfo::NumColumns - 1, row, true);
         horizontalSet = mChainCtrl->createHorizontalChainAt(column, row, true);
         verticalSet = mChainCtrl->createVerticalChainAt(column, row, true);
     }
@@ -207,9 +194,9 @@ void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
                 continue;
             }
             auto newTopSet = mChainCtrl->createChainFromPosToPos(Direction::Up, column + i, row, column + i, 0, true);
-            auto newBotSet = mChainCtrl->createChainFromPosToPos(Direction::Down, column + i, row, column + i, NumRows - 1, true);
+            auto newBotSet = mChainCtrl->createChainFromPosToPos(Direction::Down, column + i, row, column + i, _GlobalInfo::NumRows - 1, true);
             auto newLeftSet = mChainCtrl->createChainFromPosToPos(Direction::Left, column, row + i, 0, row + i, true);
-            auto newRightSet = mChainCtrl->createChainFromPosToPos(Direction::Right, column, row + i, NumColumns - 1, row + i, true);
+            auto newRightSet = mChainCtrl->createChainFromPosToPos(Direction::Right, column, row + i, _GlobalInfo::NumColumns - 1, row + i, true);
             auto newHorizontalSet = mChainCtrl->createHorizontalChainAt(column, row + i, true);
             auto newVerticalSet = mChainCtrl->createVerticalChainAt(column + i, row, true);
             mChainCtrl->addObjectsFromChainToChain(newTopSet, topSet);
@@ -241,10 +228,10 @@ bool DudeController::canActivateDudeTo(int fromCol, int fromRow, int direction)
     int toColumn = fromCol + horzDelta;
     int toRow = fromRow + vertDelta;
 
-    if (toColumn < 0 || toColumn >= NumColumns || toRow < 0 || toRow >= NumRows)
+    if (toColumn < 0 || toColumn >= _GlobalInfo::NumColumns || toRow < 0 || toRow >= _GlobalInfo::NumRows)
         return false;
 
-    auto fromObj = dudeObjectAt(fromCol, fromRow);
+    auto fromObj = mObjCtrl->dudeAt(fromCol, fromRow);
     if (!fromObj)
         return false;
 
@@ -260,10 +247,10 @@ bool DudeController::canActivateDudeTo(int fromCol, int fromRow, int direction)
 }
 
 //--------------------------------------------------------------------
-Set * DudeController::activateDudeAndGetChains(DudeObj* obj, int dir)
+Set * DudeController::getChainsForDude(DudeObj* obj, int dir, bool isPreview)
 //--------------------------------------------------------------------
 {
-    auto set = Set::create();
+    Set* set = nullptr;
     if (!obj) {
         cocos2d::log("DudeController::activateDudeAndGetChains: empty ptr DudeObj");
         return set;
@@ -275,66 +262,45 @@ Set * DudeController::activateDudeAndGetChains(DudeObj* obj, int dir)
 
     auto helper = mDudeDirections.at(obj);
     if (helper) {
-        obj->activate();
 
-        auto chains = helper->getChainByDirection(direction);
+        obj->activate();
+        auto chains = helper->getChainByDirection(direction, isPreview);
         if (!chains) {
             cocos2d::log("DudeController::activateDudeAndGetChains: empty chain from helper! direction=%d", dir);
             return set;
         }
 
-        updateChainSetWithDudesInChain(direction, chains, set);
+        set = Set::create();
+        updateChainSetWithDudesInChain(direction, obj, chains, set);
         // create param without dude obj, to skip all dudes from adding except dude at 0 chain pos
         mChainCtrl->addChainsFromSetToSet(chains, set, true); 
+        if (isPreview) {
+            mChainCtrl->deactivateChains(set);
+        }
     }
     
     return set;
 }
 
 //--------------------------------------------------------------------
-Set* DudeController::getChainPreviewHint(DudeObj* obj, int dir)
+void DudeController::updateChainSetWithDudesInChain(const Direction& direction, DudeObj* activeDude, Set* chains, Set* chainSet)
 //--------------------------------------------------------------------
 {
-    Set* set = nullptr;
-    if (!obj) {
-        cocos2d::log("DudeController::getHintPreviewChains: empty ptr DudeObj");
-        return set;
-    }
-    auto direction = static_cast<Direction>(dir);
-    if (direction == Direction::Unknown) {
-        return set;
-    }
+    CC_ASSERT(activeDude);
+    cocos2d::log("DudeController::updateChainSetWithDudesInChain: direction=%d", Helper::to_underlying(direction));
 
-    auto helper = mDudeDirections.at(obj);
-    if (helper) {
-        
-        auto chains = helper->getChainByDirection(direction, true);
-        if (!chains) {
-            cocos2d::log("DudeController::getHintPreviewChains: empty chain from helper! direction=%d", dir);
-            return set;
-        }
-        set = Set::create();
-        //updateChainSetWithDudesInChain(direction, chains, set);
-        // create param without dude obj, to skip all dudes from adding except dude at 0 chain pos
-        mChainCtrl->addChainsFromSetToSet(chains, set, true);
-    }
+    mChainCtrl->activateChains(chains);
 
-    return set;
-}
-
-//--------------------------------------------------------------------
-void DudeController::updateChainSetWithDudesInChain(const Direction& direction, Set* chains, Set* chainSet)
-//--------------------------------------------------------------------
-{
     for (auto itChain = chains->begin(); itChain != chains->end(); ++itChain) {
         auto chain = dynamic_cast<ChainObj*>(*itChain);
         CC_ASSERT(chain);
 
+        auto color = Helper::getScoreColorByObj(activeDude);
+        chain->setChainColor(color);
+
         auto objects = chain->getObjects();
         if (!objects) 
             continue;
-
-        mChainCtrl->activateChains(chains);
 
         uint8_t index = 0;
         for (auto it = objects->begin(); it != objects->end(); it++, index++) {
@@ -356,7 +322,10 @@ void DudeController::updateChainSetWithDudesInChain(const Direction& direction, 
 
                     CommonTypes::Set* newChains = nullptr;
                     auto dude = container->getDude();
-                    auto invertedDirection = Helper::invertDirection(direction);
+                    auto realDirection = Helper::getDirectionByTileFromAToB(Helper::to_underlying(direction), activeDude, dude);
+                    auto invertedDirection = Helper::invertDirection(realDirection);
+
+                    cocos2d::log("DudeController::updateChainSetWithDudesInChain: realDirection=%d", Helper::to_underlying(realDirection));
 
                     auto helper = mDudeDirections.at(dude);
                     if (helper && !dude->isActivated()) {
@@ -367,42 +336,13 @@ void DudeController::updateChainSetWithDudesInChain(const Direction& direction, 
                     if (newChains != nullptr) {
                         dude->activate();
 
-                        updateChainSetWithDudesInChain(invertedDirection, newChains, chainSet);
-                        mChainCtrl->addChainsFromSetToSet(newChains, chainSet, true);
+                        updateChainSetWithDudesInChain(invertedDirection, dude, newChains, chainSet);
+                        mChainCtrl->addChainsFromSetToSet(newChains, chainSet, true); //TODO: Fix this!!!
                     }
                 }
             }
         }
     }
-}
-
-//--------------------------------------------------------------------
-void DudeController::activateAllDudes()
-//--------------------------------------------------------------------
-{
-}
-
-
-//--------------------------------------------------------------------
-void DudeController::removeDude(int column, int row, bool removeWithCleanup)
-//--------------------------------------------------------------------
-{
-    if (removeWithCleanup)
-    {
-        auto dude = dudeObjectAt(column, row);
-
-        if (!dude) {
-            cocos2d::log("DudeController::removeDude: dude at (%d,%d) already removed", column, row);
-            return;
-        }
-        cocos2d::log("DudeController::removeDude: remove %s", dude->description().getCString());
-
-        SmartObjFactory->recycle(dude);
-        mDudeDirections.erase(dude);
-    }
-    
-    auto container = mObjCtrl->getObject(column, row);
-    container->removeObject(BaseObjType::Dude);
 }
 
 //--------------------------------------------------------------------
@@ -414,17 +354,7 @@ void DudeController::eraseDirectionsForDude(DudeObj * obj)
         return;
     }
     mDudeDirections.erase(obj);
-}
-
-//--------------------------------------------------------------------
-void DudeController::removeAllDudes()
-//--------------------------------------------------------------------
-{
-    for (int row = 0; row < NumRows; row++) {
-        for (int column = 0; column < NumColumns; column++) {
-            removeDude(column, row);
-        }
-    }
+    mDudesCount--;
 }
 
 //--------------------------------------------------------------------
@@ -451,14 +381,19 @@ FieldType DudeController::getDudeTypeByChain(ChainObj * chain)
         }
         break;
     case ChainType::ChainTypeL:
-        if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForOni)) {
-            type = FieldType::DudeChainX;
+        if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForDudeAllOfType)) {
+            type = FieldType::DudeAllOfType;
+        }
+        break;
+    case ChainType::ChainTypeX:
+        if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForDudeSquareBomb)) {
+            type = FieldType::DudeSquareBomb;
         }
         break;
     case ChainType::ChainTypeT:
-        if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForPina)) {
-            type = FieldType::DudeAllOfType;
-        }
+        if (isEnoughCookiesForDude(cookiesCount, RequiredAmountForDudeChainX)) {
+            type = FieldType::DudeChainX;
+        }        
         break;
     default:
         break;

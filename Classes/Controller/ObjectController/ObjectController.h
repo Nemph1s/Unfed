@@ -13,6 +13,7 @@
 #include <queue>
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
  
 class DudeObj;
 class BaseObj;
@@ -41,10 +42,12 @@ public:
     bool init();
 
     void createObjects();
-    inline ObjContainer* getObject(int column, int row);
+    ObjContainer* getContainer(int column, int row);
 
     CommonTypes::Set* createInitialFieldObjects();
     CommonTypes::Set* createInitialCookies();
+
+    void detectDirectionsForDudes();
     
     BaseObj* createRandomCookie(int column, int row);
     int getRandomCookieType(int column, int row);
@@ -54,8 +57,8 @@ public:
     bool hasChainAt(int column, int row);
 
     BaseObj* fieldObjectAt(int column, int row);
-    std::list<FieldObj*>& fieldObjectsAt(int column, int row);
-    DudeObj* dudeObjectAt(int column, int row);
+    std::list<FieldObj*>* fieldObjectsAt(int column, int row);
+    DudeObj* dudeAt(int column, int row);
 
     bool isEmptyTileAt(int column, int row);
     bool isPossibleToAddCookie(int column, int row);
@@ -87,5 +90,5 @@ protected:
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
     CC_SYNTHESIZE(DudeController*, mDudeCtrl, DudeController);
 
-    ObjContainer* mObjects[CommonTypes::NumColumns][CommonTypes::NumRows] = { nullptr };
+    ObjContainer* mObjects[_GlobalInfo::NumColumns][_GlobalInfo::NumRows] = { nullptr };
 };

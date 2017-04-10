@@ -36,6 +36,8 @@ public:
     void createSpriteWithFieldObj(FieldObj* fieldObj, int column, int row);
     void createChainPreviewSprites(CommonTypes::Set* set);
 
+    bool isObjTouched();
+
     bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
@@ -50,18 +52,18 @@ public:
 protected:
     // Nodes should be created using create();
     CookiesLayer();
-
-    bool isObjTouched();
+        
     void clearTouchedObj();
     int getSwipeDirection(int newCol, int newRow);
+    bool isSameDirection(int direction);
 
-    bool updateChainPreviewHint(int column, int row);
+    bool updateChainPreviewHint(int column, int row, int direction);
 
 
     //---Class Attributes-------------------------------------------------
     cocos2d::EventListener* mListener;
 
-    CommonTypes::Direction mHintPreviewDirection = CommonTypes::Direction::Unknown;
+    CommonTypes::Direction mPreviousDirection = CommonTypes::Direction::Unknown;
     CC_SYNTHESIZE(std::function<CommonTypes::Set*(BaseObj* dudeObj, int direction)>, mUpdateDirectionCallback, UpdateDirectionCallback);
 
     CC_SYNTHESIZE(std::function<bool(int fromCol, int fromRow, int direction)>, mTrySwapCookieCallback, TrySwapCookieCallback);

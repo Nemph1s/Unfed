@@ -9,6 +9,7 @@
 */
 
 #include "Managers/AnimationsManager.h"
+#include "Managers/ActionsManager.h"
 #include "Managers/AudioManager.h"
 
 #include "Controller/SwapController/SwapObj.h"
@@ -25,6 +26,9 @@
 #include "Utils/GameResources.h"
 #include "Common/CommonTypes.h"
 #include "Common/Factory/SmartObjFactory.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
+
+#include "Utils/Helpers/ScoreHelper.h"
 
 #include "Scenes/GameplayScene.h"
 #include "Layers/CookiesLayer.h"
@@ -39,10 +43,12 @@ using ui::Text;
 bool _AnimationsManager::initWithScene(cocos2d::Scene * scene)
 //--------------------------------------------------------------------
 {
+    ActionsManager->init();
     if (scene) {
         mCurrentScene = scene;
         return true;
-    }
+    }   
+
     return false;
 }
 
@@ -52,26 +58,17 @@ void _AnimationsManager::animateSwap(SwapObj* swap, cocos2d::CallFunc* completio
 {
     CC_ASSERT(swap);
     CC_ASSERT(completion);
-    // Put the cookie you started with on top.
-
+    
     auto cookieA = swap->getObjectA()->getSpriteNode();
     auto cookieB = swap->getObjectB()->getSpriteNode();
+    auto swapObjA = ActionsManager->actionSwapObj(swap->getObjectA(), swap->getObjectB(), true);
+    auto swapObjB = ActionsManager->actionSwapObj(swap->getObjectB(), swap->getObjectA());
+    cookieA->runAction(swapObjA);
+    cookieB->runAction(swapObjB);
 
-    cookieA->setLocalZOrder(100);
-    cookieB->setLocalZOrder(90);
-
+    CC_ASSERT(mCurrentScene);
     const float duration = 0.3f;
-
-    auto moveA = MoveTo::create(duration, cookieB->getPosition());
-    auto easeA = EaseOut::create(moveA, duration); // maybe change rate?
-    cookieA->runAction(Sequence::create(easeA, completion, nullptr));
-
-    auto moveB = MoveTo::create(duration, cookieA->getPosition());
-    auto easeB = EaseOut::create(moveB, duration);
-    cookieB->runAction(easeB);
-    
-    swap->getObjectA()->updateDebugLabel();
-    swap->getObjectB()->updateDebugLabel();
+    mCurrentScene->runAction(Sequence::createWithTwoActions(DelayTime::create(duration), completion));
 }
 
 //--------------------------------------------------------------------
@@ -173,7 +170,7 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
 
             // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
             // You can tweak these numbers to change the feel of the animation.
-            float timeToTile = (obj->getSpriteNode()->getPositionY() - newPos.y) / GameResources::TileHeight;
+            float timeToTile = (obj->getSpriteNode()->getPositionY() - newPos.y) / GlobInfo->getTileHeight();
             float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
 
             // Calculate which animation is the longest. This is the time the game has to wait before it may continue.
@@ -183,7 +180,7 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
             // Perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
 
-                obj->updateDebugLabel();
+                obj->updateZOrder();
 
                 auto moveCallback = CallFunc::create([=]() {
                     AnimationsManager->animateBouncingObj(obj);
@@ -251,7 +248,7 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
             // You perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
 
-                cookie->updateDebugLabel();
+                cookie->updateZOrder();
 
                 auto moveCallback = CallFunc::create([=]() {
                     AnimationsManager->animateBouncingObj(cookie);
@@ -301,11 +298,7 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
     CC_ASSERT(chain);
     // Figure out what the midpoint of the chain is.
 
-    auto objects = chain->getChainObjectsForScoreAnimation();
-    auto cookiesCount = chain->getCookiesCount();
-    if (cookiesCount == 0) {
-        return;
-    }
+    auto objects = chain->getChainObjects(); //chain->getChainObjectsForScoreAnimation();
     CC_ASSERT(objects);
 
     for (auto itObj = objects->begin(); itObj != objects->end(); itObj++) {
@@ -328,11 +321,7 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
         Vec2 centerPosition = Vec2(spritePos.x, spritePos.y);// - 8);
 
         auto color = Helper::getScoreColorByObj(obj);
-
-        int score = obj->getScoreValue();
-        if (cookiesCount != 0 && (obj->getType() != BaseObjType::Field && obj->getType() != BaseObjType::Dude)) {
-            score = chain->getCookiesScore() / cookiesCount;
-        }
+        int score = ScoreHelper::getScoreByObj(obj, chain->getIsCreatedByDude());
 
         // Add a label for the score that slowly floats up.
         auto fontSize = 80;
@@ -372,10 +361,11 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
     Vec2 centerPosition = obj->getSpriteNode()->getPosition();
 
     auto color = Helper::getScoreColorByObj(obj);
+    auto score = ScoreHelper::getScoreByObj(obj, false);
 
     // Add a label for the score that slowly floats up.
     auto fontSize = 80;
-    auto str = StringUtils::format("%d", obj->getScoreValue());
+    auto str = StringUtils::format("%d", score);
     Text* scoreLabel = Text::create(str, GameResources::s_fontYellow.getCString(), fontSize);
     scoreLabel->setTextHorizontalAlignment(cocos2d::TextHAlignment::CENTER);
     scoreLabel->setPosition(centerPosition);
@@ -405,95 +395,55 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateBouncingObj(BaseObj * obj)
+void _AnimationsManager::animateJumpWithBouncing(BaseObj* obj, float heigthInPixel)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
 
-    float duration = 0.2f;
-    auto moveAction = MoveBy::create(duration, Vec2(0.0f, -10.0f));
-    auto easeMoveOut = EaseOut::create(moveAction, duration);
-    auto scaleXAction = ScaleTo::create(duration, 1.2f, 0.8f);
-    auto easeScaleXOut = EaseOut::create(scaleXAction, duration);
-
-    auto reverseScaleXCallback = CallFunc::create([obj]() {
-        float duration = 0.2f;
-        auto reverseScaleXAction = ScaleTo::create(duration, 1.0f, 1.0f);
-        auto reverseEaseScaleXOut = EaseOut::create(reverseScaleXAction, duration);
-        auto reverseMoveAction = MoveBy::create(duration, Vec2(0.0f, 10.0f));
-        auto reverseEaseMoveOut = EaseOut::create(reverseMoveAction, duration);
-        if (obj) {
-            auto sprite = obj->getSpriteNode();
-            if (sprite) {
-                sprite->runAction(reverseEaseScaleXOut);
-                sprite->runAction(reverseEaseMoveOut);
-            }
-        }
-    });
-
-    duration = 0.2f;
-    auto scaleYAction = ScaleTo::create(duration, 0.8f, 1.2f);
-    auto easeScaleYOut = EaseOut::create(scaleYAction, duration);
-
-    auto reverseScaleYAction = ScaleTo::create(duration*2, 1.0f, 1.0f);
-    auto reverseEaseScaleYOut = EaseOut::create(reverseScaleYAction, duration);
+    auto bounceIn = ActionsManager->actionBounceIn(obj);
 
     auto speed = 2.0f;
+    float duration = heigthInPixel / 100.0f;
+
     auto sprite = obj->getSpriteNode();
-    sprite->runAction(Speed::create(easeMoveOut, speed));
-    sprite->runAction(Speed::create(easeScaleXOut, speed));
-    auto seq1 = Sequence::create(DelayTime::create(0.2f), reverseScaleXCallback, nullptr);
-    sprite->runAction(Speed::create(seq1, speed));
-    auto seq2 = Sequence::create(DelayTime::create(0.4f), easeScaleYOut, reverseEaseScaleYOut, nullptr);
-    sprite->runAction(Speed::create(seq2, speed));
+    auto jumpAction = cocos2d::JumpBy::create(duration, Vec2::ZERO, heigthInPixel, 1);
+    auto seq = Sequence::create(jumpAction, bounceIn, nullptr);
+    sprite->runAction(Speed::create(seq, speed));
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateJumpingObj(BaseObj * obj)
+void _AnimationsManager::animateBouncingObj(BaseObj* obj)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
+    
+    auto bounceIn = ActionsManager->actionBounceIn(obj);
+    auto bounceOut = ActionsManager->actionBounceOut(obj);
 
-    float duration = 0.2f;
-    auto moveAction = MoveBy::create(duration, Vec2(0.0f, -10.0f));
-    auto easeMoveOut = EaseOut::create(moveAction, duration);
-    auto scaleXAction = ScaleTo::create(duration, 1.2f, 0.8f);
-    auto easeScaleXOut = EaseOut::create(scaleXAction, duration);
+    auto sprite = obj->getSpriteNode();
+    sprite->runAction(bounceIn);
+    auto seq = Sequence::create(DelayTime::create(0.2f), bounceOut, nullptr);
+    sprite->runAction(seq);
+}
 
-    auto reverseScaleXCallback = CallFunc::create([obj]() {
-        float duration = 0.2f;
-        auto reverseScaleXAction = ScaleTo::create(duration, 1.0f, 1.0f);
-        auto reverseEaseScaleXOut = EaseOut::create(reverseScaleXAction, duration);
-        auto reverseMoveAction = MoveBy::create(duration, Vec2(0.0f, 10.0f));
-        auto reverseEaseMoveOut = EaseOut::create(reverseMoveAction, duration);
-        if (obj) {
-            auto sprite = obj->getSpriteNode();
-            if (sprite) {
-                sprite->runAction(reverseEaseScaleXOut);
-                sprite->runAction(reverseEaseMoveOut);
-            }
-        }
-    });
+//--------------------------------------------------------------------
+void _AnimationsManager::animateHintJump(BaseObj* obj)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+    
+    auto bounceIn = ActionsManager->actionBounceIn(obj);
+    auto bounceOut = ActionsManager->actionBounceOut(obj);
 
-    duration = 0.2f;
-    auto scaleYAction = ScaleTo::create(duration, 0.8f, 1.2f);
-    auto easeScaleYOut = EaseOut::create(scaleYAction, duration);
-
-    auto reverseScaleYAction = ScaleTo::create(duration * 2, 1.0f, 1.0f);
-    auto reverseEaseScaleYOut = EaseOut::create(reverseScaleYAction, duration);
+    auto sprite = obj->getSpriteNode();
+    sprite->runAction(bounceIn);
+    auto seq = Sequence::create(DelayTime::create(0.2f), bounceOut, nullptr);
+    sprite->runAction(seq);
 
     auto speed = 2.0f;
-    auto sprite = obj->getSpriteNode();
-    sprite->runAction(Speed::create(easeMoveOut, speed));
-    sprite->runAction(Speed::create(easeScaleXOut, speed));
-    auto seq1 = Sequence::create(DelayTime::create(0.2f), reverseScaleXCallback, nullptr);
+    auto jumpAction = cocos2d::JumpBy::create(0.4f, Vec2::ZERO, 40.0f, 1);
+    auto seq1 = Sequence::create(DelayTime::create(0.5f), jumpAction, nullptr);
     sprite->runAction(Speed::create(seq1, speed));
-    auto seq2 = Sequence::create(DelayTime::create(0.4f), easeScaleYOut, reverseEaseScaleYOut, nullptr);
-    sprite->runAction(Speed::create(seq2, speed));
-
-    auto jumpAction = cocos2d::JumpBy::create(0.4f, Vec2::ZERO, 30.0f, 1);
-    auto seq3 = Sequence::create(DelayTime::create(0.5f), jumpAction, nullptr);
-    sprite->runAction(Speed::create(seq3, speed));
 }
 
 //--------------------------------------------------------------------
@@ -505,12 +455,11 @@ void _AnimationsManager::animateHintSwap(CommonTypes::Set* objects, cocos2d::Cal
     for (auto itObj = objects->begin(); itObj != objects->end(); itObj++) {
         auto obj = dynamic_cast<BaseObj*>(*itObj);
         if (obj) {
-            animateJumpingObj(obj);
+            animateHintJump(obj);
         }
     }
 
     const float duration = 0.4f;
-
     mCurrentScene->runAction(Sequence::create(DelayTime::create(duration), completion, nullptr));
 }
 
@@ -521,7 +470,6 @@ void _AnimationsManager::animateMatchCookie(CookieObj * obj)
     if (!obj) {
         return;
     }
-
     const float duration = 0.3f;
     const float scaleFactor = 0.1f;
 
@@ -535,7 +483,6 @@ void _AnimationsManager::animateMatchCookie(CookieObj * obj)
         if (func) {
             func(baseObj);
         }
-
     });
     obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
 }
@@ -547,13 +494,10 @@ void _AnimationsManager::animateMatchFieldObj(FieldObj * obj)
     if (!obj) {
         return;
     }
-
     const float duration = 0.3f;
 
     auto fadeOut = FadeOut::create(duration);
     auto easeOut = EaseOut::create(fadeOut, duration);
-
-    //animateScoreForFieldObj(obj);
 
     auto scene = dynamic_cast<GameplayScene*>(mCurrentScene);
     CC_ASSERT(scene);
@@ -568,7 +512,6 @@ void _AnimationsManager::animateMatchFieldObj(FieldObj * obj)
         if (func) {
             func(baseObj, createSpriteCallback);
         }
-
     });
     obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
 }
@@ -580,7 +523,6 @@ void _AnimationsManager::animateMatchDude(DudeObj * obj)
     if (!obj) {
         return;
     }
-
     const float duration = 0.3f;
     const float scaleFactor = 0.1f;
 
@@ -594,8 +536,6 @@ void _AnimationsManager::animateMatchDude(DudeObj * obj)
         if (func) {
             func(baseObj);
         }
-
     });
     obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
 }
-
