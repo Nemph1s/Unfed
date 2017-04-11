@@ -129,40 +129,49 @@ Set* ChainController::removeChainAt(ChainType& type, cocos2d::Vec2& pos)
 }
 
 //--------------------------------------------------------------------
-Set* ChainController::detectChainAt(int column, int row)
+Set* ChainController::detectHintChainAt(BaseObj* curObj, BaseObj* nextObj)
 //--------------------------------------------------------------------
 {
+    CC_ASSERT(curObj);
+    CC_ASSERT(nextObj);
+    cocos2d::log("ChainController::detectHintChainAt: currObj: %s nextObj: %s"
+        , curObj->description().getCString(), nextObj->description().getCString());
     Set* set = nullptr;
-    if (!mObjCtrl->cookieAt(column, row))
+    auto curCol = curObj->getColumn();
+    auto curRow = curObj->getRow();
+    auto nextCol = nextObj->getColumn();
+    auto nextRow = nextObj->getRow();
+
+    if (!mObjCtrl->cookieAt(curCol, curRow))
         return set;
 
     set = Set::create();
-    int type = mObjCtrl->cookieAt(column, row)->getTypeAsInt();
+    int type = mObjCtrl->cookieAt(curCol, curRow)->getTypeAsInt();
     int fieldSize = _GlobalInfo::NumColumns;
 
     int horzLength = 1;
-    for (int i = column - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(i, row, type); i--, horzLength++) {
-        set->addObject(mObjCtrl->cookieAt(i, row));
+    for (int i = nextCol - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(i, nextRow, type) && (curCol != i); i--, horzLength++) {
+        set->addObject(mObjCtrl->cookieAt(i, nextRow));
     };
-    for (int i = column + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(i, row, type); i++, horzLength++) {
-        set->addObject(mObjCtrl->cookieAt(i, row));
+    for (int i = nextCol + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(i, nextRow, type) && (curCol != i); i++, horzLength++) {
+        set->addObject(mObjCtrl->cookieAt(i, nextRow));
     };
     if (horzLength >= 3) {
-        set->addObject(mObjCtrl->cookieAt(column, row));
+        set->addObject(mObjCtrl->cookieAt(curCol, curRow));
         return set;
     }
     set->removeAllObjects();
 
     int vertLength = 1;
 
-    for (int i = row - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(column, i, type); i--, vertLength++) {
-        set->addObject(mObjCtrl->cookieAt(column, i));
+    for (int i = nextRow - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(nextCol, i, type) && (curRow != i); i--, vertLength++) {
+        set->addObject(mObjCtrl->cookieAt(nextCol, i));
     };
-    for (int i = row + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(column, i, type); i++, vertLength++) {
-        set->addObject(mObjCtrl->cookieAt(column, i));
+    for (int i = nextRow + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(nextCol, i, type) && (curRow != i); i++, vertLength++) {
+        set->addObject(mObjCtrl->cookieAt(nextCol, i));
     };
     if (vertLength >= 3) {
-        set->addObject(mObjCtrl->cookieAt(column, row));
+        set->addObject(mObjCtrl->cookieAt(curCol, curRow));
     }
     else {
         set->removeAllObjects();

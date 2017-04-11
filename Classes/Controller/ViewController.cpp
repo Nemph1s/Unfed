@@ -495,16 +495,27 @@ void ViewController::showSwapHint(float dt)
     if (mGameplayScene->isObjTouched()) {
         return;
     }
+    cocos2d::log("ViewController::showSwapHint:");
     auto swapObj = dynamic_cast<SwapObj*>(mSwapController->getPossibleSwaps()->anyObject());
     if (swapObj) {
-        mGameplayScene->userInteractionDisabled();
-        set = swapObj->getObjectsForHint();
-        auto callback = CallFunc::create([=]() {
-            // enable touches on layer.
-            mGameplayScene->userInteractionEnabled();
-        });
-        if (set) {
-            AnimationsManager->animateHintSwap(set, callback);
-        }        
+        auto detectChain = swapObj->getDetectHintChainCallback();
+        if (detectChain) {
+
+            mGameplayScene->userInteractionDisabled();
+            set = detectChain();
+
+            auto callback = CallFunc::create([=]() {
+                // enable touches on layer.
+                mGameplayScene->userInteractionEnabled();
+            });
+
+            if (set) {
+                AnimationsManager->animateHintSwap(set, callback);
+            } else {
+                cocos2d::log("ViewController::showSwapHint: ERROR! cant detect chain set");
+                mGameplayScene->userInteractionEnabled();
+            }
+
+        }               
     }
 }

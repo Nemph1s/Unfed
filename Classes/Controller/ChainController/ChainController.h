@@ -52,7 +52,7 @@ public:
     CommonTypes::Set* removeMatches();
     CommonTypes::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
 
-    CommonTypes::Set* detectChainAt(int column, int row);
+    CommonTypes::Set* detectHintChainAt(BaseObj* curObj, BaseObj* nextObj);
 
     bool getCellFromChainAndPrevSwapSet(int& column, int& row, ChainObj* chain, CommonTypes::Set* prevSwapObjs);
 
