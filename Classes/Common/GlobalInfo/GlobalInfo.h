@@ -52,6 +52,8 @@ private:
     SYNTHESIZE_READONLY_PASS_BY_REF(double, mTileWidth, TileWidth, 0.0f)
     SYNTHESIZE_READONLY_PASS_BY_REF(double, mTileHeight, TileHeight, 0.0f)
     SYNTHESIZE_READONLY_PASS_BY_REF(uint16_t, mLevelsCount, LevelsCount, 0)
+    SYNTHESIZE_READONLY_PASS_BY_REF(double, mShakeScreenDuration, ShakeScreenDuration, 60.0f)
+    SYNTHESIZE_READONLY_PASS_BY_REF(double, mMinShakeTime, MinShakeTime, 6.0f)
 
     // GL view info
     SYNTHESIZE_READONLY_PASS_BY_REF(float, mScaleFactor, ScaleFactor, 0.0f)

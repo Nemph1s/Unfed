@@ -31,6 +31,14 @@ float Helper::randomFloatBetween(float smallNumber, float bigNumber)
 }
 
 //--------------------------------------------------------------------
+float Helper::rangeRandom(float min, float max)
+//--------------------------------------------------------------------
+{
+    float rnd = ((float)rand() / (float)RAND_MAX);
+    return rnd*(max - min) + min;
+}
+
+//--------------------------------------------------------------------
 int Helper::random(int fromRange, int toRange)
 //--------------------------------------------------------------------
 {

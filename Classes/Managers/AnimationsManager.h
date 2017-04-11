@@ -21,7 +21,7 @@ class CookieObj;
 class FieldObj;
 class DudeObj;
 
-class _AnimationsManager
+class _AnimationsManager : public cocos2d::Ref
 {
     CREATE_SINGLETON(_AnimationsManager);
 
@@ -39,10 +39,14 @@ public:
     void animateScoreForChain(ChainObj* chain);
     void animateScoreForFieldObj(BaseObj* obj);
 
+    void animateDropDownObj(BaseObj* obj, bool animateShakingScreen = false);
+
     void animateJumpWithBouncing(BaseObj* obj, float heigthInPixel);
     void animateBouncingObj(BaseObj* obj);
     
     void animateHintSwap(CommonTypes::Set* objects, cocos2d::CallFunc* completion);
+
+    void animateShakeScreen();
     
 protected:
     void animateMatchCookie(CookieObj* obj);
@@ -51,7 +55,12 @@ protected:
     
     void animateHintJump(BaseObj* obj);
 
+    void shakeScreen(float dt);
+
     cocos2d::Scene* mCurrentScene;
+    cocos2d::Vec2 mInitialScenePos = cocos2d::Vec2::ZERO;
+    float mShakeScreenDuration = 0;
+
 };
 
 #define AnimationsManager _AnimationsManager::getInstance()

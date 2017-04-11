@@ -23,12 +23,15 @@ class _ActionsManager
 public:
     bool init();
     
-    cocos2d::ActionInstant* actionBounceIn(BaseObj* obj);
-    cocos2d::ActionInstant* actionBounceOut(BaseObj* obj);
+    cocos2d::ActionInstant* actionBounceInNormal(BaseObj* obj, float duration = 0.2f);
+    cocos2d::ActionInstant* actionBounceInHeavy(BaseObj* obj, float duration = 0.3f);
+    cocos2d::ActionInstant* actionBounceOut(BaseObj* obj, float duration = 0.2f);
 
     cocos2d::ActionInstant* actionSwapObj(BaseObj* objA, BaseObj* objB, bool isFirstSwapObject = false);
-    
+
 protected:
+
+    cocos2d::ActionInstant* reverseScaleXCallback(BaseObj* obj, float duration);
 
 };
 

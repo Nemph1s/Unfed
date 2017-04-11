@@ -29,6 +29,7 @@ public:
     }
 
     static float randomFloatBetween(float smallNumber, float bigNumber);
+    static float rangeRandom(float min, float max);
     static int random(int fromRange, int toRange);
     static CommonTypes::CookieType randomCookieType(int fromRange, int toRange);
 

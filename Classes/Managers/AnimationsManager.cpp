@@ -46,6 +46,7 @@ bool _AnimationsManager::initWithScene(cocos2d::Scene * scene)
     ActionsManager->init();
     if (scene) {
         mCurrentScene = scene;
+        mInitialScenePos = mCurrentScene->getPosition();
         return true;
     }   
 
@@ -395,12 +396,55 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
+void _AnimationsManager::animateDropDownObj(BaseObj* obj, bool animateShakingScreen)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+
+    auto moveCallback = CallFunc::create([=]() {
+        obj->updateZOrder();
+
+        float duration = 0.3f;
+        auto bounceIn = ActionsManager->actionBounceInHeavy(obj, duration);
+        auto bounceOut = ActionsManager->actionBounceOut(obj, duration);
+
+        auto sprite = obj->getSpriteNode();
+        sprite->runAction(bounceIn);
+        auto seq = Sequence::create(DelayTime::create(duration), bounceOut, nullptr);
+        sprite->runAction(seq);
+
+        if (animateShakingScreen) {
+            AnimationsManager->animateShakeScreen();
+        }
+    });
+
+    int startRow = -5;
+    uint8_t zOrder = 100;
+    auto startPos = Helper::pointForColumnAndRow(obj->getColumn(), startRow);
+    auto sprite = obj->getSpriteNode();
+    
+    sprite->setPosition(startPos);
+    sprite->setLocalZOrder(zOrder);
+
+    float timeToTile = fabs(startRow - obj->getRow());
+    float duration = (timeToTile * 0.1f) + 0.125f;
+
+    auto speed = 2.0f;
+    auto moveAction = MoveTo::create(duration, Helper::pointForTile(obj));
+    auto easeAction = EaseOut::create(moveAction, duration);
+
+    auto waitDelay = DelayTime::create(0.01f);
+    auto seq = Sequence::create(waitDelay, easeAction, moveCallback, nullptr);
+    sprite->runAction(Speed::create(seq, speed));
+}
+
+//--------------------------------------------------------------------
 void _AnimationsManager::animateJumpWithBouncing(BaseObj* obj, float heigthInPixel)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
 
-    auto bounceIn = ActionsManager->actionBounceIn(obj);
+    auto bounceIn = ActionsManager->actionBounceInNormal(obj);
 
     auto speed = 2.0f;
     float duration = heigthInPixel / 100.0f;
@@ -417,7 +461,7 @@ void _AnimationsManager::animateBouncingObj(BaseObj* obj)
 {
     CC_ASSERT(obj);
     
-    auto bounceIn = ActionsManager->actionBounceIn(obj);
+    auto bounceIn = ActionsManager->actionBounceInNormal(obj);
     auto bounceOut = ActionsManager->actionBounceOut(obj);
 
     auto sprite = obj->getSpriteNode();
@@ -432,7 +476,7 @@ void _AnimationsManager::animateHintJump(BaseObj* obj)
 {
     CC_ASSERT(obj);
     
-    auto bounceIn = ActionsManager->actionBounceIn(obj);
+    auto bounceIn = ActionsManager->actionBounceInNormal(obj);
     auto bounceOut = ActionsManager->actionBounceOut(obj);
 
     auto sprite = obj->getSpriteNode();
@@ -538,4 +582,38 @@ void _AnimationsManager::animateMatchDude(DudeObj * obj)
         }
     });
     obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateShakeScreen()
+//--------------------------------------------------------------------
+{
+    if (mShakeScreenDuration <= 0) {
+        auto selector = schedule_selector(_AnimationsManager::shakeScreen);
+        cocos2d::Director::getInstance()->getScheduler()->schedule(selector, this, 0, CC_REPEAT_FOREVER, 0.0f, false);
+        mShakeScreenDuration = GlobInfo->getShakeScreenDuration();
+    }
+    else {
+        cocos2d::log("_AnimationsManager::animateShakeScreen: ERROR! can't run animation while it is still running!");
+    }
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::shakeScreen(float dt)
+//--------------------------------------------------------------------
+{
+    float offset = mShakeScreenDuration / GlobInfo->getMinShakeTime();
+    float randx = Helper::rangeRandom(-offset, offset);
+    float randy = Helper::rangeRandom(-offset, offset);
+
+    mCurrentScene->setPosition(Point(randx, randy));
+    mCurrentScene->setPosition(Point(mInitialScenePos.x + randx, mInitialScenePos.y + randy));
+
+    mShakeScreenDuration -= 1;
+
+    if (mShakeScreenDuration <= 0) {
+        mCurrentScene->setPosition(Point(mInitialScenePos.x, mInitialScenePos.y));
+        auto selector = schedule_selector(_AnimationsManager::shakeScreen);
+        cocos2d::Director::getInstance()->getScheduler()->unschedule(selector, this);
+    }
 }
