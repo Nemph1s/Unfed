@@ -293,7 +293,8 @@ cocos2d::ui::Text * _GuiManager::createLabel(const CommonTypes::TextLabelInfo& i
 
     Text* text = Text::create(info.text, GameResources::s_fontYellow.getCString(), info.fontSize);
     text->ignoreContentAdaptWithSize(false);
-    text->setTextColor(Color4B::GRAY);
+    text->setTextColor(Color4B::WHITE);
+    text->enableOutline(Color4B::BLACK, 2);
     text->setPositionType(ui::Widget::PositionType::PERCENT);
     text->setPositionPercent(Vec2(info.posXPercent, info.posYPercent));
     text->setTextHorizontalAlignment(cocos2d::TextHAlignment::LEFT);

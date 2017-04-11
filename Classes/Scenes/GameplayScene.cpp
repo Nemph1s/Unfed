@@ -87,7 +87,6 @@ bool GameplayScene::initWithSize(const Size& size)
     auto scaleFactor = std::min(bg->getContentSize().width / size.width
         , bg->getContentSize().height / size.height);
     bg->setScale(1.0f / scaleFactor);
-    bg->setScale(bg->getScale() * 2 );
     bg->setPosition(VisibleRect::center());
     bgLayer->addChild(bg, 0);
 
