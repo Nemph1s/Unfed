@@ -22,6 +22,8 @@
 
 #include "Layers/CookiesLayer.h"
 
+using namespace CommonTypes;
+
 //--------------------------------------------------------------------
 SwapController::~SwapController()
 //--------------------------------------------------------------------
@@ -122,18 +124,31 @@ void SwapController::detectSwap(SwapChecker * checker)
 
         // Is either cookie now part of a chain?
         bool hasChainFromNextTile = objCtrl->hasChainAt(checker->nextCol, checker->nextRow);
-        bool hasChainFromCurrTile = objCtrl->hasChainAt(checker->curCol, checker->curRow);
+        bool hasChainFromCurrTile = false;
+
+        // decrease attempts to looking chains in hasChainAt method
+        if (!hasChainFromNextTile) {
+            hasChainFromCurrTile = objCtrl->hasChainAt(checker->curCol, checker->curRow);
+        }
+
         if (hasChainFromNextTile || hasChainFromCurrTile) {
             auto chainCtrl = mLevel->getChainController();
             SwapObj* swap = SwapObj::createWithObjects(currObject, nextObject);
-            if (hasChainFromNextTile) {
-                //TODO: use lazy detecting for each swap
-                swap->setObjectsForHint(chainCtrl->detectChainAt(checker->nextCol, checker->nextRow));
-            }
-            else if (hasChainFromCurrTile) {
-                //TODO: use lazy detecting for each swap
-                swap->setObjectsForHint(chainCtrl->detectChainAt(checker->curCol, checker->curRow));
-            }
+            
+            BaseObj* curr = hasChainFromNextTile ? currObject : nextObject;
+            BaseObj* next = hasChainFromNextTile ? nextObject : currObject;
+
+            // need to use callback for determine only necessary chain
+            std::function<Set*()> func = [chainCtrl, curr, next]() {
+                auto set = chainCtrl->detectHintChainAt(curr, next);
+                if (!set) { 
+                    CC_ASSERT(set); //TODO: remove in future this check for nullptr. 
+                    set = chainCtrl->detectHintChainAt(next, curr);
+                }
+                return set;
+            };
+            swap->setDetectHintChainCallback(func);
+
             checker->set->addObject(swap);
         }
         // Swap them back

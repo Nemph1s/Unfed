@@ -43,6 +43,6 @@ protected:
     CC_SYNTHESIZE_READONLY(BaseObj*, mObjectA, ObjectA);
     CC_SYNTHESIZE_READONLY(BaseObj*, mObjectB, ObjectB);
 
-    CC_PROPERTY(CommonTypes::Set*, mObjectsForHint, ObjectsForHint);
+    CC_SYNTHESIZE(std::function<CommonTypes::Set*()>, mDetectHintChainCallback, DetectHintChainCallback);
 };
 
