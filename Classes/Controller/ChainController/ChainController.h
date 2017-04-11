@@ -67,6 +67,16 @@ public:
 
     void executeCollectGoalCallback(CommonTypes::Set* chains);
 
+    /**
+    * This method will create map with chains, first value is the length between inserted object and main object
+    * @param col column of current object.
+    * @param row row of current object.
+    * @param length The max size between current object and current obj + length.
+    * @return map
+    */
+    std::map<int, ChainObj*> createCircleChainAt(uint8_t col, uint8_t row, uint8_t length);
+
+
 protected:
     // Nodes should be created using create();
     ChainController();

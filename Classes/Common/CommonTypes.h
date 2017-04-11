@@ -130,6 +130,7 @@ namespace CommonTypes {
        , ChainExplosion = 7 /**< enum value ChainExplosion. */
        , ChainFromAToB = 6 /**< enum value ChainTypeAllOfOne. */
        , ChainFieldObjects = 7 /**< enum value ChainFieldObjects. */
+       , ChainCircle = 8 /**< enum value ChainCircle. */
        , Unknown /**< enum value unknown. */
    };
 
@@ -189,5 +190,4 @@ namespace CommonTypes {
        float posXPercent; /**< position x in Percent */
        float posYPercent; /**< position Y in Percent */
    };
-
 }

@@ -23,6 +23,8 @@
 #include "Common/CommonTypes.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
 
+#include <map>
+
 using namespace CommonTypes;
 
 //--------------------------------------------------------------------
@@ -291,8 +293,38 @@ void ChainController::executeCollectGoalCallback(Set * chains)
     for (auto it = chains->begin(); it != chains->end(); it++) {
         auto chain = dynamic_cast<ChainObj*>(*it);
         if (chain)
+            // TODO: call this callback after removing each base object (maybe in clear() method)
             chain->executeCollectGoalCallback();
     }
+}
+
+//--------------------------------------------------------------------
+std::map<int, ChainObj*> ChainController::createCircleChainAt(uint8_t col, uint8_t row, uint8_t length)
+//--------------------------------------------------------------------
+{
+    std::map<int, ChainObj*> chainsMap;
+    if (length < 0 || !Helper::isValidColumnAndRow(col, row)) {
+        cocos2d::log("ChainController::createCircleChainAt: wrong length=%d or destinationPos at column=%d, row=%d", length, col, row);
+        return chainsMap;
+    }
+    
+    for (int i = col - length; i <= col + length; i++) {
+        uint8_t colLength = std::abs(col - i);
+        for (int j = row - length; j <= row + length; j++) {
+            uint8_t rowLength = std::abs(row - i);
+            uint8_t currentLength = MAX(colLength, rowLength);
+
+            if (chainsMap.find(currentLength) == chainsMap.end()) {
+                auto chain = ChainObj::createWithType(ChainType::ChainExplosion);
+                //chain->setUpdateGoalCallback(mUpdateGoalCallback);
+                CC_SAFE_RETAIN(chain);
+                chainsMap[currentLength] = chain;
+            }
+            
+            addObjToChain(chainsMap[currentLength], i, j);
+        }
+    }
+    return chainsMap;
 }
 
 //--------------------------------------------------------------------
