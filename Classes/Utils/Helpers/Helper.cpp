@@ -65,6 +65,15 @@ float Helper::getDurationToTile(int8_t startRow, int8_t destinationRow)
 }
 
 //--------------------------------------------------------------------
+int8_t Helper::getDistanceBetweenObjects(CommonTypes::CellPos cellPosA, CommonTypes::CellPos cellPosB)
+//--------------------------------------------------------------------
+{
+    uint8_t colLength = std::abs(cellPosA.column - cellPosB.column);
+    uint8_t rowLength = std::abs(cellPosA.row - cellPosB.row);
+    return MAX(colLength, rowLength);
+}
+
+//--------------------------------------------------------------------
 cocos2d::String* Helper::getSpriteNameByFieldType(int fieldType)
 //--------------------------------------------------------------------
 {

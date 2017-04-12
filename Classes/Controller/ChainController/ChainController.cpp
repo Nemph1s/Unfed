@@ -291,32 +291,25 @@ void ChainController::executeCollectGoalCallback(Set * chains)
 }
 
 //--------------------------------------------------------------------
-std::map<int, ChainObj*> ChainController::createCircleChainAt(uint8_t col, uint8_t row, uint8_t length)
+CommonTypes::Set* ChainController::createCircleChainAt(CommonTypes::CellPos cell, uint8_t length)
 //--------------------------------------------------------------------
 {
-    std::map<int, ChainObj*> chainsMap;
-    if (length < 0 || !Helper::isValidColumnAndRow(col, row)) {
-        cocos2d::log("ChainController::createCircleChainAt: wrong length=%d or destinationPos at column=%d, row=%d", length, col, row);
-        return chainsMap;
+    auto set = Set::create();
+    if (length < 0 || !Helper::isValidColumnAndRow(cell.column, cell.row)) {
+        cocos2d::log("ChainController::createCircleChainAt: wrong length=%d or destinationPos at column=%d, row=%d"
+            , length, cell.column, cell.row);
+        return set;
     }
-    
-    for (int i = col - length; i <= col + length; i++) {
-        uint8_t colLength = std::abs(col - i);
-        for (int j = row - length; j <= row + length; j++) {
-            uint8_t rowLength = std::abs(row - i);
-            uint8_t currentLength = MAX(colLength, rowLength);
+    auto chain = ChainObj::createWithType(ChainType::ChainExplosion);
 
-            if (chainsMap.find(currentLength) == chainsMap.end()) {
-                auto chain = ChainObj::createWithType(ChainType::ChainExplosion);
-                //chain->setUpdateGoalCallback(mUpdateGoalCallback);
-                CC_SAFE_RETAIN(chain);
-                chainsMap[currentLength] = chain;
-            }
-            
-            addObjToChain(chainsMap[currentLength], i, j);
+    for (int i = cell.column - length; i <= cell.column + length; i++) {
+        for (int j = cell.row - length; j <= cell.row + length; j++) {
+            addObjToChain(chain, i, j);
         }
     }
-    return chainsMap;
+    addChainToSet(chain, set);
+
+    return set;
 }
 
 //--------------------------------------------------------------------

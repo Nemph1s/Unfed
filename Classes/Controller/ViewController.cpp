@@ -27,6 +27,8 @@
 #include "Controller/ObjectController/Dude/DudeObj.h"
 #include "Controller/ChainController/ChainObj.h"
 
+#include "Utils/Helpers/Helper.h"
+
 #include "Scenes/GameplayScene.h"
 
 using cocos2d::Director;
@@ -460,30 +462,35 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
 void ViewController::throwDownAnObject(BaseObj* obj, CommonTypes::CellPos destPos, bool isHeavyObject)
 //--------------------------------------------------------------------
 {
-    auto objsToRemove = mObjectController->getObjectsForChain(destPos);
-    if (!objsToRemove) {
-        return;
-    }
-    CC_SAFE_RETAIN(objsToRemove);
     //TODO: refactor createDudeObject to set cellPos -1,-1 and dont add to container!
-    auto onCompleteCallback = CallFunc::create([&]() {
+    auto onThrowDownCallback = CallFunc::create([=]() {
         
-        for (auto itObj = objsToRemove->begin(); itObj != objsToRemove->end(); ++itObj) {
-            auto object = dynamic_cast<BaseObj*>(*itObj);
-            CC_ASSERT(object);
+        auto onCompleteCallback = CallFunc::create([=]() {
 
-            if (mObjectController->matchObject(object)) {
-                AnimationsManager->animateMatchObj(object);
-            }
-            //TODO: for other special abilities add score animation
+            mObjectController->updateObjectAt(destPos.column, destPos.row, obj);
+            mObjectController->synchronizeObjectAt(destPos);
+
+            mSwapController->detectPossibleSwaps();
+            mDudeController->detectDirectionsForDudes();
+
+            mGameplayScene->userInteractionEnabled();
+        });
+
+        auto object = mObjectController->getObjectForChain(destPos);
+        if (mObjectController->matchObject(object)) {
+            AnimationsManager->animateMatchObj(object, onCompleteCallback);
         }
-        CC_SAFE_RELEASE_NULL(objsToRemove);
 
-        mObjectController->updateObjectAt(destPos.column, destPos.row, obj);
-        mObjectController->synchronizeObjectAt(destPos);
+        // TODO: get wave length from other place
+        auto earthquakeWave = 2; 
+        auto chainSet = mChainController->createCircleChainAt(destPos, earthquakeWave);
+        AnimationsManager->animateReboundAfterThrowingObj(destPos, chainSet);
+
     });
 
-    AnimationsManager->animateThrowDownAnObj(obj, destPos, onCompleteCallback, isHeavyObject);
+    mGameplayScene->userInteractionDisabled();
+
+    AnimationsManager->animateThrowDownAnObj(obj, destPos, onThrowDownCallback, isHeavyObject);
 }
 
 //--------------------------------------------------------------------

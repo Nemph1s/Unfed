@@ -103,7 +103,7 @@ void _AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* co
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatchObj(BaseObj * obj)
+void _AnimationsManager::animateMatchObj(BaseObj * obj, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     if (!obj) {
@@ -113,13 +113,13 @@ void _AnimationsManager::animateMatchObj(BaseObj * obj)
     switch (obj->getType())
     {
     case BaseObjType::Cookie:
-        animateMatchCookie(dynamic_cast<CookieObj*>(obj));
+        animateMatchCookie(dynamic_cast<CookieObj*>(obj), completion);
         break;
     case BaseObjType::Field:
-        animateMatchFieldObj(dynamic_cast<FieldObj*>(obj));
+        animateMatchFieldObj(dynamic_cast<FieldObj*>(obj), completion);
         break;
     case BaseObjType::Dude:
-        animateMatchDude(dynamic_cast<DudeObj*>(obj));
+        animateMatchDude(dynamic_cast<DudeObj*>(obj), completion);
         break;
     default:
         break;
@@ -437,19 +437,54 @@ void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CommonTypes::CellPo
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateJumpWithBouncing(BaseObj* obj, float heigthInPixel)
+void _AnimationsManager::animateReboundAfterThrowingObj(CommonTypes::CellPos destPos, CommonTypes::Set* chains, cocos2d::CallFunc* completion)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(chains);
+
+    for (auto itChain = chains->begin(); itChain != chains->end(); ++itChain) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        if (!chain) {
+            continue;
+        }
+        auto objects = chain->getChainObjects();
+        if (!objects) {
+            continue;
+        }
+        for (auto it = objects->begin(); it != objects->end(); ++it) {
+            auto obj = dynamic_cast<BaseObj*>(*it);
+            if (!obj) {
+                continue;
+            }
+            int8_t col = obj->getColumn();
+            int8_t row = obj->getRow();
+            if (obj->isContainer() || (destPos.column == col && destPos.row == row)) {
+                continue;
+            }
+
+            auto distance = Helper::getDistanceBetweenObjects(destPos, CellPos(col, row));
+            auto jumpHeight = GlobInfo->getTileHeight() / 3.0f;
+            AnimationsManager->animateJumpWithBouncing(obj, distance * 0.2f, jumpHeight / distance);
+        }
+    }
+
+
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateJumpWithBouncing(BaseObj* obj, float delay, float heigthInPixel)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
 
     auto bounceIn = ActionsManager->actionBounceInNormal(obj);
 
-    auto speed = 2.0f;
+    auto speed = 1.0f;
     float duration = heigthInPixel / 100.0f;
 
     auto sprite = obj->getSpriteNode();
     auto jumpAction = cocos2d::JumpBy::create(duration, Vec2::ZERO, heigthInPixel, 1);
-    auto seq = Sequence::create(jumpAction, bounceIn, nullptr);
+    auto seq = Sequence::create(DelayTime::create(delay), jumpAction, bounceIn, nullptr);
     sprite->runAction(Speed::create(seq, speed));
 }
 
@@ -506,7 +541,7 @@ void _AnimationsManager::animateHintSwap(CommonTypes::Set* objects, cocos2d::Cal
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatchCookie(CookieObj * obj)
+void _AnimationsManager::animateMatchCookie(CookieObj * obj, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     if (!obj) {
@@ -526,11 +561,11 @@ void _AnimationsManager::animateMatchCookie(CookieObj * obj)
             func(baseObj);
         }
     });
-    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
+    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, completion, nullptr));
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatchFieldObj(FieldObj * obj)
+void _AnimationsManager::animateMatchFieldObj(FieldObj * obj, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     if (!obj) {
@@ -555,11 +590,11 @@ void _AnimationsManager::animateMatchFieldObj(FieldObj * obj)
             func(baseObj, createSpriteCallback);
         }
     });
-    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
+    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, completion, nullptr));
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatchDude(DudeObj * obj)
+void _AnimationsManager::animateMatchDude(DudeObj * obj, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     if (!obj) {
@@ -579,7 +614,7 @@ void _AnimationsManager::animateMatchDude(DudeObj * obj)
             func(baseObj);
         }
     });
-    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
+    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, completion, nullptr));
 }
 
 //--------------------------------------------------------------------

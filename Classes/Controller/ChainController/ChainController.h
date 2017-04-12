@@ -74,7 +74,7 @@ public:
     * @param length The max size between current object and current obj + length.
     * @return map
     */
-    std::map<int, ChainObj*> createCircleChainAt(uint8_t col, uint8_t row, uint8_t length);
+    CommonTypes::Set* createCircleChainAt(CommonTypes::CellPos cell, uint8_t length);
 
 
 protected:

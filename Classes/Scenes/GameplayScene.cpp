@@ -256,7 +256,7 @@ void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int r
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::createSpriteWithDude(BaseObj * dudeObj)
+void GameplayScene::createSpriteForDude(BaseObj * dudeObj)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->createSpriteWithObj(dudeObj, dudeObj->getColumn(), dudeObj->getRow());

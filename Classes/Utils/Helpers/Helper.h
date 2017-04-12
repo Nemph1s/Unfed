@@ -34,6 +34,7 @@ public:
     static CommonTypes::CookieType randomCookieType(int fromRange, int toRange);
 
     static float getDurationToTile(int8_t startRow, int8_t destinationRow);
+    static int8_t getDistanceBetweenObjects(CommonTypes::CellPos cellPosA, CommonTypes::CellPos cellPosB);
 
     static cocos2d::String* getSpriteNameByFieldType(int fieldType);
 

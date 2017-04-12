@@ -37,7 +37,7 @@ public:
     void createChainPreviewSprites(CommonTypes::Set* set);
 
     void createSpriteWithCookie(CookieObj* cookie, int column, int row);
-    void createSpriteWithDude(BaseObj* dudeObj);
+    void createSpriteForDude(BaseObj* dudeObj);
     void createSpriteWithFieldObj(FieldObj* fieldObj);
 
     bool isObjTouched();
