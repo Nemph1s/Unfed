@@ -43,6 +43,7 @@ public:
 
     Set* createDudeObectsFromChains(Set* chains, Set* prevSwapContainers);
 
+    BaseObj* createDudeObjWithoutContainer(int type);
     BaseObj* createDudeObject(int column, int row, int type);
 
     void detectDirectionsForDudes();

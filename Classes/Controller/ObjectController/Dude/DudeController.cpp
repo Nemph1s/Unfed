@@ -97,6 +97,24 @@ Set* DudeController::createDudeObectsFromChains(Set* chains, Set* prevSwapContai
 }
 
 //--------------------------------------------------------------------
+BaseObj* DudeController::createDudeObjWithoutContainer(int type)
+//--------------------------------------------------------------------
+{
+    //TODO: maybe retain obj?
+    BaseObjInfo baseInfo = { BaseObjType::Dude };
+    FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
+    auto obj = dynamic_cast<DudeObj*>(SmartObjFactory->createDudeObj(info));
+    CC_ASSERT(obj);
+
+    auto helper = DudeHelper::createWithDudeObject(obj);
+    helper->setDudeController(this);
+    mDudeDirections.insert(obj, helper);
+    mDudesCount++;
+
+    return obj;
+}
+
+//--------------------------------------------------------------------
 BaseObj * DudeController::createDudeObject(int column, int row, int type)
 //--------------------------------------------------------------------
 {
