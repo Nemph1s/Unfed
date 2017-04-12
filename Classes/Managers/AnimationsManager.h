@@ -30,7 +30,11 @@ public:
     
     void animateSwap(SwapObj* swap, cocos2d::CallFunc* completion);
     void animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* completion);
+
+    void animateMatchObj(BaseObj* obj);
     void animateMatching(CommonTypes::Set* chains, cocos2d::CallFunc* completion);
+
+
     void animateFallingObjects(cocos2d::Array* colums, cocos2d::CallFunc* completion);
     void animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion);
 
@@ -39,7 +43,7 @@ public:
     void animateScoreForChain(ChainObj* chain);
     void animateScoreForFieldObj(BaseObj* obj);
 
-    void animateDropDownObj(BaseObj* obj, bool animateShakingScreen = false);
+    void animateThrowDownAnObj(BaseObj* obj, CommonTypes::CellPos destPos, cocos2d::CallFunc* completion, bool animateShakingScreen = false);
 
     void animateJumpWithBouncing(BaseObj* obj, float heigthInPixel);
     void animateBouncingObj(BaseObj* obj);

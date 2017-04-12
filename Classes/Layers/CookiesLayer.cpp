@@ -395,7 +395,6 @@ void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
         if (obj->getType() == BaseObjType::Dude) {
             this->addChild(sprite, zOrder);
             mDudesLayer->addChild(obj, zOrder);
-
         } else {
             this->addChild(sprite, zOrder);
             if (!obj->getParent()) {

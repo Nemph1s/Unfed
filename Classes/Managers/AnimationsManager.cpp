@@ -103,6 +103,30 @@ void _AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* co
 }
 
 //--------------------------------------------------------------------
+void _AnimationsManager::animateMatchObj(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    if (!obj) {
+        return;
+    }
+
+    switch (obj->getType())
+    {
+    case BaseObjType::Cookie:
+        animateMatchCookie(dynamic_cast<CookieObj*>(obj));
+        break;
+    case BaseObjType::Field:
+        animateMatchFieldObj(dynamic_cast<FieldObj*>(obj));
+        break;
+    case BaseObjType::Dude:
+        animateMatchDude(dynamic_cast<DudeObj*>(obj));
+        break;
+    default:
+        break;
+    }
+}
+
+//--------------------------------------------------------------------
 void _AnimationsManager::animateMatching(CommonTypes::Set* chains, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
@@ -123,20 +147,7 @@ void _AnimationsManager::animateMatching(CommonTypes::Set* chains, cocos2d::Call
         for (auto it = objects->begin(); it != objects->end(); it++) {
 
             auto obj = dynamic_cast<BaseObj*>(*it);
-            switch (obj->getType())
-            {
-            case BaseObjType::Cookie:
-                animateMatchCookie(dynamic_cast<CookieObj*>(obj));
-                break;
-            case BaseObjType::Field:
-                animateMatchFieldObj(dynamic_cast<FieldObj*>(obj));
-                break;
-            case BaseObjType::Dude:
-                animateMatchDude(dynamic_cast<DudeObj*>(obj));
-                break;
-            default:
-                break;
-            }
+            animateMatchObj(obj);
         }
     }
     CC_ASSERT(mCurrentScene);
@@ -239,8 +250,7 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
 
             // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
             // You can tweak these numbers to change the feel of the animation.
-            float timeToTile = fabs(startRow - cookie->getRow());
-            float duration = (timeToTile * 0.1f) + 0.125f;            
+            float duration = Helper::getDurationToTile(startRow, cookie->getRow());
 
             // You calculate which animation is the longest. This is the time the game has to wait before it may continue.
             auto animateBouncingObjDelay = 0.25f;
@@ -396,21 +406,23 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateDropDownObj(BaseObj* obj, bool animateShakingScreen)
+void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CommonTypes::CellPos destPos, cocos2d::CallFunc* completion, bool animateShakingScreen)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
 
+    auto sprite = obj->getSpriteNode();
+
+    auto easeAction = ActionsManager->actionFallDown(obj, destPos.column, destPos.row);
+
     auto moveCallback = CallFunc::create([=]() {
-        obj->updateZOrder();
 
         float duration = 0.3f;
         auto bounceIn = ActionsManager->actionBounceInHeavy(obj, duration);
         auto bounceOut = ActionsManager->actionBounceOut(obj, duration);
-
-        auto sprite = obj->getSpriteNode();
-        sprite->runAction(bounceIn);
         auto seq = Sequence::create(DelayTime::create(duration), bounceOut, nullptr);
+
+        sprite->runAction(bounceIn);        
         sprite->runAction(seq);
 
         if (animateShakingScreen) {
@@ -418,23 +430,9 @@ void _AnimationsManager::animateDropDownObj(BaseObj* obj, bool animateShakingScr
         }
     });
 
-    int startRow = -5;
-    uint8_t zOrder = 100;
-    auto startPos = Helper::pointForColumnAndRow(obj->getColumn(), startRow);
-    auto sprite = obj->getSpriteNode();
-    
-    sprite->setPosition(startPos);
-    sprite->setLocalZOrder(zOrder);
-
-    float timeToTile = fabs(startRow - obj->getRow());
-    float duration = (timeToTile * 0.1f) + 0.125f;
-
     auto speed = 2.0f;
-    auto moveAction = MoveTo::create(duration, Helper::pointForTile(obj));
-    auto easeAction = EaseOut::create(moveAction, duration);
-
-    auto waitDelay = DelayTime::create(0.01f);
-    auto seq = Sequence::create(waitDelay, easeAction, moveCallback, nullptr);
+    auto waitDelay = DelayTime::create(0.2f);
+    auto seq = Sequence::create(waitDelay, easeAction, moveCallback, completion, nullptr);
     sprite->runAction(Speed::create(seq, speed));
 }
 

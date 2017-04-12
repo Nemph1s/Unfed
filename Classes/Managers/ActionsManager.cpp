@@ -9,6 +9,7 @@
 */
 
 #include "Managers/ActionsManager.h"
+#include "Utils/Helpers/Helper.h"
 
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 
@@ -135,6 +136,27 @@ cocos2d::ActionInstant* _ActionsManager::actionSwapObj(BaseObj* objA, BaseObj* o
     });
 
     return swapCallback;
+}
+
+//--------------------------------------------------------------------
+cocos2d::ActionInterval * _ActionsManager::actionFallDown(BaseObj * obj, uint8_t desinationColumn, uint8_t destinationRow)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+    int startRow = -5;
+    uint8_t zOrder = 100;
+    auto startPos = Helper::pointForColumnAndRow(desinationColumn, startRow);
+    auto newPos = Helper::pointForColumnAndRow(desinationColumn, destinationRow);
+    auto sprite = obj->getSpriteNode();
+
+    sprite->setPosition(startPos);
+    sprite->setLocalZOrder(zOrder);
+
+    float duration = Helper::getDurationToTile(startRow, destinationRow);
+
+    auto moveAction = MoveTo::create(duration, newPos);
+    auto easeAction = EaseOut::create(moveAction, duration);
+    return easeAction;
 }
 
 //--------------------------------------------------------------------

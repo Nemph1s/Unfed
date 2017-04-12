@@ -33,6 +33,20 @@ namespace CommonTypes {
     };
 
     /**
+    * @brief CellPos struct.
+    */
+    struct CellPos
+    {
+        int8_t column; /**< horizontal cell in a table */
+        int8_t row; /**< vertical cell in a table */
+
+        CellPos()
+            : column(-1), row(-1) {}
+        CellPos(int8_t _column, int8_t _row)
+            : column(_column), row(_row) {}
+    };
+
+    /**
     * @brief GameObjectInfo struct.
     */
     struct BaseObjInfo

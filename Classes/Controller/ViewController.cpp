@@ -457,18 +457,33 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
 }
 
 //--------------------------------------------------------------------
-void ViewController::activateChainCallback(CommonTypes::ChainType & type, cocos2d::Vec2 & pos)
+void ViewController::throwDownAnObject(BaseObj* obj, CommonTypes::CellPos destPos, bool isHeavyObject)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("ViewController::activateChainCallback");
-    auto chains = mChainController->removeChainAt(type, pos);
+    auto objsToRemove = mObjectController->getObjectsForChain(destPos);
+    if (!objsToRemove) {
+        return;
+    }
+    CC_SAFE_RETAIN(objsToRemove);
+    //TODO: refactor createDudeObject to set cellPos -1,-1 and dont add to container!
+    auto onCompleteCallback = CallFunc::create([&]() {
+        
+        for (auto itObj = objsToRemove->begin(); itObj != objsToRemove->end(); ++itObj) {
+            auto object = dynamic_cast<BaseObj*>(*itObj);
+            CC_ASSERT(object);
 
-    if (chains->count() > 0) {
-        mGameplayScene->userInteractionDisabled();
+            if (mObjectController->matchObject(object)) {
+                AnimationsManager->animateMatchObj(object);
+            }
+            //TODO: for other special abilities add score animation
+        }
+        CC_SAFE_RELEASE_NULL(objsToRemove);
 
-        updateScore(chains);
-        animateHandleMatches(chains);
-    }    
+        mObjectController->updateObjectAt(destPos.column, destPos.row, obj);
+        mObjectController->synchronizeObjectAt(destPos);
+    });
+
+    AnimationsManager->animateThrowDownAnObj(obj, destPos, onCompleteCallback, isHeavyObject);
 }
 
 //--------------------------------------------------------------------

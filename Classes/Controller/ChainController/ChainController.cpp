@@ -272,15 +272,7 @@ void ChainController::matchChains(Set* chains)
                 auto object = dynamic_cast<BaseObj*>(*itObj);
                 CC_ASSERT(object);
 
-                if (object->getType() == BaseObjType::Cookie) {
-                    mObjCtrl->matchCookieObject(object);
-                }
-                else if (object->getType() == BaseObjType::Field) {
-                    mObjCtrl->matchFieldObject(object);
-                }
-                else if (object->getType() == BaseObjType::Dude) {
-                    mObjCtrl->matchDudeObject(object);
-                }
+                mObjCtrl->matchObject(object);
             }            
         }
     }

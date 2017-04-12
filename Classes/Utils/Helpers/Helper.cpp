@@ -57,6 +57,14 @@ CookieType Helper::randomCookieType(int fromRange, int toRange)
 }
 
 //--------------------------------------------------------------------
+float Helper::getDurationToTile(int8_t startRow, int8_t destinationRow)
+//--------------------------------------------------------------------
+{
+    float timeToTile = fabs(startRow - destinationRow);
+    return (timeToTile * 0.1f) + 0.125f;
+}
+
+//--------------------------------------------------------------------
 cocos2d::String* Helper::getSpriteNameByFieldType(int fieldType)
 //--------------------------------------------------------------------
 {

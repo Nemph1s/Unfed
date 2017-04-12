@@ -33,6 +33,8 @@ public:
     static int random(int fromRange, int toRange);
     static CommonTypes::CookieType randomCookieType(int fromRange, int toRange);
 
+    static float getDurationToTile(int8_t startRow, int8_t destinationRow);
+
     static cocos2d::String* getSpriteNameByFieldType(int fieldType);
 
     static bool isValidColumnAndRow(int column, int row);
