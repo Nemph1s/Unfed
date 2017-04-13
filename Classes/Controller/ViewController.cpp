@@ -27,6 +27,8 @@
 #include "Controller/ObjectController/Dude/DudeObj.h"
 #include "Controller/ChainController/ChainObj.h"
 
+#include "Utils/Helpers/Helper.h"
+
 #include "Scenes/GameplayScene.h"
 
 using cocos2d::Director;
@@ -457,18 +459,38 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
 }
 
 //--------------------------------------------------------------------
-void ViewController::activateChainCallback(CommonTypes::ChainType & type, cocos2d::Vec2 & pos)
+void ViewController::throwDownAnObject(BaseObj* obj, CommonTypes::CellPos destPos, bool isHeavyObject)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("ViewController::activateChainCallback");
-    auto chains = mChainController->removeChainAt(type, pos);
+    //TODO: refactor createDudeObject to set cellPos -1,-1 and dont add to container!
+    auto onThrowDownCallback = CallFunc::create([=]() {
+        
+        auto onCompleteCallback = CallFunc::create([=]() {
 
-    if (chains->count() > 0) {
-        mGameplayScene->userInteractionDisabled();
+            mObjectController->updateObjectAt(destPos.column, destPos.row, obj);
+            mObjectController->synchronizeObjectAt(destPos);
 
-        updateScore(chains);
-        animateHandleMatches(chains);
-    }    
+            mSwapController->detectPossibleSwaps();
+            mDudeController->detectDirectionsForDudes();
+
+            mGameplayScene->userInteractionEnabled();
+        });
+
+        auto object = mObjectController->getObjectForChain(destPos);
+        if (mObjectController->matchObject(object)) {
+            AnimationsManager->animateMatchObj(object, onCompleteCallback);
+        }
+
+        // TODO: get wave length from other place
+        auto earthquakeWave = 2; 
+        auto chainSet = mChainController->createCircleChainAt(destPos, earthquakeWave);
+        AnimationsManager->animateReboundAfterThrowingObj(destPos, chainSet);
+
+    });
+
+    mGameplayScene->userInteractionDisabled();
+
+    AnimationsManager->animateThrowDownAnObj(obj, destPos, onThrowDownCallback, isHeavyObject);
 }
 
 //--------------------------------------------------------------------

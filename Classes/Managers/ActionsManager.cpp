@@ -9,6 +9,7 @@
 */
 
 #include "Managers/ActionsManager.h"
+#include "Utils/Helpers/Helper.h"
 
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 
@@ -23,39 +24,26 @@ bool _ActionsManager::init()
 }
 
 //--------------------------------------------------------------------
-cocos2d::ActionInstant* _ActionsManager::actionBounceIn(BaseObj* obj)
+cocos2d::ActionInstant* _ActionsManager::actionBounceInNormal(BaseObj* obj, float duration)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
 
-    auto bounceCallback = CallFunc::create([obj]() {
+    auto bounceCallback = CallFunc::create([obj, duration]() {
 
-        float duration = 0.2f;
         auto moveAction = MoveBy::create(duration, Vec2(0.0f, -10.0f));
         auto easeMoveOut = EaseOut::create(moveAction, duration);
         auto scaleXAction = ScaleTo::create(duration, 1.2f, 0.8f);
         auto easeScaleXOut = EaseOut::create(scaleXAction, duration);
 
-        auto reverseScaleXCallback = CallFunc::create([obj, duration]() {
-
-            auto reverseScaleXAction = ScaleTo::create(duration, 1.0f, 1.0f);
-            auto reverseEaseScaleXOut = EaseOut::create(reverseScaleXAction, duration);
-            auto reverseMoveAction = MoveBy::create(duration, Vec2(0.0f, 10.0f));
-            auto reverseEaseMoveOut = EaseOut::create(reverseMoveAction, duration);
-            if (obj) {
-                auto sprite = obj->getSpriteNode();
-                if (sprite) {
-                    sprite->runAction(reverseEaseScaleXOut);
-                    sprite->runAction(reverseEaseMoveOut);
-                }
-            }
-        });
+        auto reverseScaleX = ActionsManager->reverseScaleXCallback(obj, duration);
 
         auto speed = 2.0f;
         auto sprite = obj->getSpriteNode();
         sprite->runAction(Speed::create(easeMoveOut, speed));
         sprite->runAction(Speed::create(easeScaleXOut, speed));
-        auto seq1 = Sequence::create(DelayTime::create(0.2f), reverseScaleXCallback, nullptr);
+        
+        auto seq1 = Sequence::create(DelayTime::create(duration), reverseScaleX, nullptr);
         sprite->runAction(Speed::create(seq1, speed));
     });
 
@@ -63,13 +51,40 @@ cocos2d::ActionInstant* _ActionsManager::actionBounceIn(BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
-cocos2d::ActionInstant* _ActionsManager::actionBounceOut(BaseObj* obj)
+cocos2d::ActionInstant * _ActionsManager::actionBounceInHeavy(BaseObj * obj, float duration)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
 
-    auto bounceCallback = CallFunc::create([obj]() {
-        float duration = 0.2f;
+    auto bounceCallback = CallFunc::create([obj, duration]() {
+
+        auto moveAction = MoveBy::create(duration, Vec2(0.0f, -12.0f));
+        auto easeMoveOut = EaseOut::create(moveAction, duration);
+        auto scaleXAction = ScaleTo::create(duration, 1.4f, 0.6f);
+        auto easeScaleXOut = EaseOut::create(scaleXAction, duration);
+
+        auto reverseScaleX = ActionsManager->reverseScaleXCallback(obj, duration);
+
+        auto speed = 2.0f;
+        auto sprite = obj->getSpriteNode();
+        sprite->runAction(Speed::create(easeMoveOut, speed));
+        sprite->runAction(Speed::create(easeScaleXOut, speed));
+
+        auto seq1 = Sequence::create(DelayTime::create(duration), reverseScaleX, nullptr);
+        sprite->runAction(Speed::create(seq1, speed));
+    });
+
+    return bounceCallback;
+}
+
+//--------------------------------------------------------------------
+cocos2d::ActionInstant* _ActionsManager::actionBounceOut(BaseObj* obj, float duration)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+
+    auto bounceCallback = CallFunc::create([obj, duration]() {
+
         auto scaleYAction = ScaleTo::create(duration, 0.8f, 1.2f);
         auto easeScaleYOut = EaseOut::create(scaleYAction, duration);
 
@@ -121,4 +136,47 @@ cocos2d::ActionInstant* _ActionsManager::actionSwapObj(BaseObj* objA, BaseObj* o
     });
 
     return swapCallback;
+}
+
+//--------------------------------------------------------------------
+cocos2d::ActionInterval * _ActionsManager::actionFallDown(BaseObj * obj, uint8_t desinationColumn, uint8_t destinationRow)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+    int startRow = -5;
+    uint8_t zOrder = 100;
+    auto startPos = Helper::pointForColumnAndRow(desinationColumn, startRow);
+    auto newPos = Helper::pointForColumnAndRow(desinationColumn, destinationRow);
+    auto sprite = obj->getSpriteNode();
+
+    sprite->setPosition(startPos);
+    sprite->setLocalZOrder(zOrder);
+
+    float duration = Helper::getDurationToTile(startRow, destinationRow);
+
+    auto moveAction = MoveTo::create(duration, newPos);
+    auto easeAction = EaseOut::create(moveAction, duration);
+    return easeAction;
+}
+
+//--------------------------------------------------------------------
+cocos2d::ActionInstant * _ActionsManager::reverseScaleXCallback(BaseObj * obj, float duration)
+//--------------------------------------------------------------------
+{
+    auto reverseScaleX = CallFunc::create([obj, duration]() {
+
+        auto reverseScaleXAction = ScaleTo::create(duration, 1.0f, 1.0f);
+        auto reverseEaseScaleXOut = EaseOut::create(reverseScaleXAction, duration);
+        auto reverseMoveAction = MoveBy::create(duration, Vec2(0.0f, 10.0f));
+        auto reverseEaseMoveOut = EaseOut::create(reverseMoveAction, duration);
+        if (obj) {
+            auto sprite = obj->getSpriteNode();
+            if (sprite) {
+                sprite->runAction(reverseEaseScaleXOut);
+                sprite->runAction(reverseEaseMoveOut);
+            }
+        }
+    });
+
+    return reverseScaleX;
 }

@@ -23,6 +23,8 @@
 #include "Common/CommonTypes.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
 
+#include <map>
+
 using namespace CommonTypes;
 
 //--------------------------------------------------------------------
@@ -270,15 +272,7 @@ void ChainController::matchChains(Set* chains)
                 auto object = dynamic_cast<BaseObj*>(*itObj);
                 CC_ASSERT(object);
 
-                if (object->getType() == BaseObjType::Cookie) {
-                    mObjCtrl->matchCookieObject(object);
-                }
-                else if (object->getType() == BaseObjType::Field) {
-                    mObjCtrl->matchFieldObject(object);
-                }
-                else if (object->getType() == BaseObjType::Dude) {
-                    mObjCtrl->matchDudeObject(object);
-                }
+                mObjCtrl->matchObject(object);
             }            
         }
     }
@@ -291,8 +285,31 @@ void ChainController::executeCollectGoalCallback(Set * chains)
     for (auto it = chains->begin(); it != chains->end(); it++) {
         auto chain = dynamic_cast<ChainObj*>(*it);
         if (chain)
+            // TODO: call this callback after removing each base object (maybe in clear() method)
             chain->executeCollectGoalCallback();
     }
+}
+
+//--------------------------------------------------------------------
+CommonTypes::Set* ChainController::createCircleChainAt(CommonTypes::CellPos cell, uint8_t length)
+//--------------------------------------------------------------------
+{
+    auto set = Set::create();
+    if (length < 0 || !Helper::isValidColumnAndRow(cell.column, cell.row)) {
+        cocos2d::log("ChainController::createCircleChainAt: wrong length=%d or destinationPos at column=%d, row=%d"
+            , length, cell.column, cell.row);
+        return set;
+    }
+    auto chain = ChainObj::createWithType(ChainType::ChainExplosion);
+
+    for (int i = cell.column - length; i <= cell.column + length; i++) {
+        for (int j = cell.row - length; j <= cell.row + length; j++) {
+            addObjToChain(chain, i, j);
+        }
+    }
+    addChainToSet(chain, set);
+
+    return set;
 }
 
 //--------------------------------------------------------------------

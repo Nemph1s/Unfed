@@ -97,6 +97,45 @@ ObjContainer* ObjectController::getContainer(int column, int row)
 }
 
 //--------------------------------------------------------------------
+ObjContainer * ObjectController::getContainer(CommonTypes::CellPos cell)
+//--------------------------------------------------------------------
+{
+    return getContainer(cell.column, cell.row);
+}
+
+//--------------------------------------------------------------------
+BaseObj * ObjectController::getObjectForChain(CommonTypes::CellPos cell)
+//--------------------------------------------------------------------
+{
+    auto obj = getContainer(cell);
+    if (obj) {
+        return obj->getObjectForChain();
+    }
+    return nullptr;
+}
+
+//--------------------------------------------------------------------
+CommonTypes::Set* ObjectController::getObjectsForChain(CommonTypes::CellPos cell)
+//--------------------------------------------------------------------
+{
+    auto obj = getContainer(cell);
+    if (obj) {
+        return obj->getObjectsForChain();
+    }
+    return nullptr;
+}
+
+//--------------------------------------------------------------------
+void ObjectController::synchronizeObjectAt(CommonTypes::CellPos cell)
+//--------------------------------------------------------------------
+{
+    auto obj = getContainer(cell);
+    if (obj) {
+        obj->synchronizeTilePos();
+    }
+}
+
+//--------------------------------------------------------------------
 CommonTypes::Set* ObjectController::createInitialFieldObjects()
 //--------------------------------------------------------------------
 {
@@ -254,7 +293,6 @@ int ObjectController::getRandomCookieType(int column, int row)
     return type;
 }
 
-
 //--------------------------------------------------------------------
 TileObj* ObjectController::tileAt(int column, int row)
 //--------------------------------------------------------------------
@@ -369,21 +407,50 @@ bool ObjectController::isSameTypeOfCookieAt(int column, int row, int type)
 }
 
 //--------------------------------------------------------------------
+bool ObjectController::matchObject(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    bool result = false;
+
+    if (obj) {
+        switch (obj->getType())
+        {
+        case BaseObjType::Cookie:
+            result = matchCookieObject(obj);
+            break;
+        case BaseObjType::Field:
+            result = matchFieldObject(obj);
+            break;
+        case BaseObjType::Dude:
+            result = matchDudeObject(obj);
+            break;
+        default:
+            break;
+        }
+    }
+    return result;
+}
+
+//--------------------------------------------------------------------
 bool ObjectController::matchFieldObject(BaseObj * obj)
 //--------------------------------------------------------------------
 {
-    obj->match();
-
     auto objContainer = getContainer(obj->getColumn(), obj->getRow());
     if (!objContainer) {
         return false;
     }
+
+    obj->match();
+
     auto fieldObj = objContainer->getFieldObject();
     if (obj == fieldObj) {
         std::function<void(BaseObj*, std::function<void(FieldObj*)>)> onFieldObjChangeStateCallback;
         onFieldObjChangeStateCallback = std::bind(&ObjContainer::onFieldObjChangeState, objContainer, _1, _2);
         fieldObj->setFieldObjChangeState(onFieldObjChangeStateCallback);
-    }   
+    }
+    else {
+        return false;
+    }
 
     return true;
 }
@@ -401,6 +468,9 @@ bool ObjectController::matchCookieObject(BaseObj * obj)
         std::function<void(BaseObj*)> onRemoveCookieCallback;
         onRemoveCookieCallback = std::bind(&ObjContainer::onRemoveCookie, objContainer, _1);
         cookieObj->setRemoveCookieCallback(onRemoveCookieCallback);
+    }
+    else {
+        return false;
     }
 
     return true;
@@ -427,6 +497,9 @@ bool ObjectController::matchDudeObject(BaseObj * obj)
         std::function<void(BaseObj*)> onRemoveDudeCallback;
         onRemoveDudeCallback = std::bind(&ObjContainer::onRemoveDude, objContainer, _1);
         dudeObj->setRemoveDudeCallback(onRemoveDudeCallback);
+    }
+    else {
+        return false;
     }
 
     return true;

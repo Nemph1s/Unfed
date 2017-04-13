@@ -305,6 +305,9 @@
     <ClInclude Include="..\Classes\Utils\Helpers\ScoreHelper.h">
       <Filter>src\Utils\Helper</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Common\Tags.h">
+      <Filter>src\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

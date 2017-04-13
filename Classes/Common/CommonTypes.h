@@ -33,6 +33,20 @@ namespace CommonTypes {
     };
 
     /**
+    * @brief CellPos struct.
+    */
+    struct CellPos
+    {
+        int8_t column; /**< horizontal cell in a table */
+        int8_t row; /**< vertical cell in a table */
+
+        CellPos()
+            : column(-1), row(-1) {}
+        CellPos(int8_t _column, int8_t _row)
+            : column(_column), row(_row) {}
+    };
+
+    /**
     * @brief GameObjectInfo struct.
     */
     struct BaseObjInfo
@@ -130,6 +144,7 @@ namespace CommonTypes {
        , ChainExplosion = 7 /**< enum value ChainExplosion. */
        , ChainFromAToB = 6 /**< enum value ChainTypeAllOfOne. */
        , ChainFieldObjects = 7 /**< enum value ChainFieldObjects. */
+       , ChainCircle = 8 /**< enum value ChainCircle. */
        , Unknown /**< enum value unknown. */
    };
 
@@ -189,5 +204,4 @@ namespace CommonTypes {
        float posXPercent; /**< position x in Percent */
        float posYPercent; /**< position Y in Percent */
    };
-
 }

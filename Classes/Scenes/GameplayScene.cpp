@@ -12,6 +12,7 @@
 
 #include "Common/Factory/SpritesFactory.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
+#include "Common/Tags.h"
 
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
@@ -81,18 +82,23 @@ bool GameplayScene::initWithSize(const Size& size)
 
     auto bgLayer = LayerColor::create(Color4B::WHITE);
     bgLayer->setPosition(VisibleRect::leftBottom());
-    this->addChild(bgLayer);
+    this->addChild(bgLayer, 0, Tags::GameplayScene::kBackgroundLayerTag);
+
+    // shakeScreenOffset must be multiplied by 2 because shaking position can have positive or negative offset
+    float shakeScreenOffset = (GlobInfo->getShakeScreenDuration() / GlobInfo->getMinShakeTime()) * 2;
 
     auto bg = ui::Scale9Sprite::create(GameResources::s_backgroundImg.getCString());
-    auto scaleFactor = std::min(bg->getContentSize().width / size.width
-        , bg->getContentSize().height / size.height);
+    float bgContentWidth = (bg->getContentSize().width - shakeScreenOffset);
+    float bgContentHeigth = (bg->getContentSize().height - shakeScreenOffset);
+
+    auto scaleFactor = std::min(bgContentWidth / size.width, bgContentHeigth / size.height);
     bg->setScale(1.0f / scaleFactor);
     bg->setPosition(VisibleRect::center());
     bgLayer->addChild(bg, 0);
 
     mGameLayer = Layer::create();
     mGameLayer->setPosition(VisibleRect::center());
-    this->addChild(mGameLayer);
+    this->addChild(mGameLayer, 1, Tags::GameplayScene::kGameLayerTag);
 
     auto offset = -2.5f * _GlobalInfo::NumColumns / 2;
     Vec2 layerPos = Vec2(offset - GlobInfo->getTileWidth() * _GlobalInfo::NumColumns / 2
@@ -250,7 +256,7 @@ void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int r
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::createSpriteWithDude(BaseObj * dudeObj)
+void GameplayScene::createSpriteForDude(BaseObj * dudeObj)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->createSpriteWithObj(dudeObj, dudeObj->getColumn(), dudeObj->getRow());

@@ -31,6 +31,14 @@ float Helper::randomFloatBetween(float smallNumber, float bigNumber)
 }
 
 //--------------------------------------------------------------------
+float Helper::rangeRandom(float min, float max)
+//--------------------------------------------------------------------
+{
+    float rnd = ((float)rand() / (float)RAND_MAX);
+    return rnd*(max - min) + min;
+}
+
+//--------------------------------------------------------------------
 int Helper::random(int fromRange, int toRange)
 //--------------------------------------------------------------------
 {
@@ -46,6 +54,23 @@ CookieType Helper::randomCookieType(int fromRange, int toRange)
 {
     int randValue = random(fromRange, toRange);
     return static_cast<CookieType>(randValue);
+}
+
+//--------------------------------------------------------------------
+float Helper::getDurationToTile(int8_t startRow, int8_t destinationRow)
+//--------------------------------------------------------------------
+{
+    float timeToTile = fabs(startRow - destinationRow);
+    return (timeToTile * 0.1f) + 0.125f;
+}
+
+//--------------------------------------------------------------------
+int8_t Helper::getDistanceBetweenObjects(CommonTypes::CellPos cellPosA, CommonTypes::CellPos cellPosB)
+//--------------------------------------------------------------------
+{
+    uint8_t colLength = std::abs(cellPosA.column - cellPosB.column);
+    uint8_t rowLength = std::abs(cellPosA.row - cellPosB.row);
+    return MAX(colLength, rowLength);
 }
 
 //--------------------------------------------------------------------

@@ -187,6 +187,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Common\Factory\SpritesFactory.h" />
     <ClInclude Include="..\Classes\Common\GlobalInfo\GlobalInfo.h" />
     <ClInclude Include="..\Classes\Common\GlobalInfo\GlobalInfoTypes.h" />
+    <ClInclude Include="..\Classes\Common\Tags.h" />
     <ClInclude Include="..\Classes\Controller\ChainController\ChainController.h" />
     <ClInclude Include="..\Classes\Controller\ChainController\ChainObj.h" />
     <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeController.h" />

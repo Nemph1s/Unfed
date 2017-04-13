@@ -15,6 +15,7 @@
 
 class LevelObj;
 class SwapObj;
+class BaseObj;
 class DudeObj;
 class GameplayScene;
 class ObjectController;
@@ -42,6 +43,7 @@ protected:
     // Nodes should be created using create();
     ViewController();
 
+    //---Initialization-------------------------------------------------------
     bool initGameScene();
     bool initLevel();
     bool initSpritesFactory();
@@ -50,26 +52,31 @@ protected:
     bool initChainController();
     bool initDudeController();
 
+    //---Gui-------------------------------------------------------
     void updateScore(CommonTypes::Set* chains);
     void updateInfoLabels();
 
+    //---Operable sequence-------------------------------------------------------
     void shuffle();
     void handleMatches();
     void animateHandleMatches(CommonTypes::Set* chains);
-
     void beginNextTurn();
-    void decrementMoves();
 
     //---Callbacks-------------------------------------------------------
     void shuffleButtonCallback();
     void swapCallback(SwapObj* swap);
-    //???? something wrong with
     void activateDudeCallback(DudeObj* obj, int direction);
-    void activateChainCallback(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
 
+    //---Special-------------------------------------------------------
+    void throwDownAnObject(BaseObj* obj, CommonTypes::CellPos destPos, bool isHeavyObject);
+
+    //---Hints-------------------------------------------------------
     void startHintTimer();
     void stopHintTimer();
     void showSwapHint(float dt);
+
+    //---Other-------------------------------------------------------
+    void decrementMoves();
     //--------------------------------------------------------------------
 
     //---Class Attributes-------------------------------------------------

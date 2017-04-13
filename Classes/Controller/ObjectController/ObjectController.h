@@ -42,27 +42,31 @@ public:
     bool init();
 
     void createObjects();
-    ObjContainer* getContainer(int column, int row);
-
     CommonTypes::Set* createInitialFieldObjects();
     CommonTypes::Set* createInitialCookies();
+    BaseObj* createRandomCookie(int column, int row);
 
     void detectDirectionsForDudes();
     
-    BaseObj* createRandomCookie(int column, int row);
-    int getRandomCookieType(int column, int row);
+    ObjContainer* getContainer(int column, int row);
+    ObjContainer* getContainer(CommonTypes::CellPos cell);
+    BaseObj* getObjectForChain(CommonTypes::CellPos cell);
+    CommonTypes::Set* getObjectsForChain(CommonTypes::CellPos cell);
+    void synchronizeObjectAt(CommonTypes::CellPos cell);
 
     TileObj* tileAt(int column, int row);
     CookieObj* cookieAt(int column, int row);
-    bool hasChainAt(int column, int row);
-
     BaseObj* fieldObjectAt(int column, int row);
     std::list<FieldObj*>* fieldObjectsAt(int column, int row);
     DudeObj* dudeAt(int column, int row);
-
+    
+    bool hasChainAt(int column, int row);
     bool isEmptyTileAt(int column, int row);
     bool isPossibleToAddCookie(int column, int row);
     bool isSameTypeOfCookieAt(int column, int row, int type);
+    int getRandomCookieType(int column, int row);
+
+    bool matchObject(BaseObj* obj);
 
     bool matchFieldObject(BaseObj* obj);
     bool matchCookieObject(BaseObj* obj);
