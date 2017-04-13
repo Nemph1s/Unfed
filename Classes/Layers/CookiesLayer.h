@@ -54,7 +54,7 @@ protected:
     CookiesLayer();
         
     void clearTouchedObj();
-    int getSwipeDirection(int newCol, int newRow);
+    int getSwipeDirection(CommonTypes::Cell& cell);
     bool isSameDirection(int direction);
 
     bool updateChainPreviewHint(int column, int row, int direction);
@@ -66,14 +66,13 @@ protected:
     CommonTypes::Direction mPreviousDirection = CommonTypes::Direction::Unknown;
     CC_SYNTHESIZE(std::function<CommonTypes::Set*(BaseObj* dudeObj, int direction)>, mUpdateDirectionCallback, UpdateDirectionCallback);
 
-    CC_SYNTHESIZE(std::function<bool(int fromCol, int fromRow, int direction)>, mTrySwapCookieCallback, TrySwapCookieCallback);
-    CC_SYNTHESIZE(std::function<bool(int fromCol, int fromRow, int direction)>, mCanActivateDudeCallback, CanActivateDudeCallback);
+    CC_SYNTHESIZE(std::function<bool(CommonTypes::Cell& fromCell, int direction)>, mTrySwapCookieCallback, TrySwapCookieCallback);
+    CC_SYNTHESIZE(std::function<bool(CommonTypes::Cell& fromCell, int direction)>, mCanActivateDudeCallback, CanActivateDudeCallback);
 
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
 
     CC_SYNTHESIZE(BaseObj*, mTouchedObj, TouchedObj);
-    CC_SYNTHESIZE_READONLY(int, mSwipeFromColumn, SwipeFromColumn);
-    CC_SYNTHESIZE_READONLY(int, mSwipeFromRow, SwipeFromRow);
+    CC_SYNTHESIZE_READONLY(CommonTypes::Cell, mSwipeFromCell, SwipeFromCell);
 
     CC_SYNTHESIZE_READONLY(cocos2d::Layer*, mDudesLayer, DudesLayer);
     CC_SYNTHESIZE_READONLY(cocos2d::Sprite*, mSelectionSprite, SelectionSprite);

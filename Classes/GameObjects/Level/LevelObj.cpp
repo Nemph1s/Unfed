@@ -223,7 +223,8 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
                     if (!mLevelInfo.skipEmptyHoles && mObjCtrl->isEmptyTileAt(column, lookup)) {
                         continue;
                     }
-                    auto dudeObj = mObjCtrl->dudeAt(column, lookup);
+                    auto cell = Cell(column, lookup);
+                    auto dudeObj = mObjCtrl->dudeAt(cell);
                     if (useGravityOnObject(columns, array, dudeObj, row)) {
                         break;
                     }

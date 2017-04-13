@@ -145,9 +145,9 @@ bool CookiesLayer::onTouchBegan(Touch* touch, Event* event)
 {
     Vec2 locationInNode = this->convertToNodeSpace(touch->getLocation());
 
-    if (Helper::convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {
+    if (Helper::convertPointToTilePos(locationInNode, mSwipeFromCell)) {
         auto objCtrl = mLevel->getObjectController();
-        CookieObj* cookie = objCtrl->cookieAt(mSwipeFromColumn, mSwipeFromRow);
+        CookieObj* cookie = objCtrl->cookieAt(mSwipeFromCell);
         if (cookie) {
             if (cookie->isSwappable()) {
                 showSelectionIndicatorForCookie(cookie);
@@ -155,7 +155,7 @@ bool CookiesLayer::onTouchBegan(Touch* touch, Event* event)
                 return true;
             }            
         }
-        BaseObj* dudeObj = objCtrl->dudeAt(mSwipeFromColumn, mSwipeFromRow);
+        BaseObj* dudeObj = objCtrl->dudeAt(mSwipeFromCell);
         if (dudeObj) {
             if (dudeObj->isSwappable()) {
                 mTouchedObj = dudeObj;
@@ -175,19 +175,19 @@ void CookiesLayer::onTouchMoved(Touch* touch, Event* event)
 
     Vec2 locationInNode = this->convertToNodeSpace(touch->getLocation());
 
-    int column = -1, row = -1;
-    if (Helper::convertPointToTilePos(locationInNode, column, row)) {
+    auto cell = Cell();;
+    if (Helper::convertPointToTilePos(locationInNode, cell)) {
 
-        auto direction = getSwipeDirection(column, row);
+        auto direction = getSwipeDirection(cell);
         if (isSameDirection(direction)) {
             return;
         }
-        if (updateChainPreviewHint(column, row, direction)) {
+        if (updateChainPreviewHint(cell.column, cell.row, direction)) {
             return;
         }
         if (direction != Helper::to_underlying(Direction::Unknown)) {
             if (mTrySwapCookieCallback) {
-                if (mTrySwapCookieCallback(mSwipeFromColumn, mSwipeFromRow, direction)) {
+                if (mTrySwapCookieCallback(mSwipeFromCell, direction)) {
                     hideSelectionIndicator();
                     clearTouchedObj();
                 }
@@ -204,14 +204,14 @@ void CookiesLayer::onTouchEnded(Touch* touch, Event* event)
         if (mTouchedObj->getType() == BaseObjType::Dude) {
             Vec2 locationInNode = this->convertToNodeSpace(touch->getLocation());
 
-            int column = -1, row = -1;
-            if (Helper::convertPointToTilePos(locationInNode, column, row)) {
+            auto cell = Cell();
+            if (Helper::convertPointToTilePos(locationInNode, cell)) {
 
                 removeChainPreviewSprites();
 
-                auto direction = getSwipeDirection(column, row);
+                auto direction = getSwipeDirection(cell);
                 if (direction != Helper::to_underlying(Direction::Unknown)) {
-                    if (mCanActivateDudeCallback(mSwipeFromColumn, mSwipeFromRow, direction)) {
+                    if (mCanActivateDudeCallback(mSwipeFromCell, direction)) {
                         hideSelectionIndicator();
                         clearTouchedObj();
                         return;
@@ -329,20 +329,20 @@ void CookiesLayer::clearTouchedObj()
 }
 
 //--------------------------------------------------------------------
-int CookiesLayer::getSwipeDirection(int column, int row)
+int CookiesLayer::getSwipeDirection(CommonTypes::Cell& cell)
 //--------------------------------------------------------------------
 {
     auto direction = Direction::Unknown;
-    if (column < mSwipeFromColumn) { // swipe left
+    if (cell.column < mSwipeFromCell.column) { // swipe left
         direction = Direction::Left;
     }
-    else if (column > mSwipeFromColumn) { // swipe right
+    else if (cell.column > mSwipeFromCell.column) { // swipe right
         direction = Direction::Right;
     }
-    else if (row < mSwipeFromRow) { // swipe up
+    else if (cell.row < mSwipeFromCell.row) { // swipe up
         direction = Direction::Up;
     }
-    else if (row > mSwipeFromRow) { // swipe down
+    else if (cell.row > mSwipeFromCell.row) { // swipe down
         direction = Direction::Down;
     }
     return Helper::to_underlying(direction);

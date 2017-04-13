@@ -90,6 +90,13 @@ bool BaseObj::init(const CommonTypes::BaseObjInfo & info)
 }
 
 //--------------------------------------------------------------------
+CommonTypes::Cell BaseObj::getCell() const
+//--------------------------------------------------------------------
+{
+    return CommonTypes::Cell(mColumn, mRow);
+}
+
+//--------------------------------------------------------------------
 cocos2d::String& BaseObj::spriteName() const
 //--------------------------------------------------------------------
 {

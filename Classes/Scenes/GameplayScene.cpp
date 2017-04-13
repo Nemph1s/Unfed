@@ -210,14 +210,14 @@ void GameplayScene::setUpdateDirectionCallback(std::function<CommonTypes::Set*(B
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::setSwapCookieCallback(std::function<bool(int fromCol, int fromRow, int direction)> func)
+void GameplayScene::setSwapCookieCallback(std::function<bool(CommonTypes::Cell& fromCell, int direction)> func)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->setTrySwapCookieCallback(func);
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::setDudeActivationCallback(std::function<bool(int fromCol, int fromRow, int direction)> func)
+void GameplayScene::setDudeActivationCallback(std::function<bool(CommonTypes::Cell& fromCell, int direction)> func)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->setCanActivateDudeCallback(func);

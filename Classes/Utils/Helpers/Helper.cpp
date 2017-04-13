@@ -65,7 +65,7 @@ float Helper::getDurationToTile(int8_t startRow, int8_t destinationRow)
 }
 
 //--------------------------------------------------------------------
-int8_t Helper::getDistanceBetweenObjects(CommonTypes::CellPos cellPosA, CommonTypes::CellPos cellPosB)
+int8_t Helper::getDistanceBetweenObjects(CommonTypes::Cell cellPosA, CommonTypes::Cell cellPosB)
 //--------------------------------------------------------------------
 {
     uint8_t colLength = std::abs(cellPosA.column - cellPosB.column);
@@ -125,6 +125,17 @@ bool Helper::isValidColumnAndRow(int column, int row)
 }
 
 //--------------------------------------------------------------------
+bool Helper::isValidCell(CommonTypes::Cell & cell)
+//--------------------------------------------------------------------
+{
+    bool result = true;
+    if (cell.column < 0 || cell.column >= _GlobalInfo::NumColumns || cell.row < 0 || cell.row >= _GlobalInfo::NumColumns) {
+        result = false;
+    }
+    return result;
+}
+
+//--------------------------------------------------------------------
 cocos2d::Vec2 Helper::pointForColumnAndRow(int column, int row)
 //--------------------------------------------------------------------
 {
@@ -164,13 +175,13 @@ cocos2d::Vec2 Helper::pointForTile(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-bool Helper::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
+bool Helper::convertPointToTilePos(cocos2d::Vec2& point, CommonTypes::Cell& cell)
 //--------------------------------------------------------------------
 {
     if (point.x >= 0 && point.x < _GlobalInfo::NumColumns * GlobInfo->getTileWidth() &&
         point.y >= 0 && point.y < _GlobalInfo::NumRows * GlobInfo->getTileHeight()) {
-        column = point.x / GlobInfo->getTileWidth();
-        row = _GlobalInfo::NumColumns - (point.y / GlobInfo->getTileHeight());
+        cell.column = point.x / GlobInfo->getTileWidth();
+        cell.row = _GlobalInfo::NumColumns - (point.y / GlobInfo->getTileHeight());
         return true;
     }
     return false;
@@ -210,12 +221,12 @@ CommonTypes::Direction Helper::invertDirection(int direction)
 }
 
 //--------------------------------------------------------------------
-int Helper::getDirectionByTileFromAToB(int oldDirection, int fromCol, int fromRow, int toCol, int toRow)
+int Helper::getDirectionByTileFromAToB(int oldDirection, CommonTypes::Cell& fromCell, CommonTypes::Cell& toCell)
 //--------------------------------------------------------------------
 {
     auto dir = Direction::Unknown;
-    int8_t xDiff = toCol - fromCol;
-    int8_t yDiff = toRow - fromRow;
+    int8_t xDiff = toCell.column - fromCell.column;
+    int8_t yDiff = toCell.row - fromCell.row;
     if (std::abs(xDiff) != std::abs(yDiff)) {
         if (std::abs(xDiff) > std::abs(yDiff)) {
             dir = xDiff > 0 ? Direction::Left : Direction::Right;
@@ -230,7 +241,7 @@ int Helper::getDirectionByTileFromAToB(int oldDirection, int fromCol, int fromRo
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Direction Helper::getDirectionByTileFromAToB(int oldDirection, BaseObj * from, BaseObj * to)
+CommonTypes::Direction Helper::getDirectionByTileFromAToB(int oldDirection, BaseObj* from, BaseObj* to)
 //--------------------------------------------------------------------
 {
     auto direction = getDirectionByTileFromAToB(oldDirection, from->getColumn(), from->getRow(), to->getColumn(), to->getRow());

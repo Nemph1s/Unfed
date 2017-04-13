@@ -34,22 +34,23 @@ public:
     static CommonTypes::CookieType randomCookieType(int fromRange, int toRange);
 
     static float getDurationToTile(int8_t startRow, int8_t destinationRow);
-    static int8_t getDistanceBetweenObjects(CommonTypes::CellPos cellPosA, CommonTypes::CellPos cellPosB);
+    static int8_t getDistanceBetweenObjects(CommonTypes::Cell cellPosA, CommonTypes::Cell cellPosB);
 
     static cocos2d::String* getSpriteNameByFieldType(int fieldType);
 
     static bool isValidColumnAndRow(int column, int row);
+    static bool isValidCell(CommonTypes::Cell& cell);
 
     static cocos2d::Vec2 pointForColumnAndRow(int column, int row);
     static cocos2d::Vec2 pointForColumnAndRowWithPriority(int column, int row, int priority);
     static cocos2d::Vec2 pointForTile(BaseObj* obj);
 
-    static bool convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row);
+    static bool convertPointToTilePos(cocos2d::Vec2& point, CommonTypes::Cell& cell);
 
     static CommonTypes::Direction invertDirection(const CommonTypes::Direction& direction);
     static CommonTypes::Direction invertDirection(int direction);
 
-    static int getDirectionByTileFromAToB(int oldDirection, int fromCol, int fromRow, int toCol, int toRow);
+    static int getDirectionByTileFromAToB(int oldDirection, CommonTypes::Cell& fromCell, CommonTypes::Cell& toCell);
     static CommonTypes::Direction getDirectionByTileFromAToB(int oldDirection, BaseObj* from, BaseObj* to);
     
     static bool convertDirectionToSwipeDelta(int dir, int& horzDelta, int& vertDelta);

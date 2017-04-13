@@ -33,17 +33,21 @@ namespace CommonTypes {
     };
 
     /**
-    * @brief CellPos struct.
+    * @brief Cell struct.
     */
-    struct CellPos
+    struct Cell
     {
         int8_t column; /**< horizontal cell in a table */
         int8_t row; /**< vertical cell in a table */
 
-        CellPos()
+        Cell()
             : column(-1), row(-1) {}
-        CellPos(int8_t _column, int8_t _row)
+        Cell(int8_t _column, int8_t _row)
             : column(_column), row(_row) {}
+        Cell(Cell& _cell, int8_t _row)
+            : column(_cell.column), row(_row) {}
+        Cell(int8_t _column, Cell& _cell)
+            : column(_column), row(_cell.row) {}
     };
 
     /**
@@ -57,6 +61,8 @@ namespace CommonTypes {
 
         BaseObjInfo(BaseObjType _type) 
             : type(_type), column(-1), row(-1) {}
+        BaseObjInfo(BaseObjType _type, Cell _cell)
+            : type(_type), column(_cell.column), row(_cell.row) {}
         BaseObjInfo(BaseObjType _type, int _column, int _row) 
             : type(_type), column(_column), row(_row) {}
     };

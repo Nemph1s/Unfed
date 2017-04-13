@@ -13,12 +13,6 @@
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
  
-#include <map>
-
-using CommonTypes::FieldType;
-using CommonTypes::Set;
-using CommonTypes::Direction;
-
 class BaseObj;
 class DudeObj;
 class ChainObj;
@@ -41,17 +35,17 @@ public:
 
     bool init();
 
-    Set* createDudeObectsFromChains(Set* chains, Set* prevSwapContainers);
+    CommonTypes::Set* createDudeObectsFromChains(CommonTypes::Set* chains, CommonTypes::Set* prevSwapContainers);
 
     BaseObj* createDudeObjWithoutContainer(int type);
-    BaseObj* createDudeObject(int column, int row, int type);
+    BaseObj* createDudeObject(CommonTypes::Cell& cell, int type);
 
     void detectDirectionsForDudes();
 
-    bool canActivateDudeTo(int fromCol, int fromRow, int direction);
-    Set* getChainsForDude(DudeObj* obj, int dir, bool isPreview = false);
+    bool canActivateDudeTo(CommonTypes::Cell& fromCell, int direction);
+    CommonTypes::Set* getChainsForDude(DudeObj* obj, int dir, bool isPreview = false);
 
-    void updateChainSetWithDudesInChain(const Direction& direction, DudeObj* activeDude, Set* chains, Set* chainSet);
+    void updateChainSetWithDudesInChain(const CommonTypes::Direction& direction, DudeObj* activeDude, CommonTypes::Set* chains, CommonTypes::Set* chainSet);
     void eraseDirectionsForDude(DudeObj* obj);
 
 protected:
@@ -62,7 +56,7 @@ protected:
 
     bool isEnoughCookiesForDude(int count, int neededCount);
 
-    FieldType getDudeTypeByChain(ChainObj* chain);
+    CommonTypes::FieldType getDudeTypeByChain(ChainObj* chain);
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(DudeObj*, int direction)>, mActivateDudeCallback, ActivateDudeCallback);

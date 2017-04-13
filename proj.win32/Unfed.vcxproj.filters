@@ -275,9 +275,6 @@
     <ClInclude Include="..\Classes\Common\Factory\SmartObjFactory.h">
       <Filter>src\Common\Factory</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Common\Factory\SpritesFactory.h">
-      <Filter>src\Common\Factory</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\Controller\ChainController\ChainController.h">
       <Filter>src\Controller\ChainController</Filter>
     </ClInclude>
@@ -307,6 +304,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Common\Tags.h">
       <Filter>src\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Common\Factory\SpritesFactory.h">
+      <Filter>src\Common\GlobalInfo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

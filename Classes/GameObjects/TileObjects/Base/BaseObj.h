@@ -30,6 +30,8 @@ public:
     virtual bool init();
     bool init(const CommonTypes::BaseObjInfo &info);
 
+    CommonTypes::Cell getCell() const;
+
     virtual cocos2d::String& spriteName() const;
     virtual cocos2d::String& description() const;
 

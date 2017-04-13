@@ -47,8 +47,8 @@ public:
 
     void setUpdateDirectionCallback(std::function<CommonTypes::Set*(BaseObj* obj, int direction)> func);
 
-    void setSwapCookieCallback(std::function<bool(int fromCol, int fromRow, int direction)> func);
-    void setDudeActivationCallback(std::function<bool(int fromCol, int fromRow, int direction)> func);
+    void setSwapCookieCallback(std::function<bool(CommonTypes::Cell& fromCell, int direction)> func);
+    void setDudeActivationCallback(std::function<bool(CommonTypes::Cell& fromCell, int direction)> func);
     void removeAllCookieSprites();
 
     void removeAllChainPreviewSprites();

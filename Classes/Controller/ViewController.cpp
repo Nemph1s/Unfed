@@ -219,8 +219,8 @@ bool ViewController::initDudeController()
     mDudeController->setActivateDudeCallback(activateDudeCallback);
 
     auto dudeCtrl = mDudeController;
-    auto dudeActivationCallback = [dudeCtrl](int fromCol, int fromRow, int direction) {
-        return dudeCtrl->canActivateDudeTo(fromCol, fromRow, direction);
+    auto dudeActivationCallback = [dudeCtrl](CommonTypes::Cell& fromCell, int direction) {
+        return dudeCtrl->canActivateDudeTo(fromCell, direction);
     };
     mGameplayScene->setDudeActivationCallback(dudeActivationCallback);
 
@@ -247,8 +247,8 @@ bool ViewController::initSwapController()
     mSwapController->setSwapCallback(swapCallback);
 
     auto swapCtrl = mSwapController;
-    auto tryToSwapCallback = [swapCtrl](int fromCol, int fromRow, int direction) {
-        return swapCtrl->trySwapCookieTo(fromCol, fromRow, direction);
+    auto tryToSwapCallback = [swapCtrl](CommonTypes::Cell& fromCell, int direction) {
+        return swapCtrl->trySwapCookieTo(fromCell, direction);
     };
     mGameplayScene->setSwapCookieCallback(tryToSwapCallback);
 
@@ -459,13 +459,12 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
 }
 
 //--------------------------------------------------------------------
-void ViewController::throwDownAnObject(BaseObj* obj, CommonTypes::CellPos destPos, bool isHeavyObject)
+void ViewController::throwDownAnObject(BaseObj* obj, CommonTypes::Cell& destPos, bool isHeavyObject)
 //--------------------------------------------------------------------
 {
-    //TODO: refactor createDudeObject to set cellPos -1,-1 and dont add to container!
-    auto onThrowDownCallback = CallFunc::create([=]() {
+    auto onThrowDownCallback = CallFunc::create([&]() {
         
-        auto onCompleteCallback = CallFunc::create([=]() {
+        auto onCompleteCallback = CallFunc::create([&]() {
 
             mObjectController->updateObjectAt(destPos.column, destPos.row, obj);
             mObjectController->synchronizeObjectAt(destPos);
@@ -483,7 +482,7 @@ void ViewController::throwDownAnObject(BaseObj* obj, CommonTypes::CellPos destPo
 
         // TODO: get wave length from other place
         auto earthquakeWave = 2; 
-        auto chainSet = mChainController->createCircleChainAt(destPos, earthquakeWave);
+        auto chainSet = mChainController->createExposionChainAtCellForRebound(destPos, earthquakeWave);
         AnimationsManager->animateReboundAfterThrowingObj(destPos, chainSet);
 
     });

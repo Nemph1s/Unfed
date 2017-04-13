@@ -14,6 +14,8 @@
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
+
+using CommonTypes::Cell;
  
 class DudeObj;
 class BaseObj;
@@ -26,7 +28,6 @@ class ObjContainer;
 
 class ObjectController : public cocos2d::Ref
 {
-
     friend DudeController;
 
 CC_CONSTRUCTOR_ACCESS:
@@ -44,27 +45,28 @@ public:
     void createObjects();
     CommonTypes::Set* createInitialFieldObjects();
     CommonTypes::Set* createInitialCookies();
-    BaseObj* createRandomCookie(int column, int row);
+    BaseObj* createRandomCookie(Cell& cell);
 
     void detectDirectionsForDudes();
     
-    ObjContainer* getContainer(int column, int row);
-    ObjContainer* getContainer(CommonTypes::CellPos cell);
-    BaseObj* getObjectForChain(CommonTypes::CellPos cell);
-    CommonTypes::Set* getObjectsForChain(CommonTypes::CellPos cell);
-    void synchronizeObjectAt(CommonTypes::CellPos cell);
+    ObjContainer* getContainer(Cell& cell);
+    ObjContainer* getContainer(int8_t column, int8_t row);
 
-    TileObj* tileAt(int column, int row);
-    CookieObj* cookieAt(int column, int row);
-    BaseObj* fieldObjectAt(int column, int row);
-    std::list<FieldObj*>* fieldObjectsAt(int column, int row);
-    DudeObj* dudeAt(int column, int row);
+    BaseObj* getObjectForChain(Cell& cell);
+    CommonTypes::Set* getObjectsForChain(Cell& cell);
+    void synchronizeObjectAt(Cell& cell);
+
+    TileObj* tileAt(Cell& cell);
+    CookieObj* cookieAt(Cell& cell);
+    BaseObj* fieldObjectAt(Cell& cell);
+    std::list<FieldObj*>* fieldObjectsAt(Cell& cell);
+    DudeObj* dudeAt(Cell& cell);
     
-    bool hasChainAt(int column, int row);
-    bool isEmptyTileAt(int column, int row);
-    bool isPossibleToAddCookie(int column, int row);
-    bool isSameTypeOfCookieAt(int column, int row, int type);
-    int getRandomCookieType(int column, int row);
+    bool hasChainAt(Cell& cell);
+    bool isEmptyTileAt(Cell& cell);
+    bool isPossibleToAddCookie(Cell& cell);
+    bool isSameTypeOfCookieAt(int8_t column, int8_t row, int type);
+    int getRandomCookieType(Cell& cell);
 
     bool matchObject(BaseObj* obj);
 
@@ -72,21 +74,20 @@ public:
     bool matchCookieObject(BaseObj* obj);
     bool matchDudeObject(BaseObj* obj);
 
-    void updateCookieObjectAt(int column, int row, BaseObj* cookie);
-    void updateObjectAt(int column, int row, BaseObj* obj);
-    void removeObjectAt(int column, int row, CommonTypes::BaseObjType type);
+    void updateCookieObjectAt(Cell& cell, BaseObj* cookie);
+    void updateObjectAt(Cell& cell, BaseObj* obj);
+    void removeObjectAt(Cell& cell, CommonTypes::BaseObjType type);
 
-    void removeCookie(int column, int row);
+    void removeCookie(Cell& cell);
     void removeAllCookies();
 
 protected:
     // Nodes should be created using create();
     ObjectController();
 
-    BaseObj* createTile(int column, int row, int type);
-    BaseObj* createCookie(int column, int row, int type);
-    
-    BaseObj* createFieldObject(int column, int row, int type, int priority);
+    BaseObj* createTile(Cell& cell, int type);
+    BaseObj* createCookie(Cell& cell, int type);
+    BaseObj* createFieldObject(Cell& cell, int type, int priority);
 
     int getAllowedRandomCookieType();
     

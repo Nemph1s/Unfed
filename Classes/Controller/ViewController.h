@@ -68,7 +68,7 @@ protected:
     void activateDudeCallback(DudeObj* obj, int direction);
 
     //---Special-------------------------------------------------------
-    void throwDownAnObject(BaseObj* obj, CommonTypes::CellPos destPos, bool isHeavyObject);
+    void throwDownAnObject(BaseObj* obj, CommonTypes::Cell& destPos, bool isHeavyObject);
 
     //---Hints-------------------------------------------------------
     void startHintTimer();

@@ -406,7 +406,7 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CommonTypes::CellPos destPos, cocos2d::CallFunc* completion, bool animateShakingScreen)
+void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CommonTypes::Cell destPos, cocos2d::CallFunc* completion, bool animateShakingScreen)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
@@ -437,7 +437,7 @@ void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CommonTypes::CellPo
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateReboundAfterThrowingObj(CommonTypes::CellPos destPos, CommonTypes::Set* chains, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateReboundAfterThrowingObj(CommonTypes::Cell destPos, CommonTypes::Set* chains, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -462,7 +462,7 @@ void _AnimationsManager::animateReboundAfterThrowingObj(CommonTypes::CellPos des
                 continue;
             }
 
-            auto distance = Helper::getDistanceBetweenObjects(destPos, CellPos(col, row));
+            auto distance = Helper::getDistanceBetweenObjects(destPos, Cell(col, row));
             auto jumpHeight = GlobInfo->getTileHeight() / 3.0f;
             AnimationsManager->animateJumpWithBouncing(obj, distance * 0.2f, jumpHeight / distance);
         }

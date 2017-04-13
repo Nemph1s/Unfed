@@ -21,12 +21,10 @@ class CookieObj;
 struct SwapChecker : public cocos2d::Ref
 {
     CommonTypes::Set* set;
-    int curCol;
-    int curRow;
-    int nextCol;
-    int nextRow;
-    SwapChecker(CommonTypes::Set* _set, int _curCol, int _curRow, int _nextCol, int _nextRow)
-        : set(_set), curCol(_curCol), curRow(_curRow), nextCol(_nextCol), nextRow(_nextRow) {}
+    CommonTypes::Cell curCell;
+    CommonTypes::Cell nextCell;
+    SwapChecker(CommonTypes::Set* _set, CommonTypes::Cell _curCell, CommonTypes::Cell _nextCell)
+        : set(_set), curCell(_curCell), nextCell(_nextCell) {}
 };
 
 class SwapController : public cocos2d::Ref
