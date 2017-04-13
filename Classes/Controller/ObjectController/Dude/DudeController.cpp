@@ -31,7 +31,7 @@
 #define RequiredAmountForDudeAllOfType 5
 #define RequiredAmountForDudeSquareBomb 5
 
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 DudeController::DudeController()
@@ -114,7 +114,7 @@ BaseObj* DudeController::createDudeObjWithoutContainer(int type)
 }
 
 //--------------------------------------------------------------------
-BaseObj * DudeController::createDudeObject(CommonTypes::Cell& cell, int type)
+BaseObj * DudeController::createDudeObject(CT::Cell& cell, int type)
 //--------------------------------------------------------------------
 {
     BaseObjInfo baseInfo = { BaseObjType::Dude, cell };
@@ -366,7 +366,7 @@ void DudeController::updateChainSetWithDudesInChain(const Direction& direction, 
                     if (index == 0)  // skip first dude to avoid dead loop
                         continue;
 
-                    CommonTypes::Set* newChains = nullptr;
+                    CT::Set* newChains = nullptr;
                     auto dude = container->getDude();
                     auto realDirection = Helper::getDirectionByTileFromAToB(Helper::to_underlying(direction), activeDude, dude);
                     auto invertedDirection = Helper::invertDirection(realDirection);

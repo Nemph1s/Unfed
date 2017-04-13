@@ -13,7 +13,7 @@
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
-using CommonTypes::FieldType;
+using CT::FieldType;
 
 //--------------------------------------------------------------------
 DirtObject::DirtObject()
@@ -29,7 +29,7 @@ DirtObject::~DirtObject()
 }
 
 //--------------------------------------------------------------------
-DirtObject * DirtObject::create(const CommonTypes::FieldInfo & info)
+DirtObject * DirtObject::create(const CT::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     DirtObject * ret = new (std::nothrow) DirtObject();
@@ -43,7 +43,7 @@ DirtObject * DirtObject::create(const CommonTypes::FieldInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool DirtObject::init(const CommonTypes::FieldInfo & info)
+bool DirtObject::init(const CT::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     if (!FieldObj::init(info)) {

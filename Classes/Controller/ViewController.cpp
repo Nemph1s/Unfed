@@ -33,7 +33,7 @@
 
 using cocos2d::Director;
 using cocos2d::CallFunc;
-using namespace CommonTypes;
+using namespace CT;
 using namespace std::placeholders;
  
 #define COCOS2D_DEBUG 1
@@ -219,7 +219,7 @@ bool ViewController::initDudeController()
     mDudeController->setActivateDudeCallback(activateDudeCallback);
 
     auto dudeCtrl = mDudeController;
-    auto dudeActivationCallback = [dudeCtrl](CommonTypes::Cell& fromCell, int direction) {
+    auto dudeActivationCallback = [dudeCtrl](CT::Cell& fromCell, int direction) {
         return dudeCtrl->canActivateDudeTo(fromCell, direction);
     };
     mGameplayScene->setDudeActivationCallback(dudeActivationCallback);
@@ -247,7 +247,7 @@ bool ViewController::initSwapController()
     mSwapController->setSwapCallback(swapCallback);
 
     auto swapCtrl = mSwapController;
-    auto tryToSwapCallback = [swapCtrl](CommonTypes::Cell& fromCell, int direction) {
+    auto tryToSwapCallback = [swapCtrl](CT::Cell& fromCell, int direction) {
         return swapCtrl->trySwapCookieTo(fromCell, direction);
     };
     mGameplayScene->setSwapCookieCallback(tryToSwapCallback);
@@ -277,7 +277,7 @@ void ViewController::startGame()
 }
 
 //--------------------------------------------------------------------
-void ViewController::updateScore(CommonTypes::Set * chains)
+void ViewController::updateScore(CT::Set * chains)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -337,7 +337,7 @@ void ViewController::handleMatches()
 
 
 //--------------------------------------------------------------------
-void ViewController::animateHandleMatches(CommonTypes::Set* chains)
+void ViewController::animateHandleMatches(CT::Set* chains)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -459,7 +459,7 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
 }
 
 //--------------------------------------------------------------------
-void ViewController::throwDownAnObject(BaseObj* obj, CommonTypes::Cell& destPos, bool isHeavyObject)
+void ViewController::throwDownAnObject(BaseObj* obj, CT::Cell& destPos, bool isHeavyObject)
 //--------------------------------------------------------------------
 {
     auto onThrowDownCallback = CallFunc::create([&]() {
@@ -512,7 +512,7 @@ void ViewController::stopHintTimer()
 void ViewController::showSwapHint(float dt)
 //--------------------------------------------------------------------
 {
-    CommonTypes::Set* set = nullptr;
+    CT::Set* set = nullptr;
     if (mGameplayScene->isObjTouched()) {
         return;
     }

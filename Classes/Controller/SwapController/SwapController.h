@@ -20,10 +20,10 @@ class CookieObj;
 
 struct SwapChecker : public cocos2d::Ref
 {
-    CommonTypes::Set* set;
-    CommonTypes::Cell curCell;
-    CommonTypes::Cell nextCell;
-    SwapChecker(CommonTypes::Set* _set, CommonTypes::Cell _curCell, CommonTypes::Cell _nextCell)
+    CT::Set* set;
+    CT::Cell curCell;
+    CT::Cell nextCell;
+    SwapChecker(CT::Set* _set, CT::Cell _curCell, CT::Cell _nextCell)
         : set(_set), curCell(_curCell), nextCell(_nextCell) {}
 };
 
@@ -57,7 +57,7 @@ public:
 
     void clearPossibleSwaps();
 
-    CommonTypes::Set* getPreviousSwapContainers();
+    CT::Set* getPreviousSwapContainers();
                           
 protected:
     // Nodes should be created using create();
@@ -69,7 +69,7 @@ protected:
     CC_SYNTHESIZE(std::function<void(SwapObj* swap)>, mSwapCallback, SwapCallback);
 
     SYNTHESIZE(LevelObj*, mLevel, Level, nullptr);
-    SYNTHESIZE_READONLY(CommonTypes::Set*, mPossibleSwaps, PossibleSwaps, nullptr);
+    SYNTHESIZE_READONLY(CT::Set*, mPossibleSwaps, PossibleSwaps, nullptr);
     SYNTHESIZE_READONLY(SwapObj*, mPreviousSwap, PreviousSwap, nullptr);
 };
 

@@ -25,12 +25,12 @@ public:
     * @return A initialized node which is marked as "autorelease".
     */
     static BaseObj * create();
-    static BaseObj * create(const CommonTypes::BaseObjInfo &info);
+    static BaseObj * create(const CT::BaseObjInfo &info);
 
     virtual bool init();
-    bool init(const CommonTypes::BaseObjInfo &info);
+    bool init(const CT::BaseObjInfo &info);
 
-    CommonTypes::Cell getCell() const;
+    CT::Cell getCell() const;
 
     virtual cocos2d::String& spriteName() const;
     virtual cocos2d::String& description() const;
@@ -60,7 +60,7 @@ protected:
 
     CC_SYNTHESIZE(int, mColumn, Column);
     CC_SYNTHESIZE(int, mRow, Row);
-    CC_SYNTHESIZE(CommonTypes::BaseObjType, mType, Type);
+    CC_SYNTHESIZE(CT::BaseObjType, mType, Type);
     CC_SYNTHESIZE(cocos2d::Sprite*, mSpriteNode, SpriteNode);
 
 };

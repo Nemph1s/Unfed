@@ -19,7 +19,7 @@
 #include "GameObjects/TileObjects/FieldObjects/BushObj.h"
 #include "GameObjects/TileObjects/FieldObjects/RockObj.h"
 
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 _SmartObjFactory & _SmartObjFactory::Instance()

@@ -30,7 +30,7 @@
 #include "Controller/ChainController/ChainController.h"
 
 
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 LevelObj::LevelObj()
@@ -85,7 +85,7 @@ bool LevelObj::initWithId(const int16_t& levelId)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* LevelObj::shuffle()
+CT::Set* LevelObj::shuffle()
 //--------------------------------------------------------------------
 {
     cocos2d::log("LevelObj::shuffle:");
@@ -162,10 +162,10 @@ bool LevelObj::useGravityOnObject(cocos2d::Array * colArr, cocos2d::Array * rowA
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* LevelObj::detectFieldObjects(CommonTypes::Set * chains)
+CT::Set* LevelObj::detectFieldObjects(CT::Set * chains)
 //--------------------------------------------------------------------
 {
-    auto set = CommonTypes::Set::create();
+    auto set = CT::Set::create();
 
     for (int row = 0; row < _GlobalInfo::NumRows; row++) {
         for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
@@ -303,7 +303,7 @@ void LevelObj::disablePredefinedCookies()
 }
 
 //--------------------------------------------------------------------
-void LevelObj::removeDudeMatches(CommonTypes::Set* set)
+void LevelObj::removeDudeMatches(CT::Set* set)
 //--------------------------------------------------------------------
 {
     cocos2d::log("LevelObj::removeDudeMatches:");

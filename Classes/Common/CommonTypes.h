@@ -16,7 +16,7 @@
 
 namespace cocos2d { class __Set; }
 
-namespace CommonTypes {
+namespace CT {
 
     typedef cocos2d::__Set Set;
 

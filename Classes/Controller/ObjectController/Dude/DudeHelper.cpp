@@ -17,7 +17,7 @@
 
 #include "Utils/Helpers/Helper.h"
 
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 DudeHelper::DudeHelper()

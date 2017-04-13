@@ -12,7 +12,7 @@
 
 #include <stdint.h>
 
-namespace CommonTypes {
+namespace CT {
 
     /**
     * @brief SGlobalInfo struct.

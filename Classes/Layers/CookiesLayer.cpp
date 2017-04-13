@@ -26,7 +26,7 @@
 #include "Controller/ObjectController/Dude/DudeObj.h"
 
 USING_NS_CC;
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 CookiesLayer::CookiesLayer()
@@ -116,7 +116,7 @@ void CookiesLayer::onExit()
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::addSpritesForObjects(CommonTypes::Set * set)
+void CookiesLayer::addSpritesForObjects(CT::Set * set)
 //--------------------------------------------------------------------
 {
     log("CookiesLayer::addSpritesForDudes:");
@@ -329,7 +329,7 @@ void CookiesLayer::clearTouchedObj()
 }
 
 //--------------------------------------------------------------------
-int CookiesLayer::getSwipeDirection(CommonTypes::Cell& cell)
+int CookiesLayer::getSwipeDirection(CT::Cell& cell)
 //--------------------------------------------------------------------
 {
     auto direction = Direction::Unknown;
@@ -355,7 +355,7 @@ bool CookiesLayer::isSameDirection(int direction)
     if (direction == Helper::to_underlying(mPreviousDirection)) {
         return true;
     }
-    mPreviousDirection = static_cast<CommonTypes::Direction>(direction);
+    mPreviousDirection = static_cast<CT::Direction>(direction);
     return false;
 }
 
@@ -440,7 +440,7 @@ void CookiesLayer::createSpriteWithFieldObj(FieldObj* obj, int column, int row)
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::createChainPreviewSprites(CommonTypes::Set* set)
+void CookiesLayer::createChainPreviewSprites(CT::Set* set)
 //--------------------------------------------------------------------
 {
     log("CookiesLayer::addSpritesForDudes:");

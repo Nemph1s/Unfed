@@ -173,7 +173,7 @@ void GameplayScene::addFieldObjectsAt(int column, int row)
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::addSpritesForObjects(CommonTypes::Set* set)
+void GameplayScene::addSpritesForObjects(CT::Set* set)
 //--------------------------------------------------------------------
 {
     cocos2d::log("GameplayScene::addSpritesForObjects:");
@@ -181,7 +181,7 @@ void GameplayScene::addSpritesForObjects(CommonTypes::Set* set)
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::createChainPreviewSprites(CommonTypes::Set * set)
+void GameplayScene::createChainPreviewSprites(CT::Set * set)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->createChainPreviewSprites(set);
@@ -203,21 +203,21 @@ void GameplayScene::userInteractionDisabled()
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::setUpdateDirectionCallback(std::function<CommonTypes::Set*(BaseObj* obj, int direction)> func)
+void GameplayScene::setUpdateDirectionCallback(std::function<CT::Set*(BaseObj* obj, int direction)> func)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->setUpdateDirectionCallback(func);
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::setSwapCookieCallback(std::function<bool(CommonTypes::Cell& fromCell, int direction)> func)
+void GameplayScene::setSwapCookieCallback(std::function<bool(CT::Cell& fromCell, int direction)> func)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->setTrySwapCookieCallback(func);
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::setDudeActivationCallback(std::function<bool(CommonTypes::Cell& fromCell, int direction)> func)
+void GameplayScene::setDudeActivationCallback(std::function<bool(CT::Cell& fromCell, int direction)> func)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->setCanActivateDudeCallback(func);

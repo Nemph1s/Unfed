@@ -23,9 +23,9 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static DudeObj * create(const CommonTypes::FieldInfo &info);
+    static DudeObj * create(const CT::FieldInfo &info);
 
-    bool init(const CommonTypes::FieldInfo &info);
+    bool init(const CT::FieldInfo &info);
 
     cocos2d::String& spriteName() const override;
 

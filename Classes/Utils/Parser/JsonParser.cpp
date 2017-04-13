@@ -40,10 +40,10 @@ bool _JsonParser::checkGlobalInfoStatus()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::SGlobalInfo _JsonParser::getJsonGlobalInfo()
+CT::SGlobalInfo _JsonParser::getJsonGlobalInfo()
 //--------------------------------------------------------------------
 {
-    auto globalInfo = CommonTypes::SGlobalInfo();
+    auto globalInfo = CT::SGlobalInfo();
     globalInfo.swVersion = getSwVersion();
     globalInfo.imgPackType = getImagePackType();
     globalInfo.imgPackVersion = getImagePackVersion();
@@ -263,10 +263,10 @@ bool _JsonParser::checkLevelInfoStatus()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::LevelInfo _JsonParser::getJsonLevelInfo()
+CT::LevelInfo _JsonParser::getJsonLevelInfo()
 //--------------------------------------------------------------------
 {
-	auto levelInfo = CommonTypes::LevelInfo();
+	auto levelInfo = CT::LevelInfo();
 	levelInfo.id = mLoadedLevel;
 	levelInfo.targetScore = getTargetScore();
 	levelInfo.moves = getMoves();
@@ -283,10 +283,10 @@ CommonTypes::LevelInfo _JsonParser::getJsonLevelInfo()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::LevelGoals _JsonParser::getJsonLevelGoals()
+CT::LevelGoals _JsonParser::getJsonLevelGoals()
 //--------------------------------------------------------------------
 {
-    auto levelGoals = CommonTypes::LevelGoals();
+    auto levelGoals = CT::LevelGoals();
 
     if (mLevelInfoRootNode[JsonNames::levelGoals].isNull()) {
         return levelGoals;
@@ -301,7 +301,7 @@ CommonTypes::LevelGoals _JsonParser::getJsonLevelGoals()
         const Json::Value& goalCollectNode = subNode[i];
         CC_ASSERT(goalCollectNode.isObject());
 
-        auto goalInfo = CommonTypes::CollectGoalInfo();
+        auto goalInfo = CT::CollectGoalInfo();
         goalInfo.baseObjectType = getTargetBaseObjType(goalCollectNode);
         goalInfo.objectType = getTargetObjType(goalCollectNode);
         goalInfo.targetCount = getTargetObjectCount(goalCollectNode);
@@ -455,7 +455,7 @@ uint8_t _JsonParser::getTargetObjectCount(const Json::Value& node)
 }
 
 //--------------------------------------------------------------------
-void _JsonParser::updateTiles(CommonTypes::LevelInfo& levelInfo)
+void _JsonParser::updateTiles(CT::LevelInfo& levelInfo)
 //--------------------------------------------------------------------
 {
     const Json::Value& node = getTiles();
@@ -472,7 +472,7 @@ void _JsonParser::updateTiles(CommonTypes::LevelInfo& levelInfo)
 }
 
 //--------------------------------------------------------------------
-void _JsonParser::updatePredefinedCookies(CommonTypes::LevelInfo& levelInfo)
+void _JsonParser::updatePredefinedCookies(CT::LevelInfo& levelInfo)
 //--------------------------------------------------------------------
 {
     if (!mLevelInfoRootNode[JsonNames::cookiesArray].isNull()) {
@@ -491,7 +491,7 @@ void _JsonParser::updatePredefinedCookies(CommonTypes::LevelInfo& levelInfo)
 }
 
 //--------------------------------------------------------------------
-void _JsonParser::updateAllowedCookieTypes(CommonTypes::LevelInfo& levelInfo)
+void _JsonParser::updateAllowedCookieTypes(CT::LevelInfo& levelInfo)
 //--------------------------------------------------------------------
 {
     if (!mLevelInfoRootNode[JsonNames::allowedCookieTypes].isNull()) {
@@ -506,7 +506,7 @@ void _JsonParser::updateAllowedCookieTypes(CommonTypes::LevelInfo& levelInfo)
 }
 
 //--------------------------------------------------------------------
-void _JsonParser::updateFieldObjects(CommonTypes::LevelInfo& levelInfo)
+void _JsonParser::updateFieldObjects(CT::LevelInfo& levelInfo)
 //--------------------------------------------------------------------
 {
     if (mLevelInfoRootNode[JsonNames::fieldObjectsArray].isNull()) {
@@ -518,7 +518,7 @@ void _JsonParser::updateFieldObjects(CommonTypes::LevelInfo& levelInfo)
         const Json::Value& fieldObjectNode = subNode[i];
         CC_ASSERT(fieldObjectNode.isObject());
 
-        auto fieldInfo = CommonTypes::JsonFieldInfo();
+        auto fieldInfo = CT::JsonFieldInfo();
         fieldInfo.baseInfo.column = getFieldObjectCol(fieldObjectNode);
         fieldInfo.baseInfo.row = getFieldObjectRow(fieldObjectNode);
 

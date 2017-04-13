@@ -22,7 +22,7 @@ ChainObj::ChainObj()
     , mObjsToRemove(nullptr)
     , mIsCreatedByDude(false)
     , mScore(0)
-    , mDirection(CommonTypes::Direction::Unknown)
+    , mDirection(CT::Direction::Unknown)
 //--------------------------------------------------------------------
 {
 }
@@ -49,7 +49,7 @@ ChainObj::~ChainObj()
 }
 
 //--------------------------------------------------------------------
-ChainObj * ChainObj::createWithType(const CommonTypes::ChainType &type)
+ChainObj * ChainObj::createWithType(const CT::ChainType &type)
 //--------------------------------------------------------------------
 {
     ChainObj * ret = new (std::nothrow) ChainObj();
@@ -63,7 +63,7 @@ ChainObj * ChainObj::createWithType(const CommonTypes::ChainType &type)
 }
 
 //--------------------------------------------------------------------
-bool ChainObj::initWithType(const CommonTypes::ChainType &type)
+bool ChainObj::initWithType(const CT::ChainType &type)
 //--------------------------------------------------------------------
 {
     if (!Node::init()) {
@@ -100,19 +100,19 @@ std::string ChainObj::typeAsString()
     std::string type;
     switch (mType)
     {
-    case CommonTypes::ChainType::ChainTypeHorizontal:
+    case CT::ChainType::ChainTypeHorizontal:
         type = "Horizontal";
         break;
-    case CommonTypes::ChainType::ChainTypeVertical:
+    case CT::ChainType::ChainTypeVertical:
         type = "Vertical";
         break;
-    case CommonTypes::ChainType::ChainTypeL:
+    case CT::ChainType::ChainTypeL:
         type = "Type L";
         break;
-    case CommonTypes::ChainType::ChainTypeT:
+    case CT::ChainType::ChainTypeT:
         type = "Type T";
         break;
-    case CommonTypes::ChainType::Unknown:
+    case CT::ChainType::Unknown:
     default:
         type = "Unknown";
         break;
@@ -255,7 +255,7 @@ void ChainObj::removeDudeObjectsFromChain(bool skipFirst)
         }
         auto obj = dynamic_cast<ObjContainer*>(*it);
         if (obj) {
-            if (obj->getObjectForChain()->getType() == CommonTypes::BaseObjType::Dude) {
+            if (obj->getObjectForChain()->getType() == CT::BaseObjType::Dude) {
                 if (!skipFirst && index != 0) { // skip first dude in chain
                     mScore = mScore - ScoreHelper::getScoreForContainer(obj);
                     itToRemove = *it;
@@ -313,7 +313,7 @@ int ChainObj::getCookiesCount()
     for (auto it = objs->begin(); it != objs->end(); it++) {
         auto obj = dynamic_cast<BaseObj*>(*it);
         CC_ASSERT(obj);
-        if (obj->getType() == CommonTypes::BaseObjType::Cookie) {
+        if (obj->getType() == CT::BaseObjType::Cookie) {
             count++;
         }
     }

@@ -16,7 +16,7 @@
 //--------------------------------------------------------------------
 FieldObj::FieldObj()
     : BaseObj()
-    , mFieldType(CommonTypes::FieldType::Unknown)
+    , mFieldType(CT::FieldType::Unknown)
     , mPriority(0)
     , mDebugLabel(nullptr)
     , mHP(0)
@@ -32,7 +32,7 @@ FieldObj::~FieldObj()
 }
 
 //--------------------------------------------------------------------
-FieldObj * FieldObj::create(const CommonTypes::FieldInfo &info)
+FieldObj * FieldObj::create(const CT::FieldInfo &info)
 //--------------------------------------------------------------------
 {
     FieldObj * ret = new (std::nothrow) FieldObj();
@@ -46,7 +46,7 @@ FieldObj * FieldObj::create(const CommonTypes::FieldInfo &info)
 }
 
 //--------------------------------------------------------------------
-bool FieldObj::init(const CommonTypes::FieldInfo &info)
+bool FieldObj::init(const CT::FieldInfo &info)
 //--------------------------------------------------------------------
 {
     if (!BaseObj::init(info.baseInfo)) {
@@ -56,7 +56,7 @@ bool FieldObj::init(const CommonTypes::FieldInfo &info)
     mFieldType = info.fieldType;
     mPriority = info.priority;
 
-    if (!mDebugLabel && mType != CommonTypes::BaseObjType::Field) {
+    if (!mDebugLabel && mType != CT::BaseObjType::Field) {
 #ifdef COCOS2D_DEBUG
         mDebugLabel = cocos2d::Label::create();
         mDebugLabel->setBMFontSize(16);
@@ -113,7 +113,7 @@ void FieldObj::match()
 {
     mHP--;
     if (mHP > 0) {
-        mFieldType = static_cast<CommonTypes::FieldType>(getTypeAsInt() - 1);
+        mFieldType = static_cast<CT::FieldType>(getTypeAsInt() - 1);
     } else if (mHP == 0) {
         mPriority--;
     }
@@ -124,7 +124,7 @@ void FieldObj::clear()
 //--------------------------------------------------------------------
 {
     BaseObj::clear();
-    mFieldType = CommonTypes::FieldType::Unknown;
+    mFieldType = CT::FieldType::Unknown;
     mHP = 0;
     mPriority = 0;
     mReadyToUpdatePriority = false;

@@ -20,7 +20,7 @@
 #include <cstdlib>
 
 using namespace GameResources;
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 float Helper::randomFloatBetween(float smallNumber, float bigNumber) 
@@ -65,7 +65,7 @@ float Helper::getDurationToTile(int8_t startRow, int8_t destinationRow)
 }
 
 //--------------------------------------------------------------------
-int8_t Helper::getDistanceBetweenObjects(CommonTypes::Cell cellPosA, CommonTypes::Cell cellPosB)
+int8_t Helper::getDistanceBetweenObjects(CT::Cell cellPosA, CT::Cell cellPosB)
 //--------------------------------------------------------------------
 {
     uint8_t colLength = std::abs(cellPosA.column - cellPosB.column);
@@ -125,7 +125,7 @@ bool Helper::isValidColumnAndRow(int column, int row)
 }
 
 //--------------------------------------------------------------------
-bool Helper::isValidCell(CommonTypes::Cell & cell)
+bool Helper::isValidCell(CT::Cell & cell)
 //--------------------------------------------------------------------
 {
     bool result = true;
@@ -175,7 +175,7 @@ cocos2d::Vec2 Helper::pointForTile(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-bool Helper::convertPointToTilePos(cocos2d::Vec2& point, CommonTypes::Cell& cell)
+bool Helper::convertPointToTilePos(cocos2d::Vec2& point, CT::Cell& cell)
 //--------------------------------------------------------------------
 {
     if (point.x >= 0 && point.x < _GlobalInfo::NumColumns * GlobInfo->getTileWidth() &&
@@ -213,15 +213,15 @@ Direction Helper::invertDirection(const Direction & direction)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Direction Helper::invertDirection(int direction)
+CT::Direction Helper::invertDirection(int direction)
 //--------------------------------------------------------------------
 {
-    auto dir = static_cast<CommonTypes::Direction>(direction);
+    auto dir = static_cast<CT::Direction>(direction);
     return invertDirection(dir);
 }
 
 //--------------------------------------------------------------------
-int Helper::getDirectionByTileFromAToB(int oldDirection, CommonTypes::Cell& fromCell, CommonTypes::Cell& toCell)
+int Helper::getDirectionByTileFromAToB(int oldDirection, CT::Cell& fromCell, CT::Cell& toCell)
 //--------------------------------------------------------------------
 {
     auto dir = Direction::Unknown;
@@ -241,11 +241,11 @@ int Helper::getDirectionByTileFromAToB(int oldDirection, CommonTypes::Cell& from
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Direction Helper::getDirectionByTileFromAToB(int oldDirection, BaseObj* from, BaseObj* to)
+CT::Direction Helper::getDirectionByTileFromAToB(int oldDirection, BaseObj* from, BaseObj* to)
 //--------------------------------------------------------------------
 {
     auto direction = getDirectionByTileFromAToB(oldDirection, from->getColumn(), from->getRow(), to->getColumn(), to->getRow());
-    return static_cast<CommonTypes::Direction>(direction);
+    return static_cast<CT::Direction>(direction);
 }
 
 //--------------------------------------------------------------------
@@ -253,7 +253,7 @@ bool Helper::convertDirectionToSwipeDelta(int dir, int & horzDelta, int & vertDe
 //--------------------------------------------------------------------
 {
     bool result = true;
-    auto direction = static_cast<CommonTypes::Direction>(dir);
+    auto direction = static_cast<CT::Direction>(dir);
     switch (direction)
     {
     case Direction::Up:
@@ -308,7 +308,7 @@ cocos2d::Color4B Helper::getScoreColorByObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorByCookieType(CommonTypes::CookieType type)
+cocos2d::Color4B Helper::getScoreColorByCookieType(CT::CookieType type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
@@ -339,7 +339,7 @@ cocos2d::Color4B Helper::getScoreColorByCookieType(CommonTypes::CookieType type)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorForFieldObj(CommonTypes::FieldType type)
+cocos2d::Color4B Helper::getScoreColorForFieldObj(CT::FieldType type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
@@ -364,7 +364,7 @@ cocos2d::Color4B Helper::getScoreColorForFieldObj(CommonTypes::FieldType type)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorForDudeObj(CommonTypes::FieldType type)
+cocos2d::Color4B Helper::getScoreColorForDudeObj(CT::FieldType type)
 //--------------------------------------------------------------------
 {
     // see hints on http://www.colorhexa.com/color-names

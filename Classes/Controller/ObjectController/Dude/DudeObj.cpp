@@ -12,7 +12,7 @@
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
-using CommonTypes::FieldType;
+using CT::FieldType;
 
 //--------------------------------------------------------------------
 DudeObj::DudeObj()
@@ -28,7 +28,7 @@ DudeObj::~DudeObj()
 }
 
 //--------------------------------------------------------------------
-DudeObj * DudeObj::create(const CommonTypes::FieldInfo & info)
+DudeObj * DudeObj::create(const CT::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     DudeObj * ret = new (std::nothrow) DudeObj();
@@ -42,7 +42,7 @@ DudeObj * DudeObj::create(const CommonTypes::FieldInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool DudeObj::init(const CommonTypes::FieldInfo & info)
+bool DudeObj::init(const CT::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     if (!FieldObj::init(info)) {

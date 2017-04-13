@@ -15,7 +15,7 @@
 #include "Common/CommonTypes.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
 
-using CommonTypes::Cell;
+using CT::Cell;
  
 class DudeObj;
 class BaseObj;
@@ -43,8 +43,8 @@ public:
     bool init();
 
     void createObjects();
-    CommonTypes::Set* createInitialFieldObjects();
-    CommonTypes::Set* createInitialCookies();
+    CT::Set* createInitialFieldObjects();
+    CT::Set* createInitialCookies();
     BaseObj* createRandomCookie(Cell& cell);
 
     void detectDirectionsForDudes();
@@ -53,7 +53,7 @@ public:
     ObjContainer* getContainer(int8_t column, int8_t row);
 
     BaseObj* getObjectForChain(Cell& cell);
-    CommonTypes::Set* getObjectsForChain(Cell& cell);
+    CT::Set* getObjectsForChain(Cell& cell);
     void synchronizeObjectAt(Cell& cell);
 
     TileObj* tileAt(Cell& cell);
@@ -76,7 +76,7 @@ public:
 
     void updateCookieObjectAt(Cell& cell, BaseObj* cookie);
     void updateObjectAt(Cell& cell, BaseObj* obj);
-    void removeObjectAt(Cell& cell, CommonTypes::BaseObjType type);
+    void removeObjectAt(Cell& cell, CT::BaseObjType type);
 
     void removeCookie(Cell& cell);
     void removeAllCookies();

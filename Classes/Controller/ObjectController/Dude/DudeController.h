@@ -35,17 +35,17 @@ public:
 
     bool init();
 
-    CommonTypes::Set* createDudeObectsFromChains(CommonTypes::Set* chains, CommonTypes::Set* prevSwapContainers);
+    CT::Set* createDudeObectsFromChains(CT::Set* chains, CT::Set* prevSwapContainers);
 
     BaseObj* createDudeObjWithoutContainer(int type);
-    BaseObj* createDudeObject(CommonTypes::Cell& cell, int type);
+    BaseObj* createDudeObject(CT::Cell& cell, int type);
 
     void detectDirectionsForDudes();
 
-    bool canActivateDudeTo(CommonTypes::Cell& fromCell, int direction);
-    CommonTypes::Set* getChainsForDude(DudeObj* obj, int dir, bool isPreview = false);
+    bool canActivateDudeTo(CT::Cell& fromCell, int direction);
+    CT::Set* getChainsForDude(DudeObj* obj, int dir, bool isPreview = false);
 
-    void updateChainSetWithDudesInChain(const CommonTypes::Direction& direction, DudeObj* activeDude, CommonTypes::Set* chains, CommonTypes::Set* chainSet);
+    void updateChainSetWithDudesInChain(const CT::Direction& direction, DudeObj* activeDude, CT::Set* chains, CT::Set* chainSet);
     void eraseDirectionsForDude(DudeObj* obj);
 
 protected:
@@ -56,7 +56,7 @@ protected:
 
     bool isEnoughCookiesForDude(int count, int neededCount);
 
-    CommonTypes::FieldType getDudeTypeByChain(ChainObj* chain);
+    CT::FieldType getDudeTypeByChain(ChainObj* chain);
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(DudeObj*, int direction)>, mActivateDudeCallback, ActivateDudeCallback);

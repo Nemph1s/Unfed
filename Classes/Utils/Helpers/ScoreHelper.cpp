@@ -16,7 +16,7 @@
 #include "Controller/ChainController/ChainObj.h"
 #include "Controller/ObjectController/ObjContainer.h"
 
-using namespace CommonTypes;
+using namespace CT;
 
 static uint16_t EmptyScoreValue = 0;
 
@@ -39,7 +39,7 @@ void ScoreHelper::updateChainScore(ChainObj* chain)
 }
 
 //--------------------------------------------------------------------
-void ScoreHelper::calculateScore(CommonTypes::Set* chains)
+void ScoreHelper::calculateScore(CT::Set* chains)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);

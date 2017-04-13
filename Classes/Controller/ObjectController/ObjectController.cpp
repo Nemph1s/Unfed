@@ -23,7 +23,7 @@
 #include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
-using namespace CommonTypes;
+using namespace CT;
 using namespace std::placeholders;
 
 //--------------------------------------------------------------------
@@ -119,7 +119,7 @@ BaseObj * ObjectController::getObjectForChain(Cell& cell)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* ObjectController::getObjectsForChain(Cell& cell)
+CT::Set* ObjectController::getObjectsForChain(Cell& cell)
 //--------------------------------------------------------------------
 {
     auto obj = getContainer(cell);
@@ -140,11 +140,11 @@ void ObjectController::synchronizeObjectAt(Cell& cell)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* ObjectController::createInitialFieldObjects()
+CT::Set* ObjectController::createInitialFieldObjects()
 //--------------------------------------------------------------------
 {
     auto levelInfo = mLevel->getLevelInfo();
-    auto set = CommonTypes::Set::create();
+    auto set = CT::Set::create();
     for (auto obj : levelInfo.fieldObjects) {
         for (uint8_t i = 0; i < obj.fieldType.size(); i++) {
             auto type = obj.fieldType.at(i);
@@ -159,11 +159,11 @@ CommonTypes::Set* ObjectController::createInitialFieldObjects()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set * ObjectController::createInitialCookies()
+CT::Set * ObjectController::createInitialCookies()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ObjectController::createInitialCookies:");
-    auto set = CommonTypes::Set::create();
+    auto set = CT::Set::create();
     auto createdString = cocos2d::String::create("");
 
     for (int row = 0; row < _GlobalInfo::NumRows; row++) {
@@ -532,7 +532,7 @@ void ObjectController::updateObjectAt(Cell& cell, BaseObj* baseObj)
 }
 
 //--------------------------------------------------------------------
-void ObjectController::removeObjectAt(Cell& cell, CommonTypes::BaseObjType type)
+void ObjectController::removeObjectAt(Cell& cell, CT::BaseObjType type)
 //--------------------------------------------------------------------
 {
     auto obj = getContainer(cell);

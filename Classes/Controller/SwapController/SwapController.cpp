@@ -22,7 +22,7 @@
 
 #include "Layers/CookiesLayer.h"
 
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 SwapController::~SwapController()
@@ -243,7 +243,7 @@ bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
         return false;
     }
 
-    auto cookieType = CommonTypes::BaseObjType::Cookie;
+    auto cookieType = CT::BaseObjType::Cookie;
     if (fromCookie->getType() != cookieType && toCookie->getType() != cookieType) {
         cocos2d::log("GameplayScene::trySwapCookieTo: cant swap non cookies obj");
         return false;
@@ -274,13 +274,13 @@ void SwapController::clearPossibleSwaps()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* SwapController::getPreviousSwapContainers()
+CT::Set* SwapController::getPreviousSwapContainers()
 //--------------------------------------------------------------------
 {
     if (!mPreviousSwap) {
         return nullptr;
     }
-    CommonTypes::Set* set = CommonTypes::Set::create();
+    CT::Set* set = CT::Set::create();
     auto objCtrl = mLevel->getObjectController();
     auto objA = mPreviousSwap->getObjectA();
     if (objA) {

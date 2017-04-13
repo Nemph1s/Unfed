@@ -36,7 +36,7 @@
 #include "cocos2d/cocos/ui/UIText.h"
 
 USING_NS_CC;
-using namespace CommonTypes;
+using namespace CT;
 using ui::Text;
 
 //--------------------------------------------------------------------
@@ -127,7 +127,7 @@ void _AnimationsManager::animateMatchObj(BaseObj * obj, cocos2d::CallFunc* compl
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatching(CommonTypes::Set* chains, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateMatching(CT::Set* chains, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -196,7 +196,7 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
 
                 auto moveCallback = CallFunc::create([=]() {
                     AnimationsManager->animateBouncingObj(obj);
-                    AudioManager->playSound(CommonTypes::SoundType::FallingCookieSound);
+                    AudioManager->playSound(CT::SoundType::FallingCookieSound);
                 });
                 
                 auto sprite = obj->getSpriteNode();
@@ -263,7 +263,7 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
 
                 auto moveCallback = CallFunc::create([=]() {
                     AnimationsManager->animateBouncingObj(cookie);
-                    AudioManager->playSound(CommonTypes::SoundType::AddCookieSound);
+                    AudioManager->playSound(CT::SoundType::AddCookieSound);
                 });
 
                 auto moveAction = MoveTo::create(duration, newPos);
@@ -406,7 +406,7 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CommonTypes::Cell destPos, cocos2d::CallFunc* completion, bool animateShakingScreen)
+void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CT::Cell destPos, cocos2d::CallFunc* completion, bool animateShakingScreen)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
@@ -437,7 +437,7 @@ void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CommonTypes::Cell d
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateReboundAfterThrowingObj(CommonTypes::Cell destPos, CommonTypes::Set* chains, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateReboundAfterThrowingObj(CT::Cell destPos, CT::Set* chains, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -524,7 +524,7 @@ void _AnimationsManager::animateHintJump(BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateHintSwap(CommonTypes::Set* objects, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateHintSwap(CT::Set* objects, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(objects);

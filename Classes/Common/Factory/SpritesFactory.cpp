@@ -19,7 +19,7 @@
 #include "Controller/ObjectController/Dude/DudeObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
-using namespace CommonTypes;
+using namespace CT;
 
 const int kSpriteTag = 3;
 const int kGlowingSpriteTag = 4;

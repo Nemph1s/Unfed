@@ -25,7 +25,7 @@
 
 #include <map>
 
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 ChainController::ChainController()
@@ -186,7 +186,7 @@ Set* ChainController::detectHintChainAt(BaseObj* curObj, BaseObj* nextObj)
 }
 
 //--------------------------------------------------------------------
-bool ChainController::getCellFromChainAndPrevSwapSet(Cell& cell, ChainObj* chain, CommonTypes::Set* prevSwapObjs)
+bool ChainController::getCellFromChainAndPrevSwapSet(Cell& cell, ChainObj* chain, CT::Set* prevSwapObjs)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chain);
@@ -291,7 +291,7 @@ void ChainController::executeCollectGoalCallback(Set * chains)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* ChainController::createExposionChainAtCellForRebound(CommonTypes::Cell& cell, uint8_t length)
+CT::Set* ChainController::createExposionChainAtCellForRebound(CT::Cell& cell, uint8_t length)
 //--------------------------------------------------------------------
 {
     auto set = Set::create();

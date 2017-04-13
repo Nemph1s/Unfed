@@ -13,7 +13,7 @@
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
-using CommonTypes::FieldType;
+using CT::FieldType;
 
 //--------------------------------------------------------------------
 BushObj::BushObj()
@@ -29,7 +29,7 @@ BushObj::~BushObj()
 }
 
 //--------------------------------------------------------------------
-BushObj * BushObj::create(const CommonTypes::FieldInfo & info)
+BushObj * BushObj::create(const CT::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     BushObj * ret = new (std::nothrow) BushObj();
@@ -43,7 +43,7 @@ BushObj * BushObj::create(const CommonTypes::FieldInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool BushObj::init(const CommonTypes::FieldInfo & info)
+bool BushObj::init(const CT::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     if (!FieldObj::init(info)) {

@@ -15,7 +15,7 @@
 #include "cocos2d.h"
 #include "SimpleAudioEngine.h"  
 
-using namespace CommonTypes;
+using namespace CT;
 
 const auto AudioEngine = CocosDenshion::SimpleAudioEngine::getInstance();
 
@@ -38,7 +38,7 @@ void _AudioManager::playBGMusic()
 }
 
 //--------------------------------------------------------------------
-void _AudioManager::playSound(CommonTypes::SoundType type)
+void _AudioManager::playSound(CT::SoundType type)
 //--------------------------------------------------------------------
 {
     auto soundType = Helper::getInstance()->to_underlying(type);

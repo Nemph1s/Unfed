@@ -23,13 +23,13 @@ public:
     static _SmartObjFactory& Instance();
     static _SmartObjFactory* getInstance();
 
-    BaseObj* create(const CommonTypes::BaseObjInfo &info);
+    BaseObj* create(const CT::BaseObjInfo &info);
 
-    BaseObj* createBaseObj(const CommonTypes::BaseObjInfo &info);
-    BaseObj* createTileObj(const CommonTypes::TileInfo &info);
-    BaseObj* createCookieObj(const CommonTypes::CookieInfo &info);
-    BaseObj* createFieldObj(const CommonTypes::FieldInfo &info);
-    BaseObj* createDudeObj(const CommonTypes::FieldInfo &info);
+    BaseObj* createBaseObj(const CT::BaseObjInfo &info);
+    BaseObj* createTileObj(const CT::TileInfo &info);
+    BaseObj* createCookieObj(const CT::CookieInfo &info);
+    BaseObj* createFieldObj(const CT::FieldInfo &info);
+    BaseObj* createDudeObj(const CT::FieldInfo &info);
 
     bool init(int poolSize);
     bool initCookiesPool(int poolSize);

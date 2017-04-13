@@ -32,9 +32,9 @@ public:
 
 	void addTiles();
     void addFieldObjectsAt(int column, int row);
-    void addSpritesForObjects(CommonTypes::Set* set);
+    void addSpritesForObjects(CT::Set* set);
 
-    void createChainPreviewSprites(CommonTypes::Set* set);
+    void createChainPreviewSprites(CT::Set* set);
 
     void createSpriteWithCookie(CookieObj* cookie, int column, int row);
     void createSpriteForDude(BaseObj* dudeObj);
@@ -45,10 +45,10 @@ public:
     void userInteractionEnabled();
     void userInteractionDisabled();
 
-    void setUpdateDirectionCallback(std::function<CommonTypes::Set*(BaseObj* obj, int direction)> func);
+    void setUpdateDirectionCallback(std::function<CT::Set*(BaseObj* obj, int direction)> func);
 
-    void setSwapCookieCallback(std::function<bool(CommonTypes::Cell& fromCell, int direction)> func);
-    void setDudeActivationCallback(std::function<bool(CommonTypes::Cell& fromCell, int direction)> func);
+    void setSwapCookieCallback(std::function<bool(CT::Cell& fromCell, int direction)> func);
+    void setDudeActivationCallback(std::function<bool(CT::Cell& fromCell, int direction)> func);
     void removeAllCookieSprites();
 
     void removeAllChainPreviewSprites();
