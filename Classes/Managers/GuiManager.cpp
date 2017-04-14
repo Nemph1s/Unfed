@@ -27,7 +27,7 @@
 //#include "cocos2d/cocos/editor-support/cocostudio/WidgetReader/TextReader/TextReader.h"
 
 USING_NS_CC;
-using namespace CommonTypes;
+using namespace CT;
 using ui::Text;
 using ui::Layout;
 using ui::Button;
@@ -213,7 +213,7 @@ void _GuiManager::updateMovesLabel(int value)
 }
 
 //--------------------------------------------------------------------
-void _GuiManager::updateLevelGoals(std::vector<CommonTypes::CollectGoalInfo>& levelGoals)
+void _GuiManager::updateLevelGoals(std::vector<CT::CollectGoalInfo>& levelGoals)
 //--------------------------------------------------------------------
 {
     for (uint8_t i = 0; i < mGoalsLabels.size(); i++) {
@@ -233,18 +233,18 @@ cocos2d::Sprite * _GuiManager::createSprite(int baseType, int objType)
 {
     cocos2d::Sprite* sprite = nullptr;
     cocos2d::String* str = nullptr;
-    auto baseObjType = static_cast<CommonTypes::BaseObjType>(baseType);
+    auto baseObjType = static_cast<CT::BaseObjType>(baseType);
     switch (baseObjType)
     {
-    case CommonTypes::BaseObjType::Cookie:
+    case CT::BaseObjType::Cookie:
         str = &GameResources::s_cookieSpriteNames.at(objType);
         break;
-    case CommonTypes::BaseObjType::Field:
-    case CommonTypes::BaseObjType::Dude:
+    case CT::BaseObjType::Field:
+    case CT::BaseObjType::Dude:
         str = Helper::getSpriteNameByFieldType(objType);
         break;
-    case CommonTypes::BaseObjType::Tile:
-    case CommonTypes::BaseObjType::Unknown:
+    case CT::BaseObjType::Tile:
+    case CT::BaseObjType::Unknown:
         break;
     default:
         break;
@@ -286,7 +286,7 @@ cocos2d::Vec2 _GuiManager::getPosForGoalSprite(int currGoal, int goalsCount, con
 }
 
  //--------------------------------------------------------------------
-cocos2d::ui::Text * _GuiManager::createLabel(const CommonTypes::TextLabelInfo& info)
+cocos2d::ui::Text * _GuiManager::createLabel(const CT::TextLabelInfo& info)
 //--------------------------------------------------------------------
 {
     //TODO: use in future cocostudio::GUIReader::shareReader()->widgetFromJsonFile()

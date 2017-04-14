@@ -25,7 +25,7 @@
 
 #include <map>
 
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 ChainController::ChainController()
@@ -100,22 +100,22 @@ Set* ChainController::removeChainAt(ChainType& type, cocos2d::Vec2& pos)
 {
     auto set = Set::create();
 
-    int column = -1, row = -1;
-    if (Helper::convertPointToTilePos(pos, column, row)) {
+    auto cell = Cell();
+    if (Helper::convertPointToTilePos(pos, cell)) {
         Set* chainSet = nullptr;
         switch (type)
         {
         case ChainType::ChainTypeHorizontal:
-            chainSet = createHorizontalChainAt(column, row);
+            chainSet = createHorizontalChainAt(cell);
             break;
         case ChainType::ChainTypeVertical:
-            chainSet = createVerticalChainAt(column, row);
+            chainSet = createVerticalChainAt(cell);
             break;
         case ChainType::ChainTypeX:
-            chainSet = createXChainAt(column, row);
+            chainSet = createXChainAt(cell);
             break;
         case ChainType::ChainTypeAllOfOne:
-            chainSet = createAllOfOneChain(column, row);
+            chainSet = createAllOfOneChain(cell);
             break;
         default:
             break;
@@ -139,41 +139,43 @@ Set* ChainController::detectHintChainAt(BaseObj* curObj, BaseObj* nextObj)
     cocos2d::log("ChainController::detectHintChainAt: currObj: %s nextObj: %s"
         , curObj->description().getCString(), nextObj->description().getCString());
     Set* set = nullptr;
-    auto curCol = curObj->getColumn();
-    auto curRow = curObj->getRow();
-    auto nextCol = nextObj->getColumn();
-    auto nextRow = nextObj->getRow();
+    auto curCell = curObj->getCell();
+    auto nextCell = nextObj->getCell();
 
-    if (!mObjCtrl->cookieAt(curCol, curRow))
+    if (!mObjCtrl->cookieAt(curCell))
         return set;
 
     set = Set::create();
-    int type = mObjCtrl->cookieAt(curCol, curRow)->getTypeAsInt();
+    int type = mObjCtrl->cookieAt(curCell)->getTypeAsInt();
     int fieldSize = _GlobalInfo::NumColumns;
 
     int horzLength = 1;
-    for (int i = nextCol - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(i, nextRow, type) && (curCol != i); i--, horzLength++) {
-        set->addObject(mObjCtrl->cookieAt(i, nextRow));
+    for (int i = nextCell.column - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(i, nextCell.row, type) && (curCell.column != i); i--, horzLength++) {
+        auto cell = Cell(i, nextCell.row);
+        set->addObject(mObjCtrl->cookieAt(cell));
     };
-    for (int i = nextCol + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(i, nextRow, type) && (curCol != i); i++, horzLength++) {
-        set->addObject(mObjCtrl->cookieAt(i, nextRow));
+    for (int i = nextCell.column + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(i, nextCell.row, type) && (curCell.column != i); i++, horzLength++) {
+        auto cell = Cell(i, nextCell.row);
+        set->addObject(mObjCtrl->cookieAt(cell));
     };
     if (horzLength >= 3) {
-        set->addObject(mObjCtrl->cookieAt(curCol, curRow));
+        set->addObject(mObjCtrl->cookieAt(curCell));
         return set;
     }
     set->removeAllObjects();
 
     int vertLength = 1;
 
-    for (int i = nextRow - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(nextCol, i, type) && (curRow != i); i--, vertLength++) {
-        set->addObject(mObjCtrl->cookieAt(nextCol, i));
+    for (int i = nextCell.row - 1; i >= 0 && mObjCtrl->isSameTypeOfCookieAt(nextCell.column, i, type) && (curCell.row != i); i--, vertLength++) {
+        auto cell = Cell(nextCell.column, i);
+        set->addObject(mObjCtrl->cookieAt(cell));
     };
-    for (int i = nextRow + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(nextCol, i, type) && (curRow != i); i++, vertLength++) {
-        set->addObject(mObjCtrl->cookieAt(nextCol, i));
+    for (int i = nextCell.row + 1; i < fieldSize && mObjCtrl->isSameTypeOfCookieAt(nextCell.column, i, type) && (curCell.row != i); i++, vertLength++) {
+        auto cell = Cell(nextCell.column, i);
+        set->addObject(mObjCtrl->cookieAt(cell));
     };
     if (vertLength >= 3) {
-        set->addObject(mObjCtrl->cookieAt(curCol, curRow));
+        set->addObject(mObjCtrl->cookieAt(curCell));
     }
     else {
         set->removeAllObjects();
@@ -184,7 +186,7 @@ Set* ChainController::detectHintChainAt(BaseObj* curObj, BaseObj* nextObj)
 }
 
 //--------------------------------------------------------------------
-bool ChainController::getCellFromChainAndPrevSwapSet(int& column, int& row, ChainObj* chain, CommonTypes::Set* prevSwapObjs)
+bool ChainController::getCellFromChainAndPrevSwapSet(Cell& cell, ChainObj* chain, CT::Set* prevSwapObjs)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chain);
@@ -192,8 +194,7 @@ bool ChainController::getCellFromChainAndPrevSwapSet(int& column, int& row, Chai
         auto objects = chain->getChainObjects();
         auto randomObject = dynamic_cast<BaseObj*>(objects->getRandomObject());
         if (randomObject) {
-            row = randomObject->getRow();
-            column = randomObject->getColumn();
+            cell = randomObject->getCell();
         }
     } else {
         auto objects = chain->getObjects();
@@ -209,17 +210,16 @@ bool ChainController::getCellFromChainAndPrevSwapSet(int& column, int& row, Chai
                     if (!baseObj)
                         continue;
 
-                    row = baseObj->getRow();
-                    column = baseObj->getColumn();
+                    cell = baseObj->getCell();
                     break;
                 }
             }
-            if (column != -1 && row != -1) {
+            if (cell.column != -1 && cell.row != -1) {
                 break;
             }
         }        
     }
-    if (column == -1 || row == -1) {
+    if (cell.column == -1 || cell.row == -1) {
         return false;
     }
     return true;
@@ -291,11 +291,11 @@ void ChainController::executeCollectGoalCallback(Set * chains)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* ChainController::createCircleChainAt(CommonTypes::CellPos cell, uint8_t length)
+CT::Set* ChainController::createExposionChainAtCellForRebound(CT::Cell& cell, uint8_t length)
 //--------------------------------------------------------------------
 {
     auto set = Set::create();
-    if (length < 0 || !Helper::isValidColumnAndRow(cell.column, cell.row)) {
+    if (length < 0 || !Helper::isValidCell(cell)) {
         cocos2d::log("ChainController::createCircleChainAt: wrong length=%d or destinationPos at column=%d, row=%d"
             , length, cell.column, cell.row);
         return set;
@@ -304,7 +304,7 @@ CommonTypes::Set* ChainController::createCircleChainAt(CommonTypes::CellPos cell
 
     for (int i = cell.column - length; i <= cell.column + length; i++) {
         for (int j = cell.row - length; j <= cell.row + length; j++) {
-            addObjToChain(chain, i, j);
+            addObjToChain(chain, Cell(i, j));
         }
     }
     addChainToSet(chain, set);
@@ -313,10 +313,10 @@ CommonTypes::Set* ChainController::createCircleChainAt(CommonTypes::CellPos cell
 }
 
 //--------------------------------------------------------------------
-bool ChainController::isPossibleToAddObjToChain(int col, int row, int & prevType, int & nextType)
+bool ChainController::isPossibleToAddObjToChain(Cell& cell, int& prevType, int& nextType)
 //--------------------------------------------------------------------
 {
-    auto cookie = mObjCtrl->cookieAt(col, row);
+    auto cookie = mObjCtrl->cookieAt(cell);
     nextType = cookie ? cookie->getTypeAsInt() : -1;
     if (cookie != nullptr && nextType == prevType) {
         return true;
@@ -325,11 +325,11 @@ bool ChainController::isPossibleToAddObjToChain(int col, int row, int & prevType
 }
 
 //--------------------------------------------------------------------
-void ChainController::addObjToChain(ChainObj* chain, int col, int row)
+void ChainController::addObjToChain(ChainObj* chain, Cell& cell)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chain);
-    auto container = mObjCtrl->getContainer(col, row);
+    auto container = mObjCtrl->getContainer(cell);
     if (container) {
         if (container->isContainGameObj()) {
             chain->addObjectToChain(container);
@@ -355,16 +355,18 @@ Set* ChainController::detectVerticalMatches()
     for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
         for (int row = 0; row < _GlobalInfo::NumRows - 2;) {
 
-            if (isNextTwoCookieSuitable(ChainType::ChainTypeVertical, column, row)) {
-                int matchType = mObjCtrl->cookieAt(column, row)->getTypeAsInt();
+            auto startCell = Cell(column, row);
+            if (isNextTwoCookieSuitable(ChainType::ChainTypeVertical, startCell)) {
+                int matchType = mObjCtrl->cookieAt(startCell)->getTypeAsInt();
 
                 auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
                 chain->setUpdateGoalCallback(mUpdateGoalCallback);
                 int newMatchType = -1;
                 do {
-                    if (isPossibleToAddObjToChain(column, row, matchType, newMatchType)) {
-                        addObjToChain(chain, column, row);
+                    if (isPossibleToAddObjToChain(startCell, matchType, newMatchType)) {
+                        addObjToChain(chain, startCell);
                         row += 1;
+                        startCell.row = row;
                     }
                 } while (row < _GlobalInfo::NumRows && newMatchType == matchType);
                 addChainToSet(chain, set);
@@ -387,16 +389,18 @@ Set* ChainController::detectHorizontalMatches()
     for (int row = 0; row < _GlobalInfo::NumRows; row++) {
         for (int column = 0; column < _GlobalInfo::NumColumns - 2; ) {
 
-            if (isNextTwoCookieSuitable(ChainType::ChainTypeHorizontal, column, row)) {
-                int matchType = mObjCtrl->cookieAt(column, row)->getTypeAsInt();
+            auto startCell = Cell(column, row);
+            if (isNextTwoCookieSuitable(ChainType::ChainTypeHorizontal, startCell)) {
+                int matchType = mObjCtrl->cookieAt(startCell)->getTypeAsInt();
 
                 auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
                 chain->setUpdateGoalCallback(mUpdateGoalCallback);
                 int newMatchType = -1;
                 do {
-                    if (isPossibleToAddObjToChain(column, row, matchType, newMatchType)) {
-                        addObjToChain(chain, column, row);
+                    if (isPossibleToAddObjToChain(startCell, matchType, newMatchType)) {
+                        addObjToChain(chain, startCell);
                         column += 1;
+                        startCell.column = column;
                     }
                 } while (column < _GlobalInfo::NumColumns && newMatchType == matchType);
                 addChainToSet(chain, set);
@@ -575,11 +579,11 @@ ChainObj* ChainController::detectXChainMatches(ChainObj* horzChain, ChainObj* ve
 }
 
 //--------------------------------------------------------------------
-bool ChainController::isNextTwoCookieSuitable(const ChainType& type, int col, int row)
+bool ChainController::isNextTwoCookieSuitable(const ChainType& type, Cell& cell)
 //--------------------------------------------------------------------
 {
     bool result = false;
-    auto cookie = mObjCtrl->cookieAt(col, row);
+    auto cookie = mObjCtrl->cookieAt(cell);
     // skip over any gaps in the level design.
     if (cookie != nullptr) {
 
@@ -588,8 +592,10 @@ bool ChainController::isNextTwoCookieSuitable(const ChainType& type, int col, in
         int horzDelta = type == ChainType::ChainTypeHorizontal ? 1 : 0;
         int vertDelta = type == ChainType::ChainTypeVertical ? 1 : 0;
 
-        auto obj1 = mObjCtrl->cookieAt(col + (1 * horzDelta), row + (1 * vertDelta));
-        auto obj2 = mObjCtrl->cookieAt(col + (2 * horzDelta), row + (2 * vertDelta));
+        auto nextCell1 = Cell(cell.column + (1 * horzDelta), cell.row + (1 * vertDelta));
+        auto nextCell2 = Cell(cell.column + (2 * horzDelta), cell.row + (2 * vertDelta));
+        auto obj1 = mObjCtrl->cookieAt(nextCell1);
+        auto obj2 = mObjCtrl->cookieAt(nextCell2);
         // check whether the next two columns have the same cookie type.
         if (obj1 != nullptr && obj2 != nullptr) {
 
@@ -653,7 +659,7 @@ void ChainController::addFieldOjbectsToChainSet(Set* fieldObjects, Set* chainSet
     for (auto it = fieldObjects->begin(); it != fieldObjects->end(); it++) {
         auto obj = dynamic_cast<FieldObj*>(*it);
         if (obj)
-            addObjToChain(chain, obj->getColumn(), obj->getRow());
+            addObjToChain(chain, obj->getCell());
     }
     addChainToSet(chain, chainSet);
 }
@@ -678,9 +684,7 @@ bool ChainController::checkMathicngFieldObjWithChain(Set* chains, BaseObj* obj)
         for (auto it = objects->begin(); it != objects->end(); it++) {
             auto cookie = dynamic_cast<CookieObj*>(*it);
             if (cookie) {
-                int col = cookie->getColumn();
-                int row = cookie->getRow();
-                if (fieldObj->checkMatchingCondition(col, row)) {
+                if (fieldObj->checkMatchingCondition(cookie->getCell())) {
                     result = true;
                     break;
                 }
@@ -693,80 +697,82 @@ bool ChainController::checkMathicngFieldObjWithChain(Set* chains, BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
-Set* ChainController::createHorizontalChainAt(int startColumn, int startRow, bool isCreatedByDude)
+Set* ChainController::createHorizontalChainAt(Cell& cell, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
     auto set = Set::create();
 
-    if (!Helper::isValidColumnAndRow(startColumn, startRow)) {
-        cocos2d::log("ChainController::createHorizontalChainAt: wrong destinationPos at column=%d, row=%d", startColumn, startRow);
+    if (!Helper::isValidCell(cell)) {
+        cocos2d::log("ChainController::createHorizontalChainAt: wrong destinationPos at column=%d, row=%d", cell.column, cell.row);
         return set;
     }
 
     auto chain = ChainObj::createWithType(ChainType::ChainTypeHorizontal);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
-    if (mObjCtrl->dudeAt(startColumn, startRow)) {
-        addObjToChain(chain, startColumn, startRow);
+    if (mObjCtrl->dudeAt(cell)) {
+        addObjToChain(chain, cell);
         chain->setIsCreatedByDude(true);
     }
     for (int i = 0; i < _GlobalInfo::NumRows; i++) {
-        if (startColumn == i && isCreatedByDude) {
+        if (cell.column == i && isCreatedByDude) {
             continue;
         }
-        addObjToChain(chain, i, startRow);
+        auto nextCell = Cell(i, cell);
+        addObjToChain(chain, nextCell);
     }
     addChainToSet(chain, set);
     return set;
 }
 
 //--------------------------------------------------------------------
-Set* ChainController::createVerticalChainAt(int startColumn, int startRow, bool isCreatedByDude)
+Set* ChainController::createVerticalChainAt(Cell& cell, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
     auto set = Set::create();
 
-    if (!Helper::isValidColumnAndRow(startColumn, startRow)) {
-        cocos2d::log("ChainController::createVerticalChainAt: wrong destinationPos at column=%d, row=%d", startColumn, startRow);
+    if (!Helper::isValidCell(cell)) {
+        cocos2d::log("ChainController::createVerticalChainAt: wrong destinationPos at column=%d, row=%d", cell.column, cell.row);
         return set;
     }
 
     auto chain = ChainObj::createWithType(ChainType::ChainTypeVertical);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
-    if (mObjCtrl->dudeAt(startColumn, startRow)) {
-        addObjToChain(chain, startColumn, startRow);
+    if (mObjCtrl->dudeAt(cell)) {
+        addObjToChain(chain, cell);
         chain->setIsCreatedByDude(true);
     }
     for (int i = 0; i < _GlobalInfo::NumRows; i++) {
-        if (startRow == i && isCreatedByDude) {
+        if (cell.row == i && isCreatedByDude) {
             continue;
         }
-        addObjToChain(chain, startColumn, i);
+        auto nextCell = Cell(cell, i);
+        addObjToChain(chain, nextCell);
     }
     addChainToSet(chain, set);
     return set;
 }
 
 //--------------------------------------------------------------------
-Set* ChainController::createXChainAt(int column, int row, bool isCreatedByDude)
+Set* ChainController::createXChainAt(Cell& cell, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
     auto set = Set::create();
     auto chain = ChainObj::createWithType(ChainType::ChainTypeX);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
-    addObjToChain(chain, column, row);
+    addObjToChain(chain, cell);
     for (int i = 0; i < _GlobalInfo::NumColumns; i++) {
         for (int j = 0; j < _GlobalInfo::NumRows; j++) {
-            if (column == i && row == j) {
+            if (cell.column == i && cell.row == j) {
                 continue;
             }
-            if (column == i) {
-                addObjToChain(chain, column, j);
+            if (cell.column == i) {
+                addObjToChain(chain, Cell(cell, j));
             }
-            if (row == j) {
-                addObjToChain(chain, i, row);
+            if (cell.row == j) {
+                addObjToChain(chain, Cell(i, cell));
             }
         }
     }
@@ -777,7 +783,7 @@ Set* ChainController::createXChainAt(int column, int row, bool isCreatedByDude)
 }
 
 //--------------------------------------------------------------------
-Set* ChainController::createExplosionChainAt(int column, int row, bool isCreatedByDude)
+Set* ChainController::createExplosionChainAt(Cell& cell, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
     //TODO: move to global info to modify in future
@@ -787,9 +793,9 @@ Set* ChainController::createExplosionChainAt(int column, int row, bool isCreated
     auto chain = ChainObj::createWithType(ChainType::ChainExplosion);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
-    for (int i = column - explisionSize; i <= column + explisionSize; i++) {
-        for (int j = row - explisionSize; j <= row + explisionSize; j++) {
-            addObjToChain(chain, i, j);
+    for (int i = cell.column - explisionSize; i <= cell.column + explisionSize; i++) {
+        for (int j = cell.row - explisionSize; j <= cell.row + explisionSize; j++) {
+            addObjToChain(chain, Cell(i, j));
         }
     }
 
@@ -800,11 +806,11 @@ Set* ChainController::createExplosionChainAt(int column, int row, bool isCreated
 }
 
 //--------------------------------------------------------------------
-Set* ChainController::createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude, BaseObj* dudeObj)
+Set* ChainController::createAllOfOneChain(Cell& entryCell, bool isCreatedByDude, BaseObj* dudeObj)
 //--------------------------------------------------------------------
 {
     auto set = Set::create();
-    auto entryCookie = mObjCtrl->cookieAt(entryColumn, entryRow);
+    auto entryCookie = mObjCtrl->cookieAt(entryCell);
     if (!entryCookie) {
         return set;
     }
@@ -812,18 +818,19 @@ Set* ChainController::createAllOfOneChain(int entryColumn, int entryRow, bool is
     auto chain = ChainObj::createWithType(ChainType::ChainTypeAllOfOne);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
     if (isCreatedByDude && dudeObj) {
-        addObjToChain(chain, dudeObj->getColumn(), dudeObj->getRow());
+        addObjToChain(chain, dudeObj->getCell());
     }    
 
     for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
         for (int row = _GlobalInfo::NumRows - 1; row >= 0; row--) {
-            auto cookie = mObjCtrl->cookieAt(row, column);
+            auto cell = Cell(row, column);
+            auto cookie = mObjCtrl->cookieAt(cell);
             // skip over any gaps in the level design.
             if (!cookie)
                 continue;
 
             if (cookie->getCookieType() == entryCookie->getCookieType()) {
-                addObjToChain(chain, row, column);
+                addObjToChain(chain, cell);
             }
         }
     }
@@ -833,58 +840,41 @@ Set* ChainController::createAllOfOneChain(int entryColumn, int entryRow, bool is
 }
 
 //--------------------------------------------------------------------
-Set* ChainController::createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to, bool isCreatedByDude)
-//--------------------------------------------------------------------
-{
-    int fromCol = -1; int fromRow = -1;
-    int toCol = -1; int toRow = -1;
-    auto set = Set::create();
-    if (!Helper::convertPointToTilePos(from, fromCol, fromRow)) {
-        return set;
-    }
-    if (!Helper::convertPointToTilePos(to, toCol, toRow)) {
-        return set;
-    }
-
-    return createChainFromPosToPos(Direction::Unknown, fromCol, fromRow, toCol, toRow, isCreatedByDude);
-}
-
-//--------------------------------------------------------------------
-Set* ChainController::createChainFromPosToPos(const Direction& direction, int fromCol, int fromRow, int toCol, int toRow, bool isCreatedByDude)
+Set* ChainController::createChainFromPosToPos(const Direction& direction, Cell& fromCell, Cell& toCell, bool isCreatedByDude)
 //--------------------------------------------------------------------
 {
     auto set = Set::create();
         
-    if (!Helper::isValidColumnAndRow(toCol, toRow)) {
-        cocos2d::log("ChainController::createChainFromPosToPos: wrong destinationPos at column=%d, row=%d", toCol, toRow);
+    if (!Helper::isValidCell(toCell)) {
+        cocos2d::log("ChainController::createChainFromPosToPos: wrong destinationPos at column=%d, row=%d", toCell.column, toCell.row);
         return set;
     }
  
-    int i = fromCol; 
-    int j = fromRow;
+    int i = fromCell.column;
+    int j = fromCell.row;
 
     auto chain = ChainObj::createWithType(ChainType::ChainFromAToB);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
     auto newDirection = direction;
     if (direction == Direction::Unknown) {
-        auto dir = Helper::getDirectionByTileFromAToB(Helper::to_underlying(direction), fromCol, fromRow, toCol, toRow);
+        auto dir = Helper::getDirectionByTileFromAToB(Helper::to_underlying(direction), fromCell, toCell);
         newDirection = static_cast<Direction>(dir);
     }
     chain->setDirection(newDirection);
 
-    addObjToChain(chain, i, j);
+    addObjToChain(chain, Cell(i, j));
     do {
-        if (fromCol != toCol) {
-            i = fromCol > toCol ? i - 1 : i + 1;
+        if (fromCell.column != toCell.column) {
+            i = fromCell.column > toCell.column ? i - 1 : i + 1;
         }
         do {
-            if (fromRow != toRow) {
-                j = fromRow > toRow ? j - 1 : j + 1;
+            if (fromCell.row != toCell.row) {
+                j = fromCell.row > toCell.row ? j - 1 : j + 1;
             }
-            addObjToChain(chain, i, j);                
-        } while (j != toRow);
-    } while (i != toCol);
+            addObjToChain(chain, Cell(i, j));                
+        } while (j != toCell.row);
+    } while (i != toCell.column);
     chain->setIsCreatedByDude(isCreatedByDude);
     addChainToSet(chain, set);
     return set;

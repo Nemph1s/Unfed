@@ -17,7 +17,7 @@
 BaseObj::BaseObj()
     : mColumn(-1)
     , mRow(-1)
-    , mType(CommonTypes::BaseObjType::Unknown)
+    , mType(CT::BaseObjType::Unknown)
     , mSpriteNode(nullptr)
     , mDummyString(nullptr)
 //--------------------------------------------------------------------
@@ -47,7 +47,7 @@ BaseObj * BaseObj::create()
 }
 
 //--------------------------------------------------------------------
-BaseObj * BaseObj::create(const CommonTypes::BaseObjInfo & info)
+BaseObj * BaseObj::create(const CT::BaseObjInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj * ret = new (std::nothrow) BaseObj();
@@ -73,7 +73,7 @@ bool BaseObj::init()
 }
 
 //--------------------------------------------------------------------
-bool BaseObj::init(const CommonTypes::BaseObjInfo & info)
+bool BaseObj::init(const CT::BaseObjInfo & info)
 //--------------------------------------------------------------------
 {
     if (!Node::init()) {
@@ -87,6 +87,13 @@ bool BaseObj::init(const CommonTypes::BaseObjInfo & info)
     CC_SAFE_RETAIN(mDummyString);
 
     return true;
+}
+
+//--------------------------------------------------------------------
+CT::Cell BaseObj::getCell() const
+//--------------------------------------------------------------------
+{
+    return CT::Cell(mColumn, mRow);
 }
 
 //--------------------------------------------------------------------
@@ -128,7 +135,7 @@ void BaseObj::clear()
 {
     mColumn = -1;
     mRow = -1;
-    mType = CommonTypes::BaseObjType::Unknown;
+    mType = CT::BaseObjType::Unknown;
     mIsMovable = false;
     mIsSwappable = false;
     mIsRemovable = false;

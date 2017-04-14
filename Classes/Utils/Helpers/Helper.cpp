@@ -20,7 +20,7 @@
 #include <cstdlib>
 
 using namespace GameResources;
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 float Helper::randomFloatBetween(float smallNumber, float bigNumber) 
@@ -65,7 +65,7 @@ float Helper::getDurationToTile(int8_t startRow, int8_t destinationRow)
 }
 
 //--------------------------------------------------------------------
-int8_t Helper::getDistanceBetweenObjects(CommonTypes::CellPos cellPosA, CommonTypes::CellPos cellPosB)
+int8_t Helper::getDistanceBetweenObjects(CT::Cell& cellPosA, CT::Cell& cellPosB)
 //--------------------------------------------------------------------
 {
     uint8_t colLength = std::abs(cellPosA.column - cellPosB.column);
@@ -114,32 +114,33 @@ cocos2d::String* Helper::getSpriteNameByFieldType(int fieldType)
 }
 
 //--------------------------------------------------------------------
-bool Helper::isValidColumnAndRow(int column, int row)
+bool Helper::isValidCell(CT::Cell& cell)
 //--------------------------------------------------------------------
 {
     bool result = true;
-    if (column < 0 || column >= _GlobalInfo::NumColumns || row < 0 || row >= _GlobalInfo::NumColumns) {
+    if (cell.column < 0 || cell.column >= _GlobalInfo::NumColumns || cell.row < 0 || cell.row >= _GlobalInfo::NumColumns) {
         result = false;
     }
     return result;
 }
 
 //--------------------------------------------------------------------
-cocos2d::Vec2 Helper::pointForColumnAndRow(int column, int row)
+cocos2d::Vec2 Helper::pointForCell(CT::Cell& cell)
 //--------------------------------------------------------------------
 {
-    float offsetX = 2.5f * column;
-    float offsetY = 2.5f * (_GlobalInfo::NumRows - row - 1);
+    float offsetX = 2.5f * cell.column;
+    float offsetY = 2.5f * (_GlobalInfo::NumRows - cell.row - 1);
     auto tileWidth = GlobInfo->getTileWidth();
     auto tileHeight = GlobInfo->getTileHeight();
-    return cocos2d::Vec2(offsetX + column * tileWidth + tileWidth / 2, offsetY + (_GlobalInfo::NumRows - row - 1) * tileHeight + tileHeight / 2);
+    return cocos2d::Vec2(offsetX + cell.column * tileWidth + tileWidth / 2
+        , offsetY + (_GlobalInfo::NumRows - cell.row - 1) * tileHeight + tileHeight / 2);
 }
 
 //--------------------------------------------------------------------
-cocos2d::Vec2 Helper::pointForColumnAndRowWithPriority(int column, int row, int priority)
+cocos2d::Vec2 Helper::pointForCellWithPriority(CT::Cell& cell, int priority)
 //--------------------------------------------------------------------
 {
-    auto pos = pointForColumnAndRow(column, row);
+    auto pos = pointForCell(cell);
     if (priority > 0) {
         auto tileHeight = GlobInfo->getTileHeight();
         pos.y += (tileHeight / 4) * priority;
@@ -155,22 +156,22 @@ cocos2d::Vec2 Helper::pointForTile(BaseObj * obj)
     if (obj->getType() == BaseObjType::Field) {
         auto tileObj = dynamic_cast<FieldObj*>(obj);
         if (tileObj) {
-            pos = pointForColumnAndRowWithPriority(obj->getColumn(), obj->getRow(), tileObj->getPriority());
+            pos = pointForCellWithPriority(obj->getCell(), tileObj->getPriority());
         }
     } else {
-        pos = pointForColumnAndRow(obj->getColumn(), obj->getRow());
+        pos = pointForCell(obj->getCell());
     }
     return pos;
 }
 
 //--------------------------------------------------------------------
-bool Helper::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
+bool Helper::convertPointToTilePos(cocos2d::Vec2& point, CT::Cell& cell)
 //--------------------------------------------------------------------
 {
     if (point.x >= 0 && point.x < _GlobalInfo::NumColumns * GlobInfo->getTileWidth() &&
         point.y >= 0 && point.y < _GlobalInfo::NumRows * GlobInfo->getTileHeight()) {
-        column = point.x / GlobInfo->getTileWidth();
-        row = _GlobalInfo::NumColumns - (point.y / GlobInfo->getTileHeight());
+        cell.column = point.x / GlobInfo->getTileWidth();
+        cell.row = _GlobalInfo::NumColumns - (point.y / GlobInfo->getTileHeight());
         return true;
     }
     return false;
@@ -202,20 +203,20 @@ Direction Helper::invertDirection(const Direction & direction)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Direction Helper::invertDirection(int direction)
+CT::Direction Helper::invertDirection(int direction)
 //--------------------------------------------------------------------
 {
-    auto dir = static_cast<CommonTypes::Direction>(direction);
+    auto dir = static_cast<CT::Direction>(direction);
     return invertDirection(dir);
 }
 
 //--------------------------------------------------------------------
-int Helper::getDirectionByTileFromAToB(int oldDirection, int fromCol, int fromRow, int toCol, int toRow)
+int Helper::getDirectionByTileFromAToB(int oldDirection, CT::Cell& fromCell, CT::Cell& toCell)
 //--------------------------------------------------------------------
 {
     auto dir = Direction::Unknown;
-    int8_t xDiff = toCol - fromCol;
-    int8_t yDiff = toRow - fromRow;
+    int8_t xDiff = toCell.column - fromCell.column;
+    int8_t yDiff = toCell.row - fromCell.row;
     if (std::abs(xDiff) != std::abs(yDiff)) {
         if (std::abs(xDiff) > std::abs(yDiff)) {
             dir = xDiff > 0 ? Direction::Left : Direction::Right;
@@ -230,11 +231,11 @@ int Helper::getDirectionByTileFromAToB(int oldDirection, int fromCol, int fromRo
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Direction Helper::getDirectionByTileFromAToB(int oldDirection, BaseObj * from, BaseObj * to)
+CT::Direction Helper::getDirectionByTileFromAToB(int oldDirection, BaseObj* from, BaseObj* to)
 //--------------------------------------------------------------------
 {
-    auto direction = getDirectionByTileFromAToB(oldDirection, from->getColumn(), from->getRow(), to->getColumn(), to->getRow());
-    return static_cast<CommonTypes::Direction>(direction);
+    auto direction = getDirectionByTileFromAToB(oldDirection, from->getCell(), to->getCell());
+    return static_cast<CT::Direction>(direction);
 }
 
 //--------------------------------------------------------------------
@@ -242,7 +243,7 @@ bool Helper::convertDirectionToSwipeDelta(int dir, int & horzDelta, int & vertDe
 //--------------------------------------------------------------------
 {
     bool result = true;
-    auto direction = static_cast<CommonTypes::Direction>(dir);
+    auto direction = static_cast<CT::Direction>(dir);
     switch (direction)
     {
     case Direction::Up:
@@ -297,7 +298,7 @@ cocos2d::Color4B Helper::getScoreColorByObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorByCookieType(CommonTypes::CookieType type)
+cocos2d::Color4B Helper::getScoreColorByCookieType(CT::CookieType type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
@@ -328,7 +329,7 @@ cocos2d::Color4B Helper::getScoreColorByCookieType(CommonTypes::CookieType type)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorForFieldObj(CommonTypes::FieldType type)
+cocos2d::Color4B Helper::getScoreColorForFieldObj(CT::FieldType type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
@@ -353,7 +354,7 @@ cocos2d::Color4B Helper::getScoreColorForFieldObj(CommonTypes::FieldType type)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorForDudeObj(CommonTypes::FieldType type)
+cocos2d::Color4B Helper::getScoreColorForDudeObj(CT::FieldType type)
 //--------------------------------------------------------------------
 {
     // see hints on http://www.colorhexa.com/color-names

@@ -16,7 +16,7 @@
 #include "Utils/Helpers/Helper.h"
 #include "Utils/Parser/JsonParser.h"
 
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 LevelGoalComponent::LevelGoalComponent()
@@ -74,7 +74,7 @@ void LevelGoalComponent::updateGoalByObject(BaseObj * obj)
     auto baseType = Helper::to_underlying(obj->getType());
     auto objType = obj->getTypeAsInt();
 
-    for (CommonTypes::CollectGoalInfo& info : mLevelGoals.collectGoals) {
+    for (CT::CollectGoalInfo& info : mLevelGoals.collectGoals) {
         if (baseType == info.baseObjectType && objType == info.objectType) {
             info.currentCount++;
             break;

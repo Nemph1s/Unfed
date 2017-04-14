@@ -16,7 +16,7 @@
 using std::string;
 using cocos2d::Node;
 using cocos2d::Sprite;
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 CookieObj::CookieObj()
@@ -138,7 +138,7 @@ void CookieObj::clear()
 //--------------------------------------------------------------------
 {
     BaseObj::clear();
-    mCookieType = CommonTypes::CookieType::Unknown;
+    mCookieType = CT::CookieType::Unknown;
     if (mDebugLabel) {
         mDebugLabel->removeFromParent();
         CC_SAFE_RELEASE_NULL(mDebugLabel);

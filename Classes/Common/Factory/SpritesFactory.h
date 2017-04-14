@@ -67,9 +67,9 @@ private:
     
     void clearPool(TSpriteList* pool);
 
-    std::map<CommonTypes::CookieType, TSpriteList*> mCookieSpritesPool;
-    std::map<CommonTypes::FieldType, TSpriteList*> mFieldSpritesPool;
-    std::map<CommonTypes::FieldType, TSpriteList*> mDudeSpritesPool;
+    std::map<CT::CookieType, TSpriteList*> mCookieSpritesPool;
+    std::map<CT::FieldType, TSpriteList*> mFieldSpritesPool;
+    std::map<CT::FieldType, TSpriteList*> mDudeSpritesPool;
     TSpriteList* mTileSpritesPool = nullptr;
 
     TSpriteList* mHintSpritesPool = nullptr;

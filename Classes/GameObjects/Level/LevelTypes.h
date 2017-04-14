@@ -15,7 +15,7 @@
 #include "Common/CommonTypes.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
 
-namespace CommonTypes {
+namespace CT {
 
     typedef int TilesArray[_GlobalInfo::NumColumns][_GlobalInfo::NumRows];
 
@@ -29,7 +29,7 @@ namespace CommonTypes {
         int moves = 0; /**< available moves */
         TilesArray tiles = { 0 }; /**< array of tiles */
         TilesArray cookies = { 0 }; /**< array of cookies */
-        std::vector<CommonTypes::JsonFieldInfo> fieldObjects; /**< array of tileObjects */
+        std::vector<CT::JsonFieldInfo> fieldObjects; /**< array of tileObjects */
         int typesCount = 0; /**< count of types */
         bool isPredefinedCookies = false; /**< availability to load predefined cookies */
         bool skipEmptyHoles = false; /**< availability to skip empty tiles when obj falling */

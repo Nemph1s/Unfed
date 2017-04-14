@@ -36,7 +36,7 @@
 #include "cocos2d/cocos/ui/UIText.h"
 
 USING_NS_CC;
-using namespace CommonTypes;
+using namespace CT;
 using ui::Text;
 
 //--------------------------------------------------------------------
@@ -127,7 +127,7 @@ void _AnimationsManager::animateMatchObj(BaseObj * obj, cocos2d::CallFunc* compl
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatching(CommonTypes::Set* chains, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateMatching(CT::Set* chains, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -196,7 +196,7 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
 
                 auto moveCallback = CallFunc::create([=]() {
                     AnimationsManager->animateBouncingObj(obj);
-                    AudioManager->playSound(CommonTypes::SoundType::FallingCookieSound);
+                    AudioManager->playSound(CT::SoundType::FallingCookieSound);
                 });
                 
                 auto sprite = obj->getSpriteNode();
@@ -239,7 +239,8 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
         for (auto itArr = array->begin(); itArr != array->end(); itArr++, rowIdx++) {
             auto cookie = dynamic_cast<CookieObj*>(*itArr);
             CC_ASSERT(cookie);
-            scene->createSpriteWithCookie(cookie, cookie->getColumn(), startRow);
+            auto startCell = Cell(cookie->getCell(), startRow);
+            scene->createSpriteWithCookie(cookie, startCell);
             cookie->getSpriteNode()->setOpacity(0);
 
             auto newPos = Helper::pointForTile(cookie);
@@ -263,7 +264,7 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
 
                 auto moveCallback = CallFunc::create([=]() {
                     AnimationsManager->animateBouncingObj(cookie);
-                    AudioManager->playSound(CommonTypes::SoundType::AddCookieSound);
+                    AudioManager->playSound(CT::SoundType::AddCookieSound);
                 });
 
                 auto moveAction = MoveTo::create(duration, newPos);
@@ -322,7 +323,7 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
 
         Vec2 spritePos = Vec2::ZERO;
         if (objCtrl) {
-            auto tileObj = objCtrl->tileAt(obj->getColumn(), obj->getRow());
+            auto tileObj = objCtrl->tileAt(obj->getCell());
             spritePos = tileObj->getSpriteNode()->getPosition();
         }
         else {
@@ -406,14 +407,14 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CommonTypes::CellPos destPos, cocos2d::CallFunc* completion, bool animateShakingScreen)
+void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CT::Cell& destPos, cocos2d::CallFunc* completion, bool animateShakingScreen)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
 
     auto sprite = obj->getSpriteNode();
 
-    auto easeAction = ActionsManager->actionFallDown(obj, destPos.column, destPos.row);
+    auto easeAction = ActionsManager->actionFallDown(obj, destPos);
 
     auto moveCallback = CallFunc::create([=]() {
 
@@ -437,7 +438,7 @@ void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CommonTypes::CellPo
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateReboundAfterThrowingObj(CommonTypes::CellPos destPos, CommonTypes::Set* chains, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateReboundAfterThrowingObj(CT::Cell& destPos, CT::Set* chains, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -462,7 +463,7 @@ void _AnimationsManager::animateReboundAfterThrowingObj(CommonTypes::CellPos des
                 continue;
             }
 
-            auto distance = Helper::getDistanceBetweenObjects(destPos, CellPos(col, row));
+            auto distance = Helper::getDistanceBetweenObjects(destPos, Cell(col, row));
             auto jumpHeight = GlobInfo->getTileHeight() / 3.0f;
             AnimationsManager->animateJumpWithBouncing(obj, distance * 0.2f, jumpHeight / distance);
         }
@@ -524,7 +525,7 @@ void _AnimationsManager::animateHintJump(BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateHintSwap(CommonTypes::Set* objects, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateHintSwap(CT::Set* objects, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(objects);

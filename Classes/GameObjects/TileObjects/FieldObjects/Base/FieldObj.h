@@ -22,9 +22,9 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static FieldObj * create(const CommonTypes::FieldInfo &info);
+    static FieldObj * create(const CT::FieldInfo &info);
 
-    bool init(const CommonTypes::FieldInfo &info);
+    bool init(const CT::FieldInfo &info);
 
     virtual cocos2d::String& description() const override;
 
@@ -33,7 +33,7 @@ public:
 
     virtual void match() override;
     virtual void clear() override;
-    virtual bool checkMatchingCondition(int column, int row);
+    virtual bool checkMatchingCondition(CT::Cell& cell);
     virtual bool isHpEnded() const override;
 
     virtual void updateDebugLabel() override;
@@ -43,7 +43,7 @@ protected:
     FieldObj();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE_READONLY(CommonTypes::FieldType, mFieldType, FieldType);
+    CC_SYNTHESIZE_READONLY(CT::FieldType, mFieldType, FieldType);
     CC_SYNTHESIZE(int, mPriority, Priority);
     CC_SYNTHESIZE(bool, mReadyToUpdatePriority, ReadyToUpdatePriority);
     CC_SYNTHESIZE(std::function<void(BaseObj*, std::function<void(FieldObj*)>)>, mFieldObjChangeState, FieldObjChangeState);

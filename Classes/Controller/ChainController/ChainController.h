@@ -13,6 +13,8 @@
 #include "cocos2d.h"
 #include "Common/CommonTypes.h"
 
+using CT::Cell;
+
 class BaseObj;
 class ChainObj;
 class LevelObj;
@@ -42,67 +44,109 @@ public:
     * @param to The set to which the chains are moved.
     * @param skipDudes The flag that allows to add first dude and skip the other ones(if true). If false doesnt skip any dudes.
     */
-    void addChainsFromSetToSet(CommonTypes::Set* from, CommonTypes::Set* to, bool skipDudes = false);
+    void addChainsFromSetToSet(CT::Set* from, CT::Set* to, bool skipDudes = false);
 
-    void addObjectsFromChainToChain(CommonTypes::Set* from, CommonTypes::Set* to);
+    void addObjectsFromChainToChain(CT::Set* from, CT::Set* to);
 
-    void addFieldOjbectsToChainSet(CommonTypes::Set* fieldObjects, CommonTypes::Set* chainSet);
-    bool checkMathicngFieldObjWithChain(CommonTypes::Set* chains, BaseObj* obj);
+    void addFieldOjbectsToChainSet(CT::Set* fieldObjects, CT::Set* chainSet);
+    bool checkMathicngFieldObjWithChain(CT::Set* chains, BaseObj* obj);
 
-    CommonTypes::Set* removeMatches();
-    CommonTypes::Set* removeChainAt(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
+    CT::Set* removeMatches();
+    CT::Set* removeChainAt(CT::ChainType& type, cocos2d::Vec2& pos);
 
-    CommonTypes::Set* detectHintChainAt(BaseObj* curObj, BaseObj* nextObj);
+    CT::Set* detectHintChainAt(BaseObj* curObj, BaseObj* nextObj);
 
-    bool getCellFromChainAndPrevSwapSet(int& column, int& row, ChainObj* chain, CommonTypes::Set* prevSwapObjs);
+    bool getCellFromChainAndPrevSwapSet(Cell& cell, ChainObj* chain, CT::Set* prevSwapObjs);
 
     /**
     * Add chain to objectContainer and remove duplicate containers from other chains
     * @param chains The set with the chains.
     */
-    void activateChains(CommonTypes::Set* chains);
-    void deactivateChains(CommonTypes::Set* chains);
+    void activateChains(CT::Set* chains);
+    void deactivateChains(CT::Set* chains);
 
-    void matchChains(CommonTypes::Set* chains);
+    void matchChains(CT::Set* chains);
 
-    void executeCollectGoalCallback(CommonTypes::Set* chains);
+    void executeCollectGoalCallback(CT::Set* chains);
 
     /**
     * This method will create map with chains, first value is the length between inserted object and main object
-    * @param col column of current object.
-    * @param row row of current object.
+    * @param fromCell The start point of cell from where will be created chain.
     * @param length The max size between current object and current obj + length.
     * @return map
     */
-    CommonTypes::Set* createCircleChainAt(CommonTypes::CellPos cell, uint8_t length);
-
+    CT::Set* createExposionChainAtCellForRebound(Cell& fromCell, uint8_t length);
 
 protected:
     // Nodes should be created using create();
     ChainController();
 
-    bool isPossibleToAddObjToChain(int col, int row, int& prevType, int& nextType);
-    void addObjToChain(ChainObj* chain, int col, int row);
-    void addChainToSet(ChainObj* chain, CommonTypes::Set* set);
+    bool isPossibleToAddObjToChain(Cell& cell, int& prevType, int& nextType);
+    void addObjToChain(ChainObj* chain, Cell& cell);
+    void addChainToSet(ChainObj* chain, CT::Set* set);
 
-    CommonTypes::Set* detectHorizontalMatches();
-    CommonTypes::Set* detectVerticalMatches();
-    CommonTypes::Set* detectDifficultMatches(CommonTypes::Set* horizontal, CommonTypes::Set* vertical);
+    CT::Set* detectHorizontalMatches();
+    CT::Set* detectVerticalMatches();
+    CT::Set* detectDifficultMatches(CT::Set* horizontal, CT::Set* vertical);
 
     ChainObj* detectLChainMatches(ChainObj* horzChain, ChainObj* vertChain);
     ChainObj* detectTChainMatches(ChainObj* horzChain, ChainObj* vertChain);
     ChainObj* detectXChainMatches(ChainObj* horzChain, ChainObj* vertChain);
 
-    bool isNextTwoCookieSuitable(const CommonTypes::ChainType& type, int col, int row);
+    bool isNextTwoCookieSuitable(const CT::ChainType& type, Cell& cell);
 
-    CommonTypes::Set* createHorizontalChainAt(int column, int startRow, bool isCreatedByDude = false);
-    CommonTypes::Set* createVerticalChainAt(int startColumn, int row, bool isCreatedByDude = false);
-    CommonTypes::Set* createXChainAt(int column, int row, bool isCreatedByDude = false);
-    CommonTypes::Set* createExplosionChainAt(int column, int row, bool isCreatedByDude = false);
+    //---Create chain methods-------------------------------------------------
 
-    CommonTypes::Set* createAllOfOneChain(int entryColumn, int entryRow, bool isCreatedByDude = false, BaseObj* dudeObj = nullptr);
-    CommonTypes::Set* createChainFromPosToPos(cocos2d::Vec2 from, cocos2d::Vec2 to, bool isCreatedByDude = false);
-    CommonTypes::Set* createChainFromPosToPos(const CommonTypes::Direction& direction, int fromCol, int fromRow, int toCol, int toRow, bool isCreatedByDude = false);
+    /**
+    * This method will create horizontal chain at cell pos
+    * @param cell The cell pos on field at column and startRow.
+    * @param isCreatedByDude The flag that must be set if chain created by dude.
+    * @return set The cocos2d::Set with chain objects
+    */
+    CT::Set* createHorizontalChainAt(Cell& cell, bool isCreatedByDude = false);
+
+    /**
+    * This method will create vertical chain at cell pos
+    * @param cell The cell pos on field at startColumn and row.
+    * @param isCreatedByDude The flag that must be set if chain created by dude.
+    * @return set The cocos2d::Set with chain objects
+    */
+
+    CT::Set* createVerticalChainAt(Cell& cell, bool isCreatedByDude = false);
+
+    /**
+    * This method will create vertical and horizontal chain at cell pos
+    * @param cell The cell pos on field at column and row.
+    * @param isCreatedByDude The flag that must be set if chain created by dude.
+    * @return set The cocos2d::Set with chain objects
+    */
+    CT::Set* createXChainAt(Cell& cell, bool isCreatedByDude = false);
+
+    /**
+    * This method will create circle chain at cell pos
+    * @param cell The cell pos on field at startColumn and row.
+    * @param isCreatedByDude The flag that must be set if chain created by dude.
+    * @return set The cocos2d::Set with chain objects
+    */
+    CT::Set* createExplosionChainAt(Cell& cell, bool isCreatedByDude = false);
+
+    /**
+    * This method will create all of one type chain
+    * @param cell The cell pos on field at entryColumn and entryRow.
+    * @param isCreatedByDude The flag that must be set if chain created by dude.
+    * @return set The cocos2d::Set with chain objects
+    */
+    CT::Set* createAllOfOneChain(Cell& entryCell, bool isCreatedByDude = false, BaseObj* dudeObj = nullptr);
+    
+    /**
+    * This method will create chain from cell A to cell B
+    * @param direction The direction of cell. Param uses in calculation next direction of sub chains
+    * @param fromCell The start point of cell from where will be created chain.
+    * @param toCell The end point of cell to where will be created chain.
+    * @param isCreatedByDude The flag that must be set if chain created by dude.
+    * @return set The cocos2d::Set with chain objects
+    */
+    CT::Set* createChainFromPosToPos(const CT::Direction& direction, Cell& fromCell, Cell& toCell, bool isCreatedByDude = false);
 
 #ifdef COCOS2D_DEBUG
     //void logDebugChains(CommonTypes::Set* horizontal, CommonTypes::Set* vertical, CommonTypes::Set* difficult);

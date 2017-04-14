@@ -28,7 +28,7 @@ public:
     void parseGlobalInfo();
     bool checkGlobalInfoStatus();
 
-    CommonTypes::SGlobalInfo getJsonGlobalInfo();
+    CT::SGlobalInfo getJsonGlobalInfo();
 
     void parseScoreValues();
     bool checkScoreValuesStatus();
@@ -40,8 +40,8 @@ public:
     void parseLevelInfo(const int16_t& level);
     bool checkLevelInfoStatus();
 
-    CommonTypes::LevelInfo getJsonLevelInfo();
-    CommonTypes::LevelGoals getJsonLevelGoals();
+    CT::LevelInfo getJsonLevelInfo();
+    CT::LevelGoals getJsonLevelGoals();
     //---------------------------------------------------------------
 
 protected:
@@ -68,10 +68,10 @@ protected:
     Json::Value mGlobalInfoRootNode;
 
     //---Level Info--------------------------------------------------
-    void updateTiles(CommonTypes::LevelInfo& levelInfo);
-    void updatePredefinedCookies(CommonTypes::LevelInfo& levelInfo);
-    void updateAllowedCookieTypes(CommonTypes::LevelInfo& levelInfo);
-    void updateFieldObjects(CommonTypes::LevelInfo& levelInfo);
+    void updateTiles(CT::LevelInfo& levelInfo);
+    void updatePredefinedCookies(CT::LevelInfo& levelInfo);
+    void updateAllowedCookieTypes(CT::LevelInfo& levelInfo);
+    void updateFieldObjects(CT::LevelInfo& levelInfo);
 
     const Json::Value& getTiles();
     const Json::Value& getPredefinedCookies();

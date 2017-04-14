@@ -22,7 +22,7 @@
 
 #include "Layers/CookiesLayer.h"
 
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 SwapController::~SwapController()
@@ -61,27 +61,33 @@ bool SwapController::detectPossibleSwaps()
     cocos2d::log("SwapController::detectPossibleSwaps:");
 
     clearPossibleSwaps();
-    CommonTypes::Set* set = CommonTypes::Set::create();
+    Set* set = Set::create();
 
     for (int row = 0; row < _GlobalInfo::NumRows; row++) {
         for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
+
             auto objCtrl = mLevel->getObjectController();
-            auto container = objCtrl->getContainer(column, row);
+            auto curCell = Cell(column, row);
+
+            auto container = objCtrl->getContainer(curCell);
             if (!container) {
                 continue;
             }
             if (!container->getObjectForChain()) {
                 continue;
             }
+
             // Is it possible to swap this cookie with the one on the right?
+            auto rigthCell = Cell(column + 1, row);
             if (column < _GlobalInfo::NumColumns - 1) {
-                auto checker = new SwapChecker(set, column, row, column + 1, row);
+                auto checker = new SwapChecker(set, curCell, rigthCell);
                 detectSwap(checker);
                 CC_SAFE_DELETE(checker);
             }
             // This does exactly the same thing, but for the cookie above instead of on the right.
+            auto aboveCell = Cell(column, row + 1);
             if (row < _GlobalInfo::NumRows - 1) {
-                auto checker = new SwapChecker(set, column, row, column, row + 1);
+                auto checker = new SwapChecker(set, curCell, aboveCell);
                 detectSwap(checker);
                 CC_SAFE_DELETE(checker);
             }
@@ -102,14 +108,14 @@ bool SwapController::detectPossibleSwaps()
 }
 
 //--------------------------------------------------------------------
-void SwapController::detectSwap(SwapChecker * checker)
+void SwapController::detectSwap(SwapChecker* checker)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(checker);
     auto objCtrl = mLevel->getObjectController();
 
-    auto currContainer = objCtrl->getContainer(checker->curCol, checker->curRow);
-    auto nextContainer = objCtrl->getContainer(checker->nextCol, checker->nextRow);
+    auto currContainer = objCtrl->getContainer(checker->curCell);
+    auto nextContainer = objCtrl->getContainer(checker->nextCell);
     if (!currContainer || !nextContainer) {
         return;
     }
@@ -123,12 +129,12 @@ void SwapController::detectSwap(SwapChecker * checker)
         nextContainer->updateObjectWith(nextObject, currObject);
 
         // Is either cookie now part of a chain?
-        bool hasChainFromNextTile = objCtrl->hasChainAt(checker->nextCol, checker->nextRow);
+        bool hasChainFromNextTile = objCtrl->hasChainAt(checker->nextCell);
         bool hasChainFromCurrTile = false;
 
         // decrease attempts to looking chains in hasChainAt method
         if (!hasChainFromNextTile) {
-            hasChainFromCurrTile = objCtrl->hasChainAt(checker->curCol, checker->curRow);
+            hasChainFromCurrTile = objCtrl->hasChainAt(checker->curCell);
         }
 
         if (hasChainFromNextTile || hasChainFromCurrTile) {
@@ -185,15 +191,11 @@ void SwapController::performSwap(SwapObj* swap)
         return;
     
     cocos2d::log("performSwap::performSwap: %s", swap->description().c_str());
-    int columnA = swap->getObjectA()->getColumn();
-    int rowA = swap->getObjectA()->getRow();
-    int columnB = swap->getObjectB()->getColumn();
-    int rowB = swap->getObjectB()->getRow();
 
     auto objCtrl = mLevel->getObjectController();
 
-    auto currContainer = objCtrl->getContainer(columnA, rowA);
-    auto nextContainer = objCtrl->getContainer(columnB, rowB);
+    auto currContainer = objCtrl->getContainer(swap->getObjectA()->getCell());
+    auto nextContainer = objCtrl->getContainer(swap->getObjectB()->getCell());
 
     auto currObject = currContainer->getObjectForChain();
     auto nextObject = nextContainer->getObjectForChain();
@@ -208,22 +210,21 @@ void SwapController::performSwap(SwapObj* swap)
 }
 
 //--------------------------------------------------------------------
-bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
+bool SwapController::trySwapCookieTo(CT::Cell& fromCell, int direction)
 //--------------------------------------------------------------------
 {
     cocos2d::log("SwapController::trySwapCookieTo: direction=%d;", direction);
 
     int horzDelta = 0; int vertDelta = 0;
     Helper::getInstance()->convertDirectionToSwipeDelta(direction, horzDelta, vertDelta);
-    int toColumn = fromCol + horzDelta;
-    int toRow = fromRow + vertDelta;
+    auto toCell = Cell(fromCell.column + horzDelta, fromCell.row + vertDelta);
 
-    if (!Helper::isValidColumnAndRow(toColumn, toRow)) {
+    if (!Helper::isValidCell(toCell)) {
         return false;
     }
     auto objCtrl = mLevel->getObjectController();
-    auto toContainer = objCtrl->getContainer(toColumn, toRow);
-    auto fromContainer = objCtrl->getContainer(fromCol, fromRow);
+    auto toContainer = objCtrl->getContainer(toCell);
+    auto fromContainer = objCtrl->getContainer(fromCell);
     if (!toContainer || !fromContainer)
         return false;
 
@@ -241,7 +242,7 @@ bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
         return false;
     }
 
-    auto cookieType = CommonTypes::BaseObjType::Cookie;
+    auto cookieType = CT::BaseObjType::Cookie;
     if (fromCookie->getType() != cookieType && toCookie->getType() != cookieType) {
         cocos2d::log("GameplayScene::trySwapCookieTo: cant swap non cookies obj");
         return false;
@@ -272,22 +273,22 @@ void SwapController::clearPossibleSwaps()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* SwapController::getPreviousSwapContainers()
+CT::Set* SwapController::getPreviousSwapContainers()
 //--------------------------------------------------------------------
 {
     if (!mPreviousSwap) {
         return nullptr;
     }
-    CommonTypes::Set* set = CommonTypes::Set::create();
+    CT::Set* set = CT::Set::create();
     auto objCtrl = mLevel->getObjectController();
     auto objA = mPreviousSwap->getObjectA();
     if (objA) {
-        auto containerA = objCtrl->getContainer(objA->getColumn(), objA->getRow());
+        auto containerA = objCtrl->getContainer(objA->getCell());
         set->addObject(containerA);
     }
     auto objB = mPreviousSwap->getObjectB();
     if (objB) {
-        auto containerB = objCtrl->getContainer(objB->getColumn(), objB->getRow());
+        auto containerB = objCtrl->getContainer(objB->getCell());
         set->addObject(containerB);
     }
     CC_SAFE_RELEASE_NULL(mPreviousSwap);

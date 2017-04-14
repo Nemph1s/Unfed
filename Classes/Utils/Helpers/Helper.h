@@ -31,33 +31,33 @@ public:
     static float randomFloatBetween(float smallNumber, float bigNumber);
     static float rangeRandom(float min, float max);
     static int random(int fromRange, int toRange);
-    static CommonTypes::CookieType randomCookieType(int fromRange, int toRange);
+    static CT::CookieType randomCookieType(int fromRange, int toRange);
 
     static float getDurationToTile(int8_t startRow, int8_t destinationRow);
-    static int8_t getDistanceBetweenObjects(CommonTypes::CellPos cellPosA, CommonTypes::CellPos cellPosB);
+    static int8_t getDistanceBetweenObjects(CT::Cell& cellPosA, CT::Cell& cellPosB);
 
     static cocos2d::String* getSpriteNameByFieldType(int fieldType);
 
-    static bool isValidColumnAndRow(int column, int row);
+    static bool isValidCell(CT::Cell& cell);
 
-    static cocos2d::Vec2 pointForColumnAndRow(int column, int row);
-    static cocos2d::Vec2 pointForColumnAndRowWithPriority(int column, int row, int priority);
+    static cocos2d::Vec2 pointForCell(CT::Cell& cell);
+    static cocos2d::Vec2 pointForCellWithPriority(CT::Cell& cell, int priority);
     static cocos2d::Vec2 pointForTile(BaseObj* obj);
 
-    static bool convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row);
+    static bool convertPointToTilePos(cocos2d::Vec2& point, CT::Cell& cell);
 
-    static CommonTypes::Direction invertDirection(const CommonTypes::Direction& direction);
-    static CommonTypes::Direction invertDirection(int direction);
+    static CT::Direction invertDirection(const CT::Direction& direction);
+    static CT::Direction invertDirection(int direction);
 
-    static int getDirectionByTileFromAToB(int oldDirection, int fromCol, int fromRow, int toCol, int toRow);
-    static CommonTypes::Direction getDirectionByTileFromAToB(int oldDirection, BaseObj* from, BaseObj* to);
+    static int getDirectionByTileFromAToB(int oldDirection, CT::Cell& fromCell, CT::Cell& toCell);
+    static CT::Direction getDirectionByTileFromAToB(int oldDirection, BaseObj* from, BaseObj* to);
     
     static bool convertDirectionToSwipeDelta(int dir, int& horzDelta, int& vertDelta);
 
     static cocos2d::Color4B getScoreColorByObj(BaseObj* obj);
 
 private:
-    static cocos2d::Color4B getScoreColorByCookieType(CommonTypes::CookieType type);
-    static cocos2d::Color4B getScoreColorForFieldObj(CommonTypes::FieldType type);
-    static cocos2d::Color4B getScoreColorForDudeObj(CommonTypes::FieldType type);
+    static cocos2d::Color4B getScoreColorByCookieType(CT::CookieType type);
+    static cocos2d::Color4B getScoreColorForFieldObj(CT::FieldType type);
+    static cocos2d::Color4B getScoreColorForDudeObj(CT::FieldType type);
 };

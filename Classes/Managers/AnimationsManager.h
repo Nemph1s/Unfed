@@ -34,7 +34,7 @@ public:
     void animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* completion);
 
     void animateMatchObj(BaseObj* obj, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
-    void animateMatching(CommonTypes::Set* chains, cocos2d::CallFunc* completion);
+    void animateMatching(CT::Set* chains, cocos2d::CallFunc* completion);
 
     void animateFallingObjects(cocos2d::Array* colums, cocos2d::CallFunc* completion);
     void animateNewCookies(cocos2d::Array* colums, cocos2d::CallFunc* completion);
@@ -44,13 +44,13 @@ public:
     void animateScoreForChain(ChainObj* chain);
     void animateScoreForFieldObj(BaseObj* obj);
 
-    void animateThrowDownAnObj(BaseObj* obj, CommonTypes::CellPos destPos, cocos2d::CallFunc* completion, bool animateShakingScreen = false);
-    void animateReboundAfterThrowingObj(CommonTypes::CellPos destPos, CommonTypes::Set* chains, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
+    void animateThrowDownAnObj(BaseObj* obj, CT::Cell& destPos, cocos2d::CallFunc* completion, bool animateShakingScreen = false);
+    void animateReboundAfterThrowingObj(CT::Cell& destPos, CT::Set* chains, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
 
     void animateJumpWithBouncing(BaseObj* obj, float delay, float heigthInPixel);
     void animateBouncingObj(BaseObj* obj);
     
-    void animateHintSwap(CommonTypes::Set* objects, cocos2d::CallFunc* completion);
+    void animateHintSwap(CT::Set* objects, cocos2d::CallFunc* completion);
 
     void animateShakeScreen();
     

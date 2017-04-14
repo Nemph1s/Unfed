@@ -37,9 +37,8 @@ public:
 
     virtual bool initWithId(const int16_t& levelId);
 
-    CommonTypes::Set* shuffle();
-
-    CommonTypes::Set* detectFieldObjects(CommonTypes::Set* chains);
+    CT::Set* shuffle();
+    CT::Set* detectFieldObjects(CT::Set* chains);
 
     cocos2d::Array* useGravityToFillHoles();
     cocos2d::Array* fillTopUpHoles();
@@ -47,21 +46,20 @@ public:
     void disablePredefinedCookies();
 
     //TODO: move to callback
-    void removeDudeMatches(CommonTypes::Set* set);
+    void removeDudeMatches(CT::Set* set);
 
 protected:
     // Nodes should be created using create();
     LevelObj();
     
-    CommonTypes::SearchEmptyHoles skipFillTopUpHoles(int column, int row, bool& filledTileFouned);
+    CT::SearchEmptyHoles skipFillTopUpHoles(CT::Cell& cell, bool& filledTileFouned);
 
-    bool isPossibleToAddCookie(int column, int row);
     bool useGravityOnObject(cocos2d::Array* colArr, cocos2d::Array* rowArr, BaseObj* obj, int destinationRow);
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<bool()>, mDetectPossibleSwapsCallback, DetectPossibleSwapsCallback);
 
-    CC_SYNTHESIZE_READONLY(CommonTypes::LevelInfo, mLevelInfo, LevelInfo);
+    CC_SYNTHESIZE_READONLY(CT::LevelInfo, mLevelInfo, LevelInfo);
 
     CC_SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController);
     CC_SYNTHESIZE(DudeController*, mDudeCtrl, DudeController);

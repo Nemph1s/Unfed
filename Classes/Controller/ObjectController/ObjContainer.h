@@ -37,18 +37,18 @@ public:
     virtual bool init();
 
     bool addObject(BaseObj* obj);
-    bool removeObject(const CommonTypes::BaseObjType& type);
+    bool removeObject(const CT::BaseObjType& type);
 
     void updateObjectWith(BaseObj* currObj, BaseObj* newObj);
     void synchronizeTilePos();
 
-    BaseObj* getObject(const CommonTypes::BaseObjType& type) const;
+    BaseObj* getObject(const CT::BaseObjType& type) const;
     FieldObj* getFieldObject() const;
     std::list<FieldObj*>& getFieldObjects();
 
     bool isContainGameObj();
     BaseObj* getObjectForChain();
-    CommonTypes::Set* getObjectsForChain();
+    CT::Set* getObjectsForChain();
 
     bool isEmptyTileAt();
     bool isPossibleToAddCookie();

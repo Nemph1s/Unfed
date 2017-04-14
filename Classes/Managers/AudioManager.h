@@ -21,7 +21,7 @@ public:
     bool init();
 
     void playBGMusic();
-    void playSound(CommonTypes::SoundType type);
+    void playSound(CT::SoundType type);
     
 protected:
     bool preloadSounds();

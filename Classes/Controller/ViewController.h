@@ -53,13 +53,13 @@ protected:
     bool initDudeController();
 
     //---Gui-------------------------------------------------------
-    void updateScore(CommonTypes::Set* chains);
+    void updateScore(CT::Set* chains);
     void updateInfoLabels();
 
     //---Operable sequence-------------------------------------------------------
     void shuffle();
     void handleMatches();
-    void animateHandleMatches(CommonTypes::Set* chains);
+    void animateHandleMatches(CT::Set* chains);
     void beginNextTurn();
 
     //---Callbacks-------------------------------------------------------
@@ -68,7 +68,7 @@ protected:
     void activateDudeCallback(DudeObj* obj, int direction);
 
     //---Special-------------------------------------------------------
-    void throwDownAnObject(BaseObj* obj, CommonTypes::CellPos destPos, bool isHeavyObject);
+    void throwDownAnObject(BaseObj* obj, CT::Cell& destPos, bool isHeavyObject);
 
     //---Hints-------------------------------------------------------
     void startHintTimer();

@@ -18,7 +18,7 @@
 #include "Common/Factory/SmartObjFactory.h"
 #include "Common/Factory/SpritesFactory.h"
 
-using namespace CommonTypes;
+using namespace CT;
 
 //--------------------------------------------------------------------
 ObjContainer::ObjContainer()
@@ -112,7 +112,7 @@ bool ObjContainer::addObject(BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
-BaseObj * ObjContainer::getObject(const CommonTypes::BaseObjType& type) const
+BaseObj * ObjContainer::getObject(const CT::BaseObjType& type) const
 //--------------------------------------------------------------------
 {
     BaseObj* obj = nullptr;
@@ -183,10 +183,10 @@ BaseObj* ObjContainer::getObjectForChain()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* ObjContainer::getObjectsForChain()
+CT::Set* ObjContainer::getObjectsForChain()
 //--------------------------------------------------------------------
 {
-    auto set = CommonTypes::Set::create();
+    auto set = CT::Set::create();
     auto fieldObj = getFieldObject();
 
     if (mCookieObj) set->addObject(mCookieObj);
@@ -200,7 +200,7 @@ CommonTypes::Set* ObjContainer::getObjectsForChain()
 }
 
 //--------------------------------------------------------------------
-bool ObjContainer::removeObject(const CommonTypes::BaseObjType& type)
+bool ObjContainer::removeObject(const CT::BaseObjType& type)
 //--------------------------------------------------------------------
 {
     bool result = false;
