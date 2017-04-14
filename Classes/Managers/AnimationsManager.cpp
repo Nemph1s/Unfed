@@ -186,8 +186,11 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
             float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
 
             // Calculate which animation is the longest. This is the time the game has to wait before it may continue.
-            auto animateBouncingObjDelay = 0.25f;
-            longestDuration = MAX(longestDuration, duration + delay + animateBouncingObjDelay);
+            auto animateBouncingObjDelay = 0;//= 0.25f;
+            auto oldCell = Cell();
+            auto oldPos = obj->getSpriteNode()->getPosition();
+            Helper::convertPointToTilePos(oldPos, oldCell);
+            longestDuration = MAX(longestDuration, duration + Helper::getDurationToTile(oldCell.row, obj->getRow()));// delay + animateBouncingObjDelay);
 
             // Perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
@@ -348,19 +351,20 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
 
         scene->getInfoLayer()->addChild(scoreLabel);
 
-        auto duration = 1.15f;
+        auto duration = 0.75f;
         //auto scaleAction = ScaleTo::create(duration, 2.0f);
-        auto moveAction = MoveBy::create(duration, Vec2(0.0f, 10.0f));
-        auto easeOut = EaseOut::create(moveAction, duration);
-        auto fadeOut = FadeOut::create(0.5f);
+        auto moveAction = MoveBy::create(duration, Vec2(0.0f, GlobInfo->getTileHeight() /2 ));
+        auto easeOut = EaseIn::create(moveAction, duration);
+        auto fadeOut = FadeOut::create(duration);
 
         auto callback = CallFunc::create([scoreLabel]() {
             if (scoreLabel) {
                 scoreLabel->removeFromParent();
             }
         });
-        scoreLabel->runAction(Sequence::create(DelayTime::create(duration / 2), fadeOut, nullptr));
-        scoreLabel->runAction(Sequence::create(easeOut, callback, nullptr));
+        scoreLabel->runAction(easeOut);
+        scoreLabel->runAction(Sequence::create(DelayTime::create(duration * 0.75f), fadeOut, callback, nullptr));
+        
     }
 }
 
