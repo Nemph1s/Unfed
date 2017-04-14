@@ -82,11 +82,11 @@ cocos2d::String& DirtObject::spriteName() const
 }
 
 //--------------------------------------------------------------------
-bool DirtObject::checkMatchingCondition(int column, int row)
+bool DirtObject::checkMatchingCondition(CT::Cell& cell)
 //--------------------------------------------------------------------
 {
-    if (!Helper::isValidColumnAndRow(column, row)) {
+    if (!Helper::isValidCell(cell)) {
         return false;
     }
-    return (mColumn == column && mRow == row);
+    return (mColumn == cell.column && mRow == cell.row);
 }

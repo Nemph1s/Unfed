@@ -53,7 +53,7 @@ public:
     bool isPossibleSwap(SwapObj* swap);
     void performSwap(SwapObj* swap);
 
-    bool trySwapCookieTo(int fromCol, int fromRow, int direction);
+    bool trySwapCookieTo(CT::Cell& fromCell, int direction);
 
     void clearPossibleSwaps();
 

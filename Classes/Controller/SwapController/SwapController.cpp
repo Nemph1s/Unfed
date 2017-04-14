@@ -210,22 +210,21 @@ void SwapController::performSwap(SwapObj* swap)
 }
 
 //--------------------------------------------------------------------
-bool SwapController::trySwapCookieTo(int fromCol, int fromRow, int direction)
+bool SwapController::trySwapCookieTo(CT::Cell& fromCell, int direction)
 //--------------------------------------------------------------------
 {
     cocos2d::log("SwapController::trySwapCookieTo: direction=%d;", direction);
 
     int horzDelta = 0; int vertDelta = 0;
     Helper::getInstance()->convertDirectionToSwipeDelta(direction, horzDelta, vertDelta);
-    int toColumn = fromCol + horzDelta;
-    int toRow = fromRow + vertDelta;
+    auto toCell = Cell(fromCell.column + horzDelta, fromCell.row + vertDelta);
 
-    if (!Helper::isValidColumnAndRow(toColumn, toRow)) {
+    if (!Helper::isValidCell(toCell)) {
         return false;
     }
     auto objCtrl = mLevel->getObjectController();
-    auto toContainer = objCtrl->getContainer(toColumn, toRow);
-    auto fromContainer = objCtrl->getContainer(fromCol, fromRow);
+    auto toContainer = objCtrl->getContainer(toCell);
+    auto fromContainer = objCtrl->getContainer(fromCell);
     if (!toContainer || !fromContainer)
         return false;
 
@@ -284,12 +283,12 @@ CT::Set* SwapController::getPreviousSwapContainers()
     auto objCtrl = mLevel->getObjectController();
     auto objA = mPreviousSwap->getObjectA();
     if (objA) {
-        auto containerA = objCtrl->getContainer(objA->getColumn(), objA->getRow());
+        auto containerA = objCtrl->getContainer(objA->getCell());
         set->addObject(containerA);
     }
     auto objB = mPreviousSwap->getObjectB();
     if (objB) {
-        auto containerB = objCtrl->getContainer(objB->getColumn(), objB->getRow());
+        auto containerB = objCtrl->getContainer(objB->getCell());
         set->addObject(containerB);
     }
     CC_SAFE_RELEASE_NULL(mPreviousSwap);

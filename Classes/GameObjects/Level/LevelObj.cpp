@@ -102,16 +102,16 @@ CT::Set* LevelObj::shuffle()
 }
 
 //--------------------------------------------------------------------
-SearchEmptyHoles LevelObj::skipFillTopUpHoles(int column, int row, bool& filledTileFouned)
+SearchEmptyHoles LevelObj::skipFillTopUpHoles(CT::Cell& cell, bool& filledTileFouned)
 //--------------------------------------------------------------------
 {
     SearchEmptyHoles res;
-    if (!mObjCtrl->isEmptyTileAt(column, row)) {
+    if (!mObjCtrl->isEmptyTileAt(cell)) {
         filledTileFouned = true;
         res = SearchEmptyHoles::ObjFounded;
     }
     else {
-        if ((row <= (_GlobalInfo::NumRows / 2) + 2)  && !filledTileFouned) {
+        if ((cell.row <= (_GlobalInfo::NumRows / 2) + 2)  && !filledTileFouned) {
             res = SearchEmptyHoles::ContinueSearch;
         }
         else {
@@ -122,14 +122,7 @@ SearchEmptyHoles LevelObj::skipFillTopUpHoles(int column, int row, bool& filledT
 }
 
 //--------------------------------------------------------------------
-bool LevelObj::isPossibleToAddCookie(int column, int row)
-//--------------------------------------------------------------------
-{
-    return mObjCtrl->isPossibleToAddCookie(column, row);
-}
-
-//--------------------------------------------------------------------
-bool LevelObj::useGravityOnObject(cocos2d::Array * colArr, cocos2d::Array * rowArr, BaseObj * obj, int destinationRow)
+bool LevelObj::useGravityOnObject(cocos2d::Array* colArr, cocos2d::Array* rowArr, BaseObj* obj, int destinationRow)
 //--------------------------------------------------------------------
 {
     if (!colArr || !obj) {
@@ -141,11 +134,11 @@ bool LevelObj::useGravityOnObject(cocos2d::Array * colArr, cocos2d::Array * rowA
     }
 
     if (obj->isMovable()) {
-        int column = obj->getColumn();
-        int lookup = obj->getRow();
+        auto lookupCell = obj->getCell();
+        auto destCell = Cell(obj->getColumn(), destinationRow);
         // If find another cookie, move that cookie to the hole. This effectively moves the cookie down.
-        mObjCtrl->removeObjectAt(column, lookup, obj->getType());
-        mObjCtrl->updateObjectAt(column, destinationRow, obj);
+        mObjCtrl->removeObjectAt(lookupCell, obj->getType());
+        mObjCtrl->updateObjectAt(destCell, obj);
         obj->setRow(destinationRow);
 
         // Lazy creation of array
@@ -162,7 +155,7 @@ bool LevelObj::useGravityOnObject(cocos2d::Array * colArr, cocos2d::Array * rowA
 }
 
 //--------------------------------------------------------------------
-CT::Set* LevelObj::detectFieldObjects(CT::Set * chains)
+CT::Set* LevelObj::detectFieldObjects(CT::Set* chains)
 //--------------------------------------------------------------------
 {
     auto set = CT::Set::create();
@@ -170,7 +163,8 @@ CT::Set* LevelObj::detectFieldObjects(CT::Set * chains)
     for (int row = 0; row < _GlobalInfo::NumRows; row++) {
         for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
 
-            auto obj = mObjCtrl->fieldObjectAt(column, row);
+            auto cell = Cell(column, row);
+            auto obj = mObjCtrl->fieldObjectAt(cell);
             if (!obj) {
                 continue;
             }
@@ -200,7 +194,8 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
         cocos2d::Array* array = nullptr;
         for (int row = _GlobalInfo::NumRows - 1; row >= 0; row--) {
 
-            auto fieldObjects = mObjCtrl->fieldObjectsAt(column, row);
+            auto cell = Cell(column, row);
+            auto fieldObjects = mObjCtrl->fieldObjectsAt(cell);
             if (fieldObjects) {
                 for (auto it = fieldObjects->begin(); it != fieldObjects->end(); ++it) {
                     auto obj = dynamic_cast<FieldObj*>(*it);
@@ -215,24 +210,24 @@ cocos2d::Array* LevelObj::useGravityToFillHoles()
                     }
                 }
             }
-            if (isPossibleToAddCookie(column, row)) {
+            if (mObjCtrl->isPossibleToAddCookie(cell)) {
 
                 // Scan upward to find the cookie that sits directly above the hole
                 for (int lookup = row - 1; lookup >= 0; lookup--) {
 
-                    if (!mLevelInfo.skipEmptyHoles && mObjCtrl->isEmptyTileAt(column, lookup)) {
+                    auto lookupCell = Cell(column, lookup);
+                    if (!mLevelInfo.skipEmptyHoles && mObjCtrl->isEmptyTileAt(lookupCell)) {
                         continue;
-                    }
-                    auto cell = Cell(column, lookup);
-                    auto dudeObj = mObjCtrl->dudeAt(cell);
+                    }                    
+                    auto dudeObj = mObjCtrl->dudeAt(lookupCell);
                     if (useGravityOnObject(columns, array, dudeObj, row)) {
                         break;
                     }
-                    auto fieldObj = mObjCtrl->fieldObjectAt(column, lookup);
+                    auto fieldObj = mObjCtrl->fieldObjectAt(lookupCell);
                     if (useGravityOnObject(columns, array, fieldObj, row)) {
                         break;
                     }
-                    auto cookie = mObjCtrl->cookieAt(column, lookup);
+                    auto cookie = mObjCtrl->cookieAt(lookupCell);
                     if (useGravityOnObject(columns, array, cookie, row)) {
                         break;
                     }
@@ -259,9 +254,10 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
         cocos2d::Array* array = nullptr;
         for (int row = 0; row < _GlobalInfo::NumRows; row++) {
                         
+            auto cell = Cell(column, row);
  //--------------------------------------------------------------------       
             if (!mLevelInfo.skipEmptyHoles) {
-                auto skipRow = skipFillTopUpHoles(column, row, filledTileFouned);
+                auto skipRow = skipFillTopUpHoles(cell, filledTileFouned);
                 if (skipRow == SearchEmptyHoles::ContinueSearch) {
                     continue;
                 }
@@ -270,14 +266,14 @@ cocos2d::Array * LevelObj::fillTopUpHoles()
                 }
             }                        
 //--------------------------------------------------------------------
-            auto fieldObj = mObjCtrl->fieldObjectAt(column, row);
+            auto fieldObj = mObjCtrl->fieldObjectAt(cell);
             if (fieldObj) {
                 if (!fieldObj->isMovable() && !fieldObj->isContainer())
                     break;
             }
-            if (isPossibleToAddCookie(column, row)) {
+            if (mObjCtrl->isPossibleToAddCookie(cell)) {
 
-                BaseObj* cookie = mObjCtrl->createRandomCookie(column, row);
+                BaseObj* cookie = mObjCtrl->createRandomCookie(cell);
 
                 if (array == nullptr) {
                     array = cocos2d::Array::createWithCapacity(_GlobalInfo::NumRows);

@@ -97,17 +97,6 @@ ObjContainer * ObjectController::getContainer(Cell& cell)
 }
 
 //--------------------------------------------------------------------
-ObjContainer * ObjectController::getContainer(int8_t column, int8_t row)
-//--------------------------------------------------------------------
-{
-    if (Helper::isValidColumnAndRow(column, row)) {
-        return mObjects[column][row];
-    }
-    cocos2d::log("ObjectController::getContainer: not valid column=%d or row=%d", column, row);
-    return nullptr;
-}
-
-//--------------------------------------------------------------------
 BaseObj * ObjectController::getObjectForChain(Cell& cell)
 //--------------------------------------------------------------------
 {

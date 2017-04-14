@@ -56,14 +56,14 @@ namespace CT {
     struct BaseObjInfo
     {
         BaseObjType type; /**< type of game object */
-        int column; /**< vertical series of cells in a table */
-        int row; /**< horizontal series of cells in a table */
+        int8_t column; /**< vertical series of cells in a table */
+        int8_t row; /**< horizontal series of cells in a table */
 
         BaseObjInfo(BaseObjType _type) 
             : type(_type), column(-1), row(-1) {}
         BaseObjInfo(BaseObjType _type, Cell _cell)
             : type(_type), column(_cell.column), row(_cell.row) {}
-        BaseObjInfo(BaseObjType _type, int _column, int _row) 
+        BaseObjInfo(BaseObjType _type, int8_t _column, int8_t _row)
             : type(_type), column(_column), row(_row) {}
     };
 

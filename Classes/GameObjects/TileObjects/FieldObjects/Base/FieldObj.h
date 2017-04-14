@@ -33,7 +33,7 @@ public:
 
     virtual void match() override;
     virtual void clear() override;
-    virtual bool checkMatchingCondition(int column, int row);
+    virtual bool checkMatchingCondition(CT::Cell& cell);
     virtual bool isHpEnded() const override;
 
     virtual void updateDebugLabel() override;

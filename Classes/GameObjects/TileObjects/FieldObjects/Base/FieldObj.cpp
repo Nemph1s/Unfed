@@ -137,7 +137,7 @@ void FieldObj::clear()
 }
 
 //--------------------------------------------------------------------
-bool FieldObj::checkMatchingCondition(int column, int row)
+bool FieldObj::checkMatchingCondition(CT::Cell& cell)
 //--------------------------------------------------------------------
 {
     return false;

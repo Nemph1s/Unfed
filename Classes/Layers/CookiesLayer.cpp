@@ -127,9 +127,9 @@ void CookiesLayer::addSpritesForObjects(CT::Set * set)
 
         if (obj->getType() == BaseObjType::Field) {
             auto fieldObj = dynamic_cast<FieldObj*>(*it);
-            createSpriteWithFieldObj(fieldObj, fieldObj->getColumn(), fieldObj->getRow());
+            createSpriteWithFieldObj(fieldObj, fieldObj->getCell());
         } else {
-            createSpriteWithObj(obj, obj->getColumn(), obj->getRow());
+            createSpriteWithObj(obj, obj->getCell());
         }
 
         obj->updateZOrder();
@@ -182,7 +182,7 @@ void CookiesLayer::onTouchMoved(Touch* touch, Event* event)
         if (isSameDirection(direction)) {
             return;
         }
-        if (updateChainPreviewHint(cell.column, cell.row, direction)) {
+        if (updateChainPreviewHint(cell, direction)) {
             return;
         }
         if (direction != Helper::to_underlying(Direction::Unknown)) {
@@ -314,7 +314,7 @@ void CookiesLayer::removeChainPreviewSprites()
 bool CookiesLayer::isObjTouched()
 //--------------------------------------------------------------------
 {
-    if (mSwipeFromColumn == -1 || mSwipeFromRow == -1 || !mTouchedObj)
+    if (mSwipeFromCell.column == -1 || mSwipeFromCell.row == -1 || !mTouchedObj)
         return false;
     return true;
 }
@@ -323,8 +323,8 @@ bool CookiesLayer::isObjTouched()
 void CookiesLayer::clearTouchedObj()
 //--------------------------------------------------------------------
 {
-    mSwipeFromColumn = -1;
-    mSwipeFromRow = -1;
+    mSwipeFromCell.column = -1;
+    mSwipeFromCell.row = -1;
     mTouchedObj = nullptr;
 }
 
@@ -360,7 +360,7 @@ bool CookiesLayer::isSameDirection(int direction)
 }
 
 //--------------------------------------------------------------------
-bool CookiesLayer::updateChainPreviewHint(int column, int row, int direction)
+bool CookiesLayer::updateChainPreviewHint(CT::Cell& cell, int direction)
 //--------------------------------------------------------------------
 {
     bool isDudeObject = mTouchedObj->getType() == BaseObjType::Dude;
@@ -382,16 +382,16 @@ bool CookiesLayer::updateChainPreviewHint(int column, int row, int direction)
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
+void CookiesLayer::createSpriteWithObj(BaseObj* obj, CT::Cell& cell)
 //--------------------------------------------------------------------
 {
     if (obj) {
         auto sprite = SpritesFactory->createWithBaseObject(obj);
         sprite->setVisible(true);
-        sprite->setPosition(Helper::pointForColumnAndRow(column, row));
+        sprite->setPosition(Helper::pointForCell(cell));
         obj->setSpriteNode(sprite);
 
-        auto zOrder = (row * 10);
+        auto zOrder = (cell.row * 10);
         if (obj->getType() == BaseObjType::Dude) {
             this->addChild(sprite, zOrder);
             mDudesLayer->addChild(obj, zOrder);
@@ -408,7 +408,7 @@ void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::createSpriteWithFieldObj(FieldObj* obj, int column, int row)
+void CookiesLayer::createSpriteWithFieldObj(FieldObj* obj, CT::Cell& cell)
 //--------------------------------------------------------------------
 {
     if (obj) {
@@ -417,8 +417,8 @@ void CookiesLayer::createSpriteWithFieldObj(FieldObj* obj, int column, int row)
         obj->setSpriteNode(sprite);
 
         auto priority = obj->getPriority();
-        auto zOrder = (row * 10) + priority;
-        auto pos = Helper::pointForColumnAndRowWithPriority(column, row, priority);
+        auto zOrder = (cell.row * 10) + priority;
+        auto pos = Helper::pointForCellWithPriority(cell, priority);
 
         sprite->setPosition(pos);
         sprite->setScale(1);
@@ -468,7 +468,7 @@ void CookiesLayer::createChainPreviewSprites(CT::Set* set)
             auto sprite = SpritesFactory->createHintSprite(chain->getChainColor());
             container->setChainPreviewSprite(sprite);
 
-            sprite->setPosition(Helper::pointForColumnAndRow(obj->getColumn(), obj->getRow()));
+            sprite->setPosition(Helper::pointForCell(obj->getCell()));
 
             auto gameLayer = this->getParent();
             auto scene = dynamic_cast<GameplayScene*>(gameLayer->getParent());

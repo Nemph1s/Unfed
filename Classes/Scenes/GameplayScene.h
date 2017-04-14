@@ -31,12 +31,12 @@ public:
     virtual bool initWithSize(const cocos2d::Size& size);
 
 	void addTiles();
-    void addFieldObjectsAt(int column, int row);
+    void addFieldObjectsAt(CT::Cell& cell);
     void addSpritesForObjects(CT::Set* set);
 
     void createChainPreviewSprites(CT::Set* set);
 
-    void createSpriteWithCookie(CookieObj* cookie, int column, int row);
+    void createSpriteWithCookie(CookieObj* cookie, CT::Cell& cell);
     void createSpriteForDude(BaseObj* dudeObj);
     void createSpriteWithFieldObj(FieldObj* fieldObj);
 

@@ -78,15 +78,15 @@ cocos2d::String& RockObj::spriteName() const
 }
 
 //--------------------------------------------------------------------
-bool RockObj::checkMatchingCondition(int column, int row)
+bool RockObj::checkMatchingCondition(CT::Cell& cell)
 //--------------------------------------------------------------------
 {
-    if (!Helper::isValidColumnAndRow(column, row)) {
+    if (!Helper::isValidCell(cell)) {
         return false;
     }
-    bool objectOnTop = (mColumn == column && mRow == row - 1);
-    bool objectOnBot = (mColumn == column && mRow == row + 1);
-    bool objectOnLeft = (mColumn == column - 1 && mRow == row);
-    bool objectOnRight = (mColumn == column + 1 && mRow == row);
+    bool objectOnTop = (mColumn == cell.column && mRow == cell.row - 1);
+    bool objectOnBot = (mColumn == cell.column && mRow == cell.row + 1);
+    bool objectOnLeft = (mColumn == cell.column - 1 && mRow == cell.row);
+    bool objectOnRight = (mColumn == cell.column + 1 && mRow == cell.row);
     return objectOnTop || objectOnBot || objectOnLeft || objectOnRight;
 }

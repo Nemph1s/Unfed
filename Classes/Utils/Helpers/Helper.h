@@ -34,15 +34,14 @@ public:
     static CT::CookieType randomCookieType(int fromRange, int toRange);
 
     static float getDurationToTile(int8_t startRow, int8_t destinationRow);
-    static int8_t getDistanceBetweenObjects(CT::Cell cellPosA, CT::Cell cellPosB);
+    static int8_t getDistanceBetweenObjects(CT::Cell& cellPosA, CT::Cell& cellPosB);
 
     static cocos2d::String* getSpriteNameByFieldType(int fieldType);
 
-    static bool isValidColumnAndRow(int column, int row);
     static bool isValidCell(CT::Cell& cell);
 
-    static cocos2d::Vec2 pointForColumnAndRow(int column, int row);
-    static cocos2d::Vec2 pointForColumnAndRowWithPriority(int column, int row, int priority);
+    static cocos2d::Vec2 pointForCell(CT::Cell& cell);
+    static cocos2d::Vec2 pointForCellWithPriority(CT::Cell& cell, int priority);
     static cocos2d::Vec2 pointForTile(BaseObj* obj);
 
     static bool convertPointToTilePos(cocos2d::Vec2& point, CT::Cell& cell);

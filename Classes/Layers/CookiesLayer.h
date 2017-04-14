@@ -32,8 +32,8 @@ public:
     virtual void onExit() override;
     void addSpritesForObjects(CT::Set* set);
 
-    void createSpriteWithObj(BaseObj* obj, int column, int row);
-    void createSpriteWithFieldObj(FieldObj* fieldObj, int column, int row);
+    void createSpriteWithObj(BaseObj* obj, CT::Cell& cell);
+    void createSpriteWithFieldObj(FieldObj* fieldObj, CT::Cell& cell);
     void createChainPreviewSprites(CT::Set* set);
 
     bool isObjTouched();
@@ -57,7 +57,7 @@ protected:
     int getSwipeDirection(CT::Cell& cell);
     bool isSameDirection(int direction);
 
-    bool updateChainPreviewHint(int column, int row, int direction);
+    bool updateChainPreviewHint(CT::Cell& cell, int direction);
 
 
     //---Class Attributes-------------------------------------------------

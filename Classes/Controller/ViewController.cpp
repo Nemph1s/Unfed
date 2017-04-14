@@ -466,7 +466,7 @@ void ViewController::throwDownAnObject(BaseObj* obj, CT::Cell& destPos, bool isH
         
         auto onCompleteCallback = CallFunc::create([&]() {
 
-            mObjectController->updateObjectAt(destPos.column, destPos.row, obj);
+            mObjectController->updateObjectAt(destPos, obj);
             mObjectController->synchronizeObjectAt(destPos);
 
             mSwapController->detectPossibleSwaps();

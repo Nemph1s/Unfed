@@ -38,7 +38,6 @@ public:
     virtual bool initWithId(const int16_t& levelId);
 
     CT::Set* shuffle();
-
     CT::Set* detectFieldObjects(CT::Set* chains);
 
     cocos2d::Array* useGravityToFillHoles();
@@ -53,9 +52,8 @@ protected:
     // Nodes should be created using create();
     LevelObj();
     
-    CT::SearchEmptyHoles skipFillTopUpHoles(int column, int row, bool& filledTileFouned);
+    CT::SearchEmptyHoles skipFillTopUpHoles(CT::Cell& cell, bool& filledTileFouned);
 
-    bool isPossibleToAddCookie(int column, int row);
     bool useGravityOnObject(cocos2d::Array* colArr, cocos2d::Array* rowArr, BaseObj* obj, int destinationRow);
 
     //---Class Attributes-------------------------------------------------

@@ -139,20 +139,21 @@ cocos2d::ActionInstant* _ActionsManager::actionSwapObj(BaseObj* objA, BaseObj* o
 }
 
 //--------------------------------------------------------------------
-cocos2d::ActionInterval * _ActionsManager::actionFallDown(BaseObj * obj, uint8_t desinationColumn, uint8_t destinationRow)
+cocos2d::ActionInterval * _ActionsManager::actionFallDown(BaseObj* obj, CT::Cell& desinationCell)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
     int startRow = -5;
     uint8_t zOrder = 100;
-    auto startPos = Helper::pointForColumnAndRow(desinationColumn, startRow);
-    auto newPos = Helper::pointForColumnAndRow(desinationColumn, destinationRow);
+    auto startPosCell = CT::Cell(desinationCell, startRow);
+    auto startPos = Helper::pointForCell(startPosCell);
+    auto newPos = Helper::pointForCell(desinationCell);
     auto sprite = obj->getSpriteNode();
 
     sprite->setPosition(startPos);
     sprite->setLocalZOrder(zOrder);
 
-    float duration = Helper::getDurationToTile(startRow, destinationRow);
+    float duration = Helper::getDurationToTile(startRow, desinationCell.row);
 
     auto moveAction = MoveTo::create(duration, newPos);
     auto easeAction = EaseOut::create(moveAction, duration);

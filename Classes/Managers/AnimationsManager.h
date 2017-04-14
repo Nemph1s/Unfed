@@ -44,8 +44,8 @@ public:
     void animateScoreForChain(ChainObj* chain);
     void animateScoreForFieldObj(BaseObj* obj);
 
-    void animateThrowDownAnObj(BaseObj* obj, CT::Cell destPos, cocos2d::CallFunc* completion, bool animateShakingScreen = false);
-    void animateReboundAfterThrowingObj(CT::Cell destPos, CT::Set* chains, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
+    void animateThrowDownAnObj(BaseObj* obj, CT::Cell& destPos, cocos2d::CallFunc* completion, bool animateShakingScreen = false);
+    void animateReboundAfterThrowingObj(CT::Cell& destPos, CT::Set* chains, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
 
     void animateJumpWithBouncing(BaseObj* obj, float delay, float heigthInPixel);
     void animateBouncingObj(BaseObj* obj);

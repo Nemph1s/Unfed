@@ -239,7 +239,8 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
         for (auto itArr = array->begin(); itArr != array->end(); itArr++, rowIdx++) {
             auto cookie = dynamic_cast<CookieObj*>(*itArr);
             CC_ASSERT(cookie);
-            scene->createSpriteWithCookie(cookie, cookie->getColumn(), startRow);
+            auto startCell = Cell(cookie->getCell(), startRow);
+            scene->createSpriteWithCookie(cookie, startCell);
             cookie->getSpriteNode()->setOpacity(0);
 
             auto newPos = Helper::pointForTile(cookie);
@@ -322,7 +323,7 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
 
         Vec2 spritePos = Vec2::ZERO;
         if (objCtrl) {
-            auto tileObj = objCtrl->tileAt(obj->getColumn(), obj->getRow());
+            auto tileObj = objCtrl->tileAt(obj->getCell());
             spritePos = tileObj->getSpriteNode()->getPosition();
         }
         else {
@@ -406,14 +407,14 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CT::Cell destPos, cocos2d::CallFunc* completion, bool animateShakingScreen)
+void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CT::Cell& destPos, cocos2d::CallFunc* completion, bool animateShakingScreen)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
 
     auto sprite = obj->getSpriteNode();
 
-    auto easeAction = ActionsManager->actionFallDown(obj, destPos.column, destPos.row);
+    auto easeAction = ActionsManager->actionFallDown(obj, destPos);
 
     auto moveCallback = CallFunc::create([=]() {
 
@@ -437,7 +438,7 @@ void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CT::Cell destPos, c
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateReboundAfterThrowingObj(CT::Cell destPos, CT::Set* chains, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateReboundAfterThrowingObj(CT::Cell& destPos, CT::Set* chains, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);

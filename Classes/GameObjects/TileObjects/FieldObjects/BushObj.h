@@ -28,7 +28,7 @@ public:
 
     cocos2d::String& spriteName() const override;
 
-    virtual bool checkMatchingCondition(int column, int row) override;
+    virtual bool checkMatchingCondition(CT::Cell& cell) override;
 
 protected:
     // Nodes should be created using create();

@@ -295,7 +295,7 @@ CT::Set* ChainController::createExposionChainAtCellForRebound(CT::Cell& cell, ui
 //--------------------------------------------------------------------
 {
     auto set = Set::create();
-    if (length < 0 || !Helper::isValidColumnAndRow(cell.column, cell.row)) {
+    if (length < 0 || !Helper::isValidCell(cell)) {
         cocos2d::log("ChainController::createCircleChainAt: wrong length=%d or destinationPos at column=%d, row=%d"
             , length, cell.column, cell.row);
         return set;
@@ -684,9 +684,7 @@ bool ChainController::checkMathicngFieldObjWithChain(Set* chains, BaseObj* obj)
         for (auto it = objects->begin(); it != objects->end(); it++) {
             auto cookie = dynamic_cast<CookieObj*>(*it);
             if (cookie) {
-                int col = cookie->getColumn();
-                int row = cookie->getRow();
-                if (fieldObj->checkMatchingCondition(col, row)) {
+                if (fieldObj->checkMatchingCondition(cookie->getCell())) {
                     result = true;
                     break;
                 }
