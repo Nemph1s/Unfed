@@ -29,7 +29,8 @@ namespace CT {
         int moves = 0; /**< available moves */
         TilesArray tiles = { 0 }; /**< array of tiles */
         TilesArray cookies = { 0 }; /**< array of cookies */
-        std::vector<CT::JsonFieldInfo> fieldObjects; /**< array of tileObjects */
+        std::vector<CT::JsonFieldInfo> fieldObjects; /**< array of fieldObjects */
+        std::vector<CT::JsonEnemyInfo> enemyObjects; /**< array of enemyObjects */
         int typesCount = 0; /**< count of types */
         bool isPredefinedCookies = false; /**< availability to load predefined cookies */
         bool skipEmptyHoles = false; /**< availability to skip empty tiles when obj falling */

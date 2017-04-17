@@ -206,9 +206,6 @@
     <ClInclude Include="..\Classes\Managers\ResourceManager.h">
       <Filter>src\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Utils\PlatformMacros.h">
-      <Filter>src\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\Managers\AudioManager.h">
       <Filter>src\Managers</Filter>
     </ClInclude>
@@ -307,6 +304,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Common\Factory\SpritesFactory.h">
       <Filter>src\Common\GlobalInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Utils\PlatformMacros.h">
+      <Filter>win32</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

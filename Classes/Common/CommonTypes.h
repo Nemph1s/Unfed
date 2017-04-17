@@ -21,7 +21,7 @@ namespace CT {
     typedef cocos2d::__Set Set;
 
     /**
-    * @brief GameObjectType enum.
+    * @brief BaseObjType enum.
     * Type of the cookie object
     */
     enum class BaseObjType : int {
@@ -29,6 +29,7 @@ namespace CT {
         , Cookie = 1 /**< enum value CookieObj. */
         , Field = 2 /**< enum value FieldObj. */
         , Dude = 3 /**< enum value DudeObj. */
+        , Enemy = 4 /**< enum value EnemyObj. */
         , Unknown /**< enum value unknown. */
     };
 
@@ -65,6 +66,26 @@ namespace CT {
             : type(_type), column(_cell.column), row(_cell.row) {}
         BaseObjInfo(BaseObjType _type, int8_t _column, int8_t _row)
             : type(_type), column(_column), row(_row) {}
+    };
+
+    /**
+    * @brief TileType enum.
+    * Type of the sound object
+    */
+    enum class TileType : int {
+        Empty = 0 /**< enum value Empty. */
+        , Normal = 1 /**< enum value Normal. */
+        , Water = 2 /**< enum value Water. */
+        , Unknown /**< enum value unknown. */
+    };
+
+    /**
+    * @brief TileInfo struct.
+    */
+    struct TileInfo
+    {
+        BaseObjInfo baseInfo; /**< type of GaneInfoObject struct */
+        TileType tileType; /**< type of Tile object */
     };
 
    /**
@@ -117,12 +138,40 @@ namespace CT {
    };
 
    /**
-   * @brief FieldInfo struct.
+   * @brief JsonFieldInfo struct.
    */
    struct JsonFieldInfo
    {
        BaseObjInfo baseInfo = BaseObjInfo(BaseObjType::Field); /**< type of BaseObjectInfo struct */
        std::vector<int> fieldType; /**< type of Field object */
+   };
+
+   /**
+   * @brief EnemyType enum.
+   * Type of the enemy object
+   */
+   enum class EnemyType : int {
+       Simple = 0 /**< Simple enemy. It can be removed by match nearest cookie 2 times, or by Dude */
+       , Shielded = 1 /**< Shielded enemy. It can be removed only by Dude */
+       , Unknown /**< enum value unknown. */
+   };
+
+   /**
+   * @brief CookieInfo struct.
+   */
+   struct EnemyInfo
+   {
+       BaseObjInfo baseInfo; /**< type of GaneInfoObject struct */
+       EnemyType enemyType; /**< type of Cookie object */
+   };
+
+   /**
+   * @brief JsonEnemyInfo struct.
+   */
+   struct JsonEnemyInfo
+   {
+       BaseObjInfo baseInfo = BaseObjInfo(BaseObjType::Enemy); /**< type of BaseObjectInfo struct */
+       int16_t enemyType; /**< type of Field object */
    };
 
    /**
@@ -152,26 +201,6 @@ namespace CT {
        , ChainFieldObjects = 7 /**< enum value ChainFieldObjects. */
        , ChainCircle = 8 /**< enum value ChainCircle. */
        , Unknown /**< enum value unknown. */
-   };
-
-   /**
-   * @brief TileType enum.
-   * Type of the sound object
-   */
-   enum class TileType : int {
-       Empty = 0 /**< enum value Empty. */
-       , Normal = 1 /**< enum value Normal. */
-       , Water = 2 /**< enum value Water. */
-       , Unknown /**< enum value unknown. */
-   };
-
-   /**
-   * @brief TileInfo struct.
-   */
-   struct TileInfo
-   {
-       BaseObjInfo baseInfo; /**< type of GaneInfoObject struct */
-       TileType tileType; /**< type of Tile object */
    };
 
    /**
