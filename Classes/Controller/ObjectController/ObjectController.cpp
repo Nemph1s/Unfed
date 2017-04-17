@@ -11,6 +11,7 @@
 #include "Controller/ObjectController/ObjectController.h"
 #include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/Dude/DudeController.h"
+#include "Controller/ObjectController/Enemy/EnemyController.h"
 
 #include "Common/Factory/SmartObjFactory.h"
 
@@ -70,7 +71,7 @@ bool ObjectController::init()
 }
 
 //--------------------------------------------------------------------
-void ObjectController::createObjects()
+void ObjectController::createObjContainers()
 //--------------------------------------------------------------------
 {
     auto levelInfo = mLevel->getLevelInfo();
@@ -369,6 +370,17 @@ DudeObj* ObjectController::dudeAt(Cell& cell)
 }
 
 //--------------------------------------------------------------------
+EnemyObj* ObjectController::enemyAt(CT::Cell & cell)
+//--------------------------------------------------------------------
+{
+    auto obj = getContainer(cell);
+    if (obj) {
+        return obj->getEnemy();
+    }
+    return nullptr;
+}
+
+//--------------------------------------------------------------------
 bool ObjectController::isEmptyTileAt(Cell& cell)
 //--------------------------------------------------------------------
 {
@@ -417,7 +429,10 @@ bool ObjectController::matchObject(BaseObj * obj)
             result = matchFieldObject(obj);
             break;
         case BaseObjType::Dude:
-            result = matchDudeObject(obj);
+            result = mDudeCtrl->matchDudeObject(obj);
+            break;
+        case BaseObjType::Enemy:
+            result = mEnemyCtrl->matchEnemyObject(obj);
             break;
         default:
             break;
@@ -438,15 +453,12 @@ bool ObjectController::matchFieldObject(BaseObj* obj)
     obj->match();
 
     auto fieldObj = objContainer->getFieldObject();
-    if (obj == fieldObj) {
-        std::function<void(BaseObj*, std::function<void(FieldObj*)>)> onFieldObjChangeStateCallback;
-        onFieldObjChangeStateCallback = std::bind(&ObjContainer::onFieldObjChangeState, objContainer, _1, _2);
-        fieldObj->setFieldObjChangeState(onFieldObjChangeStateCallback);
-    }
-    else {
+    if (obj != fieldObj) {
         return false;
     }
-
+    std::function<void(BaseObj*, std::function<void(FieldObj*)>)> onFieldObjChangeStateCallback;
+    onFieldObjChangeStateCallback = std::bind(&ObjContainer::onFieldObjChangeState, objContainer, _1, _2);
+    fieldObj->setFieldObjChangeState(onFieldObjChangeStateCallback);
     return true;
 }
 
@@ -459,44 +471,12 @@ bool ObjectController::matchCookieObject(BaseObj* obj)
         return false;
     }
     auto cookieObj = objContainer->getCookie();
-    if (obj == cookieObj) {
-        std::function<void(BaseObj*)> onRemoveCookieCallback;
-        onRemoveCookieCallback = std::bind(&ObjContainer::onRemoveCookie, objContainer, _1);
-        cookieObj->setRemoveCookieCallback(onRemoveCookieCallback);
-    }
-    else {
+    if (obj != cookieObj) {
         return false;
     }
-
-    return true;
-}
-
-//--------------------------------------------------------------------
-bool ObjectController::matchDudeObject(BaseObj* obj)
-//--------------------------------------------------------------------
-{
-    auto objContainer = getContainer(obj->getCell());
-    if (!objContainer) {
-        return false;
-    }
-    auto dudeObj = objContainer->getDude();
-    if (obj == dudeObj) {
-        std::function<void(BaseObj*)> func = [&](BaseObj* obj) {
-            auto dudeObj = dynamic_cast<DudeObj*>(obj);
-            if (dudeObj) {
-                mDudeCtrl->eraseDirectionsForDude(dudeObj);
-            }
-        };
-        dudeObj->setEraseDirectionsCallback(func);
-
-        std::function<void(BaseObj*)> onRemoveDudeCallback;
-        onRemoveDudeCallback = std::bind(&ObjContainer::onRemoveDude, objContainer, _1);
-        dudeObj->setRemoveDudeCallback(onRemoveDudeCallback);
-    }
-    else {
-        return false;
-    }
-
+    std::function<void(BaseObj*)> onRemoveCookieCallback;
+    onRemoveCookieCallback = std::bind(&ObjContainer::onRemoveCookie, objContainer, _1);
+    cookieObj->setRemoveCookieCallback(onRemoveCookieCallback);
     return true;
 }
 

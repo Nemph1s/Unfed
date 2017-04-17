@@ -37,6 +37,7 @@ public:
     static int8_t getDistanceBetweenObjects(CT::Cell& cellPosA, CT::Cell& cellPosB);
 
     static cocos2d::String* getSpriteNameByFieldType(int fieldType);
+    static cocos2d::String* getSpriteNameByEnemyType(int enemyType);
 
     static bool isValidCell(CT::Cell& cell);
 

@@ -17,6 +17,7 @@
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "Controller/ObjectController/Dude/DudeObj.h"
+#include "Controller/ObjectController/Enemy/EnemyObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 #include "GameObjects/Level/LevelObj.h"
@@ -120,6 +121,9 @@ void _AnimationsManager::animateMatchObj(BaseObj * obj, cocos2d::CallFunc* compl
         break;
     case BaseObjType::Dude:
         animateMatchDude(dynamic_cast<DudeObj*>(obj), completion);
+        break;
+    case BaseObjType::Enemy:
+        animateMatchEnemy(dynamic_cast<EnemyObj*>(obj), completion);
         break;
     default:
         break;
@@ -611,6 +615,30 @@ void _AnimationsManager::animateMatchDude(DudeObj * obj, cocos2d::CallFunc* comp
     auto callback = CallFunc::create([baseObj, obj]() {
 
         auto func = obj->getRemoveDudeCallback();
+        if (func) {
+            func(baseObj);
+        }
+    });
+    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, completion, nullptr));
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateMatchEnemy(EnemyObj* obj, cocos2d::CallFunc * completion)
+//--------------------------------------------------------------------
+{
+    if (!obj) {
+        return;
+    }
+    const float duration = 0.3f;
+    const float scaleFactor = 0.1f;
+
+    auto scaleAction = ScaleTo::create(duration, scaleFactor);
+    auto easeOut = EaseOut::create(scaleAction, duration);
+
+    auto baseObj = dynamic_cast<BaseObj*>(obj);
+    auto callback = CallFunc::create([baseObj, obj]() {
+
+        auto func = obj->getRemoveEnemyCallback();
         if (func) {
             func(baseObj);
         }

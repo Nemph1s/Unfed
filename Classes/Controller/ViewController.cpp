@@ -13,6 +13,7 @@
 #include "Controller/ChainController/ChainController.h"
 #include "Controller/ObjectController/Dude/DudeController.h"
 #include "Controller/ObjectController/ObjectController.h"
+#include "Controller/ObjectController/Enemy/EnemyController.h"
 
 #include "Managers/AnimationsManager.h"
 #include "Managers/AudioManager.h"
@@ -54,6 +55,7 @@ ViewController::ViewController()
     , mChainController(nullptr)
     , mSwapController(nullptr)
     , mDudeController(nullptr)
+    , mEnemyController(nullptr)
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::ViewController");
@@ -72,6 +74,7 @@ ViewController::~ViewController()
     CC_SAFE_RELEASE_NULL(mChainController);
     CC_SAFE_RELEASE_NULL(mSwapController);
     CC_SAFE_RELEASE_NULL(mDudeController);
+    CC_SAFE_RELEASE_NULL(mEnemyController);
 }
 
 //--------------------------------------------------------------------
@@ -102,6 +105,7 @@ bool ViewController::init()
     initChainController();
     initSwapController();
     initDudeController();
+    initEnemyController();
 
     mShuffleButtonCallback = std::bind(&ViewController::shuffleButtonCallback, this);
     GuiManager->setShuffleButtonCallback(mShuffleButtonCallback);
@@ -166,6 +170,8 @@ bool ViewController::initSpritesFactory()
     SpritesFactory->initDudesPool(_GlobalInfo::NumRows / 2);
     auto fieldObjsPoolSize = mLevel->getLevelInfo().fieldObjects.size();
     SpritesFactory->initFieldObjectsPool(fieldObjsPoolSize);
+    auto enemyObjsPoolSize = mLevel->getLevelInfo().enemyObjects.size();
+    SpritesFactory->initEnemyPool(enemyObjsPoolSize);
     SpritesFactory->initHintPool(_GlobalInfo::NumColumns * _GlobalInfo::NumRows);
 
     return true;
@@ -179,7 +185,7 @@ bool ViewController::initObjectController()
     mObjectController->setLevel(mLevel);
     mLevel->setObjectController(mObjectController);
 
-    mObjectController->createObjects();
+    mObjectController->createObjContainers();
     auto fieldObjecs = mObjectController->createInitialFieldObjects();
     mGameplayScene->addTiles();
     mGameplayScene->addSpritesForObjects(fieldObjecs);
@@ -236,11 +242,24 @@ bool ViewController::initDudeController()
 }
 
 //--------------------------------------------------------------------
+bool ViewController::initEnemyController()
+//--------------------------------------------------------------------
+{
+    mEnemyController = EnemyController::create();
+    mEnemyController->setObjectController(mObjectController);
+    mObjectController->setEnemyController(mEnemyController);
+
+    auto enemies = mEnemyController->createInitialEnemies();
+    mGameplayScene->addSpritesForObjects(enemies);
+
+    return true;
+}
+
+//--------------------------------------------------------------------
 bool ViewController::initSwapController()
 //--------------------------------------------------------------------
 {
     mSwapController = SwapController::create();
-
     mSwapController->setLevel(mLevel);
 
     auto swapCallback = std::bind(&ViewController::swapCallback, this, _1);
@@ -360,9 +379,9 @@ void ViewController::animateHandleMatches(CT::Set* chains)
         AnimationsManager->animateFallingObjects(columns, addNewCookies);
     });
 
-    auto fieldObjects = mLevel->detectFieldObjects(chains);
-    if (fieldObjects->count() > 0) {
-        mChainController->addFieldOjbectsToChainSet(fieldObjects, chains);
+    auto matchedObjects = mLevel->detectMatchingObjects(chains);
+    if (matchedObjects->count() > 0) {
+        mChainController->addMatchedOjbectsToChainSet(matchedObjects, chains);
     }
     AnimationsManager->animateMatching(chains, completion);
     AudioManager->playSound(SoundType::MatchSound);
@@ -449,7 +468,7 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
                 stopHintTimer();
                 mGameplayScene->userInteractionDisabled();
 
-                mLevel->removeDudeMatches(set);
+                mChainController->removeDudeMatches(set);
 
                 updateScore(set);
                 animateHandleMatches(set);

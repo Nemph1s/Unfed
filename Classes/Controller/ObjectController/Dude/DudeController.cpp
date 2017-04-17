@@ -153,6 +153,34 @@ void DudeController::detectDirectionsForDudes()
 }
 
 //--------------------------------------------------------------------
+bool DudeController::matchDudeObject(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    auto objContainer = mObjCtrl->getContainer(obj->getCell());
+    if (!objContainer) {
+        return false;
+    }
+    auto dudeObj = objContainer->getDude();
+    if (obj != dudeObj) {
+        return false;
+    }
+
+    std::function<void(BaseObj*)> func = [&](BaseObj* obj) {
+        auto dudeObj = dynamic_cast<DudeObj*>(obj);
+        if (dudeObj) {
+            eraseDirectionsForDude(dudeObj);
+        }
+    };
+    dudeObj->setEraseDirectionsCallback(func);
+
+    std::function<void(BaseObj*)> onRemoveDudeCallback;
+    onRemoveDudeCallback = std::bind(&ObjContainer::onRemoveDude, objContainer, std::placeholders::_1);
+    dudeObj->setRemoveDudeCallback(onRemoveDudeCallback);
+
+    return true;
+}
+
+//--------------------------------------------------------------------
 void DudeController::updateDirectionsForDude(DudeObj* obj, DudeHelper* helper)
 //--------------------------------------------------------------------
 {

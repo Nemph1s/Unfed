@@ -38,15 +38,12 @@ public:
     virtual bool initWithId(const int16_t& levelId);
 
     CT::Set* shuffle();
-    CT::Set* detectFieldObjects(CT::Set* chains);
+    CT::Set* detectMatchingObjects(CT::Set* chains);
 
     cocos2d::Array* useGravityToFillHoles();
     cocos2d::Array* fillTopUpHoles();
 
     void disablePredefinedCookies();
-
-    //TODO: move to callback
-    void removeDudeMatches(CT::Set* set);
 
 protected:
     // Nodes should be created using create();

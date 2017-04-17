@@ -31,6 +31,8 @@ public:
     BaseObj* createFieldObj(const CT::FieldInfo &info);
     BaseObj* createDudeObj(const CT::FieldInfo &info);
 
+    BaseObj* createEnemyObj(const CT::EnemyInfo &info);
+
     bool init(int poolSize);
     bool initCookiesPool(int poolSize);
     bool initTilesPool(int poolSize);

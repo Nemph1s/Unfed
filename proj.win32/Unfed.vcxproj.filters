@@ -70,6 +70,9 @@
     <Filter Include="src\Common\GlobalInfo">
       <UniqueIdentifier>{eb77aec4-df4a-436b-87fb-77a76eb3a4e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Controller\ObjectController\Enemy">
+      <UniqueIdentifier>{2a961b38-828c-4d5d-8b76-61abdf808d65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -176,6 +179,12 @@
     </ClCompile>
     <ClCompile Include="..\Classes\Utils\Helpers\ScoreHelper.cpp">
       <Filter>src\Utils\Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController\Enemy\EnemyController.cpp">
+      <Filter>src\Controller\ObjectController\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Controller\ObjectController\Enemy\EnemyObj.cpp">
+      <Filter>src\Controller\ObjectController\Enemy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -302,11 +311,17 @@
     <ClInclude Include="..\Classes\Common\Tags.h">
       <Filter>src\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Common\Factory\SpritesFactory.h">
-      <Filter>src\Common\GlobalInfo</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\Utils\PlatformMacros.h">
       <Filter>win32</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController\Enemy\EnemyController.h">
+      <Filter>src\Controller\ObjectController\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Controller\ObjectController\Enemy\EnemyObj.h">
+      <Filter>src\Controller\ObjectController\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Common\Factory\SpritesFactory.h">
+      <Filter>src\Common\Factory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

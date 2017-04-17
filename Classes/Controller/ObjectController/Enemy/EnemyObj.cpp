@@ -1,5 +1,5 @@
 /**
-* @file GameObjects/TileObjects/FieldObjects/Base/FieldObj.cpp
+* @file Controller/ObjectController/Enemy/EnemyObj.cpp
 * Copyright (C) 2017
 * Company       Octohead LTD
 *               All Rights Reserved
@@ -8,15 +8,16 @@
 * @author VMartyniuk
 */
 
-#include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
-#include "Common/GlobalInfo/GlobalInfo.h"
+#include "Controller/ObjectController/Enemy/EnemyObj.h"
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
+#include "Common/GlobalInfo/GlobalInfo.h"
+
 //--------------------------------------------------------------------
-FieldObj::FieldObj()
+EnemyObj::EnemyObj()
     : BaseObj()
-    , mFieldType(CT::FieldType::Unknown)
+    , mEnemyType(CT::EnemyType::Unknown)
     , mDebugLabel(nullptr)
     , mHP(0)
     , mReadyToUpdatePriority(false)
@@ -25,16 +26,16 @@ FieldObj::FieldObj()
 }
 
 //--------------------------------------------------------------------
-FieldObj::~FieldObj()
+EnemyObj::~EnemyObj()
 //--------------------------------------------------------------------
 {
 }
 
 //--------------------------------------------------------------------
-FieldObj * FieldObj::create(const CT::FieldInfo &info)
+EnemyObj * EnemyObj::create(const CT::EnemyInfo & info)
 //--------------------------------------------------------------------
 {
-    FieldObj * ret = new (std::nothrow) FieldObj();
+    EnemyObj * ret = new (std::nothrow) EnemyObj();
     if (ret && ret->init(info)) {
         ret->autorelease();
     }
@@ -45,17 +46,23 @@ FieldObj * FieldObj::create(const CT::FieldInfo &info)
 }
 
 //--------------------------------------------------------------------
-bool FieldObj::init(const CT::FieldInfo &info)
+bool EnemyObj::init(const CT::EnemyInfo & info)
 //--------------------------------------------------------------------
 {
     if (!BaseObj::init(info.baseInfo)) {
-        cocos2d::log("FieldObj::init: can't init Node inctance");
+        cocos2d::log("DudeObj::init: can't init BaseObj inctance");
         return false;
     }
-    mFieldType = info.fieldType;
-    mPriority = info.priority;
 
-    if (!mDebugLabel && mType != CT::BaseObjType::Field) {
+    mEnemyType = info.enemyType;
+    mHP = 1;
+    mIsRemovable = true;
+    mIsMovable = true;
+    mIsSwappable = true;
+    mIsContainer = false;
+
+
+    if (!mDebugLabel) {
 #ifdef COCOS2D_DEBUG
         mDebugLabel = cocos2d::Label::create();
         mDebugLabel->setBMFontSize(16);
@@ -81,61 +88,64 @@ bool FieldObj::init(const CT::FieldInfo &info)
 }
 
 //--------------------------------------------------------------------
-cocos2d::String & FieldObj::description() const
+cocos2d::String& EnemyObj::spriteName() const
 //--------------------------------------------------------------------
 {
-    return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
+    return GameResources::s_enemySpriteNames.at(getTypeAsInt());
 }
 
 //--------------------------------------------------------------------
-void FieldObj::setSpriteNode(cocos2d::Sprite * var)
+int EnemyObj::getTypeAsInt() const
 //--------------------------------------------------------------------
 {
-    mSpriteNode = var;
-    if (mSpriteNode && mDebugLabel) {
-        if (!mDebugLabel->getParent()) {
-            mSpriteNode->addChild(mDebugLabel, 10);
-        }
-    }
+    return Helper::getInstance()->to_underlying(mEnemyType);
 }
 
 //--------------------------------------------------------------------
-int FieldObj::getTypeAsInt() const
-//--------------------------------------------------------------------
-{
-    return Helper::getInstance()->to_underlying(mFieldType);
-}
-
-//--------------------------------------------------------------------
-void FieldObj::match()
+void EnemyObj::match()
 //--------------------------------------------------------------------
 {
     mHP--;
     if (mHP > 0) {
-        mFieldType = static_cast<CT::FieldType>(getTypeAsInt() - 1);
-    } else if (mHP == 0) {
-        mPriority--;
+        //TODO: change state from idle to stun
+    }
+    else if (mHP == 0) {
+        
     }
 }
 
 //--------------------------------------------------------------------
-void FieldObj::clear()
+void EnemyObj::clear()
 //--------------------------------------------------------------------
 {
     BaseObj::clear();
-    mFieldType = CT::FieldType::Unknown;
+    mEnemyType = CT::EnemyType::Unknown;
     mHP = 0;
     mReadyToUpdatePriority = false;
     if (mDebugLabel) {
         if (mDebugLabel->getParent()) {
             mDebugLabel->removeFromParent();
-        }        
+        }
         CC_SAFE_RELEASE_NULL(mDebugLabel);
-    }    
+    }
 }
 
 //--------------------------------------------------------------------
-bool FieldObj::isHpEnded() const
+bool EnemyObj::checkMatchingCondition(CT::Cell& cell)
+//--------------------------------------------------------------------
+{
+    if (!Helper::isValidCell(cell)) {
+        return false;
+    }
+    bool objectOnTop = (mColumn == cell.column && mRow == cell.row - 1);
+    bool objectOnBot = (mColumn == cell.column && mRow == cell.row + 1);
+    bool objectOnLeft = (mColumn == cell.column - 1 && mRow == cell.row);
+    bool objectOnRight = (mColumn == cell.column + 1 && mRow == cell.row);
+    return objectOnTop || objectOnBot || objectOnLeft || objectOnRight;
+}
+
+//--------------------------------------------------------------------
+bool EnemyObj::isHpEnded() const
 //--------------------------------------------------------------------
 {
     bool result = false;
@@ -146,7 +156,7 @@ bool FieldObj::isHpEnded() const
 }
 
 //--------------------------------------------------------------------
-void FieldObj::updateDebugLabel()
+void EnemyObj::updateDebugLabel()
 //--------------------------------------------------------------------
 {
     if (mDebugLabel) {

@@ -42,6 +42,8 @@ public:
 
     void detectDirectionsForDudes();
 
+    bool matchDudeObject(BaseObj* obj);
+
     bool canActivateDudeTo(CT::Cell& fromCell, int direction);
     CT::Set* getChainsForDude(DudeObj* obj, int dir, bool isPreview = false);
 

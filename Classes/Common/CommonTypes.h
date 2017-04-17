@@ -198,7 +198,7 @@ namespace CT {
        , ChainTypeAllOfOne = 5 /**< enum value ChainTypeAllOfOne. */
        , ChainExplosion = 7 /**< enum value ChainExplosion. */
        , ChainFromAToB = 6 /**< enum value ChainTypeAllOfOne. */
-       , ChainFieldObjects = 7 /**< enum value ChainFieldObjects. */
+       , ChainMathcedObjects = 7 /**< enum value ChainFieldObjects. */
        , ChainCircle = 8 /**< enum value ChainCircle. */
        , Unknown /**< enum value unknown. */
    };

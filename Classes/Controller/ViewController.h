@@ -22,6 +22,7 @@ class ObjectController;
 class ChainController;
 class SwapController;
 class DudeController;
+class EnemyController;
 class LevelGoalComponent;
 
 class ViewController : public cocos2d::Ref
@@ -51,6 +52,7 @@ protected:
     bool initSwapController();
     bool initChainController();
     bool initDudeController();
+    bool initEnemyController();
 
     //---Gui-------------------------------------------------------
     void updateScore(CT::Set* chains);
@@ -95,5 +97,6 @@ protected:
     CC_SYNTHESIZE_READONLY(ChainController*, mChainController, ChainController)
     CC_SYNTHESIZE_READONLY(SwapController*, mSwapController, SwapController)
     CC_SYNTHESIZE_READONLY(DudeController*, mDudeController, DudeController)
+    CC_SYNTHESIZE_READONLY(EnemyController*, mEnemyController, EnemyController)
 };
 

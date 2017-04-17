@@ -114,6 +114,17 @@ cocos2d::String* Helper::getSpriteNameByFieldType(int fieldType)
 }
 
 //--------------------------------------------------------------------
+cocos2d::String * Helper::getSpriteNameByEnemyType(int enemyType)
+//--------------------------------------------------------------------
+{
+    cocos2d::String* str = nullptr;
+    if (enemyType >= to_underlying(EnemyType::Simple) && enemyType < to_underlying(EnemyType::Unknown)) {
+        str = &GameResources::s_enemySpriteNames.at(enemyType);
+    }
+    return str;
+}
+
+//--------------------------------------------------------------------
 bool Helper::isValidCell(CT::Cell& cell)
 //--------------------------------------------------------------------
 {

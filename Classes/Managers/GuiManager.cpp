@@ -243,6 +243,9 @@ cocos2d::Sprite * _GuiManager::createSprite(int baseType, int objType)
     case CT::BaseObjType::Dude:
         str = Helper::getSpriteNameByFieldType(objType);
         break;
+    case CT::BaseObjType::Enemy:
+        str = Helper::getSpriteNameByEnemyType(objType);
+        break;
     case CT::BaseObjType::Tile:
     case CT::BaseObjType::Unknown:
         break;

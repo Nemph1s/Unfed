@@ -153,6 +153,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeController.cpp" />
     <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.cpp" />
     <ClCompile Include="..\Classes\Controller\ObjectController\Dude\DudeObj.cpp" />
+    <ClCompile Include="..\Classes\Controller\ObjectController\Enemy\EnemyController.cpp" />
+    <ClCompile Include="..\Classes\Controller\ObjectController\Enemy\EnemyObj.cpp" />
     <ClCompile Include="..\Classes\Controller\ObjectController\ObjectController.cpp" />
     <ClCompile Include="..\Classes\Controller\ObjectController\ObjContainer.cpp" />
     <ClCompile Include="..\Classes\Controller\SwapController\SwapController.cpp" />
@@ -193,6 +195,8 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeController.h" />
     <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeHelper.h" />
     <ClInclude Include="..\Classes\Controller\ObjectController\Dude\DudeObj.h" />
+    <ClInclude Include="..\Classes\Controller\ObjectController\Enemy\EnemyController.h" />
+    <ClInclude Include="..\Classes\Controller\ObjectController\Enemy\EnemyObj.h" />
     <ClInclude Include="..\Classes\Controller\ObjectController\ObjectController.h" />
     <ClInclude Include="..\Classes\Controller\ObjectController\ObjContainer.h" />
     <ClInclude Include="..\Classes\Controller\SwapController\SwapController.h" />

@@ -96,7 +96,9 @@ uint16_t ScoreHelper::getScoreForContainer(ObjContainer* container)
         else if (type == BaseObjType::Dude) {
             score = getScoreByDudeObj(baseObj);
         }
-        // TODO: add enemy type
+        else if (type == BaseObjType::Enemy) {
+            score = getScoreByEnemyObj(baseObj);
+        }
     }
     return score;
 }
