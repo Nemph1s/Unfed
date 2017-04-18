@@ -32,6 +32,8 @@ public:
     bool init();
 
     CT::Set* createInitialEnemies();
+
+    void beginEnemiesTurn();
     
     bool matchEnemyObject(BaseObj* obj);
 
@@ -43,4 +45,6 @@ protected:
     
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController);
+
+    //TODO: create a list of enemies
 };

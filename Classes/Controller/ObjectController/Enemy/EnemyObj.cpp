@@ -20,7 +20,6 @@ EnemyObj::EnemyObj()
     , mEnemyType(CT::EnemyType::Unknown)
     , mDebugLabel(nullptr)
     , mHP(0)
-    , mReadyToUpdatePriority(false)
 //--------------------------------------------------------------------
 {
 }
@@ -71,7 +70,7 @@ bool EnemyObj::init(const CT::EnemyInfo & info)
         mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::BOTTOM);
         mDebugLabel->setPosition(cocos2d::Vec2(GlobInfo->getTileWidth() * 0.8f, GlobInfo->getTileHeight() * 0.2f));
         mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
-        mDebugLabel->setTextColor(cocos2d::Color4B::MAGENTA);
+        mDebugLabel->setTextColor(cocos2d::Color4B::WHITE);
         mDebugLabel->setGlobalZOrder(1000);
         CC_SAFE_RETAIN(mDebugLabel);
         //mSpriteNode->addChild(mDebugLabel, 10);
@@ -121,7 +120,6 @@ void EnemyObj::clear()
     BaseObj::clear();
     mEnemyType = CT::EnemyType::Unknown;
     mHP = 0;
-    mReadyToUpdatePriority = false;
     if (mDebugLabel) {
         if (mDebugLabel->getParent()) {
             mDebugLabel->removeFromParent();
@@ -160,10 +158,19 @@ void EnemyObj::updateDebugLabel()
 //--------------------------------------------------------------------
 {
     if (mDebugLabel) {
+        if (!mDebugLabel->getParent() && mSpriteNode) {
+            mSpriteNode->addChild(mDebugLabel);
+        }
         int col = mColumn == -1 ? 0 : mColumn;
         int row = mRow == -1 ? 0 : mRow;
 
         auto text = cocos2d::StringUtils::format("[%d,%d]z%d", col, row, mSpriteNode->getLocalZOrder());
         mDebugLabel->setString(text);
     }
+}
+
+//--------------------------------------------------------------------
+void EnemyObj::runAction()
+//--------------------------------------------------------------------
+{
 }

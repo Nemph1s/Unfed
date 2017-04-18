@@ -84,6 +84,13 @@ CT::Set* EnemyController::createInitialEnemies()
 }
 
 //--------------------------------------------------------------------
+void EnemyController::beginEnemiesTurn()
+//--------------------------------------------------------------------
+{
+    //TODO: run action for each enemy
+}
+
+//--------------------------------------------------------------------
 BaseObj * EnemyController::createEnemy(Cell& cell, int type, int priority)
 //--------------------------------------------------------------------
 {

@@ -38,6 +38,8 @@ public:
 
     virtual void updateDebugLabel() override;
 
+    virtual void runAction();
+
 protected:
     // Nodes should be created using create();
     EnemyObj();
@@ -46,12 +48,11 @@ protected:
     CC_SYNTHESIZE_READONLY(CT::EnemyType, mEnemyType, EnemyType)
     
     CC_SYNTHESIZE(int, mHP, HP)
+    CC_SYNTHESIZE(int, mWaitTurnsBeforeAction, WaitTurnsBeforeAction)
     CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel)
 
     SYNTHESIZE_IS_READONLY(bool, mIsRemovableByMatch, RemovableByMatch, false)
 
     CC_SYNTHESIZE(std::function<void(BaseObj*)>, mRemoveEnemyCallback, RemoveEnemyCallback)
-    CC_SYNTHESIZE(bool, mReadyToUpdatePriority, ReadyToUpdatePriority)
-    CC_SYNTHESIZE(std::function<void(BaseObj*, std::function<void(FieldObj*)>)>, mFieldObjChangeState, FieldObjChangeState)
 };
 

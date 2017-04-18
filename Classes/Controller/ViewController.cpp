@@ -362,7 +362,6 @@ void ViewController::animateHandleMatches(CT::Set* chains)
     CC_ASSERT(chains);
 
     stopHintTimer();
-    mChainController->executeCollectGoalCallback(chains);
 
     auto completion = CallFunc::create([&]() {
 
@@ -383,6 +382,9 @@ void ViewController::animateHandleMatches(CT::Set* chains)
     if (matchedObjects->count() > 0) {
         mChainController->addMatchedOjbectsToChainSet(matchedObjects, chains);
     }
+
+    mChainController->executeCollectGoalCallback(chains);
+
     AnimationsManager->animateMatching(chains, completion);
     AudioManager->playSound(SoundType::MatchSound);
 }

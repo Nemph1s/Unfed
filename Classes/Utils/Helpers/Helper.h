@@ -58,7 +58,8 @@ public:
     static cocos2d::Color4B getScoreColorByObj(BaseObj* obj);
 
 private:
-    static cocos2d::Color4B getScoreColorByCookieType(CT::CookieType type);
-    static cocos2d::Color4B getScoreColorForFieldObj(CT::FieldType type);
-    static cocos2d::Color4B getScoreColorForDudeObj(CT::FieldType type);
+    static cocos2d::Color4B getScoreColorByCookieType(int type);
+    static cocos2d::Color4B getScoreColorForFieldObj(int type);
+    static cocos2d::Color4B getScoreColorForDudeObj(int type);
+    static cocos2d::Color4B getScoreColorForEnemyObj(int type);
 };
