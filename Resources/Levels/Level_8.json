@@ -13,8 +13,8 @@
     "targetScore" : 3000,
     "moves" : 15,
     "typesCount" : 2,
-    "fieldObjects": {
-        "objects" : [ { "col": 4, "row": 4, "types": [ 30, 21 ] } ]
+    "objects": {
+        "fieldObjects" : [ { "col": 4, "row": 4, "types": [ 30, 21 ] } ]
     },
     "levelGoals": {
         "goalsCount" : 3,

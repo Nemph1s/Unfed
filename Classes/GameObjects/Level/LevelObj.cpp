@@ -13,6 +13,7 @@
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "Controller/ObjectController/Dude/DudeObj.h"
+#include "Controller/ObjectController/Enemy/EnemyObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
@@ -155,7 +156,7 @@ bool LevelObj::useGravityOnObject(cocos2d::Array* colArr, cocos2d::Array* rowArr
 }
 
 //--------------------------------------------------------------------
-CT::Set* LevelObj::detectFieldObjects(CT::Set* chains)
+CT::Set* LevelObj::detectMatchingObjects(CT::Set* chains)
 //--------------------------------------------------------------------
 {
     auto set = CT::Set::create();
@@ -164,14 +165,15 @@ CT::Set* LevelObj::detectFieldObjects(CT::Set* chains)
         for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
 
             auto cell = Cell(column, row);
-            auto obj = mObjCtrl->fieldObjectAt(cell);
-            if (!obj) {
+            auto fieldObj = mObjCtrl->fieldObjectAt(cell);
+            auto enemyObj = mObjCtrl->enemyAt(cell);
+            if (!fieldObj && !enemyObj) {
                 continue;
             }
+            BaseObj* obj = fieldObj ? fieldObj : enemyObj;
             if (obj->isRemovable()) {
-
-                if (mChainCtrl->checkMathicngFieldObjWithChain(chains, obj)) {
-                    if (mObjCtrl->matchFieldObject(obj)) {
+                if (mChainCtrl->checkMathingObjWithChain(chains, obj)) {
+                    if (mObjCtrl->matchObject(obj)) {
                         set->addObject(obj);
                         continue;
                     }
@@ -295,16 +297,5 @@ void LevelObj::disablePredefinedCookies()
 {
     if (mLevelInfo.isPredefinedCookies) {
         mLevelInfo.isPredefinedCookies = false;
-    }
-}
-
-//--------------------------------------------------------------------
-void LevelObj::removeDudeMatches(CT::Set* set)
-//--------------------------------------------------------------------
-{
-    cocos2d::log("LevelObj::removeDudeMatches:");
-    if (set) {
-        ScoreHelper::calculateScore(set);
-        mChainCtrl->matchChains(set);
     }
 }

@@ -16,12 +16,14 @@
 #include "Common/GlobalInfo/GlobalInfo.h"
 
 class DudeObj;
+class EnemyObj;
 class BaseObj;
 class TileObj;
 class CookieObj;
 class FieldObj;
 class LevelObj;
 class DudeController;
+class EnemyController;
 class ObjContainer;
 
 class ObjectController : public cocos2d::Ref
@@ -40,7 +42,7 @@ public:
 
     bool init();
 
-    void createObjects();
+    void createObjContainers();
     CT::Set* createInitialFieldObjects();
     CT::Set* createInitialCookies();
     BaseObj* createRandomCookie(CT::Cell& cell);
@@ -58,6 +60,7 @@ public:
     BaseObj* fieldObjectAt(CT::Cell& cell);
     std::list<FieldObj*>* fieldObjectsAt(CT::Cell& cell);
     DudeObj* dudeAt(CT::Cell& cell);
+    EnemyObj* enemyAt(CT::Cell& cell);
     
     bool hasChainAt(CT::Cell& cell);
     bool isEmptyTileAt(CT::Cell& cell);
@@ -69,7 +72,6 @@ public:
 
     bool matchFieldObject(BaseObj* obj);
     bool matchCookieObject(BaseObj* obj);
-    bool matchDudeObject(BaseObj* obj);
 
     void updateCookieObjectAt(CT::Cell& cell, BaseObj* cookie);
     void updateObjectAt(CT::Cell& cell, BaseObj* obj);
@@ -91,6 +93,7 @@ protected:
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(LevelObj*, mLevel, Level);
     CC_SYNTHESIZE(DudeController*, mDudeCtrl, DudeController);
+    CC_SYNTHESIZE(EnemyController*, mEnemyCtrl, EnemyController);
 
     ObjContainer* mObjects[_GlobalInfo::NumColumns][_GlobalInfo::NumRows] = { nullptr };
 };

@@ -69,7 +69,9 @@ uint16_t ScoreHelper::getScoreByObj(BaseObj * obj, bool isInDudeCain)
     else if (type == BaseObjType::Dude) {
         score = getScoreByDudeObj(obj);
     }
-    // TODO: add enemy type
+    else if (type == BaseObjType::Enemy) {
+        score = getScoreByEnemyObj(obj);
+    }
     return score;
 }
 
@@ -96,7 +98,9 @@ uint16_t ScoreHelper::getScoreForContainer(ObjContainer* container)
         else if (type == BaseObjType::Dude) {
             score = getScoreByDudeObj(baseObj);
         }
-        // TODO: add enemy type
+        else if (type == BaseObjType::Enemy) {
+            score = getScoreByEnemyObj(baseObj);
+        }
     }
     return score;
 }

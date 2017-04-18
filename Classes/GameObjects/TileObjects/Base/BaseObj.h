@@ -38,9 +38,9 @@ public:
     virtual int getTypeAsInt() const;
 
     virtual void match();
-    virtual bool isHpEnded() const;
-
     virtual void clear();
+    virtual bool checkMatchingCondition(CT::Cell& cell);
+    virtual bool isHpEnded() const;   
 
     virtual void updateDebugLabel();
     virtual void updateZOrder();
@@ -56,6 +56,7 @@ protected:
     SYNTHESIZE_IS_READONLY(bool, mIsSwappable, Swappable, false);
     SYNTHESIZE_IS_READONLY(bool, mIsContainer, Container, false);
 
+    CC_SYNTHESIZE(int, mPriority, Priority);
     cocos2d::String* mDummyString;
 
     CC_SYNTHESIZE(int, mColumn, Column);

@@ -48,11 +48,12 @@ public:
 
     void addObjectsFromChainToChain(CT::Set* from, CT::Set* to);
 
-    void addFieldOjbectsToChainSet(CT::Set* fieldObjects, CT::Set* chainSet);
-    bool checkMathicngFieldObjWithChain(CT::Set* chains, BaseObj* obj);
+    void addMatchedOjbectsToChainSet(CT::Set* fieldObjects, CT::Set* chainSet);
+    bool checkMathingObjWithChain(CT::Set* chains, BaseObj* obj);
 
     CT::Set* removeMatches();
     CT::Set* removeChainAt(CT::ChainType& type, cocos2d::Vec2& pos);
+    void removeDudeMatches(CT::Set* set);
 
     CT::Set* detectHintChainAt(BaseObj* curObj, BaseObj* nextObj);
 

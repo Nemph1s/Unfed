@@ -17,6 +17,7 @@
 class SwapObj;
 class LevelObj;
 class CookieObj;
+class BaseObj;
 
 struct SwapChecker : public cocos2d::Ref
 {
@@ -40,6 +41,8 @@ public:
     static SwapController* create();
 
     bool init();
+
+    SwapObj* createSwapWithObjects(BaseObj* objectA, BaseObj* objectB);
     
     /**
     * @brief A method that checks is the cookie[column][row] type equal to forwarded type

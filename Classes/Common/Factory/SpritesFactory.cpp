@@ -17,6 +17,7 @@
 #include "GameObjects/TileObjects/TileObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "Controller/ObjectController/Dude/DudeObj.h"
+#include "Controller/ObjectController/Enemy/EnemyObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 using namespace CT;
@@ -59,6 +60,9 @@ Sprite* _SpritesFactory::createWithBaseObject(BaseObj* obj)
         break;
     case BaseObjType::Dude:
         sprite = createForDudeObj(obj);
+        break;
+    case BaseObjType::Enemy:
+        sprite = createForEnemyObj(obj);
         break;
     case BaseObjType::Unknown:
     default:
@@ -181,6 +185,37 @@ bool _SpritesFactory::initDudesPool(int poolSize)
 }
 
 //--------------------------------------------------------------------
+bool _SpritesFactory::initEnemyPool(int poolSize)
+//--------------------------------------------------------------------
+{
+    auto enemyTypeInt = Helper::to_underlying(EnemyType::Simple);
+    auto enemyTypeMax = Helper::to_underlying(EnemyType::Unknown);
+    while (enemyTypeInt != enemyTypeMax) {
+        auto enemyList = new TSpriteList;
+        CCASSERT(enemyList, "error while creating enemyList");
+
+        auto dudePoolSize = poolSize;
+        while (dudePoolSize--) {
+            auto spriteName = GameResources::s_enemySpriteNames.at(enemyTypeInt).getCString();
+            auto sprite = Sprite::create(spriteName);
+            sprite->setTag(enemyTypeInt);
+            sprite->setVisible(false);
+            CC_SAFE_RETAIN(sprite);
+            CCASSERT(sprite, "error while creating sprite for EnemyObj");
+
+            enemyList->push_back(sprite);
+        }
+        auto type = static_cast<EnemyType>(enemyTypeInt);
+        mEnemySpritesPool[type] = enemyList;
+        cocos2d::log("SpritesFactory::initEnemyPool: actual enemyList type=%d size=%d", enemyTypeInt, enemyList->size());
+        enemyTypeInt++;
+    };
+
+    cocos2d::log("SpritesFactory::initEnemyPool: actual mDudeSpritesPool size=%d", mEnemySpritesPool.size());
+    return true;
+}
+
+//--------------------------------------------------------------------
 bool _SpritesFactory::initHintPool(int poolSize)
 //--------------------------------------------------------------------
 {
@@ -257,6 +292,12 @@ void _SpritesFactory::recycle(Sprite* spriteNode, BaseObj* obj)
         mDudeSpritesPool.at(fieldType)->push_back(spriteNode);
     }
         break;
+    case BaseObjType::Enemy:
+    {
+        auto enemyType = static_cast<EnemyType>(spriteNode->getTag());
+        mEnemySpritesPool.at(enemyType)->push_back(spriteNode);
+    }
+    break;
     case BaseObjType::Unknown:
     default:
         break;
@@ -277,6 +318,9 @@ _SpritesFactory::~_SpritesFactory()
          clearPool(it->second);
      }
      for (auto it = mFieldSpritesPool.begin(); it != mFieldSpritesPool.end(); it++) {
+         clearPool(it->second);
+     }
+     for (auto it = mEnemySpritesPool.begin(); it != mEnemySpritesPool.end(); it++) {
          clearPool(it->second);
      }
 //     clearPool(mCookieObjPool);
@@ -362,6 +406,29 @@ Sprite* _SpritesFactory::createForDudeObj(BaseObj * obj)
         if (mDudeSpritesPool.at(type)->size() > 0) {
             sprite = mDudeSpritesPool.at(type)->front();
             mDudeSpritesPool.at(type)->pop_front();
+            sprite->setVisible(true);
+        }
+    }
+    if (!sprite) {
+        sprite = createSpriteForObj(obj);
+    }
+    return sprite;
+}
+
+//--------------------------------------------------------------------
+Sprite * _SpritesFactory::createForEnemyObj(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    Sprite* sprite = nullptr;
+    auto enemyObj = dynamic_cast<EnemyObj*>(obj);
+    if (!enemyObj) {
+        return sprite;
+    }
+    auto type = static_cast<CT::EnemyType>(enemyObj->getTypeAsInt());
+    if (mEnemySpritesPool.size() > 0) {
+        if (mEnemySpritesPool.at(type)->size() > 0) {
+            sprite = mEnemySpritesPool.at(type)->front();
+            mEnemySpritesPool.at(type)->pop_front();
             sprite->setVisible(true);
         }
     }

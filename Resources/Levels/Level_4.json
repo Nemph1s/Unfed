@@ -13,8 +13,8 @@
 	"targetScore" : 60000,
 	"moves" : 20,
 	"typesCount" : 4,
-  	"fieldObjects": {
-        "objects" : [ { "col": 1, "row": 4, "types": [ 21 ] },
+  	"objects": {
+        "fieldObjects" : [ { "col": 1, "row": 4, "types": [ 21 ] },
 					{ "col": 2, "row": 4, "types": [ 21 ] },
 					{ "col": 3, "row": 4, "types": [ 21 ] },
 					{ "col": 4, "row": 4, "types": [ 21 ] },

@@ -20,6 +20,7 @@ class BaseObj;
 class CookieObj;
 class FieldObj;
 class DudeObj;
+class EnemyObj;
 
 #define CALLFUNC_EMPTY_LAMBDA cocos2d::CCCallFunc::create([](){})
 
@@ -58,6 +59,7 @@ protected:
     void animateMatchCookie(CookieObj* obj, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
     void animateMatchFieldObj(FieldObj* obj, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
     void animateMatchDude(DudeObj* obj, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
+    void animateMatchEnemy(EnemyObj* obj, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
     
     void animateHintJump(BaseObj* obj);
 

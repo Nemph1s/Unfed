@@ -15,6 +15,7 @@
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "Controller/ObjectController/Dude/DudeObj.h"
+#include "Controller/ObjectController/Enemy/EnemyObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include <random>
 #include <cstdlib>
@@ -109,6 +110,17 @@ cocos2d::String* Helper::getSpriteNameByFieldType(int fieldType)
         break;
     default:
         break;
+    }
+    return str;
+}
+
+//--------------------------------------------------------------------
+cocos2d::String * Helper::getSpriteNameByEnemyType(int enemyType)
+//--------------------------------------------------------------------
+{
+    cocos2d::String* str = nullptr;
+    if (enemyType >= to_underlying(EnemyType::Simple) && enemyType < to_underlying(EnemyType::Unknown)) {
+        str = &GameResources::s_enemySpriteNames.at(enemyType);
     }
     return str;
 }
@@ -274,35 +286,30 @@ cocos2d::Color4B Helper::getScoreColorByObj(BaseObj * obj)
     if (!obj) {
         return color;
     }
-
+    auto type = obj->getTypeAsInt();
     if (obj->getType() == BaseObjType::Cookie) {
-        auto cookie = dynamic_cast<CookieObj*>(obj);
-        if (cookie) {
-            color = getScoreColorByCookieType(cookie->getCookieType());
-        }
+        color = getScoreColorByCookieType(type);
     }
     else if (obj->getType() == BaseObjType::Field) {
-        auto tileObj = dynamic_cast<FieldObj*>(obj);
-        if (tileObj) {
-            color = getScoreColorForFieldObj(tileObj->getFieldType());
-        }
+        color = getScoreColorForFieldObj(type);
     }
     else if (obj->getType() == BaseObjType::Dude) {
-        auto dudeObj = dynamic_cast<DudeObj*>(obj);
-        if (dudeObj) {
-            color = getScoreColorForDudeObj(dudeObj->getFieldType());
-        }
+        color = getScoreColorForDudeObj(type);
+    }
+    else if (obj->getType() == BaseObjType::Enemy) {
+        color = getScoreColorForEnemyObj(type);
     }
 
     return color;
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorByCookieType(CT::CookieType type)
+cocos2d::Color4B Helper::getScoreColorByCookieType(int type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
-    switch (type)
+    auto cookieType = static_cast<CT::CookieType>(type);
+    switch (cookieType)
     {
     case CookieType::Croissant:
         color = cocos2d::Color4B::ORANGE;
@@ -329,11 +336,12 @@ cocos2d::Color4B Helper::getScoreColorByCookieType(CT::CookieType type)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorForFieldObj(CT::FieldType type)
+cocos2d::Color4B Helper::getScoreColorForFieldObj(int type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
-    switch (type)
+    auto fieldType = static_cast<CT::FieldType>(type);
+    switch (fieldType)
     {
     case FieldType::Dirt:
     case FieldType::Dirt_HP2:
@@ -354,12 +362,13 @@ cocos2d::Color4B Helper::getScoreColorForFieldObj(CT::FieldType type)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorForDudeObj(CT::FieldType type)
+cocos2d::Color4B Helper::getScoreColorForDudeObj(int type)
 //--------------------------------------------------------------------
 {
     // see hints on http://www.colorhexa.com/color-names
     auto color = cocos2d::Color4B(209, 159, 232, 255); //Bright ube 
-    switch (type)
+    auto dudeType = static_cast<CT::FieldType>(type);
+    switch (dudeType)
     {
     case FieldType::DudeFromAToB:
         color = cocos2d::Color4B(193, 154, 107, 150); //Desert 
@@ -375,6 +384,27 @@ cocos2d::Color4B Helper::getScoreColorForDudeObj(CT::FieldType type)
         break;
     case FieldType::DudeSquareBomb:
         color = cocos2d::Color4B(175, 64, 53, 255); // Pale Carmine 
+        break;
+    default:
+        break;
+    }
+    return color;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Color4B Helper::getScoreColorForEnemyObj(int type)
+//--------------------------------------------------------------------
+{
+    // see hints on http://www.colorhexa.com/color-names
+    auto color = cocos2d::Color4B(0x0f, 0x0f, 0x0f, 255); //onyx
+    auto enemyType = static_cast<CT::EnemyType>(type);
+    switch (type)
+    {
+    case EnemyType::Simple:
+        color = cocos2d::Color4B(0x3e, 0xb4, 0x89, 255); //mint 
+        break;
+    case EnemyType::Shielded:
+        color = cocos2d::Color4B(0xff, 0x45, 0x00, 255); //orange red
         break;
     default:
         break;
