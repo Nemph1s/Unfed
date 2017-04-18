@@ -396,15 +396,15 @@ cocos2d::Color4B Helper::getScoreColorForEnemyObj(int type)
 //--------------------------------------------------------------------
 {
     // see hints on http://www.colorhexa.com/color-names
-    auto color = cocos2d::Color4B::BLACK;
+    auto color = cocos2d::Color4B(0x0f, 0x0f, 0x0f, 255); //onyx
     auto enemyType = static_cast<CT::EnemyType>(type);
     switch (type)
     {
     case EnemyType::Simple:
-        color = cocos2d::Color4B(0x3D, 0x91, 0x40, 255); //cobaltgreen 
+        color = cocos2d::Color4B(0x3e, 0xb4, 0x89, 255); //mint 
         break;
     case EnemyType::Shielded:
-        color = cocos2d::Color4B(161, 202, 241, 255); //Baby blue eyes
+        color = cocos2d::Color4B(0xff, 0x45, 0x00, 255); //orange red
         break;
     default:
         break;

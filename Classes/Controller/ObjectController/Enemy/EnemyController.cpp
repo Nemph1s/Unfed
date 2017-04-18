@@ -34,6 +34,7 @@ using namespace std::placeholders;
 //--------------------------------------------------------------------
 EnemyController::EnemyController()
     : mObjCtrl(nullptr)
+    , mEnemiesList()
 //--------------------------------------------------------------------
 {
 }
@@ -87,7 +88,11 @@ CT::Set* EnemyController::createInitialEnemies()
 void EnemyController::beginEnemiesTurn()
 //--------------------------------------------------------------------
 {
-    //TODO: run action for each enemy
+    cocos2d::log("EnemyController::beginEnemiesTurn:");
+    for (auto it = mEnemiesList.begin(); it != mEnemiesList.end(); ++it) {
+   
+        runAction(*it);
+    }
 }
 
 //--------------------------------------------------------------------
@@ -102,7 +107,16 @@ BaseObj * EnemyController::createEnemy(Cell& cell, int type, int priority)
     if (obj) {
         obj->addObject(enemyObj);
     }
+    mEnemiesList.pushBack(enemyObj);
     return enemyObj;
+}
+
+//--------------------------------------------------------------------
+bool EnemyController::runAction(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    // TODO: get info about actions for current enemy, take it from EnemyHelper, and run in this method
+    return false;
 }
 
 //--------------------------------------------------------------------
@@ -121,6 +135,7 @@ bool EnemyController::matchEnemyObject(BaseObj* obj)
         std::function<void(BaseObj*)> onRemoveEnemyCallback;
         onRemoveEnemyCallback = std::bind(&ObjContainer::onRemoveEnemy, objContainer, _1);
         enemyObj->setRemoveEnemyCallback(onRemoveEnemyCallback);
+        mEnemiesList.eraseObject(enemyObj);
     }
     else {
         return false;

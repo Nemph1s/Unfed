@@ -14,6 +14,7 @@
 #include "Common/CommonTypes.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
 
+
 class BaseObj;
 class ObjectController;
 
@@ -34,7 +35,7 @@ public:
     CT::Set* createInitialEnemies();
 
     void beginEnemiesTurn();
-    
+
     bool matchEnemyObject(BaseObj* obj);
 
 protected:
@@ -42,9 +43,10 @@ protected:
     EnemyController();
 
     BaseObj* createEnemy(CT::Cell& cell, int type, int priority = 0);
+    bool runAction(BaseObj* obj);
     
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController);
-
-    //TODO: create a list of enemies
+    CC_SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController)
+    
+    CC_SYNTHESIZE(cocos2d::Vector<EnemyObj*>, mEnemiesList, EnemiesList)
 };

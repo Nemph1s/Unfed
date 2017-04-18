@@ -99,7 +99,6 @@ Set* DudeController::createDudeObectsFromChains(Set* chains, Set* prevSwapContai
 BaseObj* DudeController::createDudeObjWithoutContainer(int type)
 //--------------------------------------------------------------------
 {
-    //TODO: maybe retain obj?
     BaseObjInfo baseInfo = { BaseObjType::Dude };
     FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
     auto obj = dynamic_cast<DudeObj*>(SmartObjFactory->createDudeObj(info));
