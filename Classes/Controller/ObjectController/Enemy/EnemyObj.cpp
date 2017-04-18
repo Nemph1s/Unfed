@@ -20,6 +20,8 @@ EnemyObj::EnemyObj()
     , mEnemyType(CT::EnemyType::Unknown)
     , mDebugLabel(nullptr)
     , mHP(0)
+    , mWaitTurnsBeforeAction(1)
+    , mWaitedTurns(0)
 //--------------------------------------------------------------------
 {
 }
@@ -104,7 +106,13 @@ int EnemyObj::getTypeAsInt() const
 void EnemyObj::match()
 //--------------------------------------------------------------------
 {
-    mHP--;
+    // TODO: implement checking state before match
+    if (mIsStunned) {
+        mHP--;
+    } else {
+        mIsStunned = true;
+    }
+    
     if (mHP > 0) {
         //TODO: change state from idle to stun
     }
@@ -173,4 +181,29 @@ void EnemyObj::updateDebugLabel()
 void EnemyObj::runAction()
 //--------------------------------------------------------------------
 {
+    if (mRunActionCallback) {
+        mRunActionCallback();
+    }
+    updateState();
+}
+
+//--------------------------------------------------------------------
+bool EnemyObj::isInOparableState()
+//--------------------------------------------------------------------
+{
+    return !mIsStunned && (mWaitTurnsBeforeAction <= mWaitedTurns);
+}
+
+//--------------------------------------------------------------------
+void EnemyObj::updateState()
+//--------------------------------------------------------------------
+{
+    if (mWaitTurnsBeforeAction <= mWaitedTurns) {
+        mWaitedTurns = 0;
+        if (mIsStunned) {
+            mIsStunned = false;
+        }
+    } else {
+        mWaitedTurns++;
+    }
 }

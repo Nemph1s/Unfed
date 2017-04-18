@@ -470,6 +470,11 @@ void ObjContainer::onRemoveEnemy(BaseObj * obj)
         if (mEnemyObj->getParent()) {
             mEnemyObj->removeFromParent();
         }
+
+        auto eraseDirectionsFunc = mEnemyObj->getEraseEnemyHelperCallback();
+        if (eraseDirectionsFunc) {
+            eraseDirectionsFunc(obj);
+        }
         mObjectInChain = nullptr;
         SpritesFactory->recycle(mEnemyObj->getSpriteNode(), mEnemyObj);
         if (mEnemyObj->getSpriteNode()) {

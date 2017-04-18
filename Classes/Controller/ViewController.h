@@ -62,6 +62,7 @@ protected:
     void shuffle();
     void handleMatches();
     void animateHandleMatches(CT::Set* chains);
+    void beginEnemiesTurn();
     void beginNextTurn();
 
     //---Callbacks-------------------------------------------------------
@@ -79,6 +80,8 @@ protected:
 
     //---Other-------------------------------------------------------
     void decrementMoves();
+
+    void actionEnemyMove(BaseObj* objA, BaseObj* objB);
     //--------------------------------------------------------------------
 
     //---Class Attributes-------------------------------------------------

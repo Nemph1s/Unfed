@@ -9,6 +9,7 @@
 */
 
 #include "Controller/ObjectController/Enemy/EnemyController.h"
+#include "Controller/ObjectController/Enemy/EnemyHelper.h"
 #include "Controller/ObjectController/Enemy/EnemyObj.h"
 #include "Controller/ObjectController/ObjectController.h"
 #include "Controller/ObjectController/ObjContainer.h"
@@ -34,7 +35,6 @@ using namespace std::placeholders;
 //--------------------------------------------------------------------
 EnemyController::EnemyController()
     : mObjCtrl(nullptr)
-    , mEnemiesList()
 //--------------------------------------------------------------------
 {
 }
@@ -85,14 +85,51 @@ CT::Set* EnemyController::createInitialEnemies()
 }
 
 //--------------------------------------------------------------------
-void EnemyController::beginEnemiesTurn()
+void EnemyController::detectDirectionsForEnemies()
 //--------------------------------------------------------------------
 {
-    cocos2d::log("EnemyController::beginEnemiesTurn:");
-    for (auto it = mEnemiesList.begin(); it != mEnemiesList.end(); ++it) {
-   
-        runAction(*it);
+    for (auto it = mEnemyDirections.begin(); it != mEnemyDirections.end(); ++it) {
+        auto enemyPair = *it;
+        EnemyObj* enemy = enemyPair.first;
+        EnemyHelper* helper = enemyPair.second;
+        if (enemy && helper) {
+            updateDirectionsForEnemy(enemy, helper);
+        }
     }
+}
+
+//--------------------------------------------------------------------
+void EnemyController::eraseEnemyHelper(EnemyObj* obj)
+//--------------------------------------------------------------------
+{
+    if (!obj) {
+        cocos2d::log("EnemyController::eraseEnemyHelper: empty enemy ptr");
+        return;
+    }
+    mEnemyDirections.erase(obj);
+}
+
+//--------------------------------------------------------------------
+bool EnemyController::beginEnemiesTurn(bool updateDirections /* = true */)
+//--------------------------------------------------------------------
+{
+    bool result = false;
+    cocos2d::log("EnemyController::beginEnemiesTurn:");
+    for (auto it = mEnemyDirections.begin(); it != mEnemyDirections.end(); ++it) {
+        
+        auto enemyPair = *it;
+        EnemyObj* enemy = enemyPair.first;
+        if (updateDirections) {
+            EnemyHelper* helper = enemyPair.second;
+            if (enemy && helper) {
+                updateDirectionsForEnemy(enemy, helper);
+            }
+        }
+        if (runAction(enemy)) {
+            result = true;
+        }        
+    }
+    return result;
 }
 
 //--------------------------------------------------------------------
@@ -101,22 +138,71 @@ BaseObj * EnemyController::createEnemy(Cell& cell, int type, int priority)
 {
     BaseObjInfo baseInfo = { BaseObjType::Enemy, cell };
     EnemyInfo info = { baseInfo, static_cast<EnemyType>(type) };
-    auto enemyObj = SmartObjFactory->createEnemyObj(info);
-    CC_ASSERT(enemyObj);
-    auto obj = mObjCtrl->getContainer(cell);
-    if (obj) {
-        obj->addObject(enemyObj);
+    auto obj = dynamic_cast<EnemyObj*>(SmartObjFactory->createEnemyObj(info));
+    CC_ASSERT(obj);
+    auto container = mObjCtrl->getContainer(cell);
+    if (container) {
+        container->addObject(obj);
     }
-    mEnemiesList.pushBack(enemyObj);
-    return enemyObj;
+    auto helper = EnemyHelper::createWithEnemyObject(obj);
+    helper->setEnemyController(this);
+    helper->setObjectController(mObjCtrl);
+
+    mEnemyDirections.insert(obj, helper);
+    return obj;
 }
 
 //--------------------------------------------------------------------
-bool EnemyController::runAction(BaseObj * obj)
+bool EnemyController::runAction(EnemyObj* obj)
 //--------------------------------------------------------------------
 {
-    // TODO: get info about actions for current enemy, take it from EnemyHelper, and run in this method
-    return false;
+    bool result = true;
+    auto helper = mEnemyDirections.at(obj);
+    if (!helper) {
+        result = false;
+    }
+    if (helper->isReadyForAction()) {
+        helper->runEnemyAction();
+    } else {
+        result = false;
+    }
+    //TODO: change state in different way
+    obj->updateState();
+    return result;
+}
+
+//--------------------------------------------------------------------
+void EnemyController::updateDirectionsForEnemy(EnemyObj* obj, EnemyHelper* helper)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+    CC_ASSERT(helper);
+
+    int column = obj->getColumn();
+    int row = obj->getRow();
+
+    auto topObj = mObjCtrl->getObjectForChain(Cell(column, row - 1));
+    auto botObj = mObjCtrl->getObjectForChain(Cell(column, row + 1));
+    auto leftObj = mObjCtrl->getObjectForChain(Cell(column - 1, row));
+    auto rightObj = mObjCtrl->getObjectForChain(Cell(column + 1, row));
+
+    updateNotAllowedDirectionToObj(topObj);
+    updateNotAllowedDirectionToObj(botObj);
+    updateNotAllowedDirectionToObj(leftObj);
+    updateNotAllowedDirectionToObj(rightObj);
+
+    helper->updateNearbyObjects(topObj, botObj, leftObj, rightObj);
+}
+
+//--------------------------------------------------------------------
+void EnemyController::updateNotAllowedDirectionToObj(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    if (obj) {
+        if (!obj->isSwappable() && obj->isContainer()) {
+            obj = nullptr;
+        }
+    }
 }
 
 //--------------------------------------------------------------------
@@ -131,14 +217,20 @@ bool EnemyController::matchEnemyObject(BaseObj* obj)
     obj->match();
 
     auto enemyObj = objContainer->getEnemy();
-    if (obj == enemyObj) {
-        std::function<void(BaseObj*)> onRemoveEnemyCallback;
-        onRemoveEnemyCallback = std::bind(&ObjContainer::onRemoveEnemy, objContainer, _1);
-        enemyObj->setRemoveEnemyCallback(onRemoveEnemyCallback);
-        mEnemiesList.eraseObject(enemyObj);
-    }
-    else {
+    if (obj != enemyObj) {
         return false;
     }
+
+    std::function<void(BaseObj*)> func = [&](BaseObj* obj) {
+        auto enemy = dynamic_cast<EnemyObj*>(obj);
+        if (enemy) {
+            eraseEnemyHelper(enemy);
+        }
+    };
+    enemyObj->setEraseEnemyHelperCallback(func);
+
+    std::function<void(BaseObj*)> onRemoveEnemyCallback;
+    onRemoveEnemyCallback = std::bind(&ObjContainer::onRemoveEnemy, objContainer, _1);
+    enemyObj->setRemoveEnemyCallback(onRemoveEnemyCallback);
     return true;
 }

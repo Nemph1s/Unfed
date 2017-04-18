@@ -242,20 +242,6 @@ bool ViewController::initDudeController()
 }
 
 //--------------------------------------------------------------------
-bool ViewController::initEnemyController()
-//--------------------------------------------------------------------
-{
-    mEnemyController = EnemyController::create();
-    mEnemyController->setObjectController(mObjectController);
-    mObjectController->setEnemyController(mEnemyController);
-
-    auto enemies = mEnemyController->createInitialEnemies();
-    mGameplayScene->addSpritesForObjects(enemies);
-
-    return true;
-}
-
-//--------------------------------------------------------------------
 bool ViewController::initSwapController()
 //--------------------------------------------------------------------
 {
@@ -275,6 +261,24 @@ bool ViewController::initSwapController()
         return swapCtrl->detectPossibleSwaps();
     };
     mLevel->setDetectPossibleSwapsCallback(detectPossibleSwapsCallback);
+
+    return true;
+}
+
+
+//--------------------------------------------------------------------
+bool ViewController::initEnemyController()
+//--------------------------------------------------------------------
+{
+    mEnemyController = EnemyController::create();
+    mEnemyController->setObjectController(mObjectController);
+    mObjectController->setEnemyController(mEnemyController);
+
+    auto enemies = mEnemyController->createInitialEnemies();
+    mGameplayScene->addSpritesForObjects(enemies);
+
+    auto moveActionCallback = std::bind(&ViewController::actionEnemyMove, this, _1, _2);
+    mEnemyController->setMoveActionCallback(moveActionCallback);
 
     return true;
 }
@@ -390,10 +394,29 @@ void ViewController::animateHandleMatches(CT::Set* chains)
 }
 
 //--------------------------------------------------------------------
+void ViewController::beginEnemiesTurn()
+//--------------------------------------------------------------------
+{
+    mEnemyController->setEnemiesTurn(false);
+
+    auto result = mEnemyController->beginEnemiesTurn();
+    if (!result) {
+        beginNextTurn();
+    }
+}
+
+//--------------------------------------------------------------------
 void ViewController::beginNextTurn()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ViewController::beginNextTurn");
+
+    GlobInfo->resetComboMultiplier();
+
+    if (mEnemyController->isEnemiesTurn()) {
+        beginEnemiesTurn();
+        return;
+    }
     
     float delay = 0.01f;
     if (!mSwapController->detectPossibleSwaps() && mDudeController->getDudesCount() == 0) {
@@ -406,8 +429,7 @@ void ViewController::beginNextTurn()
 
         startHintTimer();
     });
-
-    GlobInfo->resetComboMultiplier();
+    
     decrementMoves();
   
     mGameplayScene->runAction(cocos2d::Sequence::create(cocos2d::DelayTime::create(delay), callback, nullptr));
@@ -420,6 +442,19 @@ void ViewController::decrementMoves()
     cocos2d::log("ViewController::decrementMoves");
     mMovesLeft--;
     updateInfoLabels();
+}
+
+//--------------------------------------------------------------------
+void ViewController::actionEnemyMove(BaseObj * objA, BaseObj * objB)
+//--------------------------------------------------------------------
+{
+    auto swapCallback = CallFunc::create([=]() {
+        handleMatches();
+    });
+    auto swap = mSwapController->createSwapWithObjects(objA, objB);
+    mSwapController->performSwap(swap);
+    AnimationsManager->animateSwap(swap, swapCallback);
+    AudioManager->playSound(SoundType::SwapSound);
 }
 
 //--------------------------------------------------------------------
@@ -439,6 +474,8 @@ void ViewController::swapCallback(SwapObj * swap)
     mGameplayScene->userInteractionDisabled();
 
     auto swapCallback = CallFunc::create([=]() {
+
+        mEnemyController->setEnemiesTurn(true);
         handleMatches();
     });
     auto invalidSwapCallback = CallFunc::create([=]() {
@@ -447,7 +484,6 @@ void ViewController::swapCallback(SwapObj * swap)
     });
 
     if (mSwapController->isPossibleSwap(swap)) {
-
         mSwapController->performSwap(swap);
         AnimationsManager->animateSwap(swap, swapCallback);
         AudioManager->playSound(SoundType::SwapSound);
@@ -470,6 +506,7 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
                 stopHintTimer();
                 mGameplayScene->userInteractionDisabled();
 
+                mEnemyController->setEnemiesTurn(true);
                 mChainController->removeDudeMatches(set);
 
                 updateScore(set);

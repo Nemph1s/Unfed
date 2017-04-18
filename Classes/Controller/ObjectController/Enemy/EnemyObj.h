@@ -40,6 +40,10 @@ public:
 
     virtual void runAction();
 
+    //TODO: replace with FSM
+    bool isInOparableState();
+    void updateState();
+
 protected:
     // Nodes should be created using create();
     EnemyObj();
@@ -49,10 +53,14 @@ protected:
     
     CC_SYNTHESIZE(int, mHP, HP)
     CC_SYNTHESIZE(int, mWaitTurnsBeforeAction, WaitTurnsBeforeAction)
+    CC_SYNTHESIZE(int, mWaitedTurns, WaitedTurns)
     CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel)
 
     SYNTHESIZE_IS_READONLY(bool, mIsRemovableByMatch, RemovableByMatch, false)
+    SYNTHESIZE_IS_READONLY(bool, mIsStunned, Stunned, false)
 
+    CC_SYNTHESIZE(std::function<void()>, mRunActionCallback, RunActionCallback)
     CC_SYNTHESIZE(std::function<void(BaseObj*)>, mRemoveEnemyCallback, RemoveEnemyCallback)
+    CC_SYNTHESIZE(std::function<void(BaseObj*)>, mEraseEnemyHelperCallback, EraseEnemyHelperCallback)
 };
 

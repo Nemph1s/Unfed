@@ -14,8 +14,9 @@
 #include "Common/CommonTypes.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
 
-
 class BaseObj;
+class EnemyObj;
+class EnemyHelper;
 class ObjectController;
 
 class EnemyController : public cocos2d::Ref
@@ -34,7 +35,10 @@ public:
 
     CT::Set* createInitialEnemies();
 
-    void beginEnemiesTurn();
+    void detectDirectionsForEnemies();
+    void eraseEnemyHelper(EnemyObj* obj);
+
+    bool beginEnemiesTurn(bool updateDirections = true);
 
     bool matchEnemyObject(BaseObj* obj);
 
@@ -43,10 +47,17 @@ protected:
     EnemyController();
 
     BaseObj* createEnemy(CT::Cell& cell, int type, int priority = 0);
-    bool runAction(BaseObj* obj);
+    bool runAction(EnemyObj* obj);
+
+    void updateDirectionsForEnemy(EnemyObj* obj, EnemyHelper* helper);
+    void updateNotAllowedDirectionToObj(BaseObj* obj);
     
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController)
-    
-    CC_SYNTHESIZE(cocos2d::Vector<EnemyObj*>, mEnemiesList, EnemiesList)
+    SYNTHESIZE(ObjectController*, mObjCtrl, ObjectController, nullptr)
+
+    SYNTHESIZE_IS(bool, mIsEnemiesTurn, EnemiesTurn, false)
+    cocos2d::Map<EnemyObj*, EnemyHelper*> mEnemyDirections;
+
+    // Enemies Actions
+    CC_SYNTHESIZE(std::function<void(BaseObj*, BaseObj*)>, mMoveActionCallback, MoveActionCallback)
 };

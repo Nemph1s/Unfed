@@ -136,19 +136,26 @@ BaseObj * DudeController::createDudeObject(CT::Cell& cell, int type)
 void DudeController::detectDirectionsForDudes()
 //--------------------------------------------------------------------
 {
-    for (int row = 0; row < _GlobalInfo::NumRows; row++) {
-        for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
-            
-            auto cell = Cell(column, row);
-            auto dude = mObjCtrl->dudeAt(cell);
-            if (dude) {
-                auto helper = mDudeDirections.at(dude);
-                if (helper) {
-                    updateDirectionsForDude(dude, helper);
-                }
-            }            
+    for (auto it = mDudeDirections.begin(); it != mDudeDirections.end(); ++it) {
+        auto dudePair = *it;
+        DudeObj* dude = dudePair.first;
+        DudeHelper* helper = dudePair.second;
+        if (dude && helper) {
+            updateDirectionsForDude(dude, helper);
         }
     }
+}
+
+//--------------------------------------------------------------------
+void DudeController::eraseDirectionsForDude(DudeObj * obj)
+//--------------------------------------------------------------------
+{
+    if (!obj) {
+        cocos2d::log("DudeController::eraseDirectionsForDude: epmty dude ptr");
+        return;
+    }
+    mDudeDirections.erase(obj);
+    mDudesCount--;
 }
 
 //--------------------------------------------------------------------
@@ -416,18 +423,6 @@ void DudeController::updateChainSetWithDudesInChain(const Direction& direction, 
             }
         }
     }
-}
-
-//--------------------------------------------------------------------
-void DudeController::eraseDirectionsForDude(DudeObj * obj)
-//--------------------------------------------------------------------
-{
-    if (!obj) {
-        cocos2d::log("DudeController::eraseDirectionsForDude: epmty dude ptr");
-        return;
-    }
-    mDudeDirections.erase(obj);
-    mDudesCount--;
 }
 
 //--------------------------------------------------------------------
