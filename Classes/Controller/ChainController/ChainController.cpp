@@ -95,6 +95,17 @@ Set* ChainController::removeMatches()
 }
 
 //--------------------------------------------------------------------
+void ChainController::removeDudeMatches(CT::Set* set)
+//--------------------------------------------------------------------
+{
+    cocos2d::log("ChainController::removeDudeMatches:");
+    if (set) {
+        ScoreHelper::calculateScore(set);
+        matchChains(set);
+    }
+}
+
+//--------------------------------------------------------------------
 Set* ChainController::removeChainAt(ChainType& type, cocos2d::Vec2& pos)
 //--------------------------------------------------------------------
 {
@@ -650,14 +661,14 @@ void ChainController::addObjectsFromChainToChain(Set* from, Set* to)
 }
 
 //--------------------------------------------------------------------
-void ChainController::addFieldOjbectsToChainSet(Set* fieldObjects, Set* chainSet)
+void ChainController::addMatchedOjbectsToChainSet(Set* fieldObjects, Set* chainSet)
 //--------------------------------------------------------------------
 {
-    auto chain = ChainObj::createWithType(ChainType::ChainFieldObjects);
+    auto chain = ChainObj::createWithType(ChainType::ChainMathcedObjects);
     chain->setUpdateGoalCallback(mUpdateGoalCallback);
 
     for (auto it = fieldObjects->begin(); it != fieldObjects->end(); it++) {
-        auto obj = dynamic_cast<FieldObj*>(*it);
+        auto obj = dynamic_cast<BaseObj*>(*it);
         if (obj)
             addObjToChain(chain, obj->getCell());
     }
@@ -665,12 +676,11 @@ void ChainController::addFieldOjbectsToChainSet(Set* fieldObjects, Set* chainSet
 }
 
 //--------------------------------------------------------------------
-bool ChainController::checkMathicngFieldObjWithChain(Set* chains, BaseObj* obj)
+bool ChainController::checkMathingObjWithChain(Set* chains, BaseObj* obj)
 //--------------------------------------------------------------------
 {
     auto result = false;
-    auto fieldObj = dynamic_cast<FieldObj*>(obj);
-    if (!fieldObj) {
+    if (obj->getType() != BaseObjType::Field && obj->getType() != BaseObjType::Enemy) {
         return result;
     }
     for (auto itChain = chains->begin(); itChain != chains->end(); itChain++) {
@@ -684,7 +694,7 @@ bool ChainController::checkMathicngFieldObjWithChain(Set* chains, BaseObj* obj)
         for (auto it = objects->begin(); it != objects->end(); it++) {
             auto cookie = dynamic_cast<CookieObj*>(*it);
             if (cookie) {
-                if (fieldObj->checkMatchingCondition(cookie->getCell())) {
+                if (obj->checkMatchingCondition(cookie->getCell())) {
                     result = true;
                     break;
                 }

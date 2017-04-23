@@ -37,7 +37,8 @@ public:
     bool initTilesPool(int poolSize);
     bool initCookiesPool(int poolSize);
     bool initFieldObjectsPool(int poolSize);
-    bool initDudesPool(int poolSize);     
+    bool initDudesPool(int poolSize); 
+    bool initEnemyPool(int poolSize);
 
     bool initHintPool(int poolSize);
 
@@ -60,6 +61,7 @@ private:
     Sprite* createForCookieObj(BaseObj* obj);
     Sprite* createForFieldObj(BaseObj* obj);
     Sprite* createForDudeObj(BaseObj* obj);
+    Sprite* createForEnemyObj(BaseObj* obj);
 
     Sprite* createSpriteForObj(BaseObj* obj);
     Sprite* createNewHintSprite(const cocos2d::Color4B& color, bool isVisible = false);
@@ -70,6 +72,7 @@ private:
     std::map<CT::CookieType, TSpriteList*> mCookieSpritesPool;
     std::map<CT::FieldType, TSpriteList*> mFieldSpritesPool;
     std::map<CT::FieldType, TSpriteList*> mDudeSpritesPool;
+    std::map<CT::EnemyType, TSpriteList*> mEnemySpritesPool;
     TSpriteList* mTileSpritesPool = nullptr;
 
     TSpriteList* mHintSpritesPool = nullptr;

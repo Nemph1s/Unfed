@@ -33,7 +33,7 @@ public:
 
     virtual void match() override;
     virtual void clear() override;
-    virtual bool checkMatchingCondition(CT::Cell& cell);
+    
     virtual bool isHpEnded() const override;
 
     virtual void updateDebugLabel() override;
@@ -44,7 +44,7 @@ protected:
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE_READONLY(CT::FieldType, mFieldType, FieldType);
-    CC_SYNTHESIZE(int, mPriority, Priority);
+
     CC_SYNTHESIZE(bool, mReadyToUpdatePriority, ReadyToUpdatePriority);
     CC_SYNTHESIZE(std::function<void(BaseObj*, std::function<void(FieldObj*)>)>, mFieldObjChangeState, FieldObjChangeState);
 

@@ -41,13 +41,15 @@ public:
     BaseObj* createDudeObject(CT::Cell& cell, int type);
 
     void detectDirectionsForDudes();
+    void eraseDirectionsForDude(DudeObj* obj);
+
+    bool matchDudeObject(BaseObj* obj);
 
     bool canActivateDudeTo(CT::Cell& fromCell, int direction);
     CT::Set* getChainsForDude(DudeObj* obj, int dir, bool isPreview = false);
 
     void updateChainSetWithDudesInChain(const CT::Direction& direction, DudeObj* activeDude, CT::Set* chains, CT::Set* chainSet);
-    void eraseDirectionsForDude(DudeObj* obj);
-
+ 
 protected:
     // Nodes should be created using create();
     DudeController();

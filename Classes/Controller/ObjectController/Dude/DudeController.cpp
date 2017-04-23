@@ -99,7 +99,6 @@ Set* DudeController::createDudeObectsFromChains(Set* chains, Set* prevSwapContai
 BaseObj* DudeController::createDudeObjWithoutContainer(int type)
 //--------------------------------------------------------------------
 {
-    //TODO: maybe retain obj?
     BaseObjInfo baseInfo = { BaseObjType::Dude };
     FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
     auto obj = dynamic_cast<DudeObj*>(SmartObjFactory->createDudeObj(info));
@@ -137,19 +136,54 @@ BaseObj * DudeController::createDudeObject(CT::Cell& cell, int type)
 void DudeController::detectDirectionsForDudes()
 //--------------------------------------------------------------------
 {
-    for (int row = 0; row < _GlobalInfo::NumRows; row++) {
-        for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
-            
-            auto cell = Cell(column, row);
-            auto dude = mObjCtrl->dudeAt(cell);
-            if (dude) {
-                auto helper = mDudeDirections.at(dude);
-                if (helper) {
-                    updateDirectionsForDude(dude, helper);
-                }
-            }            
+    for (auto it = mDudeDirections.begin(); it != mDudeDirections.end(); ++it) {
+        auto dudePair = *it;
+        DudeObj* dude = dudePair.first;
+        DudeHelper* helper = dudePair.second;
+        if (dude && helper) {
+            updateDirectionsForDude(dude, helper);
         }
     }
+}
+
+//--------------------------------------------------------------------
+void DudeController::eraseDirectionsForDude(DudeObj * obj)
+//--------------------------------------------------------------------
+{
+    if (!obj) {
+        cocos2d::log("DudeController::eraseDirectionsForDude: epmty dude ptr");
+        return;
+    }
+    mDudeDirections.erase(obj);
+    mDudesCount--;
+}
+
+//--------------------------------------------------------------------
+bool DudeController::matchDudeObject(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    auto objContainer = mObjCtrl->getContainer(obj->getCell());
+    if (!objContainer) {
+        return false;
+    }
+    auto dudeObj = objContainer->getDude();
+    if (obj != dudeObj) {
+        return false;
+    }
+
+    std::function<void(BaseObj*)> func = [&](BaseObj* obj) {
+        auto dudeObj = dynamic_cast<DudeObj*>(obj);
+        if (dudeObj) {
+            eraseDirectionsForDude(dudeObj);
+        }
+    };
+    dudeObj->setEraseDirectionsCallback(func);
+
+    std::function<void(BaseObj*)> onRemoveDudeCallback;
+    onRemoveDudeCallback = std::bind(&ObjContainer::onRemoveDude, objContainer, std::placeholders::_1);
+    dudeObj->setRemoveDudeCallback(onRemoveDudeCallback);
+
+    return true;
 }
 
 //--------------------------------------------------------------------
@@ -389,18 +423,6 @@ void DudeController::updateChainSetWithDudesInChain(const Direction& direction, 
             }
         }
     }
-}
-
-//--------------------------------------------------------------------
-void DudeController::eraseDirectionsForDude(DudeObj * obj)
-//--------------------------------------------------------------------
-{
-    if (!obj) {
-        cocos2d::log("DudeController::eraseDirectionsForDude: epmty dude ptr");
-        return;
-    }
-    mDudeDirections.erase(obj);
-    mDudesCount--;
 }
 
 //--------------------------------------------------------------------

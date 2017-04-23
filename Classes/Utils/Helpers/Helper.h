@@ -37,6 +37,7 @@ public:
     static int8_t getDistanceBetweenObjects(CT::Cell& cellPosA, CT::Cell& cellPosB);
 
     static cocos2d::String* getSpriteNameByFieldType(int fieldType);
+    static cocos2d::String* getSpriteNameByEnemyType(int enemyType);
 
     static bool isValidCell(CT::Cell& cell);
 
@@ -57,7 +58,8 @@ public:
     static cocos2d::Color4B getScoreColorByObj(BaseObj* obj);
 
 private:
-    static cocos2d::Color4B getScoreColorByCookieType(CT::CookieType type);
-    static cocos2d::Color4B getScoreColorForFieldObj(CT::FieldType type);
-    static cocos2d::Color4B getScoreColorForDudeObj(CT::FieldType type);
+    static cocos2d::Color4B getScoreColorByCookieType(int type);
+    static cocos2d::Color4B getScoreColorForFieldObj(int type);
+    static cocos2d::Color4B getScoreColorForDudeObj(int type);
+    static cocos2d::Color4B getScoreColorForEnemyObj(int type);
 };

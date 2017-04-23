@@ -20,6 +20,7 @@ BaseObj::BaseObj()
     , mType(CT::BaseObjType::Unknown)
     , mSpriteNode(nullptr)
     , mDummyString(nullptr)
+    , mPriority(0)
 //--------------------------------------------------------------------
 {
 }
@@ -135,6 +136,7 @@ void BaseObj::clear()
 {
     mColumn = -1;
     mRow = -1;
+    mPriority = 0;
     mType = CT::BaseObjType::Unknown;
     mIsMovable = false;
     mIsSwappable = false;
@@ -147,6 +149,13 @@ void BaseObj::clear()
     if (mSpriteNode) {
         mSpriteNode = nullptr;
     }
+}
+
+//--------------------------------------------------------------------
+bool BaseObj::checkMatchingCondition(CT::Cell & cell)
+//--------------------------------------------------------------------
+{
+    return false;
 }
 
 //--------------------------------------------------------------------

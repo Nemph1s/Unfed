@@ -72,6 +72,7 @@ protected:
     void updatePredefinedCookies(CT::LevelInfo& levelInfo);
     void updateAllowedCookieTypes(CT::LevelInfo& levelInfo);
     void updateFieldObjects(CT::LevelInfo& levelInfo);
+    void updateEnemyObjects(CT::LevelInfo& levelInfo);
 
     const Json::Value& getTiles();
     const Json::Value& getPredefinedCookies();
@@ -89,9 +90,11 @@ protected:
     uint8_t getTargetObjectCount(const Json::Value & node);
 
     const Json::Value& getFieldObjects(const Json::Value & node);
-    uint8_t getFieldObjectCol(const Json::Value & node);
-    uint8_t getFieldObjectRow(const Json::Value & node);
+    const Json::Value& getEnemyObjects(const Json::Value & node);
+    uint8_t getObjectColumn(const Json::Value & node);
+    uint8_t getObjectRow(const Json::Value & node);
     const Json::Value& getFieldObjectTypes(const Json::Value & node);
+    int16_t getEnemyObjectType(const Json::Value & node);
 
     Json::Value mLevelInfoRootNode;
     int16_t mLoadedLevel = -1;

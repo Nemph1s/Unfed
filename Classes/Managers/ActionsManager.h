@@ -35,6 +35,7 @@ protected:
 
     cocos2d::ActionInstant* reverseScaleXCallback(BaseObj* obj, float duration);
 
+    //TODO: create queue for actions with actionEntitiy struct (param 1: base obj, to get a sprite, action (if it move action start pos should be current pos))
 };
 
 #define ActionsManager _ActionsManager::getInstance()

@@ -288,12 +288,18 @@ void CookiesLayer::hideSelectionIndicator()
 void CookiesLayer::removeAllCookieSprites()
 //--------------------------------------------------------------------
 {
-    for (const auto& child : getChildren()) {
+    auto childs = getChildren();
+    if (childs.size() == 0) {
+        return;
+    }
+    for (const auto& child : childs) {
         auto obj = dynamic_cast<BaseObj*>(child);
         if (!obj) {
             continue;
         }
-        if (obj->getType() != BaseObjType::Dude && obj->getType() != BaseObjType::Field) {
+        if (obj->getType() != BaseObjType::Dude 
+            && obj->getType() != BaseObjType::Field
+            && obj->getType() != BaseObjType::Enemy) {
             this->removeChild(child);
         }
     }

@@ -55,6 +55,13 @@ bool SwapController::init()
 }
 
 //--------------------------------------------------------------------
+SwapObj* SwapController::createSwapWithObjects(BaseObj * objectA, BaseObj * objectB)
+//--------------------------------------------------------------------
+{
+    return SwapObj::createWithObjects(objectA, objectB);
+}
+
+//--------------------------------------------------------------------
 bool SwapController::detectPossibleSwaps()
 //--------------------------------------------------------------------
 {

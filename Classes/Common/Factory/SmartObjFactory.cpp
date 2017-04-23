@@ -18,6 +18,7 @@
 #include "GameObjects/TileObjects/FieldObjects/DirtObject.h"
 #include "GameObjects/TileObjects/FieldObjects/BushObj.h"
 #include "GameObjects/TileObjects/FieldObjects/RockObj.h"
+#include "Controller/ObjectController/Enemy/EnemyObj.h"
 
 using namespace CT;
 
@@ -158,6 +159,7 @@ void _SmartObjFactory::recycle(BaseObj * obj)
         break;
     case BaseObjType::Field:
     case BaseObjType::Dude:
+    case BaseObjType::Enemy:
     case BaseObjType::Unknown:
     default:
         obj->clear();
@@ -284,6 +286,16 @@ BaseObj * _SmartObjFactory::createDudeObj(const FieldInfo & info)
         CC_ASSERT(baseObject);
         break;
     }
+    return baseObject;
+}
+
+//--------------------------------------------------------------------
+BaseObj* _SmartObjFactory::createEnemyObj(const CT::EnemyInfo & info)
+//--------------------------------------------------------------------
+{
+    BaseObj* baseObject = EnemyObj::create(info);
+    CC_SAFE_RETAIN(baseObject);
+    CCASSERT(baseObject, "error while creating EnemyObj");
     return baseObject;
 }
 
