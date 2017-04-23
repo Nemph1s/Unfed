@@ -20,6 +20,7 @@
 #include "Controller/ObjectController/Enemy/EnemyObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
+using cocos2d::Sprite;
 using namespace CT;
 using namespace GOT;
 
@@ -500,6 +501,40 @@ Sprite* _SpritesFactory::createHintSprite(const cocos2d::Color4B& color)
     }
     else {
         sprite = createNewHintSprite(color, true);
+    }
+    return sprite;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Sprite* _SpritesFactory::createGoalSprite(int baseType, int objType)
+//--------------------------------------------------------------------
+{
+    cocos2d::Sprite* sprite = nullptr;
+    cocos2d::String* str = nullptr;
+    auto baseObjType = static_cast<GOT::BaseObjType>(baseType);
+    switch (baseObjType)
+    {
+    case GOT::BaseObjType::Cookie:
+        str = &GameResources::s_cookieSpriteNames.at(objType);
+        break;
+    case GOT::BaseObjType::Field:
+    case GOT::BaseObjType::Dude:
+        str = Helper::getSpriteNameByFieldType(objType);
+        break;
+    case GOT::BaseObjType::Enemy:
+        str = Helper::getSpriteNameByEnemyType(objType);
+        break;
+    case GOT::BaseObjType::Tile:
+    case GOT::BaseObjType::Unknown:
+        break;
+    default:
+        break;
+    }
+
+    if (str) {
+        sprite = cocos2d::Sprite::create(str->getCString());
+        sprite->setAnchorPoint(cocos2d::Vec2::ZERO);
+        sprite->setPosition(cocos2d::Vec2::ZERO);
     }
     return sprite;
 }

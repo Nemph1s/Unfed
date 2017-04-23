@@ -59,6 +59,8 @@ public:
     static cocos2d::Vec2 pointForCellWithPriority(CT::Cell& cell, int priority);
     static cocos2d::Vec2 pointForTile(BaseObj* obj);
 
+    static cocos2d::Vec2 pointForGoalSprite(int currGoal, int goalsCount, const cocos2d::Size& spriteSize);
+
     static CT::Cell cellFromPoint(const cocos2d::Vec2& point);
     static bool convertPointToTilePos(cocos2d::Vec2& point, CT::Cell& cell);
 
