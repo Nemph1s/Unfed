@@ -27,9 +27,9 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static ChainObj * createWithType(const GOT::ChainType &type);
+    static ChainObj* createWithType(const GOT::ChainType& type);
 
-    virtual bool initWithType(const GOT::ChainType &type);
+    virtual bool initWithType(const GOT::ChainType& type);
 
     std::string description();
     std::string typeAsString();

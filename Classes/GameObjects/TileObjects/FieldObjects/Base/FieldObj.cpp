@@ -19,7 +19,6 @@ using GOT::FieldType;
 FieldObj::FieldObj()
     : BaseObj()
     , mFieldType(FieldType::Unknown)
-    , mDebugLabel(nullptr)
     , mHP(0)
     , mReadyToUpdatePriority(false)
 //--------------------------------------------------------------------
@@ -56,29 +55,6 @@ bool FieldObj::init(const GOT::FieldInfo &info)
     }
     mFieldType = info.fieldType;
     mPriority = info.priority;
-
-    if (!mDebugLabel && mType != GOT::BaseObjType::Field) {
-#ifdef COCOS2D_DEBUG
-        mDebugLabel = cocos2d::Label::create();
-        mDebugLabel->setBMFontSize(16);
-        mDebugLabel->setDimensions(42, 32);
-        mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::RIGHT);
-        mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::BOTTOM);
-        mDebugLabel->setPosition(cocos2d::Vec2(GlobInfo->getTileWidth() * 0.8f, GlobInfo->getTileHeight() * 0.2f));
-        mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
-        mDebugLabel->setTextColor(cocos2d::Color4B::MAGENTA);
-        mDebugLabel->setGlobalZOrder(1000);
-        CC_SAFE_RETAIN(mDebugLabel);
-        //mSpriteNode->addChild(mDebugLabel, 10);
-
-        int col = mColumn == -1 ? 0 : mColumn;
-        int row = mRow == -1 ? 0 : mRow;
-
-        auto text = cocos2d::StringUtils::format("[%d,%d]", col, row);
-        mDebugLabel->setString(text);
-#endif //UNFED_ENABLE_DEBUG
-    }
-
     return true;
 }
 
@@ -87,18 +63,6 @@ cocos2d::String & FieldObj::description() const
 //--------------------------------------------------------------------
 {
     return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", getTypeAsInt(), mColumn, mRow);
-}
-
-//--------------------------------------------------------------------
-void FieldObj::setSpriteNode(cocos2d::Sprite * var)
-//--------------------------------------------------------------------
-{
-    mSpriteNode = var;
-    if (mSpriteNode && mDebugLabel) {
-        if (!mDebugLabel->getParent()) {
-            mSpriteNode->addChild(mDebugLabel, 10);
-        }
-    }
 }
 
 //--------------------------------------------------------------------
@@ -128,12 +92,6 @@ void FieldObj::clear()
     mFieldType = FieldType::Unknown;
     mHP = 0;
     mReadyToUpdatePriority = false;
-    if (mDebugLabel) {
-        if (mDebugLabel->getParent()) {
-            mDebugLabel->removeFromParent();
-        }        
-        CC_SAFE_RELEASE_NULL(mDebugLabel);
-    }    
 }
 
 //--------------------------------------------------------------------
@@ -145,17 +103,4 @@ bool FieldObj::isHpEnded() const
         result = (mHP <= 0);
     }
     return result;
-}
-
-//--------------------------------------------------------------------
-void FieldObj::updateDebugLabel()
-//--------------------------------------------------------------------
-{
-    if (mDebugLabel) {
-        int col = mColumn == -1 ? 0 : mColumn;
-        int row = mRow == -1 ? 0 : mRow;
-
-        auto text = cocos2d::StringUtils::format("[%d,%d]z%d", col, row, mSpriteNode->getLocalZOrder());
-        mDebugLabel->setString(text);
-    }
 }

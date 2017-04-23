@@ -32,21 +32,17 @@ public:
    cocos2d::String& highlightedSpriteName() const;
    cocos2d::String& description() const;
 
-   virtual void setSpriteNode(cocos2d::Sprite* var) override;
    virtual void setColumn(int var) override;
    virtual void setRow(int var) override;
    virtual int getTypeAsInt() const override;
 
    virtual void clear() override;
 
-   virtual void updateDebugLabel();
-
 protected: 
     // Nodes should be created using create();
     CookieObj();
 
     //---Class Attributes-------------------------------------------------
-   CC_SYNTHESIZE_READONLY(GOT::CookieType, mCookieType, CookieType);
-   CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);
+   CC_SYNTHESIZE_READONLY(GOT::CookieType, mCookieType, CookieType)
 };
 

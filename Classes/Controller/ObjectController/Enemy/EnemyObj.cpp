@@ -20,7 +20,6 @@ static const uint8_t defaultWaitTurnsBeforeAction = 1;
 EnemyObj::EnemyObj()
     : BaseObj()
     , mEnemyType(GOT::EnemyType::Unknown)
-    , mDebugLabel(nullptr)
     , mHP(0)
     , mWaitTurnsBeforeAction(defaultWaitTurnsBeforeAction)
     , mWaitedTurns(defaultWaitTurnsBeforeAction)
@@ -35,10 +34,10 @@ EnemyObj::~EnemyObj()
 }
 
 //--------------------------------------------------------------------
-EnemyObj * EnemyObj::create(const GOT::EnemyInfo & info)
+EnemyObj * EnemyObj::create(const GOT::EnemyInfo& info)
 //--------------------------------------------------------------------
 {
-    EnemyObj * ret = new (std::nothrow) EnemyObj();
+    EnemyObj* ret = new (std::nothrow) EnemyObj();
     if (ret && ret->init(info)) {
         ret->autorelease();
     }
@@ -49,7 +48,7 @@ EnemyObj * EnemyObj::create(const GOT::EnemyInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool EnemyObj::init(const GOT::EnemyInfo & info)
+bool EnemyObj::init(const GOT::EnemyInfo& info)
 //--------------------------------------------------------------------
 {
     if (!BaseObj::init(info.baseInfo)) {
@@ -63,30 +62,6 @@ bool EnemyObj::init(const GOT::EnemyInfo & info)
     mIsMovable = true;
     mIsSwappable = true;
     mIsContainer = false;
-
-
-    if (!mDebugLabel) {
-#ifdef COCOS2D_DEBUG
-        mDebugLabel = cocos2d::Label::create();
-        mDebugLabel->setBMFontSize(16);
-        mDebugLabel->setDimensions(42, 32);
-        mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::RIGHT);
-        mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::BOTTOM);
-        mDebugLabel->setPosition(cocos2d::Vec2(GlobInfo->getTileWidth() * 0.8f, GlobInfo->getTileHeight() * 0.2f));
-        mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
-        mDebugLabel->setTextColor(cocos2d::Color4B::WHITE);
-        mDebugLabel->setGlobalZOrder(1000);
-        CC_SAFE_RETAIN(mDebugLabel);
-        //mSpriteNode->addChild(mDebugLabel, 10);
-
-        int col = mColumn == -1 ? 0 : mColumn;
-        int row = mRow == -1 ? 0 : mRow;
-
-        auto text = cocos2d::StringUtils::format("[%d,%d]", col, row);
-        mDebugLabel->setString(text);
-#endif //UNFED_ENABLE_DEBUG
-    }
-
     return true;
 }
 
@@ -130,12 +105,6 @@ void EnemyObj::clear()
     BaseObj::clear();
     mEnemyType = GOT::EnemyType::Unknown;
     mHP = 0;
-    if (mDebugLabel) {
-        if (mDebugLabel->getParent()) {
-            mDebugLabel->removeFromParent();
-        }
-        CC_SAFE_RELEASE_NULL(mDebugLabel);
-    }
 }
 
 //--------------------------------------------------------------------
@@ -161,22 +130,6 @@ bool EnemyObj::isHpEnded() const
         result = (mHP <= 0);
     }
     return result;
-}
-
-//--------------------------------------------------------------------
-void EnemyObj::updateDebugLabel()
-//--------------------------------------------------------------------
-{
-    if (mDebugLabel) {
-        if (!mDebugLabel->getParent() && mSpriteNode) {
-            mSpriteNode->addChild(mDebugLabel);
-        }
-        int col = mColumn == -1 ? 0 : mColumn;
-        int row = mRow == -1 ? 0 : mRow;
-
-        auto text = cocos2d::StringUtils::format("[%d,%d]z%d", col, row, mSpriteNode->getLocalZOrder());
-        mDebugLabel->setString(text);
-    }
 }
 
 //--------------------------------------------------------------------

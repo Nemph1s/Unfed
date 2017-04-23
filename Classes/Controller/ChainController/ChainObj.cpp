@@ -49,10 +49,10 @@ ChainObj::~ChainObj()
 }
 
 //--------------------------------------------------------------------
-ChainObj * ChainObj::createWithType(const GOT::ChainType &type)
+ChainObj * ChainObj::createWithType(const GOT::ChainType& type)
 //--------------------------------------------------------------------
 {
-    ChainObj * ret = new (std::nothrow) ChainObj();
+    ChainObj* ret = new (std::nothrow) ChainObj();
     if (ret && ret->initWithType(type)) {
         ret->autorelease();
     }
@@ -63,7 +63,7 @@ ChainObj * ChainObj::createWithType(const GOT::ChainType &type)
 }
 
 //--------------------------------------------------------------------
-bool ChainObj::initWithType(const GOT::ChainType &type)
+bool ChainObj::initWithType(const GOT::ChainType& type)
 //--------------------------------------------------------------------
 {
     if (!Node::init()) {

@@ -14,6 +14,9 @@
 #include <string.h>
 #include <vector>
 
+#define COCOS2D_DEBUG 1
+//#define UNFED_ENABLE_DEBUG 1
+
 namespace cocos2d { class __Set; }
 
 namespace CT {

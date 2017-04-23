@@ -9,7 +9,7 @@
 */
 
 #include "GameObjects/TileObjects/CookieObj.h"
-#include "Common/GlobalInfo/GlobalInfo.h"
+
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
@@ -23,7 +23,6 @@ using namespace GOT;
 CookieObj::CookieObj()
     : BaseObj()
     , mCookieType(CookieType::Unknown)
-    , mDebugLabel(nullptr)
 //--------------------------------------------------------------------
 {
 }
@@ -62,21 +61,6 @@ bool CookieObj::init(const CookieInfo & cookieInfo)
     mIsMovable = true;
     mIsSwappable = true;
     mIsRemovable = true;
-
-    if (!mDebugLabel) {
-#ifdef COCOS2D_DEBUG
-        mDebugLabel = cocos2d::Label::create();
-        mDebugLabel->setBMFontSize(16);
-        mDebugLabel->setDimensions(42, 32);
-        mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::LEFT);
-        mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::TOP);
-        mDebugLabel->setPosition(cocos2d::Vec2(GlobInfo->getTileWidth() / 4, (GlobInfo->getTileHeight() / 1.25f)));
-        mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
-        CC_SAFE_RETAIN(mDebugLabel);
-        //mSpriteNode->addChild(mDebugLabel, 10);
-#endif //UNFED_ENABLE_DEBUG
-    }
-
     return true;
 }
 
@@ -99,16 +83,6 @@ cocos2d::String& CookieObj::description() const
 //--------------------------------------------------------------------
 {
     return *cocos2d::String::createWithFormat("type:%d square:(%d,%d)", mCookieType, mColumn, mRow);
-}
-
-//--------------------------------------------------------------------
-void CookieObj::setSpriteNode(cocos2d::Sprite * var)
-//--------------------------------------------------------------------
-{
-    mSpriteNode = var;
-    if (mSpriteNode && !mDebugLabel->getParent()) {
-        mSpriteNode->addChild(mDebugLabel, 10);
-    }
 }
 
 //--------------------------------------------------------------------
@@ -140,21 +114,4 @@ void CookieObj::clear()
 {
     BaseObj::clear();
     mCookieType = CookieType::Unknown;
-    if (mDebugLabel) {
-        mDebugLabel->removeFromParent();
-        CC_SAFE_RELEASE_NULL(mDebugLabel);
-    }
-}
-
-//--------------------------------------------------------------------
-void CookieObj::updateDebugLabel()
-//--------------------------------------------------------------------
-{
-    if (mDebugLabel) {
-        int col = mColumn == -1 ? 0 : mColumn;
-        int row = mRow == -1 ? 0 : mRow;
-     
-        auto text = cocos2d::StringUtils::format("[%d,%d]z%d", col, row, mSpriteNode->getLocalZOrder());
-        mDebugLabel->setString(text);
-    }
 }

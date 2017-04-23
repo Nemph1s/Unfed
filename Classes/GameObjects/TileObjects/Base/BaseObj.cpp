@@ -11,6 +11,7 @@
 #include "GameObjects/TileObjects/Base/BaseObj.h"
 
 #include "Common/Factory/SpritesFactory.h"
+#include "Common/GlobalInfo/GlobalInfo.h"
 #include "Utils/Helpers/Helper.h"
 
 //--------------------------------------------------------------------
@@ -21,6 +22,7 @@ BaseObj::BaseObj()
     , mSpriteNode(nullptr)
     , mDummyString(nullptr)
     , mPriority(0)
+    , mDebugLabel(nullptr)
 //--------------------------------------------------------------------
 {
 }
@@ -87,6 +89,26 @@ bool BaseObj::init(const GOT::BaseObjInfo & info)
     mDummyString = cocos2d::String::create("");
     CC_SAFE_RETAIN(mDummyString);
 
+#ifdef UNFED_ENABLE_DEBUG
+    if (!mDebugLabel && mType != GOT::BaseObjType::Tile) {
+        mDebugLabel = cocos2d::Label::create();
+        mDebugLabel->setBMFontSize(16);
+        mDebugLabel->setDimensions(42, 32);
+        mDebugLabel->setHorizontalAlignment(cocos2d::TextHAlignment::LEFT);
+        mDebugLabel->setVerticalAlignment(cocos2d::TextVAlignment::TOP);
+        mDebugLabel->setAnchorPoint(cocos2d::Vec2::ANCHOR_MIDDLE);
+        mDebugLabel->setPosition(cocos2d::Vec2(GlobInfo->getTileWidth() / 4, (GlobInfo->getTileHeight() / 1.25f)));
+        mDebugLabel->setColor(cocos2d::Color3B::BLACK);
+        CC_SAFE_RETAIN(mDebugLabel);
+
+        int col = mColumn == -1 ? 0 : mColumn;
+        int row = mRow == -1 ? 0 : mRow;
+
+        auto text = cocos2d::StringUtils::format("[%d,%d]", col, row);
+        mDebugLabel->setString(text);
+}
+#endif //UNFED_ENABLE_DEBUG
+
     return true;
 }
 
@@ -104,9 +126,32 @@ cocos2d::String& BaseObj::spriteName() const
     return *mDummyString;
 }
 
+//--------------------------------------------------------------------
 cocos2d::String & BaseObj::description() const
+//--------------------------------------------------------------------
 {
     return *mDummyString;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Sprite* BaseObj::getSpriteNode() const
+//--------------------------------------------------------------------
+{
+    return mSpriteNode;
+}
+
+//--------------------------------------------------------------------
+void BaseObj::setSpriteNode(cocos2d::Sprite* var)
+//--------------------------------------------------------------------
+{
+    mSpriteNode = var;
+#ifdef UNFED_ENABLE_DEBUG
+    if (mSpriteNode && mDebugLabel) {
+        if (!mDebugLabel->getParent()) {
+            mSpriteNode->addChild(mDebugLabel, 10);
+        }
+    }
+#endif
 }
 
 //--------------------------------------------------------------------
@@ -142,6 +187,10 @@ void BaseObj::clear()
     mIsSwappable = false;
     mIsRemovable = false;
     mIsContainer = false;
+    if (mDebugLabel) {
+        mDebugLabel->removeFromParent();
+        CC_SAFE_RELEASE_NULL(mDebugLabel);
+    }
     if (getParent()) {
         removeFromParent();
     }
@@ -162,6 +211,13 @@ bool BaseObj::checkMatchingCondition(CT::Cell & cell)
 void BaseObj::updateDebugLabel()
 //--------------------------------------------------------------------
 {
+    if (mDebugLabel) {
+        int col = mColumn == -1 ? 0 : mColumn;
+        int row = mRow == -1 ? 0 : mRow;
+
+        auto text = cocos2d::StringUtils::format("[%d,%d]z%d", col, row, mSpriteNode->getLocalZOrder());
+        mDebugLabel->setString(text);
+    }
 }
 
 //--------------------------------------------------------------------

@@ -28,15 +28,12 @@ public:
 
     virtual cocos2d::String& description() const override;
 
-    virtual void setSpriteNode(cocos2d::Sprite* var) override;
     virtual int getTypeAsInt() const override;
 
     virtual void match() override;
     virtual void clear() override;
     
     virtual bool isHpEnded() const override;
-
-    virtual void updateDebugLabel() override;
 
 protected:
     // Nodes should be created using create();
@@ -49,6 +46,5 @@ protected:
     CC_SYNTHESIZE(std::function<void(BaseObj*, std::function<void(FieldObj*)>)>, mFieldObjChangeState, FieldObjChangeState);
 
     CC_SYNTHESIZE(int, mHP, HP);
-    CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);
 };
 

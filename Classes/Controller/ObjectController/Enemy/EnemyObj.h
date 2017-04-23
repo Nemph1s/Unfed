@@ -23,9 +23,9 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static EnemyObj * create(const GOT::EnemyInfo &info);
+    static EnemyObj * create(const GOT::EnemyInfo& info);
 
-    bool init(const GOT::EnemyInfo &info);
+    bool init(const GOT::EnemyInfo& info);
 
     cocos2d::String& spriteName() const override;
 
@@ -35,8 +35,6 @@ public:
     virtual void clear() override;
     virtual bool checkMatchingCondition(CT::Cell& cell);
     virtual bool isHpEnded() const override;
-
-    virtual void updateDebugLabel() override;
 
     virtual void runAction();
 
@@ -54,7 +52,6 @@ protected:
     CC_SYNTHESIZE(int, mHP, HP)
     CC_SYNTHESIZE(int, mWaitTurnsBeforeAction, WaitTurnsBeforeAction)
     CC_SYNTHESIZE(int, mWaitedTurns, WaitedTurns)
-    CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel)
 
     SYNTHESIZE_IS_READONLY(bool, mIsRemovableByMatch, RemovableByMatch, false)
     SYNTHESIZE_IS_READONLY(bool, mIsStunned, Stunned, false)

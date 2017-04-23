@@ -62,7 +62,8 @@ protected:
     CC_SYNTHESIZE(int, mColumn, Column);
     CC_SYNTHESIZE(int, mRow, Row);
     CC_SYNTHESIZE(GOT::BaseObjType, mType, Type);
-    CC_SYNTHESIZE(cocos2d::Sprite*, mSpriteNode, SpriteNode);
+    CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);
+    CC_PROPERTY(cocos2d::Sprite*, mSpriteNode, SpriteNode);
 
     CC_SYNTHESIZE(std::function<void(BaseObj*)>, mRemoveObjectCallback, RemoveObjectCallback)
 
