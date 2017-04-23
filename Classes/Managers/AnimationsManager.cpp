@@ -186,11 +186,8 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
             float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
 
             // Calculate which animation is the longest. This is the time the game has to wait before it may continue.
-            auto animateBouncingObjDelay = 0;//= 0.25f;
-            auto oldCell = Cell();
-            auto oldPos = obj->getSpriteNode()->getPosition();
-            Helper::convertPointToTilePos(oldPos, oldCell);
-            longestDuration = MAX(longestDuration, duration + Helper::getDurationToTile(oldCell.row, obj->getRow()));// delay + animateBouncingObjDelay);
+            auto animateBouncingObjDelay = 0.25f;
+            longestDuration = MAX(longestDuration, duration + delay + animateBouncingObjDelay);
 
             // Perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
