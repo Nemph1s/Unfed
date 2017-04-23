@@ -231,6 +231,6 @@ bool EnemyController::matchEnemyObject(BaseObj* obj)
 
     std::function<void(BaseObj*)> onRemoveEnemyCallback;
     onRemoveEnemyCallback = std::bind(&ObjContainer::onRemoveEnemy, objContainer, _1);
-    enemyObj->setRemoveEnemyCallback(onRemoveEnemyCallback);
+    enemyObj->setRemoveObjectCallback(onRemoveEnemyCallback);
     return true;
 }

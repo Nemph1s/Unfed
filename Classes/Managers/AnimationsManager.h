@@ -34,7 +34,7 @@ public:
     void animateSwap(SwapObj* swap, cocos2d::CallFunc* completion);
     void animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* completion);
 
-    void animateMatchObj(BaseObj* obj, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
+    void animateMatchObject(BaseObj* obj, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
     void animateMatching(CT::Set* chains, cocos2d::CallFunc* completion);
 
     void animateFallingObjects(cocos2d::Array* colums, cocos2d::CallFunc* completion);
@@ -56,10 +56,8 @@ public:
     void animateShakeScreen();
     
 protected:
-    void animateMatchCookie(CookieObj* obj, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
+    void animateMatchObj(BaseObj* obj, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
     void animateMatchFieldObj(FieldObj* obj, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
-    void animateMatchDude(DudeObj* obj, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
-    void animateMatchEnemy(EnemyObj* obj, cocos2d::CallFunc* completion = CALLFUNC_EMPTY_LAMBDA);
     
     void animateHintJump(BaseObj* obj);
 

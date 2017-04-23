@@ -39,7 +39,6 @@ protected:
 
     //---Class Attributes-------------------------------------------------
 
-    CC_SYNTHESIZE(std::function<void(BaseObj*)>, mRemoveDudeCallback, RemoveDudeCallback);
     CC_SYNTHESIZE(std::function<void(BaseObj*)>, mEraseDirectionsCallback, EraseDirectionsCallback);
 
     /**

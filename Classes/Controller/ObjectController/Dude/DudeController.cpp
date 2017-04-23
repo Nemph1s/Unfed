@@ -181,7 +181,7 @@ bool DudeController::matchDudeObject(BaseObj * obj)
 
     std::function<void(BaseObj*)> onRemoveDudeCallback;
     onRemoveDudeCallback = std::bind(&ObjContainer::onRemoveDude, objContainer, std::placeholders::_1);
-    dudeObj->setRemoveDudeCallback(onRemoveDudeCallback);
+    dudeObj->setRemoveObjectCallback(onRemoveDudeCallback);
 
     return true;
 }

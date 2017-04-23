@@ -476,7 +476,7 @@ bool ObjectController::matchCookieObject(BaseObj* obj)
     }
     std::function<void(BaseObj*)> onRemoveCookieCallback;
     onRemoveCookieCallback = std::bind(&ObjContainer::onRemoveCookie, objContainer, _1);
-    cookieObj->setRemoveCookieCallback(onRemoveCookieCallback);
+    cookieObj->setRemoveObjectCallback(onRemoveCookieCallback);
     return true;
 }
 

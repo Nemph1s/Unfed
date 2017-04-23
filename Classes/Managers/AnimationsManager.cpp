@@ -104,7 +104,7 @@ void _AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* co
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatchObj(BaseObj * obj, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateMatchObject(BaseObj * obj, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     if (!obj) {
@@ -114,16 +114,12 @@ void _AnimationsManager::animateMatchObj(BaseObj * obj, cocos2d::CallFunc* compl
     switch (obj->getType())
     {
     case BaseObjType::Cookie:
-        animateMatchCookie(dynamic_cast<CookieObj*>(obj), completion);
+    case BaseObjType::Dude:
+    case BaseObjType::Enemy:
+        animateMatchObj(obj, completion);
         break;
     case BaseObjType::Field:
         animateMatchFieldObj(dynamic_cast<FieldObj*>(obj), completion);
-        break;
-    case BaseObjType::Dude:
-        animateMatchDude(dynamic_cast<DudeObj*>(obj), completion);
-        break;
-    case BaseObjType::Enemy:
-        animateMatchEnemy(dynamic_cast<EnemyObj*>(obj), completion);
         break;
     default:
         break;
@@ -151,7 +147,7 @@ void _AnimationsManager::animateMatching(CT::Set* chains, cocos2d::CallFunc* com
         for (auto it = objects->begin(); it != objects->end(); it++) {
 
             auto obj = dynamic_cast<BaseObj*>(*it);
-            animateMatchObj(obj);
+            animateMatchObject(obj);
         }
     }
     CC_ASSERT(mCurrentScene);
@@ -514,7 +510,7 @@ void _AnimationsManager::animateHintSwap(CT::Set* objects, cocos2d::CallFunc* co
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatchCookie(CookieObj * obj, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateMatchObj(BaseObj* obj, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     if (!obj) {
@@ -529,7 +525,7 @@ void _AnimationsManager::animateMatchCookie(CookieObj * obj, cocos2d::CallFunc* 
     auto baseObj = dynamic_cast<BaseObj*>(obj);
     auto callback = CallFunc::create([baseObj, obj]() {
 
-        auto func = obj->getRemoveCookieCallback();
+        auto func = obj->getRemoveObjectCallback();
         if (func) {
             func(baseObj);
         }
@@ -561,54 +557,6 @@ void _AnimationsManager::animateMatchFieldObj(FieldObj * obj, cocos2d::CallFunc*
         auto func = obj->getFieldObjChangeState();
         if (func) {
             func(baseObj, createSpriteCallback);
-        }
-    });
-    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, completion, nullptr));
-}
-
-//--------------------------------------------------------------------
-void _AnimationsManager::animateMatchDude(DudeObj * obj, cocos2d::CallFunc* completion)
-//--------------------------------------------------------------------
-{
-    if (!obj) {
-        return;
-    }
-    const float duration = 0.3f;
-    const float scaleFactor = 0.1f;
-
-    auto scaleAction = ScaleTo::create(duration, scaleFactor);
-    auto easeOut = EaseOut::create(scaleAction, duration);
-
-    auto baseObj = dynamic_cast<BaseObj*>(obj);
-    auto callback = CallFunc::create([baseObj, obj]() {
-
-        auto func = obj->getRemoveDudeCallback();
-        if (func) {
-            func(baseObj);
-        }
-    });
-    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, completion, nullptr));
-}
-
-//--------------------------------------------------------------------
-void _AnimationsManager::animateMatchEnemy(EnemyObj* obj, cocos2d::CallFunc * completion)
-//--------------------------------------------------------------------
-{
-    if (!obj) {
-        return;
-    }
-    const float duration = 0.3f;
-    const float scaleFactor = 0.1f;
-
-    auto scaleAction = ScaleTo::create(duration, scaleFactor);
-    auto easeOut = EaseOut::create(scaleAction, duration);
-
-    auto baseObj = dynamic_cast<BaseObj*>(obj);
-    auto callback = CallFunc::create([baseObj, obj]() {
-
-        auto func = obj->getRemoveEnemyCallback();
-        if (func) {
-            func(baseObj);
         }
     });
     obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, completion, nullptr));

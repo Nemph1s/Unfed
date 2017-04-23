@@ -537,7 +537,7 @@ void ViewController::throwDownAnObject(BaseObj* obj, CT::Cell& destPos, bool isH
 
         auto object = mObjectController->getObjectForChain(destPos);
         if (mObjectController->matchObject(object)) {
-            AnimationsManager->animateMatchObj(object, onCompleteCallback);
+            AnimationsManager->animateMatchObject(object, onCompleteCallback);
         }
 
         // TODO: get wave length from other place

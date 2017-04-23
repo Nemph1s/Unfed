@@ -60,7 +60,6 @@ protected:
     SYNTHESIZE_IS_READONLY(bool, mIsStunned, Stunned, false)
 
     CC_SYNTHESIZE(std::function<void()>, mRunActionCallback, RunActionCallback)
-    CC_SYNTHESIZE(std::function<void(BaseObj*)>, mRemoveEnemyCallback, RemoveEnemyCallback)
     CC_SYNTHESIZE(std::function<void(BaseObj*)>, mEraseEnemyHelperCallback, EraseEnemyHelperCallback)
 };
 
