@@ -24,31 +24,25 @@ public:
    * Allocates and initializes a node.
    * @return A initialized node which is marked as "autorelease".
    */
-   static CookieObj * create(const CommonTypes::CookieInfo &cookieInfo);
+   static CookieObj * create(const GOT::CookieInfo &cookieInfo);
 
-   bool init(const CommonTypes::CookieInfo & cookieInfo);
+   bool init(const GOT::CookieInfo & cookieInfo);
 
    cocos2d::String& spriteName() const override;
    cocos2d::String& highlightedSpriteName() const;
    cocos2d::String& description() const;
 
-   virtual void setSpriteNode(cocos2d::Sprite* var) override;
    virtual void setColumn(int var) override;
    virtual void setRow(int var) override;
    virtual int getTypeAsInt() const override;
 
    virtual void clear() override;
 
-   virtual void updateDebugLabel();
-
 protected: 
     // Nodes should be created using create();
     CookieObj();
 
     //---Class Attributes-------------------------------------------------
-   CC_SYNTHESIZE_READONLY(CommonTypes::CookieType, mCookieType, CookieType);
-   CC_SYNTHESIZE(cocos2d::Label*, mDebugLabel, DebugLabel);
-
-   CC_SYNTHESIZE(std::function<void(BaseObj*)>, mRemoveCookieCallback, RemoveCookieCallback);
+   CC_SYNTHESIZE_READONLY(GOT::CookieType, mCookieType, CookieType)
 };
 

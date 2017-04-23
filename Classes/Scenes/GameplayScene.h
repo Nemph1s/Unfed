@@ -11,7 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 
 class BaseObj;
 class CookieObj;
@@ -31,13 +31,14 @@ public:
     virtual bool initWithSize(const cocos2d::Size& size);
 
 	void addTiles();
-    void addFieldObjectsAt(int column, int row);
-    void addSpritesForObjects(CommonTypes::Set* set);
+    void addFieldObjectsAt(CT::Cell& cell);
+    void addSpritesForObjects(CT::Set* set);
 
-    void createChainPreviewSprites(CommonTypes::Set* set);
+    void createChainPreviewSprites(CT::Set* set);
 
-    void createSpriteWithCookie(CookieObj* cookie, int column, int row);
-    void createSpriteWithDude(BaseObj* dudeObj);
+    void createSpriteWithCookie(CookieObj* cookie, CT::Cell& cell);
+    void createSpriteWithObj(BaseObj* obj, CT::Cell& cell);
+    void createSpriteForDude(BaseObj* dudeObj);
     void createSpriteWithFieldObj(FieldObj* fieldObj);
 
     bool isObjTouched();
@@ -45,10 +46,10 @@ public:
     void userInteractionEnabled();
     void userInteractionDisabled();
 
-    void setUpdateDirectionCallback(std::function<CommonTypes::Set*(BaseObj* obj, int direction)> func);
+    void setUpdateDirectionCallback(std::function<CT::Set*(BaseObj* obj, int direction)> func);
 
-    void setSwapCookieCallback(std::function<bool(int fromCol, int fromRow, int direction)> func);
-    void setDudeActivationCallback(std::function<bool(int fromCol, int fromRow, int direction)> func);
+    void setSwapCookieCallback(std::function<bool(CT::Cell& fromCell, int direction)> func);
+    void setDudeActivationCallback(std::function<bool(CT::Cell& fromCell, int direction)> func);
     void removeAllCookieSprites();
 
     void removeAllChainPreviewSprites();

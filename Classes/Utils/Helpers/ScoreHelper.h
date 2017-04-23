@@ -11,7 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 #include "Utils/PlatformMacros.h"
 
 class BaseObj;
@@ -25,7 +25,7 @@ class ScoreHelper
 public:
     static void updateChainScore(ChainObj* chain);
 
-    static void calculateScore(CommonTypes::Set* chains);
+    static void calculateScore(CT::Set* chains);
 
     static uint16_t getScoreByObj(BaseObj* obj, bool isInDudeCain);
     static uint16_t getScoreForContainer(ObjContainer* container);

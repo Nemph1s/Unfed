@@ -17,6 +17,7 @@
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "Controller/ObjectController/Dude/DudeObj.h"
+#include "Controller/ObjectController/Enemy/EnemyObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 #include "GameObjects/Level/LevelObj.h"
@@ -24,7 +25,7 @@
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 #include "Common/Factory/SmartObjFactory.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
 
@@ -36,7 +37,8 @@
 #include "cocos2d/cocos/ui/UIText.h"
 
 USING_NS_CC;
-using namespace CommonTypes;
+using namespace CT;
+using namespace GOT;
 using ui::Text;
 
 //--------------------------------------------------------------------
@@ -46,6 +48,7 @@ bool _AnimationsManager::initWithScene(cocos2d::Scene * scene)
     ActionsManager->init();
     if (scene) {
         mCurrentScene = scene;
+        mInitialScenePos = mCurrentScene->getPosition();
         return true;
     }   
 
@@ -102,7 +105,30 @@ void _AnimationsManager::animateInvalidSwap(SwapObj* swap, cocos2d::CallFunc* co
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatching(CommonTypes::Set* chains, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateMatchObject(BaseObj * obj, cocos2d::CallFunc* completion)
+//--------------------------------------------------------------------
+{
+    if (!obj) {
+        return;
+    }
+
+    switch (obj->getType())
+    {
+    case BaseObjType::Cookie:
+    case BaseObjType::Dude:
+    case BaseObjType::Enemy:
+        animateMatchObj(obj, completion);
+        break;
+    case BaseObjType::Field:
+        animateMatchFieldObj(dynamic_cast<FieldObj*>(obj), completion);
+        break;
+    default:
+        break;
+    }
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateMatching(CT::Set* chains, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -122,20 +148,7 @@ void _AnimationsManager::animateMatching(CommonTypes::Set* chains, cocos2d::Call
         for (auto it = objects->begin(); it != objects->end(); it++) {
 
             auto obj = dynamic_cast<BaseObj*>(*it);
-            switch (obj->getType())
-            {
-            case BaseObjType::Cookie:
-                animateMatchCookie(dynamic_cast<CookieObj*>(obj));
-                break;
-            case BaseObjType::Field:
-                animateMatchFieldObj(dynamic_cast<FieldObj*>(obj));
-                break;
-            case BaseObjType::Dude:
-                animateMatchDude(dynamic_cast<DudeObj*>(obj));
-                break;
-            default:
-                break;
-            }
+            animateMatchObject(obj);
         }
     }
     CC_ASSERT(mCurrentScene);
@@ -156,47 +169,27 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
         auto array = dynamic_cast<cocos2d::Array*>(*it);
         CC_ASSERT(array);
 
-        float colDelay = Helper::randomFloatBetween(0.06f, 0.07f);
         for (auto itArr = array->begin(); itArr != array->end(); itArr++) {
 
             auto obj = dynamic_cast<BaseObj*>(*itArr);
             CC_ASSERT(obj);
 
-            auto newPos = Helper::pointForTile(obj);
             // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
             // This calculation works because fillHoles guarantees that lower cookies are first in the array.
-
-            float delay = (0.05f + 0.15f * colDelay);
-
-            // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
-            // You can tweak these numbers to change the feel of the animation.
-            float timeToTile = (obj->getSpriteNode()->getPositionY() - newPos.y) / GlobInfo->getTileHeight();
-            float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
+            auto sprite = obj->getSpriteNode();
+            auto startCell = Helper::cellFromPoint(sprite->getPosition());
+            float duration = Helper::getDurationToTile(startCell, obj->getCell());
 
             // Calculate which animation is the longest. This is the time the game has to wait before it may continue.
-            auto animateBouncingObjDelay = 0.25f;
-            longestDuration = MAX(longestDuration, duration + delay + animateBouncingObjDelay);
+            longestDuration = MAX(longestDuration, duration);
 
             // Perform the animation, which consists of a delay, a movement and a sound effect.
-            auto callback = CallFunc::create([=]() {
-
+            auto moveCallback = CallFunc::create([=]() {
                 obj->updateZOrder();
-
-                auto moveCallback = CallFunc::create([=]() {
-                    AnimationsManager->animateBouncingObj(obj);
-                    AudioManager->playSound(CommonTypes::SoundType::FallingCookieSound);
-                });
-                
-                auto sprite = obj->getSpriteNode();
-                auto delta = newPos - sprite->getPosition();
-
-                auto moveAction = MoveBy::create(duration, delta);
-                auto easeAction = EaseOut::create(moveAction, duration);
-
-                sprite->runAction(Sequence::create(easeAction, moveCallback, nullptr));
+                AnimationsManager->animateBouncingObj(obj);
+                AudioManager->playSound(CT::SoundType::FallingCookieSound);
             });
-
-            obj->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
+            sprite->runAction(ActionsManager->actionFallObject(obj, moveCallback, duration));
         }
     }
 
@@ -222,49 +215,37 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
         auto array = dynamic_cast<cocos2d::Array*>(*it);
         CC_ASSERT(array);
 
-        int startRow = -1;
+        int startRow = -5;
         int rowIdx = 0;
         for (auto itArr = array->begin(); itArr != array->end(); itArr++, rowIdx++) {
-            auto cookie = dynamic_cast<CookieObj*>(*itArr);
-            CC_ASSERT(cookie);
-            scene->createSpriteWithCookie(cookie, cookie->getColumn(), startRow);
-            cookie->getSpriteNode()->setOpacity(0);
+            auto row = array->count() - rowIdx - 1;
+            auto obj = dynamic_cast<BaseObj*>(*itArr);
+            CC_ASSERT(obj);
 
-            auto newPos = Helper::pointForTile(cookie);
+            auto startCell = Cell(obj->getCell(), startRow);
+            scene->createSpriteWithObj(obj, startCell);
+            auto sprite = obj->getSpriteNode();
 
             // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
             // This calculation works because fillHoles guarantees that lower cookies are first in the array.
-            float delay = 0.1f + 0.175f * (array->count() - rowIdx - 1);
-
-            // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
-            // You can tweak these numbers to change the feel of the animation.
-            float timeToTile = fabs(startRow - cookie->getRow());
-            float duration = (timeToTile * 0.1f) + 0.125f;            
+            const float tileOffset = 0.09f;
+            float delay = tileOffset + 0.1f + (0.15f * row);
+            float duration = Helper::getDurationToTile(startCell, obj->getCell());
 
             // You calculate which animation is the longest. This is the time the game has to wait before it may continue.
             auto animateBouncingObjDelay = 0.25f;
             longestDuration = MAX(longestDuration, duration + delay + animateBouncingObjDelay);
 
-            // You perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
-
-                cookie->updateZOrder();
-
                 auto moveCallback = CallFunc::create([=]() {
-                    AnimationsManager->animateBouncingObj(cookie);
-                    AudioManager->playSound(CommonTypes::SoundType::AddCookieSound);
+                    obj->updateZOrder();
+                    AnimationsManager->animateBouncingObj(obj);
+                    AudioManager->playSound(CT::SoundType::AddCookieSound);
                 });
-
-                auto moveAction = MoveTo::create(duration, newPos);
-                auto easeAction = EaseOut::create(moveAction, duration);
-                auto fadeIn = FadeIn::create(0.0125f);
-                auto delayAction = DelayTime::create(0.15f);
-
-                cookie->getSpriteNode()->runAction(Sequence::create(delayAction, fadeIn, nullptr));
-                cookie->getSpriteNode()->runAction(Sequence::create(easeAction, moveCallback, nullptr));
+                sprite->runAction(ActionsManager->actionFallObject(obj, moveCallback, duration));
             });
 
-            cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
+            sprite->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
         }
     }
 
@@ -311,7 +292,7 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
 
         Vec2 spritePos = Vec2::ZERO;
         if (objCtrl) {
-            auto tileObj = objCtrl->tileAt(obj->getColumn(), obj->getRow());
+            auto tileObj = objCtrl->tileAt(obj->getCell());
             spritePos = tileObj->getSpriteNode()->getPosition();
         }
         else {
@@ -336,19 +317,19 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
 
         scene->getInfoLayer()->addChild(scoreLabel);
 
-        auto duration = 1.15f;
+        auto duration = 0.75f;
         //auto scaleAction = ScaleTo::create(duration, 2.0f);
-        auto moveAction = MoveBy::create(duration, Vec2(0.0f, 10.0f));
-        auto easeOut = EaseOut::create(moveAction, duration);
-        auto fadeOut = FadeOut::create(0.5f);
+        auto moveAction = MoveBy::create(duration, Vec2(0.0f, GlobInfo->getTileHeight() /2 ));
+        auto easeOut = EaseIn::create(moveAction, duration);
+        auto fadeOut = FadeOut::create(duration);
 
         auto callback = CallFunc::create([scoreLabel]() {
             if (scoreLabel) {
                 scoreLabel->removeFromParent();
             }
         });
-        scoreLabel->runAction(Sequence::create(DelayTime::create(duration / 2), fadeOut, nullptr));
-        scoreLabel->runAction(Sequence::create(easeOut, callback, nullptr));
+        scoreLabel->runAction(easeOut);
+        scoreLabel->runAction(Sequence::create(DelayTime::create(duration * 0.75f), fadeOut, callback, nullptr));
     }
 }
 
@@ -395,19 +376,85 @@ void _AnimationsManager::animateScoreForFieldObj(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateJumpWithBouncing(BaseObj* obj, float heigthInPixel)
+void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CT::Cell& destPos, cocos2d::CallFunc* completion, bool animateShakingScreen)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
 
-    auto bounceIn = ActionsManager->actionBounceIn(obj);
+    auto sprite = obj->getSpriteNode();
+
+    auto easeAction = ActionsManager->actionThrowDownAnObj(obj, destPos);
+
+    auto moveCallback = CallFunc::create([=]() {
+
+        float duration = 0.3f;
+        auto bounceIn = ActionsManager->actionBounceInHeavy(obj, duration);
+        auto bounceOut = ActionsManager->actionBounceOut(obj, duration);
+        auto seq = Sequence::create(DelayTime::create(duration), bounceOut, nullptr);
+
+        sprite->runAction(bounceIn);        
+        sprite->runAction(seq);
+
+        if (animateShakingScreen) {
+            AnimationsManager->animateShakeScreen();
+        }
+    });
 
     auto speed = 2.0f;
+    auto waitDelay = DelayTime::create(0.2f);
+    auto seq = Sequence::create(waitDelay, easeAction, moveCallback, completion, nullptr);
+    sprite->runAction(Speed::create(seq, speed));
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateReboundAfterThrowingObj(CT::Cell& destPos, CT::Set* chains, cocos2d::CallFunc* completion)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(chains);
+
+    for (auto itChain = chains->begin(); itChain != chains->end(); ++itChain) {
+        auto chain = dynamic_cast<ChainObj*>(*itChain);
+        if (!chain) {
+            continue;
+        }
+        auto objects = chain->getChainObjects();
+        if (!objects) {
+            continue;
+        }
+        for (auto it = objects->begin(); it != objects->end(); ++it) {
+            auto obj = dynamic_cast<BaseObj*>(*it);
+            if (!obj) {
+                continue;
+            }
+            int8_t col = obj->getColumn();
+            int8_t row = obj->getRow();
+            if (obj->isContainer() || (destPos.column == col && destPos.row == row)) {
+                continue;
+            }
+
+            auto distance = Helper::getDistanceBetweenObjects(destPos, Cell(col, row));
+            auto jumpHeight = GlobInfo->getTileHeight() / 3.0f;
+            AnimationsManager->animateJumpWithBouncing(obj, distance * 0.2f, jumpHeight / distance);
+        }
+    }
+
+
+}
+
+//--------------------------------------------------------------------
+void _AnimationsManager::animateJumpWithBouncing(BaseObj* obj, float delay, float heigthInPixel)
+//--------------------------------------------------------------------
+{
+    CC_ASSERT(obj);
+
+    auto bounceIn = ActionsManager->actionBounceInNormal(obj);
+
+    auto speed = 1.0f;
     float duration = heigthInPixel / 100.0f;
 
     auto sprite = obj->getSpriteNode();
     auto jumpAction = cocos2d::JumpBy::create(duration, Vec2::ZERO, heigthInPixel, 1);
-    auto seq = Sequence::create(jumpAction, bounceIn, nullptr);
+    auto seq = Sequence::create(DelayTime::create(delay), jumpAction, bounceIn, nullptr);
     sprite->runAction(Speed::create(seq, speed));
 }
 
@@ -417,7 +464,7 @@ void _AnimationsManager::animateBouncingObj(BaseObj* obj)
 {
     CC_ASSERT(obj);
     
-    auto bounceIn = ActionsManager->actionBounceIn(obj);
+    auto bounceIn = ActionsManager->actionBounceInNormal(obj);
     auto bounceOut = ActionsManager->actionBounceOut(obj);
 
     auto sprite = obj->getSpriteNode();
@@ -432,7 +479,7 @@ void _AnimationsManager::animateHintJump(BaseObj* obj)
 {
     CC_ASSERT(obj);
     
-    auto bounceIn = ActionsManager->actionBounceIn(obj);
+    auto bounceIn = ActionsManager->actionBounceInNormal(obj);
     auto bounceOut = ActionsManager->actionBounceOut(obj);
 
     auto sprite = obj->getSpriteNode();
@@ -447,7 +494,7 @@ void _AnimationsManager::animateHintJump(BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateHintSwap(CommonTypes::Set* objects, cocos2d::CallFunc* completion)
+void _AnimationsManager::animateHintSwap(CT::Set* objects, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(objects);
@@ -464,7 +511,7 @@ void _AnimationsManager::animateHintSwap(CommonTypes::Set* objects, cocos2d::Cal
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatchCookie(CookieObj * obj)
+void _AnimationsManager::animateMatchObj(BaseObj* obj, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     if (!obj) {
@@ -479,16 +526,16 @@ void _AnimationsManager::animateMatchCookie(CookieObj * obj)
     auto baseObj = dynamic_cast<BaseObj*>(obj);
     auto callback = CallFunc::create([baseObj, obj]() {
 
-        auto func = obj->getRemoveCookieCallback();
+        auto func = obj->getRemoveObjectCallback();
         if (func) {
             func(baseObj);
         }
     });
-    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
+    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, completion, nullptr));
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatchFieldObj(FieldObj * obj)
+void _AnimationsManager::animateMatchFieldObj(FieldObj * obj, cocos2d::CallFunc* completion)
 //--------------------------------------------------------------------
 {
     if (!obj) {
@@ -513,29 +560,39 @@ void _AnimationsManager::animateMatchFieldObj(FieldObj * obj)
             func(baseObj, createSpriteCallback);
         }
     });
-    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
+    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, completion, nullptr));
 }
 
 //--------------------------------------------------------------------
-void _AnimationsManager::animateMatchDude(DudeObj * obj)
+void _AnimationsManager::animateShakeScreen()
 //--------------------------------------------------------------------
 {
-    if (!obj) {
-        return;
+    if (mShakeScreenDuration <= 0) {
+        auto selector = schedule_selector(_AnimationsManager::shakeScreen);
+        cocos2d::Director::getInstance()->getScheduler()->schedule(selector, this, 0, CC_REPEAT_FOREVER, 0.0f, false);
+        mShakeScreenDuration = GlobInfo->getShakeScreenDuration();
     }
-    const float duration = 0.3f;
-    const float scaleFactor = 0.1f;
+    else {
+        cocos2d::log("_AnimationsManager::animateShakeScreen: ERROR! can't run animation while it is still running!");
+    }
+}
 
-    auto scaleAction = ScaleTo::create(duration, scaleFactor);
-    auto easeOut = EaseOut::create(scaleAction, duration);
+//--------------------------------------------------------------------
+void _AnimationsManager::shakeScreen(float dt)
+//--------------------------------------------------------------------
+{
+    float offset = mShakeScreenDuration / GlobInfo->getMinShakeTime();
+    float randx = Helper::rangeRandom(-offset, offset);
+    float randy = Helper::rangeRandom(-offset, offset);
 
-    auto baseObj = dynamic_cast<BaseObj*>(obj);
-    auto callback = CallFunc::create([baseObj, obj]() {
+    mCurrentScene->setPosition(Point(randx, randy));
+    mCurrentScene->setPosition(Point(mInitialScenePos.x + randx, mInitialScenePos.y + randy));
 
-        auto func = obj->getRemoveDudeCallback();
-        if (func) {
-            func(baseObj);
-        }
-    });
-    obj->getSpriteNode()->runAction(Sequence::create(easeOut, callback, nullptr));
+    mShakeScreenDuration -= 1;
+
+    if (mShakeScreenDuration <= 0) {
+        mCurrentScene->setPosition(Point(mInitialScenePos.x, mInitialScenePos.y));
+        auto selector = schedule_selector(_AnimationsManager::shakeScreen);
+        cocos2d::Director::getInstance()->getScheduler()->unschedule(selector, this);
+    }
 }

@@ -31,7 +31,7 @@ public:
 
     void updateScore(uint32_t value, float percentage);
     void updateMovesLabel(int value);
-    void updateLevelGoals(std::vector<CommonTypes::CollectGoalInfo>& levelGoals);
+    void updateLevelGoals(std::vector<CT::CollectGoalInfo>& levelGoals);
 
 protected:
 
@@ -40,12 +40,7 @@ protected:
     void createScoreBar();
     void createLevelGoals();
 
-    //TODO: move to sprite factory
-    cocos2d::Sprite* createSprite(int baseType, int objType);
-    //TODO: move to helper
-    cocos2d::Vec2 getPosForGoalSprite(int currGoal, int goalsCount, const cocos2d::Size& spriteSize);
-
-    cocos2d::ui::Text* createLabel(const CommonTypes::TextLabelInfo& info);
+    cocos2d::ui::Text* createLabel(const CT::TextLabelInfo& info);
     
     CC_SYNTHESIZE(cocos2d::Scene*, mCurrentScene, CurrentScene);
     CC_SYNTHESIZE(LevelGoalComponent*, mLevelGoalComponent, LevelGoalComponent);
@@ -61,6 +56,8 @@ protected:
     cocos2d::ui::Text* mMovesLabel = nullptr;
     cocos2d::ui::Text* mScoreLabel = nullptr;
 
+    // TODO: clear vector in destructor
+    std::vector<cocos2d::Sprite*> mGoalsSprites;
     std::vector<cocos2d::ui::Text*> mGoalsLabels;
 };
 

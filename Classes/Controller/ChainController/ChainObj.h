@@ -11,7 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 
 class BaseObj;
 class CookieObj;
@@ -27,9 +27,9 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static ChainObj * createWithType(const CommonTypes::ChainType &type);
+    static ChainObj* createWithType(const GOT::ChainType& type);
 
-    virtual bool initWithType(const CommonTypes::ChainType &type);
+    virtual bool initWithType(const GOT::ChainType& type);
 
     std::string description();
     std::string typeAsString();
@@ -58,13 +58,13 @@ protected:
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(BaseObj* obj)>, mUpdateGoalCallback, UpdateGoalCallback);
 
-    CC_SYNTHESIZE_PASS_BY_REF(CommonTypes::Direction, mDirection, Direction);
+    CC_SYNTHESIZE_PASS_BY_REF(CT::Direction, mDirection, Direction);
     
     CC_SYNTHESIZE(int, mScore, Score);
     CC_SYNTHESIZE(bool, mIsCreatedByDude, IsCreatedByDude);
     CC_SYNTHESIZE(cocos2d::Color4B, mChainColor, ChainColor);
 
-    CC_SYNTHESIZE_READONLY(CommonTypes::ChainType, mType, Type);
+    CC_SYNTHESIZE_READONLY(GOT::ChainType, mType, Type);
     CC_SYNTHESIZE_READONLY(cocos2d::Array*, mObjsToRemove, ObjsToRemove);
     CC_SYNTHESIZE_READONLY(cocos2d::Array*, mObjects, Objects);
 };

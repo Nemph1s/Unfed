@@ -22,9 +22,9 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static TileObj * create(const CommonTypes::TileInfo &info);
+    static TileObj * create(const GOT::TileInfo &info);
 
-    bool init(const CommonTypes::TileInfo &info);
+    bool init(const GOT::TileInfo &info);
 
     virtual cocos2d::String& spriteName() const override;
     virtual cocos2d::String& description() const override;
@@ -38,7 +38,7 @@ protected:
     TileObj();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE_READONLY(CommonTypes::TileType, mTileType, TileType);
+    CC_SYNTHESIZE_READONLY(GOT::TileType, mTileType, TileType);
 
     CC_SYNTHESIZE(cocos2d::Sprite*, mChainPreviewSpriteNode, ChainPreviewSpriteNode);
 };

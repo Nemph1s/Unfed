@@ -11,16 +11,18 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 
 class LevelObj;
 class SwapObj;
+class BaseObj;
 class DudeObj;
 class GameplayScene;
 class ObjectController;
 class ChainController;
 class SwapController;
 class DudeController;
+class EnemyController;
 class LevelGoalComponent;
 
 class ViewController : public cocos2d::Ref
@@ -42,6 +44,7 @@ protected:
     // Nodes should be created using create();
     ViewController();
 
+    //---Initialization-------------------------------------------------------
     bool initGameScene();
     bool initLevel();
     bool initSpritesFactory();
@@ -49,27 +52,36 @@ protected:
     bool initSwapController();
     bool initChainController();
     bool initDudeController();
+    bool initEnemyController();
 
-    void updateScore(CommonTypes::Set* chains);
+    //---Gui-------------------------------------------------------
+    void updateScore(CT::Set* chains);
     void updateInfoLabels();
 
+    //---Operable sequence-------------------------------------------------------
     void shuffle();
     void handleMatches();
-    void animateHandleMatches(CommonTypes::Set* chains);
-
+    void animateHandleMatches(CT::Set* chains);
+    void beginEnemiesTurn();
     void beginNextTurn();
-    void decrementMoves();
 
     //---Callbacks-------------------------------------------------------
     void shuffleButtonCallback();
     void swapCallback(SwapObj* swap);
-    //???? something wrong with
     void activateDudeCallback(DudeObj* obj, int direction);
-    void activateChainCallback(CommonTypes::ChainType& type, cocos2d::Vec2& pos);
 
+    //---Special-------------------------------------------------------
+    void throwDownAnObject(BaseObj* obj, CT::Cell& destPos, bool isHeavyObject);
+
+    //---Hints-------------------------------------------------------
     void startHintTimer();
     void stopHintTimer();
     void showSwapHint(float dt);
+
+    //---Other-------------------------------------------------------
+    void decrementMoves();
+
+    void actionEnemyMove(BaseObj* objA, BaseObj* objB);
     //--------------------------------------------------------------------
 
     //---Class Attributes-------------------------------------------------
@@ -88,5 +100,6 @@ protected:
     CC_SYNTHESIZE_READONLY(ChainController*, mChainController, ChainController)
     CC_SYNTHESIZE_READONLY(SwapController*, mSwapController, SwapController)
     CC_SYNTHESIZE_READONLY(DudeController*, mDudeController, DudeController)
+    CC_SYNTHESIZE_READONLY(EnemyController*, mEnemyController, EnemyController)
 };
 

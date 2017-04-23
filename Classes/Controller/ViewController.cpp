@@ -13,6 +13,7 @@
 #include "Controller/ChainController/ChainController.h"
 #include "Controller/ObjectController/Dude/DudeController.h"
 #include "Controller/ObjectController/ObjectController.h"
+#include "Controller/ObjectController/Enemy/EnemyController.h"
 
 #include "Managers/AnimationsManager.h"
 #include "Managers/AudioManager.h"
@@ -27,15 +28,15 @@
 #include "Controller/ObjectController/Dude/DudeObj.h"
 #include "Controller/ChainController/ChainObj.h"
 
+#include "Utils/Helpers/Helper.h"
+
 #include "Scenes/GameplayScene.h"
 
 using cocos2d::Director;
 using cocos2d::CallFunc;
-using namespace CommonTypes;
+using namespace CT;
+using namespace GOT;
 using namespace std::placeholders;
- 
-#define COCOS2D_DEBUG 1
-#define UNFED_ENABLE_DEBUG 1
 
 const float showHintInterval = 10.0f;
 
@@ -52,6 +53,7 @@ ViewController::ViewController()
     , mChainController(nullptr)
     , mSwapController(nullptr)
     , mDudeController(nullptr)
+    , mEnemyController(nullptr)
 //--------------------------------------------------------------------
 {
    cocos2d::log("ViewController::ViewController");
@@ -70,6 +72,7 @@ ViewController::~ViewController()
     CC_SAFE_RELEASE_NULL(mChainController);
     CC_SAFE_RELEASE_NULL(mSwapController);
     CC_SAFE_RELEASE_NULL(mDudeController);
+    CC_SAFE_RELEASE_NULL(mEnemyController);
 }
 
 //--------------------------------------------------------------------
@@ -100,6 +103,7 @@ bool ViewController::init()
     initChainController();
     initSwapController();
     initDudeController();
+    initEnemyController();
 
     mShuffleButtonCallback = std::bind(&ViewController::shuffleButtonCallback, this);
     GuiManager->setShuffleButtonCallback(mShuffleButtonCallback);
@@ -164,6 +168,8 @@ bool ViewController::initSpritesFactory()
     SpritesFactory->initDudesPool(_GlobalInfo::NumRows / 2);
     auto fieldObjsPoolSize = mLevel->getLevelInfo().fieldObjects.size();
     SpritesFactory->initFieldObjectsPool(fieldObjsPoolSize);
+    auto enemyObjsPoolSize = mLevel->getLevelInfo().enemyObjects.size();
+    SpritesFactory->initEnemyPool(enemyObjsPoolSize);
     SpritesFactory->initHintPool(_GlobalInfo::NumColumns * _GlobalInfo::NumRows);
 
     return true;
@@ -177,7 +183,7 @@ bool ViewController::initObjectController()
     mObjectController->setLevel(mLevel);
     mLevel->setObjectController(mObjectController);
 
-    mObjectController->createObjects();
+    mObjectController->createObjContainers();
     auto fieldObjecs = mObjectController->createInitialFieldObjects();
     mGameplayScene->addTiles();
     mGameplayScene->addSpritesForObjects(fieldObjecs);
@@ -217,8 +223,8 @@ bool ViewController::initDudeController()
     mDudeController->setActivateDudeCallback(activateDudeCallback);
 
     auto dudeCtrl = mDudeController;
-    auto dudeActivationCallback = [dudeCtrl](int fromCol, int fromRow, int direction) {
-        return dudeCtrl->canActivateDudeTo(fromCol, fromRow, direction);
+    auto dudeActivationCallback = [dudeCtrl](CT::Cell& fromCell, int direction) {
+        return dudeCtrl->canActivateDudeTo(fromCell, direction);
     };
     mGameplayScene->setDudeActivationCallback(dudeActivationCallback);
 
@@ -238,15 +244,14 @@ bool ViewController::initSwapController()
 //--------------------------------------------------------------------
 {
     mSwapController = SwapController::create();
-
     mSwapController->setLevel(mLevel);
 
     auto swapCallback = std::bind(&ViewController::swapCallback, this, _1);
     mSwapController->setSwapCallback(swapCallback);
 
     auto swapCtrl = mSwapController;
-    auto tryToSwapCallback = [swapCtrl](int fromCol, int fromRow, int direction) {
-        return swapCtrl->trySwapCookieTo(fromCol, fromRow, direction);
+    auto tryToSwapCallback = [swapCtrl](CT::Cell& fromCell, int direction) {
+        return swapCtrl->trySwapCookieTo(fromCell, direction);
     };
     mGameplayScene->setSwapCookieCallback(tryToSwapCallback);
 
@@ -254,6 +259,24 @@ bool ViewController::initSwapController()
         return swapCtrl->detectPossibleSwaps();
     };
     mLevel->setDetectPossibleSwapsCallback(detectPossibleSwapsCallback);
+
+    return true;
+}
+
+
+//--------------------------------------------------------------------
+bool ViewController::initEnemyController()
+//--------------------------------------------------------------------
+{
+    mEnemyController = EnemyController::create();
+    mEnemyController->setObjectController(mObjectController);
+    mObjectController->setEnemyController(mEnemyController);
+
+    auto enemies = mEnemyController->createInitialEnemies();
+    mGameplayScene->addSpritesForObjects(enemies);
+
+    auto moveActionCallback = std::bind(&ViewController::actionEnemyMove, this, _1, _2);
+    mEnemyController->setMoveActionCallback(moveActionCallback);
 
     return true;
 }
@@ -275,7 +298,7 @@ void ViewController::startGame()
 }
 
 //--------------------------------------------------------------------
-void ViewController::updateScore(CommonTypes::Set * chains)
+void ViewController::updateScore(CT::Set * chains)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
@@ -335,13 +358,12 @@ void ViewController::handleMatches()
 
 
 //--------------------------------------------------------------------
-void ViewController::animateHandleMatches(CommonTypes::Set* chains)
+void ViewController::animateHandleMatches(CT::Set* chains)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(chains);
 
     stopHintTimer();
-    mChainController->executeCollectGoalCallback(chains);
 
     auto completion = CallFunc::create([&]() {
 
@@ -358,12 +380,27 @@ void ViewController::animateHandleMatches(CommonTypes::Set* chains)
         AnimationsManager->animateFallingObjects(columns, addNewCookies);
     });
 
-    auto fieldObjects = mLevel->detectFieldObjects(chains);
-    if (fieldObjects->count() > 0) {
-        mChainController->addFieldOjbectsToChainSet(fieldObjects, chains);
+    auto matchedObjects = mChainController->detectMatchingObjects(chains);
+    if (matchedObjects->count() > 0) {
+        mChainController->addMatchedOjbectsToChainSet(matchedObjects, chains);
     }
+
+    mChainController->executeCollectGoalCallback(chains);
+
     AnimationsManager->animateMatching(chains, completion);
     AudioManager->playSound(SoundType::MatchSound);
+}
+
+//--------------------------------------------------------------------
+void ViewController::beginEnemiesTurn()
+//--------------------------------------------------------------------
+{
+    mEnemyController->setEnemiesTurn(false);
+
+    auto result = mEnemyController->beginEnemiesTurn();
+    if (!result) {
+        beginNextTurn();
+    }
 }
 
 //--------------------------------------------------------------------
@@ -371,6 +408,14 @@ void ViewController::beginNextTurn()
 //--------------------------------------------------------------------
 {
     cocos2d::log("ViewController::beginNextTurn");
+
+    stopHintTimer();
+    GlobInfo->resetComboMultiplier();
+
+    if (mEnemyController->isEnemiesTurn()) {
+        beginEnemiesTurn();
+        return;
+    }
     
     float delay = 0.01f;
     if (!mSwapController->detectPossibleSwaps() && mDudeController->getDudesCount() == 0) {
@@ -383,8 +428,7 @@ void ViewController::beginNextTurn()
 
         startHintTimer();
     });
-
-    GlobInfo->resetComboMultiplier();
+    
     decrementMoves();
   
     mGameplayScene->runAction(cocos2d::Sequence::create(cocos2d::DelayTime::create(delay), callback, nullptr));
@@ -397,6 +441,19 @@ void ViewController::decrementMoves()
     cocos2d::log("ViewController::decrementMoves");
     mMovesLeft--;
     updateInfoLabels();
+}
+
+//--------------------------------------------------------------------
+void ViewController::actionEnemyMove(BaseObj * objA, BaseObj * objB)
+//--------------------------------------------------------------------
+{
+    auto swapCallback = CallFunc::create([=]() {
+        handleMatches();
+    });
+    auto swap = mSwapController->createSwapWithObjects(objA, objB);
+    mSwapController->performSwap(swap);
+    AnimationsManager->animateSwap(swap, swapCallback);
+    AudioManager->playSound(SoundType::SwapSound);
 }
 
 //--------------------------------------------------------------------
@@ -416,6 +473,8 @@ void ViewController::swapCallback(SwapObj * swap)
     mGameplayScene->userInteractionDisabled();
 
     auto swapCallback = CallFunc::create([=]() {
+
+        mEnemyController->setEnemiesTurn(true);
         handleMatches();
     });
     auto invalidSwapCallback = CallFunc::create([=]() {
@@ -424,7 +483,7 @@ void ViewController::swapCallback(SwapObj * swap)
     });
 
     if (mSwapController->isPossibleSwap(swap)) {
-
+        stopHintTimer();
         mSwapController->performSwap(swap);
         AnimationsManager->animateSwap(swap, swapCallback);
         AudioManager->playSound(SoundType::SwapSound);
@@ -447,7 +506,8 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
                 stopHintTimer();
                 mGameplayScene->userInteractionDisabled();
 
-                mLevel->removeDudeMatches(set);
+                mEnemyController->setEnemiesTurn(true);
+                mChainController->removeDudeMatches(set);
 
                 updateScore(set);
                 animateHandleMatches(set);
@@ -457,18 +517,37 @@ void ViewController::activateDudeCallback(DudeObj * obj, int direction)
 }
 
 //--------------------------------------------------------------------
-void ViewController::activateChainCallback(CommonTypes::ChainType & type, cocos2d::Vec2 & pos)
+void ViewController::throwDownAnObject(BaseObj* obj, CT::Cell& destPos, bool isHeavyObject)
 //--------------------------------------------------------------------
 {
-    cocos2d::log("ViewController::activateChainCallback");
-    auto chains = mChainController->removeChainAt(type, pos);
+    auto onThrowDownCallback = CallFunc::create([&]() {
+        
+        auto onCompleteCallback = CallFunc::create([&]() {
 
-    if (chains->count() > 0) {
-        mGameplayScene->userInteractionDisabled();
+            mObjectController->updateObjectAt(destPos, obj);
+            mObjectController->synchronizeObjectAt(destPos);
 
-        updateScore(chains);
-        animateHandleMatches(chains);
-    }    
+            mSwapController->detectPossibleSwaps();
+            mDudeController->detectDirectionsForDudes();
+
+            mGameplayScene->userInteractionEnabled();
+        });
+
+        auto object = mObjectController->getObjectForChain(destPos);
+        if (mObjectController->matchObject(object)) {
+            AnimationsManager->animateMatchObject(object, onCompleteCallback);
+        }
+
+        // TODO: get wave length from other place
+        auto earthquakeWave = 2; 
+        auto chainSet = mChainController->createExposionChainAtCellForRebound(destPos, earthquakeWave);
+        AnimationsManager->animateReboundAfterThrowingObj(destPos, chainSet);
+
+    });
+
+    mGameplayScene->userInteractionDisabled();
+
+    AnimationsManager->animateThrowDownAnObj(obj, destPos, onThrowDownCallback, isHeavyObject);
 }
 
 //--------------------------------------------------------------------
@@ -491,20 +570,31 @@ void ViewController::stopHintTimer()
 void ViewController::showSwapHint(float dt)
 //--------------------------------------------------------------------
 {
-    CommonTypes::Set* set = nullptr;
+    CT::Set* set = nullptr;
     if (mGameplayScene->isObjTouched()) {
         return;
     }
+    cocos2d::log("ViewController::showSwapHint:");
     auto swapObj = dynamic_cast<SwapObj*>(mSwapController->getPossibleSwaps()->anyObject());
     if (swapObj) {
-        mGameplayScene->userInteractionDisabled();
-        set = swapObj->getObjectsForHint();
-        auto callback = CallFunc::create([=]() {
-            // enable touches on layer.
-            mGameplayScene->userInteractionEnabled();
-        });
-        if (set) {
-            AnimationsManager->animateHintSwap(set, callback);
-        }        
+        auto detectChain = swapObj->getDetectHintChainCallback();
+        if (detectChain) {
+
+            mGameplayScene->userInteractionDisabled();
+            set = detectChain();
+
+            auto callback = CallFunc::create([=]() {
+                // enable touches on layer.
+                mGameplayScene->userInteractionEnabled();
+            });
+
+            if (set) {
+                AnimationsManager->animateHintSwap(set, callback);
+            } else {
+                cocos2d::log("ViewController::showSwapHint: ERROR! cant detect chain set");
+                mGameplayScene->userInteractionEnabled();
+            }
+
+        }               
     }
 }

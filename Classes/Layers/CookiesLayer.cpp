@@ -26,7 +26,8 @@
 #include "Controller/ObjectController/Dude/DudeObj.h"
 
 USING_NS_CC;
-using namespace CommonTypes;
+using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 CookiesLayer::CookiesLayer()
@@ -116,7 +117,7 @@ void CookiesLayer::onExit()
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::addSpritesForObjects(CommonTypes::Set * set)
+void CookiesLayer::addSpritesForObjects(CT::Set * set)
 //--------------------------------------------------------------------
 {
     log("CookiesLayer::addSpritesForDudes:");
@@ -127,9 +128,9 @@ void CookiesLayer::addSpritesForObjects(CommonTypes::Set * set)
 
         if (obj->getType() == BaseObjType::Field) {
             auto fieldObj = dynamic_cast<FieldObj*>(*it);
-            createSpriteWithFieldObj(fieldObj, fieldObj->getColumn(), fieldObj->getRow());
+            createSpriteWithFieldObj(fieldObj, fieldObj->getCell());
         } else {
-            createSpriteWithObj(obj, obj->getColumn(), obj->getRow());
+            createSpriteWithObj(obj, obj->getCell());
         }
 
         obj->updateZOrder();
@@ -145,9 +146,9 @@ bool CookiesLayer::onTouchBegan(Touch* touch, Event* event)
 {
     Vec2 locationInNode = this->convertToNodeSpace(touch->getLocation());
 
-    if (Helper::convertPointToTilePos(locationInNode, mSwipeFromColumn, mSwipeFromRow)) {
+    if (Helper::convertPointToTilePos(locationInNode, mSwipeFromCell)) {
         auto objCtrl = mLevel->getObjectController();
-        CookieObj* cookie = objCtrl->cookieAt(mSwipeFromColumn, mSwipeFromRow);
+        CookieObj* cookie = objCtrl->cookieAt(mSwipeFromCell);
         if (cookie) {
             if (cookie->isSwappable()) {
                 showSelectionIndicatorForCookie(cookie);
@@ -155,7 +156,7 @@ bool CookiesLayer::onTouchBegan(Touch* touch, Event* event)
                 return true;
             }            
         }
-        BaseObj* dudeObj = objCtrl->dudeAt(mSwipeFromColumn, mSwipeFromRow);
+        BaseObj* dudeObj = objCtrl->dudeAt(mSwipeFromCell);
         if (dudeObj) {
             if (dudeObj->isSwappable()) {
                 mTouchedObj = dudeObj;
@@ -175,19 +176,19 @@ void CookiesLayer::onTouchMoved(Touch* touch, Event* event)
 
     Vec2 locationInNode = this->convertToNodeSpace(touch->getLocation());
 
-    int column = -1, row = -1;
-    if (Helper::convertPointToTilePos(locationInNode, column, row)) {
+    auto cell = Cell();;
+    if (Helper::convertPointToTilePos(locationInNode, cell)) {
 
-        auto direction = getSwipeDirection(column, row);
+        auto direction = getSwipeDirection(cell);
         if (isSameDirection(direction)) {
             return;
         }
-        if (updateChainPreviewHint(column, row, direction)) {
+        if (updateChainPreviewHint(cell, direction)) {
             return;
         }
         if (direction != Helper::to_underlying(Direction::Unknown)) {
             if (mTrySwapCookieCallback) {
-                if (mTrySwapCookieCallback(mSwipeFromColumn, mSwipeFromRow, direction)) {
+                if (mTrySwapCookieCallback(mSwipeFromCell, direction)) {
                     hideSelectionIndicator();
                     clearTouchedObj();
                 }
@@ -204,14 +205,14 @@ void CookiesLayer::onTouchEnded(Touch* touch, Event* event)
         if (mTouchedObj->getType() == BaseObjType::Dude) {
             Vec2 locationInNode = this->convertToNodeSpace(touch->getLocation());
 
-            int column = -1, row = -1;
-            if (Helper::convertPointToTilePos(locationInNode, column, row)) {
+            auto cell = Cell();
+            if (Helper::convertPointToTilePos(locationInNode, cell)) {
 
                 removeChainPreviewSprites();
 
-                auto direction = getSwipeDirection(column, row);
+                auto direction = getSwipeDirection(cell);
                 if (direction != Helper::to_underlying(Direction::Unknown)) {
-                    if (mCanActivateDudeCallback(mSwipeFromColumn, mSwipeFromRow, direction)) {
+                    if (mCanActivateDudeCallback(mSwipeFromCell, direction)) {
                         hideSelectionIndicator();
                         clearTouchedObj();
                         return;
@@ -288,12 +289,18 @@ void CookiesLayer::hideSelectionIndicator()
 void CookiesLayer::removeAllCookieSprites()
 //--------------------------------------------------------------------
 {
-    for (const auto& child : getChildren()) {
+    auto childs = getChildren();
+    if (childs.size() == 0) {
+        return;
+    }
+    for (const auto& child : childs) {
         auto obj = dynamic_cast<BaseObj*>(child);
         if (!obj) {
             continue;
         }
-        if (obj->getType() != BaseObjType::Dude && obj->getType() != BaseObjType::Field) {
+        if (obj->getType() != BaseObjType::Dude 
+            && obj->getType() != BaseObjType::Field
+            && obj->getType() != BaseObjType::Enemy) {
             this->removeChild(child);
         }
     }
@@ -314,7 +321,7 @@ void CookiesLayer::removeChainPreviewSprites()
 bool CookiesLayer::isObjTouched()
 //--------------------------------------------------------------------
 {
-    if (mSwipeFromColumn == -1 || mSwipeFromRow == -1 || !mTouchedObj)
+    if (mSwipeFromCell.column == -1 || mSwipeFromCell.row == -1 || !mTouchedObj)
         return false;
     return true;
 }
@@ -323,26 +330,26 @@ bool CookiesLayer::isObjTouched()
 void CookiesLayer::clearTouchedObj()
 //--------------------------------------------------------------------
 {
-    mSwipeFromColumn = -1;
-    mSwipeFromRow = -1;
+    mSwipeFromCell.column = -1;
+    mSwipeFromCell.row = -1;
     mTouchedObj = nullptr;
 }
 
 //--------------------------------------------------------------------
-int CookiesLayer::getSwipeDirection(int column, int row)
+int CookiesLayer::getSwipeDirection(CT::Cell& cell)
 //--------------------------------------------------------------------
 {
     auto direction = Direction::Unknown;
-    if (column < mSwipeFromColumn) { // swipe left
+    if (cell.column < mSwipeFromCell.column) { // swipe left
         direction = Direction::Left;
     }
-    else if (column > mSwipeFromColumn) { // swipe right
+    else if (cell.column > mSwipeFromCell.column) { // swipe right
         direction = Direction::Right;
     }
-    else if (row < mSwipeFromRow) { // swipe up
+    else if (cell.row < mSwipeFromCell.row) { // swipe up
         direction = Direction::Up;
     }
-    else if (row > mSwipeFromRow) { // swipe down
+    else if (cell.row > mSwipeFromCell.row) { // swipe down
         direction = Direction::Down;
     }
     return Helper::to_underlying(direction);
@@ -355,12 +362,12 @@ bool CookiesLayer::isSameDirection(int direction)
     if (direction == Helper::to_underlying(mPreviousDirection)) {
         return true;
     }
-    mPreviousDirection = static_cast<CommonTypes::Direction>(direction);
+    mPreviousDirection = static_cast<CT::Direction>(direction);
     return false;
 }
 
 //--------------------------------------------------------------------
-bool CookiesLayer::updateChainPreviewHint(int column, int row, int direction)
+bool CookiesLayer::updateChainPreviewHint(CT::Cell& cell, int direction)
 //--------------------------------------------------------------------
 {
     bool isDudeObject = mTouchedObj->getType() == BaseObjType::Dude;
@@ -382,18 +389,18 @@ bool CookiesLayer::updateChainPreviewHint(int column, int row, int direction)
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
+void CookiesLayer::createSpriteWithObj(BaseObj* obj, CT::Cell& cell)
 //--------------------------------------------------------------------
 {
     if (obj) {
         auto sprite = SpritesFactory->createWithBaseObject(obj);
         sprite->setVisible(true);
-        sprite->setPosition(Helper::pointForColumnAndRow(column, row));
+        sprite->setPosition(Helper::pointForCell(cell));
         obj->setSpriteNode(sprite);
 
-        auto zOrder = (row * 10);
+        auto zOrder = (cell.row * 10);
         if (obj->getType() == BaseObjType::Dude) {
-            mDudesLayer->addChild(sprite, zOrder);
+            this->addChild(sprite, zOrder);
             mDudesLayer->addChild(obj, zOrder);
         } else {
             this->addChild(sprite, zOrder);
@@ -408,7 +415,7 @@ void CookiesLayer::createSpriteWithObj(BaseObj* obj, int column, int row)
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::createSpriteWithFieldObj(FieldObj* obj, int column, int row)
+void CookiesLayer::createSpriteWithFieldObj(FieldObj* obj, CT::Cell& cell)
 //--------------------------------------------------------------------
 {
     if (obj) {
@@ -417,8 +424,8 @@ void CookiesLayer::createSpriteWithFieldObj(FieldObj* obj, int column, int row)
         obj->setSpriteNode(sprite);
 
         auto priority = obj->getPriority();
-        auto zOrder = (row * 10) + priority;
-        auto pos = Helper::pointForColumnAndRowWithPriority(column, row, priority);
+        auto zOrder = (cell.row * 10) + priority;
+        auto pos = Helper::pointForCellWithPriority(cell, priority);
 
         sprite->setPosition(pos);
         sprite->setScale(1);
@@ -440,7 +447,7 @@ void CookiesLayer::createSpriteWithFieldObj(FieldObj* obj, int column, int row)
 }
 
 //--------------------------------------------------------------------
-void CookiesLayer::createChainPreviewSprites(CommonTypes::Set* set)
+void CookiesLayer::createChainPreviewSprites(CT::Set* set)
 //--------------------------------------------------------------------
 {
     log("CookiesLayer::addSpritesForDudes:");
@@ -468,7 +475,7 @@ void CookiesLayer::createChainPreviewSprites(CommonTypes::Set* set)
             auto sprite = SpritesFactory->createHintSprite(chain->getChainColor());
             container->setChainPreviewSprite(sprite);
 
-            sprite->setPosition(Helper::pointForColumnAndRow(obj->getColumn(), obj->getRow()));
+            sprite->setPosition(Helper::pointForCell(obj->getCell()));
 
             auto gameLayer = this->getParent();
             auto scene = dynamic_cast<GameplayScene*>(gameLayer->getParent());

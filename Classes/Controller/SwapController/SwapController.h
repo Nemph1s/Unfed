@@ -11,22 +11,21 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 #include "Utils/PlatformMacros.h"
 
 class SwapObj;
 class LevelObj;
 class CookieObj;
+class BaseObj;
 
 struct SwapChecker : public cocos2d::Ref
 {
-    CommonTypes::Set* set;
-    int curCol;
-    int curRow;
-    int nextCol;
-    int nextRow;
-    SwapChecker(CommonTypes::Set* _set, int _curCol, int _curRow, int _nextCol, int _nextRow)
-        : set(_set), curCol(_curCol), curRow(_curRow), nextCol(_nextCol), nextRow(_nextRow) {}
+    CT::Set* set;
+    CT::Cell curCell;
+    CT::Cell nextCell;
+    SwapChecker(CT::Set* _set, CT::Cell _curCell, CT::Cell _nextCell)
+        : set(_set), curCell(_curCell), nextCell(_nextCell) {}
 };
 
 class SwapController : public cocos2d::Ref
@@ -42,6 +41,8 @@ public:
     static SwapController* create();
 
     bool init();
+
+    SwapObj* createSwapWithObjects(BaseObj* objectA, BaseObj* objectB);
     
     /**
     * @brief A method that checks is the cookie[column][row] type equal to forwarded type
@@ -55,11 +56,11 @@ public:
     bool isPossibleSwap(SwapObj* swap);
     void performSwap(SwapObj* swap);
 
-    bool trySwapCookieTo(int fromCol, int fromRow, int direction);
+    bool trySwapCookieTo(CT::Cell& fromCell, int direction);
 
     void clearPossibleSwaps();
 
-    CommonTypes::Set* getPreviousSwapContainers();
+    CT::Set* getPreviousSwapContainers();
                           
 protected:
     // Nodes should be created using create();
@@ -71,7 +72,7 @@ protected:
     CC_SYNTHESIZE(std::function<void(SwapObj* swap)>, mSwapCallback, SwapCallback);
 
     SYNTHESIZE(LevelObj*, mLevel, Level, nullptr);
-    SYNTHESIZE_READONLY(CommonTypes::Set*, mPossibleSwaps, PossibleSwaps, nullptr);
+    SYNTHESIZE_READONLY(CT::Set*, mPossibleSwaps, PossibleSwaps, nullptr);
     SYNTHESIZE_READONLY(SwapObj*, mPreviousSwap, PreviousSwap, nullptr);
 };
 

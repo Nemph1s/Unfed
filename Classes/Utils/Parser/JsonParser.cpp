@@ -40,10 +40,10 @@ bool _JsonParser::checkGlobalInfoStatus()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::SGlobalInfo _JsonParser::getJsonGlobalInfo()
+CT::SGlobalInfo _JsonParser::getJsonGlobalInfo()
 //--------------------------------------------------------------------
 {
-    auto globalInfo = CommonTypes::SGlobalInfo();
+    auto globalInfo = CT::SGlobalInfo();
     globalInfo.swVersion = getSwVersion();
     globalInfo.imgPackType = getImagePackType();
     globalInfo.imgPackVersion = getImagePackVersion();
@@ -263,10 +263,10 @@ bool _JsonParser::checkLevelInfoStatus()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::LevelInfo _JsonParser::getJsonLevelInfo()
+CT::LevelInfo _JsonParser::getJsonLevelInfo()
 //--------------------------------------------------------------------
 {
-	auto levelInfo = CommonTypes::LevelInfo();
+	auto levelInfo = CT::LevelInfo();
 	levelInfo.id = mLoadedLevel;
 	levelInfo.targetScore = getTargetScore();
 	levelInfo.moves = getMoves();
@@ -278,15 +278,16 @@ CommonTypes::LevelInfo _JsonParser::getJsonLevelInfo()
     updatePredefinedCookies(levelInfo);
     updateAllowedCookieTypes(levelInfo);
     updateFieldObjects(levelInfo);
+    updateEnemyObjects(levelInfo);
 
 	return levelInfo;
 }
 
 //--------------------------------------------------------------------
-CommonTypes::LevelGoals _JsonParser::getJsonLevelGoals()
+CT::LevelGoals _JsonParser::getJsonLevelGoals()
 //--------------------------------------------------------------------
 {
-    auto levelGoals = CommonTypes::LevelGoals();
+    auto levelGoals = CT::LevelGoals();
 
     if (mLevelInfoRootNode[JsonNames::levelGoals].isNull()) {
         return levelGoals;
@@ -301,7 +302,7 @@ CommonTypes::LevelGoals _JsonParser::getJsonLevelGoals()
         const Json::Value& goalCollectNode = subNode[i];
         CC_ASSERT(goalCollectNode.isObject());
 
-        auto goalInfo = CommonTypes::CollectGoalInfo();
+        auto goalInfo = CT::CollectGoalInfo();
         goalInfo.baseObjectType = getTargetBaseObjType(goalCollectNode);
         goalInfo.objectType = getTargetObjType(goalCollectNode);
         goalInfo.targetCount = getTargetObjectCount(goalCollectNode);
@@ -455,7 +456,7 @@ uint8_t _JsonParser::getTargetObjectCount(const Json::Value& node)
 }
 
 //--------------------------------------------------------------------
-void _JsonParser::updateTiles(CommonTypes::LevelInfo& levelInfo)
+void _JsonParser::updateTiles(CT::LevelInfo& levelInfo)
 //--------------------------------------------------------------------
 {
     const Json::Value& node = getTiles();
@@ -472,7 +473,7 @@ void _JsonParser::updateTiles(CommonTypes::LevelInfo& levelInfo)
 }
 
 //--------------------------------------------------------------------
-void _JsonParser::updatePredefinedCookies(CommonTypes::LevelInfo& levelInfo)
+void _JsonParser::updatePredefinedCookies(CT::LevelInfo& levelInfo)
 //--------------------------------------------------------------------
 {
     if (!mLevelInfoRootNode[JsonNames::cookiesArray].isNull()) {
@@ -491,7 +492,7 @@ void _JsonParser::updatePredefinedCookies(CommonTypes::LevelInfo& levelInfo)
 }
 
 //--------------------------------------------------------------------
-void _JsonParser::updateAllowedCookieTypes(CommonTypes::LevelInfo& levelInfo)
+void _JsonParser::updateAllowedCookieTypes(CT::LevelInfo& levelInfo)
 //--------------------------------------------------------------------
 {
     if (!mLevelInfoRootNode[JsonNames::allowedCookieTypes].isNull()) {
@@ -506,21 +507,21 @@ void _JsonParser::updateAllowedCookieTypes(CommonTypes::LevelInfo& levelInfo)
 }
 
 //--------------------------------------------------------------------
-void _JsonParser::updateFieldObjects(CommonTypes::LevelInfo& levelInfo)
+void _JsonParser::updateFieldObjects(CT::LevelInfo& levelInfo)
 //--------------------------------------------------------------------
 {
-    if (mLevelInfoRootNode[JsonNames::fieldObjectsArray].isNull()) {
+    if (mLevelInfoRootNode[JsonNames::objectsArray].isNull()) {
         return;
     }
-    const Json::Value& subNode = getFieldObjects(mLevelInfoRootNode[JsonNames::fieldObjectsArray]);
+    const Json::Value& subNode = getFieldObjects(mLevelInfoRootNode[JsonNames::objectsArray]);
 
     for (uint16_t i = 0; i < subNode.size(); ++i) {
         const Json::Value& fieldObjectNode = subNode[i];
         CC_ASSERT(fieldObjectNode.isObject());
 
-        auto fieldInfo = CommonTypes::JsonFieldInfo();
-        fieldInfo.baseInfo.column = getFieldObjectCol(fieldObjectNode);
-        fieldInfo.baseInfo.row = getFieldObjectRow(fieldObjectNode);
+        auto fieldInfo = GOT::JsonFieldInfo();
+        fieldInfo.baseInfo.column = getObjectColumn(fieldObjectNode);
+        fieldInfo.baseInfo.row = getObjectRow(fieldObjectNode);
 
         const Json::Value& typesNode = getFieldObjectTypes(fieldObjectNode);
         CC_ASSERT(typesNode.isArray());
@@ -535,10 +536,31 @@ void _JsonParser::updateFieldObjects(CommonTypes::LevelInfo& levelInfo)
 }
 
 //--------------------------------------------------------------------
+void _JsonParser::updateEnemyObjects(CT::LevelInfo & levelInfo)
+//--------------------------------------------------------------------
+{
+    if (mLevelInfoRootNode[JsonNames::objectsArray].isNull()) {
+        return;
+    }
+    const Json::Value& subNode = getEnemyObjects(mLevelInfoRootNode[JsonNames::objectsArray]);
+
+    for (uint16_t i = 0; i < subNode.size(); ++i) {
+        const Json::Value& enemyObjectNode = subNode[i];
+        CC_ASSERT(enemyObjectNode.isObject());
+
+        auto enemyInfo = GOT::JsonEnemyInfo();
+        enemyInfo.baseInfo.column = getObjectColumn(enemyObjectNode);
+        enemyInfo.baseInfo.row = getObjectRow(enemyObjectNode);
+        enemyInfo.enemyType = getEnemyObjectType(enemyObjectNode);
+        levelInfo.enemyObjects.push_back(enemyInfo);
+    }
+}
+
+//--------------------------------------------------------------------
 const Json::Value& _JsonParser::getFieldObjects(const Json::Value& node)
 //--------------------------------------------------------------------
 {
-    const Json::Value& value = node[JsonNames::fieldObject_objects];
+    const Json::Value& value = node[JsonNames::objectsArray_fieldObjs];
     if (!value.isArray())
         throw std::logic_error("bad fieldObjects array");
 
@@ -546,23 +568,34 @@ const Json::Value& _JsonParser::getFieldObjects(const Json::Value& node)
 }
 
 //--------------------------------------------------------------------
-uint8_t _JsonParser::getFieldObjectCol(const Json::Value& node)
+const Json::Value & _JsonParser::getEnemyObjects(const Json::Value & node)
+//--------------------------------------------------------------------
+{
+    const Json::Value& value = node[JsonNames::objectsArray_enemyObjs];
+    if (!value.isArray())
+        throw std::logic_error("bad enemyObjects array");
+
+    return value;
+}
+
+//--------------------------------------------------------------------
+uint8_t _JsonParser::getObjectColumn(const Json::Value& node)
 //--------------------------------------------------------------------
 {
     uint8_t res = 0;
-    if (node[JsonNames::fieldObject_col].isInt()) {
-        res = node[JsonNames::fieldObject_col].asInt();
+    if (node[JsonNames::objectsArray_col].isInt()) {
+        res = node[JsonNames::objectsArray_col].asInt();
     }
     return res;
 }
 
 //--------------------------------------------------------------------
-uint8_t _JsonParser::getFieldObjectRow(const Json::Value& node)
+uint8_t _JsonParser::getObjectRow(const Json::Value& node)
 //--------------------------------------------------------------------
 {
     uint8_t res = 0;
-    if (node[JsonNames::fieldObject_row].isInt()) {
-        res = node[JsonNames::fieldObject_row].asInt();
+    if (node[JsonNames::objectsArray_row].isInt()) {
+        res = node[JsonNames::objectsArray_row].asInt();
     }
     return res;
 }
@@ -571,9 +604,20 @@ uint8_t _JsonParser::getFieldObjectRow(const Json::Value& node)
 const Json::Value& _JsonParser::getFieldObjectTypes(const Json::Value& node)
 //--------------------------------------------------------------------
 {
-    const Json::Value& value = node[JsonNames::fieldObject_types];
+    const Json::Value& value = node[JsonNames::objectsArray_fieldTypes];
     if (!value.isArray())
         throw std::logic_error("bad fieldObject_types array");
 
     return value;
+}
+
+//--------------------------------------------------------------------
+int16_t _JsonParser::getEnemyObjectType(const Json::Value & node)
+//--------------------------------------------------------------------
+{
+    int16_t res = 0;
+    if (node[JsonNames::objectsArray_enemyType].isInt()) {
+        res = node[JsonNames::objectsArray_enemyType].asInt();
+    }
+    return res;
 }

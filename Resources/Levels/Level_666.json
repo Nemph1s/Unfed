@@ -23,8 +23,8 @@
     "moves" : 15,
     "typesCount" : 4,
     "allowedCookieTypes" : [0, 2, 3, 4 ],
-    "fieldObjects": {
-        "objects" : [ { "col": 4, "row": 3, "types": [ 30, 21 ] } ]
+    "objects": {
+        "fieldObjects" : [ { "col": 4, "row": 3, "types": [ 30, 21 ] } ]
     },
     "levelGoals": {
         "goalsCount" : 3,

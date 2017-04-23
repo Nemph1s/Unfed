@@ -13,7 +13,7 @@
 #include "cocos2d.h"
 #include <string.h>
 
-namespace CommonTypes {
+namespace CT {
     typedef cocos2d::__Set Set;
 }
 
@@ -43,6 +43,6 @@ protected:
     CC_SYNTHESIZE_READONLY(BaseObj*, mObjectA, ObjectA);
     CC_SYNTHESIZE_READONLY(BaseObj*, mObjectB, ObjectB);
 
-    CC_PROPERTY(CommonTypes::Set*, mObjectsForHint, ObjectsForHint);
+    CC_SYNTHESIZE(std::function<CT::Set*()>, mDetectHintChainCallback, DetectHintChainCallback);
 };
 

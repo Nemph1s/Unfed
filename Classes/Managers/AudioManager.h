@@ -11,7 +11,7 @@
 #pragma once
 
 #include "Utils/PlatformMacros.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 
 class _AudioManager
 {
@@ -21,7 +21,7 @@ public:
     bool init();
 
     void playBGMusic();
-    void playSound(CommonTypes::SoundType type);
+    void playSound(CT::SoundType type);
     
 protected:
     bool preloadSounds();

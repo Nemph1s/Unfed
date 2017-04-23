@@ -11,7 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 
 class DudeObj;
 class DudeController;
@@ -30,7 +30,7 @@ public:
 
     bool initWithDudeObject(DudeObj* obj);
 
-    CommonTypes::Set* getChainByDirection(const CommonTypes::Direction& direction, bool isPreview = false);
+    CT::Set* getChainByDirection(const CT::Direction& direction, bool isPreview = false);
 
     void clear();
 
@@ -43,11 +43,11 @@ protected:
     CC_SYNTHESIZE(DudeObj*, mDudeObj, DudeObj);
     CC_SYNTHESIZE(DudeController*, mDudeCtrl, DudeController);
 
-    CC_PROPERTY(CommonTypes::Set*, mTopChain, TopChain);
-    CC_PROPERTY(CommonTypes::Set*, mBottomChain, BottomChain);
-    CC_PROPERTY(CommonTypes::Set*, mLeftChain, LeftChain);
-    CC_PROPERTY(CommonTypes::Set*, mRightChain, RightChain);
-    CC_PROPERTY(CommonTypes::Set*, mHorizontalChain, HorizontalChain);
-    CC_PROPERTY(CommonTypes::Set*, mVerticalChain, VerticalChain);
-    CC_PROPERTY(CommonTypes::Set*, mXChain, XChain);
+    CC_PROPERTY(CT::Set*, mTopChain, TopChain);
+    CC_PROPERTY(CT::Set*, mBottomChain, BottomChain);
+    CC_PROPERTY(CT::Set*, mLeftChain, LeftChain);
+    CC_PROPERTY(CT::Set*, mRightChain, RightChain);
+    CC_PROPERTY(CT::Set*, mHorizontalChain, HorizontalChain);
+    CC_PROPERTY(CT::Set*, mVerticalChain, VerticalChain);
+    CC_PROPERTY(CT::Set*, mXChain, XChain);
 };

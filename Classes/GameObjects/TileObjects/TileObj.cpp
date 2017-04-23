@@ -16,7 +16,7 @@
 //--------------------------------------------------------------------
 TileObj::TileObj()
     : BaseObj()
-    , mTileType(CommonTypes::TileType::Unknown)
+    , mTileType(GOT::TileType::Unknown)
     , mChainPreviewSpriteNode(nullptr)
 //--------------------------------------------------------------------
 {
@@ -29,7 +29,7 @@ TileObj::~TileObj()
 }
 
 //--------------------------------------------------------------------
-TileObj * TileObj::create(const CommonTypes::TileInfo & info)
+TileObj * TileObj::create(const GOT::TileInfo & info)
 //--------------------------------------------------------------------
 {
     TileObj * ret = new (std::nothrow) TileObj();
@@ -43,7 +43,7 @@ TileObj * TileObj::create(const CommonTypes::TileInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool TileObj::init(const CommonTypes::TileInfo & info)
+bool TileObj::init(const GOT::TileInfo & info)
 //--------------------------------------------------------------------
 {
     if (!BaseObj::init(info.baseInfo)) {
@@ -80,7 +80,7 @@ int TileObj::getTypeAsInt() const
 bool TileObj::isEmptyTile()
 //--------------------------------------------------------------------
 {
-    if (mTileType == CommonTypes::TileType::Empty) {
+    if (mTileType == GOT::TileType::Empty) {
         return true;
     } else {
         return false;

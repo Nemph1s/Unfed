@@ -15,12 +15,14 @@
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
 #include "Controller/ObjectController/Dude/DudeObj.h"
+#include "Controller/ObjectController/Enemy/EnemyObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 #include <random>
 #include <cstdlib>
 
 using namespace GameResources;
-using namespace CommonTypes;
+using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 float Helper::randomFloatBetween(float smallNumber, float bigNumber) 
@@ -28,6 +30,14 @@ float Helper::randomFloatBetween(float smallNumber, float bigNumber)
 {
     float diff = bigNumber - smallNumber;
     return (((float)rand() / RAND_MAX) * diff) + smallNumber;
+}
+
+//--------------------------------------------------------------------
+float Helper::rangeRandom(float min, float max)
+//--------------------------------------------------------------------
+{
+    float rnd = ((float)rand() / (float)RAND_MAX);
+    return rnd*(max - min) + min;
 }
 
 //--------------------------------------------------------------------
@@ -46,6 +56,31 @@ CookieType Helper::randomCookieType(int fromRange, int toRange)
 {
     int randValue = random(fromRange, toRange);
     return static_cast<CookieType>(randValue);
+}
+
+//--------------------------------------------------------------------
+float Helper::getDurationToTile(int8_t startRow, int8_t destinationRow)
+//--------------------------------------------------------------------
+{
+    const float tileOffset = 0.09f;
+    float timeToTile = fabs(startRow - destinationRow);
+    return (timeToTile * 0.1f) + tileOffset;
+}
+
+//--------------------------------------------------------------------
+float Helper::getDurationToTile(CT::Cell& startCell, CT::Cell& destinationCell)
+//--------------------------------------------------------------------
+{
+    return getDurationToTile(startCell.row, destinationCell.row);
+}
+
+//--------------------------------------------------------------------
+int8_t Helper::getDistanceBetweenObjects(CT::Cell& cellPosA, CT::Cell& cellPosB)
+//--------------------------------------------------------------------
+{
+    uint8_t colLength = std::abs(cellPosA.column - cellPosB.column);
+    uint8_t rowLength = std::abs(cellPosA.row - cellPosB.row);
+    return MAX(colLength, rowLength);
 }
 
 //--------------------------------------------------------------------
@@ -89,32 +124,44 @@ cocos2d::String* Helper::getSpriteNameByFieldType(int fieldType)
 }
 
 //--------------------------------------------------------------------
-bool Helper::isValidColumnAndRow(int column, int row)
+cocos2d::String * Helper::getSpriteNameByEnemyType(int enemyType)
+//--------------------------------------------------------------------
+{
+    cocos2d::String* str = nullptr;
+    if (enemyType >= to_underlying(EnemyType::Simple) && enemyType < to_underlying(EnemyType::Unknown)) {
+        str = &GameResources::s_enemySpriteNames.at(enemyType);
+    }
+    return str;
+}
+
+//--------------------------------------------------------------------
+bool Helper::isValidCell(CT::Cell& cell)
 //--------------------------------------------------------------------
 {
     bool result = true;
-    if (column < 0 || column >= _GlobalInfo::NumColumns || row < 0 || row >= _GlobalInfo::NumColumns) {
+    if (cell.column < 0 || cell.column >= _GlobalInfo::NumColumns || cell.row < 0 || cell.row >= _GlobalInfo::NumColumns) {
         result = false;
     }
     return result;
 }
 
 //--------------------------------------------------------------------
-cocos2d::Vec2 Helper::pointForColumnAndRow(int column, int row)
+cocos2d::Vec2 Helper::pointForCell(CT::Cell& cell)
 //--------------------------------------------------------------------
 {
-    float offsetX = 2.5f * column;
-    float offsetY = 2.5f * (_GlobalInfo::NumRows - row - 1);
+    float offsetX = 2.5f * cell.column;
+    float offsetY = 2.5f * (_GlobalInfo::NumRows - cell.row - 1);
     auto tileWidth = GlobInfo->getTileWidth();
     auto tileHeight = GlobInfo->getTileHeight();
-    return cocos2d::Vec2(offsetX + column * tileWidth + tileWidth / 2, offsetY + (_GlobalInfo::NumRows - row - 1) * tileHeight + tileHeight / 2);
+    return cocos2d::Vec2(offsetX + cell.column * tileWidth + tileWidth / 2
+        , offsetY + (_GlobalInfo::NumRows - cell.row - 1) * tileHeight + tileHeight / 2);
 }
 
 //--------------------------------------------------------------------
-cocos2d::Vec2 Helper::pointForColumnAndRowWithPriority(int column, int row, int priority)
+cocos2d::Vec2 Helper::pointForCellWithPriority(CT::Cell& cell, int priority)
 //--------------------------------------------------------------------
 {
-    auto pos = pointForColumnAndRow(column, row);
+    auto pos = pointForCell(cell);
     if (priority > 0) {
         auto tileHeight = GlobInfo->getTileHeight();
         pos.y += (tileHeight / 4) * priority;
@@ -130,22 +177,63 @@ cocos2d::Vec2 Helper::pointForTile(BaseObj * obj)
     if (obj->getType() == BaseObjType::Field) {
         auto tileObj = dynamic_cast<FieldObj*>(obj);
         if (tileObj) {
-            pos = pointForColumnAndRowWithPriority(obj->getColumn(), obj->getRow(), tileObj->getPriority());
+            pos = pointForCellWithPriority(obj->getCell(), tileObj->getPriority());
         }
     } else {
-        pos = pointForColumnAndRow(obj->getColumn(), obj->getRow());
+        pos = pointForCell(obj->getCell());
     }
     return pos;
 }
 
 //--------------------------------------------------------------------
-bool Helper::convertPointToTilePos(cocos2d::Vec2& point, int& column, int& row)
+cocos2d::Vec2 Helper::pointForGoalSprite(int currGoal, int goalsCount, const cocos2d::Size & spriteSize)
+//--------------------------------------------------------------------
+{
+    cocos2d::Vec2 pos = cocos2d::Vec2::ZERO;
+    if (goalsCount == 1) {
+        pos = cocos2d::Vec2(-spriteSize.width * 0.25f, 0);
+    }
+    if (goalsCount == 2) {
+        if (currGoal == 0) {
+            pos = cocos2d::Vec2(-spriteSize.width * 0.75f, 0);
+        }
+        else if (currGoal == 1) {
+            pos = cocos2d::Vec2(spriteSize.width * 0.75f, 0);
+        }
+    }
+    else if (goalsCount == 3) {
+        if (currGoal == 0) {
+            pos = cocos2d::Vec2(-spriteSize.width * 1.1f, 0);
+        }
+        else if (currGoal == 2) {
+            pos = cocos2d::Vec2(spriteSize.width * 1.1f, 0);
+        }
+    }
+    return pos;
+}
+
+//--------------------------------------------------------------------
+CT::Cell Helper::cellFromPoint(const cocos2d::Vec2 & point)
+//--------------------------------------------------------------------
+{
+    auto cell = CT::Cell();
+    if (point.x >= 0 && point.x < _GlobalInfo::NumColumns * GlobInfo->getTileWidth() &&
+        point.y >= 0 && point.y < _GlobalInfo::NumRows * GlobInfo->getTileHeight()) {
+        cell.column = point.x / GlobInfo->getTileWidth();
+        cell.row = _GlobalInfo::NumColumns - (point.y / GlobInfo->getTileHeight());
+        return cell;
+    }
+    return cell;
+}
+
+//--------------------------------------------------------------------
+bool Helper::convertPointToTilePos(cocos2d::Vec2& point, CT::Cell& cell)
 //--------------------------------------------------------------------
 {
     if (point.x >= 0 && point.x < _GlobalInfo::NumColumns * GlobInfo->getTileWidth() &&
         point.y >= 0 && point.y < _GlobalInfo::NumRows * GlobInfo->getTileHeight()) {
-        column = point.x / GlobInfo->getTileWidth();
-        row = _GlobalInfo::NumColumns - (point.y / GlobInfo->getTileHeight());
+        cell.column = point.x / GlobInfo->getTileWidth();
+        cell.row = _GlobalInfo::NumColumns - (point.y / GlobInfo->getTileHeight());
         return true;
     }
     return false;
@@ -177,20 +265,20 @@ Direction Helper::invertDirection(const Direction & direction)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Direction Helper::invertDirection(int direction)
+CT::Direction Helper::invertDirection(int direction)
 //--------------------------------------------------------------------
 {
-    auto dir = static_cast<CommonTypes::Direction>(direction);
+    auto dir = static_cast<CT::Direction>(direction);
     return invertDirection(dir);
 }
 
 //--------------------------------------------------------------------
-int Helper::getDirectionByTileFromAToB(int oldDirection, int fromCol, int fromRow, int toCol, int toRow)
+int Helper::getDirectionByTileFromAToB(int oldDirection, CT::Cell& fromCell, CT::Cell& toCell)
 //--------------------------------------------------------------------
 {
     auto dir = Direction::Unknown;
-    int8_t xDiff = toCol - fromCol;
-    int8_t yDiff = toRow - fromRow;
+    int8_t xDiff = toCell.column - fromCell.column;
+    int8_t yDiff = toCell.row - fromCell.row;
     if (std::abs(xDiff) != std::abs(yDiff)) {
         if (std::abs(xDiff) > std::abs(yDiff)) {
             dir = xDiff > 0 ? Direction::Left : Direction::Right;
@@ -205,11 +293,11 @@ int Helper::getDirectionByTileFromAToB(int oldDirection, int fromCol, int fromRo
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Direction Helper::getDirectionByTileFromAToB(int oldDirection, BaseObj * from, BaseObj * to)
+CT::Direction Helper::getDirectionByTileFromAToB(int oldDirection, BaseObj* from, BaseObj* to)
 //--------------------------------------------------------------------
 {
-    auto direction = getDirectionByTileFromAToB(oldDirection, from->getColumn(), from->getRow(), to->getColumn(), to->getRow());
-    return static_cast<CommonTypes::Direction>(direction);
+    auto direction = getDirectionByTileFromAToB(oldDirection, from->getCell(), to->getCell());
+    return static_cast<CT::Direction>(direction);
 }
 
 //--------------------------------------------------------------------
@@ -217,7 +305,7 @@ bool Helper::convertDirectionToSwipeDelta(int dir, int & horzDelta, int & vertDe
 //--------------------------------------------------------------------
 {
     bool result = true;
-    auto direction = static_cast<CommonTypes::Direction>(dir);
+    auto direction = static_cast<CT::Direction>(dir);
     switch (direction)
     {
     case Direction::Up:
@@ -248,35 +336,30 @@ cocos2d::Color4B Helper::getScoreColorByObj(BaseObj * obj)
     if (!obj) {
         return color;
     }
-
+    auto type = obj->getTypeAsInt();
     if (obj->getType() == BaseObjType::Cookie) {
-        auto cookie = dynamic_cast<CookieObj*>(obj);
-        if (cookie) {
-            color = getScoreColorByCookieType(cookie->getCookieType());
-        }
+        color = getScoreColorByCookieType(type);
     }
     else if (obj->getType() == BaseObjType::Field) {
-        auto tileObj = dynamic_cast<FieldObj*>(obj);
-        if (tileObj) {
-            color = getScoreColorForFieldObj(tileObj->getFieldType());
-        }
+        color = getScoreColorForFieldObj(type);
     }
     else if (obj->getType() == BaseObjType::Dude) {
-        auto dudeObj = dynamic_cast<DudeObj*>(obj);
-        if (dudeObj) {
-            color = getScoreColorForDudeObj(dudeObj->getFieldType());
-        }
+        color = getScoreColorForDudeObj(type);
+    }
+    else if (obj->getType() == BaseObjType::Enemy) {
+        color = getScoreColorForEnemyObj(type);
     }
 
     return color;
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorByCookieType(CommonTypes::CookieType type)
+cocos2d::Color4B Helper::getScoreColorByCookieType(int type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
-    switch (type)
+    auto cookieType = static_cast<CookieType>(type);
+    switch (cookieType)
     {
     case CookieType::Croissant:
         color = cocos2d::Color4B::ORANGE;
@@ -303,11 +386,12 @@ cocos2d::Color4B Helper::getScoreColorByCookieType(CommonTypes::CookieType type)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorForFieldObj(CommonTypes::FieldType type)
+cocos2d::Color4B Helper::getScoreColorForFieldObj(int type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
-    switch (type)
+    auto fieldType = static_cast<FieldType>(type);
+    switch (fieldType)
     {
     case FieldType::Dirt:
     case FieldType::Dirt_HP2:
@@ -328,12 +412,13 @@ cocos2d::Color4B Helper::getScoreColorForFieldObj(CommonTypes::FieldType type)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Color4B Helper::getScoreColorForDudeObj(CommonTypes::FieldType type)
+cocos2d::Color4B Helper::getScoreColorForDudeObj(int type)
 //--------------------------------------------------------------------
 {
     // see hints on http://www.colorhexa.com/color-names
     auto color = cocos2d::Color4B(209, 159, 232, 255); //Bright ube 
-    switch (type)
+    auto dudeType = static_cast<FieldType>(type);
+    switch (dudeType)
     {
     case FieldType::DudeFromAToB:
         color = cocos2d::Color4B(193, 154, 107, 150); //Desert 
@@ -349,6 +434,27 @@ cocos2d::Color4B Helper::getScoreColorForDudeObj(CommonTypes::FieldType type)
         break;
     case FieldType::DudeSquareBomb:
         color = cocos2d::Color4B(175, 64, 53, 255); // Pale Carmine 
+        break;
+    default:
+        break;
+    }
+    return color;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Color4B Helper::getScoreColorForEnemyObj(int type)
+//--------------------------------------------------------------------
+{
+    // see hints on http://www.colorhexa.com/color-names
+    auto color = cocos2d::Color4B(0x0f, 0x0f, 0x0f, 255); //onyx
+    auto enemyType = static_cast<EnemyType>(type);
+    switch (type)
+    {
+    case EnemyType::Simple:
+        color = cocos2d::Color4B(0x3e, 0xb4, 0x89, 255); //mint 
+        break;
+    case EnemyType::Shielded:
+        color = cocos2d::Color4B(0xff, 0x45, 0x00, 255); //orange red
         break;
     default:
         break;

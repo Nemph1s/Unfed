@@ -12,10 +12,10 @@
 
 #include <stdint.h>
 #include <vector>
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
 
-namespace CommonTypes {
+namespace CT {
 
     typedef int TilesArray[_GlobalInfo::NumColumns][_GlobalInfo::NumRows];
 
@@ -29,7 +29,8 @@ namespace CommonTypes {
         int moves = 0; /**< available moves */
         TilesArray tiles = { 0 }; /**< array of tiles */
         TilesArray cookies = { 0 }; /**< array of cookies */
-        std::vector<CommonTypes::JsonFieldInfo> fieldObjects; /**< array of tileObjects */
+        std::vector<GOT::JsonFieldInfo> fieldObjects; /**< array of fieldObjects */
+        std::vector<GOT::JsonEnemyInfo> enemyObjects; /**< array of enemyObjects */
         int typesCount = 0; /**< count of types */
         bool isPredefinedCookies = false; /**< availability to load predefined cookies */
         bool skipEmptyHoles = false; /**< availability to skip empty tiles when obj falling */
@@ -43,8 +44,8 @@ namespace CommonTypes {
     {
         int8_t baseObjectType = 0; /**< baseObjectType type of base field object(tile, cookie, field, dude) */
         int8_t objectType = 0; /**< objectType type of child field obj */
-        int8_t targetCount = 0; /**< targetCount object count goal*/
-        int8_t currentCount = 0; /**< currentCount object count goal*/
+        int16_t targetCount = 0; /**< targetCount object count goal*/
+        int16_t currentCount = 0; /**< currentCount object count goal*/
     };
 
     /**

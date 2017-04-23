@@ -28,7 +28,7 @@ public:
     void parseGlobalInfo();
     bool checkGlobalInfoStatus();
 
-    CommonTypes::SGlobalInfo getJsonGlobalInfo();
+    CT::SGlobalInfo getJsonGlobalInfo();
 
     void parseScoreValues();
     bool checkScoreValuesStatus();
@@ -40,8 +40,8 @@ public:
     void parseLevelInfo(const int16_t& level);
     bool checkLevelInfoStatus();
 
-    CommonTypes::LevelInfo getJsonLevelInfo();
-    CommonTypes::LevelGoals getJsonLevelGoals();
+    CT::LevelInfo getJsonLevelInfo();
+    CT::LevelGoals getJsonLevelGoals();
     //---------------------------------------------------------------
 
 protected:
@@ -68,10 +68,11 @@ protected:
     Json::Value mGlobalInfoRootNode;
 
     //---Level Info--------------------------------------------------
-    void updateTiles(CommonTypes::LevelInfo& levelInfo);
-    void updatePredefinedCookies(CommonTypes::LevelInfo& levelInfo);
-    void updateAllowedCookieTypes(CommonTypes::LevelInfo& levelInfo);
-    void updateFieldObjects(CommonTypes::LevelInfo& levelInfo);
+    void updateTiles(CT::LevelInfo& levelInfo);
+    void updatePredefinedCookies(CT::LevelInfo& levelInfo);
+    void updateAllowedCookieTypes(CT::LevelInfo& levelInfo);
+    void updateFieldObjects(CT::LevelInfo& levelInfo);
+    void updateEnemyObjects(CT::LevelInfo& levelInfo);
 
     const Json::Value& getTiles();
     const Json::Value& getPredefinedCookies();
@@ -89,9 +90,11 @@ protected:
     uint8_t getTargetObjectCount(const Json::Value & node);
 
     const Json::Value& getFieldObjects(const Json::Value & node);
-    uint8_t getFieldObjectCol(const Json::Value & node);
-    uint8_t getFieldObjectRow(const Json::Value & node);
+    const Json::Value& getEnemyObjects(const Json::Value & node);
+    uint8_t getObjectColumn(const Json::Value & node);
+    uint8_t getObjectRow(const Json::Value & node);
     const Json::Value& getFieldObjectTypes(const Json::Value & node);
+    int16_t getEnemyObjectType(const Json::Value & node);
 
     Json::Value mLevelInfoRootNode;
     int16_t mLoadedLevel = -1;

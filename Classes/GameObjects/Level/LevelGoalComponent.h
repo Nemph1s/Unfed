@@ -36,6 +36,6 @@ protected:
     LevelGoalComponent();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE_READONLY(CommonTypes::LevelGoals, mLevelGoals, LevelGoals);
+    CC_SYNTHESIZE_READONLY(CT::LevelGoals, mLevelGoals, LevelGoals);
 
 };

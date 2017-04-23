@@ -11,7 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 #include "Utils/PlatformMacros.h"
 
 class BaseObj;
@@ -19,6 +19,7 @@ class TileObj;
 class CookieObj;
 class FieldObj;
 class DudeObj;
+class EnemyObj;
 class ChainObj;
 class GameplayScene;
 
@@ -37,18 +38,18 @@ public:
     virtual bool init();
 
     bool addObject(BaseObj* obj);
-    bool removeObject(const CommonTypes::BaseObjType& type);
+    bool removeObject(const GOT::BaseObjType& type);
 
     void updateObjectWith(BaseObj* currObj, BaseObj* newObj);
     void synchronizeTilePos();
 
-    BaseObj* getObject(const CommonTypes::BaseObjType& type) const;
+    BaseObj* getObject(const GOT::BaseObjType& type) const;
     FieldObj* getFieldObject() const;
     std::list<FieldObj*>& getFieldObjects();
 
     bool isContainGameObj();
     BaseObj* getObjectForChain();
-    CommonTypes::Set* getObjectsForChain();
+    CT::Set* getObjectsForChain();
 
     bool isEmptyTileAt();
     bool isPossibleToAddCookie();
@@ -60,6 +61,7 @@ public:
     //---Callbacks-------------------------------------------------
     void onRemoveCookie(BaseObj* obj);
     void onRemoveDude(BaseObj* obj);
+    void onRemoveEnemy(BaseObj* obj);
     void onFieldObjChangeState(BaseObj* obj, std::function<void(FieldObj*)> createSpriteFunc);
 
 protected:
@@ -70,6 +72,7 @@ protected:
     bool addTileObject(BaseObj* obj);
     bool addFieldObject(BaseObj* obj);
     bool addCookieObject(BaseObj* obj);
+    bool addEnemyObject(BaseObj* obj);
 
     //---Class Attributes-------------------------------------------------
     std::list<FieldObj*> mFieldObjects;
@@ -79,4 +82,5 @@ protected:
     CC_SYNTHESIZE_READONLY(DudeObj*, mDudeObj, Dude);
     CC_SYNTHESIZE_READONLY(TileObj*, mTileObj, Tile);
     CC_SYNTHESIZE_READONLY(CookieObj*, mCookieObj, Cookie);
+    CC_SYNTHESIZE_READONLY(EnemyObj*, mEnemyObj, Enemy);
 };

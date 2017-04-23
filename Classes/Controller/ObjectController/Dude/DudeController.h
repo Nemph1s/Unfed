@@ -11,14 +11,8 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
  
-#include <map>
-
-using CommonTypes::FieldType;
-using CommonTypes::Set;
-using CommonTypes::Direction;
-
 class BaseObj;
 class DudeObj;
 class ChainObj;
@@ -41,18 +35,21 @@ public:
 
     bool init();
 
-    Set* createDudeObectsFromChains(Set* chains, Set* prevSwapContainers);
+    CT::Set* createDudeObectsFromChains(CT::Set* chains, CT::Set* prevSwapContainers);
 
-    BaseObj* createDudeObject(int column, int row, int type);
+    BaseObj* createDudeObjWithoutContainer(int type);
+    BaseObj* createDudeObject(CT::Cell& cell, int type);
 
     void detectDirectionsForDudes();
-
-    bool canActivateDudeTo(int fromCol, int fromRow, int direction);
-    Set* getChainsForDude(DudeObj* obj, int dir, bool isPreview = false);
-
-    void updateChainSetWithDudesInChain(const Direction& direction, DudeObj* activeDude, Set* chains, Set* chainSet);
     void eraseDirectionsForDude(DudeObj* obj);
 
+    bool matchDudeObject(BaseObj* obj);
+
+    bool canActivateDudeTo(CT::Cell& fromCell, int direction);
+    CT::Set* getChainsForDude(DudeObj* obj, int dir, bool isPreview = false);
+
+    void updateChainSetWithDudesInChain(const CT::Direction& direction, DudeObj* activeDude, CT::Set* chains, CT::Set* chainSet);
+ 
 protected:
     // Nodes should be created using create();
     DudeController();
@@ -61,7 +58,7 @@ protected:
 
     bool isEnoughCookiesForDude(int count, int neededCount);
 
-    FieldType getDudeTypeByChain(ChainObj* chain);
+    GOT::FieldType getDudeTypeByChain(ChainObj* chain);
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(DudeObj*, int direction)>, mActivateDudeCallback, ActivateDudeCallback);

@@ -12,13 +12,15 @@
 
 #include "GameObjects/TileObjects/TileObj.h"
 #include "Controller/ObjectController/Dude/DudeObj.h"
+#include "Controller/ObjectController/Enemy/EnemyObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 #include "Common/Factory/SmartObjFactory.h"
 #include "Common/Factory/SpritesFactory.h"
 
-using namespace CommonTypes;
+using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 ObjContainer::ObjContainer()
@@ -26,6 +28,7 @@ ObjContainer::ObjContainer()
     , mTileObj(nullptr)
     , mCookieObj(nullptr)
     , mDudeObj(nullptr)
+    , mEnemyObj(nullptr)
     , mFieldObjects()
 //--------------------------------------------------------------------
 {
@@ -48,6 +51,11 @@ ObjContainer::~ObjContainer()
     if (mDudeObj) {
         SmartObjFactory->recycle(mDudeObj);
         mDudeObj = nullptr;
+    }
+
+    if (mEnemyObj) {
+        SmartObjFactory->recycle(mEnemyObj);
+        mEnemyObj = nullptr;
     }
     
     while (mFieldObjects.size() > 0) {
@@ -104,6 +112,9 @@ bool ObjContainer::addObject(BaseObj* obj)
         case BaseObjType::Dude:
             result = addDudeObject(obj);
             break;
+        case BaseObjType::Enemy:
+            result = addEnemyObject(obj);
+            break;
         default:
             break;
         }
@@ -112,7 +123,7 @@ bool ObjContainer::addObject(BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
-BaseObj * ObjContainer::getObject(const CommonTypes::BaseObjType& type) const
+BaseObj * ObjContainer::getObject(const GOT::BaseObjType& type) const
 //--------------------------------------------------------------------
 {
     BaseObj* obj = nullptr;
@@ -129,6 +140,9 @@ BaseObj * ObjContainer::getObject(const CommonTypes::BaseObjType& type) const
         break;
     case BaseObjType::Dude:
         obj = mDudeObj;
+        break;
+    case BaseObjType::Enemy:
+        obj = mEnemyObj;
         break;
     default:
         break;
@@ -157,7 +171,7 @@ std::list<FieldObj*>& ObjContainer::getFieldObjects()
 bool ObjContainer::isContainGameObj()
 //--------------------------------------------------------------------
 {
-    if (mCookieObj || mDudeObj || getFieldObject()) {
+    if (mCookieObj || mDudeObj || mEnemyObj || getFieldObject()) {
         return true;
     }
     return false;
@@ -175,6 +189,9 @@ BaseObj* ObjContainer::getObjectForChain()
     else if (mDudeObj) {
         obj = mDudeObj;
     }
+    else if (mEnemyObj) {
+        obj = mEnemyObj;
+    }
     else if (fieldObj) {
         obj = fieldObj;
     }
@@ -183,14 +200,15 @@ BaseObj* ObjContainer::getObjectForChain()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* ObjContainer::getObjectsForChain()
+CT::Set* ObjContainer::getObjectsForChain()
 //--------------------------------------------------------------------
 {
-    auto set = CommonTypes::Set::create();
+    auto set = CT::Set::create();
     auto fieldObj = getFieldObject();
 
     if (mCookieObj) set->addObject(mCookieObj);
     else if (mDudeObj) set->addObject(mDudeObj);
+    else if (mEnemyObj) set->addObject(mEnemyObj);
     if (fieldObj) set->addObject(fieldObj);    
 
     if (set->count() == 0) {
@@ -200,7 +218,7 @@ CommonTypes::Set* ObjContainer::getObjectsForChain()
 }
 
 //--------------------------------------------------------------------
-bool ObjContainer::removeObject(const CommonTypes::BaseObjType& type)
+bool ObjContainer::removeObject(const GOT::BaseObjType& type)
 //--------------------------------------------------------------------
 {
     bool result = false;
@@ -218,6 +236,9 @@ bool ObjContainer::removeObject(const CommonTypes::BaseObjType& type)
         break;
     case BaseObjType::Dude:
         CC_SAFE_RELEASE_NULL(mDudeObj);
+        break;
+    case BaseObjType::Enemy:
+        CC_SAFE_RELEASE_NULL(mEnemyObj);
         break;
     default:
         break;
@@ -238,12 +259,18 @@ void ObjContainer::updateObjectWith(BaseObj* currObj, BaseObj* newObj)
     else if (currObj->getType() == BaseObjType::Dude) {
         mDudeObj = nullptr;
     }
+    else if (currObj->getType() == BaseObjType::Enemy) {
+        mEnemyObj = nullptr;
+    }
 
     if (newObj->getType() == BaseObjType::Cookie) {
         mCookieObj = dynamic_cast<CookieObj*>(newObj);
     }
     else if (newObj->getType() == BaseObjType::Dude) {
         mDudeObj = dynamic_cast<DudeObj*>(newObj);
+    }
+    else if (newObj->getType() == BaseObjType::Enemy) {
+        mEnemyObj = dynamic_cast<EnemyObj*>(newObj);
     }
 }
 
@@ -257,6 +284,12 @@ void ObjContainer::synchronizeTilePos()
             mDudeObj->setRow(mTileObj->getRow());
             mDudeObj->updateZOrder();
             
+        }
+        if (mEnemyObj) {
+            mEnemyObj->setColumn(mTileObj->getColumn());
+            mEnemyObj->setRow(mTileObj->getRow());
+            mEnemyObj->updateZOrder();
+
         }
         if (mCookieObj) {
             mCookieObj->setColumn(mTileObj->getColumn());
@@ -281,8 +314,7 @@ bool ObjContainer::isPossibleToAddCookie()
     auto isEmptyTile = isEmptyTileAt();
     
     if (!isEmptyTile && mCookieObj == nullptr) {
-        auto dudeObj = mDudeObj;
-        if (!dudeObj) {
+        if (!mDudeObj && !mEnemyObj) {
             auto fieldObj = getFieldObject();
             if (!fieldObj) {
                 return true;
@@ -378,6 +410,19 @@ bool ObjContainer::addCookieObject(BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
+bool ObjContainer::addEnemyObject(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    auto enemyObj = dynamic_cast<EnemyObj*>(obj);
+    if (enemyObj) {
+        mEnemyObj = enemyObj;
+        CC_SAFE_RETAIN(mEnemyObj);
+        return true;
+    }
+    return false;
+}
+
+//--------------------------------------------------------------------
 void ObjContainer::onRemoveCookie(BaseObj* obj)
 //--------------------------------------------------------------------
 {
@@ -415,6 +460,29 @@ void ObjContainer::onRemoveDude(BaseObj * obj)
         }
         SmartObjFactory->recycle(mDudeObj);        
         removeObject(BaseObjType::Dude);
+    }
+}
+
+//--------------------------------------------------------------------
+void ObjContainer::onRemoveEnemy(BaseObj * obj)
+//--------------------------------------------------------------------
+{
+    if (mEnemyObj == obj) {
+        if (mEnemyObj->getParent()) {
+            mEnemyObj->removeFromParent();
+        }
+
+        auto eraseDirectionsFunc = mEnemyObj->getEraseEnemyHelperCallback();
+        if (eraseDirectionsFunc) {
+            eraseDirectionsFunc(obj);
+        }
+        mObjectInChain = nullptr;
+        SpritesFactory->recycle(mEnemyObj->getSpriteNode(), mEnemyObj);
+        if (mEnemyObj->getSpriteNode()) {
+            mEnemyObj->setSpriteNode(nullptr);
+        }
+        SmartObjFactory->recycle(mEnemyObj);
+        removeObject(BaseObjType::Enemy);
     }
 }
 

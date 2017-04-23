@@ -22,13 +22,13 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static DirtObject * create(const CommonTypes::FieldInfo &info);
+    static DirtObject * create(const GOT::FieldInfo &info);
 
-    bool init(const CommonTypes::FieldInfo &info);
+    bool init(const GOT::FieldInfo &info);
 
     cocos2d::String& spriteName() const override;
 
-    virtual bool checkMatchingCondition(int column, int row) override;
+    virtual bool checkMatchingCondition(CT::Cell& cell) override;
 
 protected:
     // Nodes should be created using create();

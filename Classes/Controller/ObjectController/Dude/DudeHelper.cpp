@@ -17,8 +17,8 @@
 
 #include "Utils/Helpers/Helper.h"
 
-using CommonTypes::TileType;
-using CommonTypes::Direction;
+using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 DudeHelper::DudeHelper()
@@ -70,10 +70,10 @@ bool DudeHelper::initWithDudeObject(DudeObj * obj)
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set * DudeHelper::getChainByDirection(const CommonTypes::Direction & direction, bool isPreview)
+Set * DudeHelper::getChainByDirection(const Direction & direction, bool isPreview)
 //--------------------------------------------------------------------
 {
-    CommonTypes::Set* set = nullptr;
+    Set* set = nullptr;
     auto chainCtrl = mDudeCtrl->getChainController();
     if (!chainCtrl) {
         cocos2d::log("DudeHelper::getChainByDirection: empty pointer ChainController");
@@ -88,16 +88,16 @@ CommonTypes::Set * DudeHelper::getChainByDirection(const CommonTypes::Direction 
     if (!set) {
         switch (direction)
         {
-        case CommonTypes::Direction::Up:
+        case Direction::Up:
             set = isActivated ? mTopChain : mVerticalChain;
             break;
-        case CommonTypes::Direction::Down:
+        case Direction::Down:
             set = isActivated ? mBottomChain : mVerticalChain;
             break;
-        case CommonTypes::Direction::Left:
+        case Direction::Left:
             set = isActivated ? mLeftChain : mHorizontalChain;
             break;
-        case CommonTypes::Direction::Right:
+        case Direction::Right:
             set = isActivated ? mRightChain : mHorizontalChain;
             break;
         default:
@@ -123,56 +123,56 @@ void DudeHelper::clear()
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* DudeHelper::getTopChain() const
+Set* DudeHelper::getTopChain() const
 //--------------------------------------------------------------------
 {
     return mTopChain;
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* DudeHelper::getBottomChain() const
+Set* DudeHelper::getBottomChain() const
 //--------------------------------------------------------------------
 {
     return mBottomChain;
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* DudeHelper::getLeftChain() const
+Set* DudeHelper::getLeftChain() const
 //--------------------------------------------------------------------
 {
     return mLeftChain;
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* DudeHelper::getRightChain() const
+Set* DudeHelper::getRightChain() const
 //--------------------------------------------------------------------
 {
     return mRightChain;
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* DudeHelper::getHorizontalChain() const
+Set* DudeHelper::getHorizontalChain() const
 //--------------------------------------------------------------------
 {
     return mHorizontalChain;
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* DudeHelper::getVerticalChain() const
+Set* DudeHelper::getVerticalChain() const
 //--------------------------------------------------------------------
 {
     return mVerticalChain;
 }
 
 //--------------------------------------------------------------------
-CommonTypes::Set* DudeHelper::getXChain() const
+Set* DudeHelper::getXChain() const
 //--------------------------------------------------------------------
 {
     return mXChain;
 }
 
 //--------------------------------------------------------------------
-void DudeHelper::setTopChain(CommonTypes::Set* var)
+void DudeHelper::setTopChain(Set* var)
 //--------------------------------------------------------------------
 {
     if (mTopChain) {
@@ -183,7 +183,7 @@ void DudeHelper::setTopChain(CommonTypes::Set* var)
 }
 
 //--------------------------------------------------------------------
-void DudeHelper::setBottomChain(CommonTypes::Set* var)
+void DudeHelper::setBottomChain(Set* var)
 //--------------------------------------------------------------------
 {
     if (mBottomChain) {
@@ -194,7 +194,7 @@ void DudeHelper::setBottomChain(CommonTypes::Set* var)
 }
 
 //--------------------------------------------------------------------
-void DudeHelper::setLeftChain(CommonTypes::Set* var)
+void DudeHelper::setLeftChain(Set* var)
 //--------------------------------------------------------------------
 {
     if (mLeftChain) {
@@ -205,7 +205,7 @@ void DudeHelper::setLeftChain(CommonTypes::Set* var)
 }
 
 //--------------------------------------------------------------------
-void DudeHelper::setRightChain(CommonTypes::Set* var)
+void DudeHelper::setRightChain(Set* var)
 //--------------------------------------------------------------------
 {
     if (mRightChain) {
@@ -216,7 +216,7 @@ void DudeHelper::setRightChain(CommonTypes::Set* var)
 }
 
 //--------------------------------------------------------------------
-void DudeHelper::setHorizontalChain(CommonTypes::Set* var)
+void DudeHelper::setHorizontalChain(Set* var)
 //--------------------------------------------------------------------
 {
     if (mHorizontalChain) {
@@ -227,7 +227,7 @@ void DudeHelper::setHorizontalChain(CommonTypes::Set* var)
 }
 
 //--------------------------------------------------------------------
-void DudeHelper::setVerticalChain(CommonTypes::Set* var)
+void DudeHelper::setVerticalChain(Set* var)
 //--------------------------------------------------------------------
 {
     if (mVerticalChain) {
@@ -238,7 +238,7 @@ void DudeHelper::setVerticalChain(CommonTypes::Set* var)
 }
 
 //--------------------------------------------------------------------
-void DudeHelper::setXChain(CommonTypes::Set* var)
+void DudeHelper::setXChain(Set* var)
 //--------------------------------------------------------------------
 {
     if (mXChain) {

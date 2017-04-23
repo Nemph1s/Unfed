@@ -12,6 +12,7 @@
 
 #include "Common/Factory/SpritesFactory.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
+#include "Common/Tags.h"
 
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/TileObj.h"
@@ -81,19 +82,23 @@ bool GameplayScene::initWithSize(const Size& size)
 
     auto bgLayer = LayerColor::create(Color4B::WHITE);
     bgLayer->setPosition(VisibleRect::leftBottom());
-    this->addChild(bgLayer);
+    this->addChild(bgLayer, 0, Tags::GameplayScene::kBackgroundLayerTag);
+
+    // shakeScreenOffset must be multiplied by 2 because shaking position can have positive or negative offset
+    float shakeScreenOffset = (GlobInfo->getShakeScreenDuration() / GlobInfo->getMinShakeTime()) * 2;
 
     auto bg = ui::Scale9Sprite::create(GameResources::s_backgroundImg.getCString());
-    auto scaleFactor = std::min(bg->getContentSize().width / size.width
-        , bg->getContentSize().height / size.height);
+    float bgContentWidth = (bg->getContentSize().width - shakeScreenOffset);
+    float bgContentHeigth = (bg->getContentSize().height - shakeScreenOffset);
+
+    auto scaleFactor = std::min(bgContentWidth / size.width, bgContentHeigth / size.height);
     bg->setScale(1.0f / scaleFactor);
-    bg->setScale(bg->getScale() * 2 );
     bg->setPosition(VisibleRect::center());
     bgLayer->addChild(bg, 0);
 
     mGameLayer = Layer::create();
     mGameLayer->setPosition(VisibleRect::center());
-    this->addChild(mGameLayer);
+    this->addChild(mGameLayer, 1, Tags::GameplayScene::kGameLayerTag);
 
     auto offset = -2.5f * _GlobalInfo::NumColumns / 2;
     Vec2 layerPos = Vec2(offset - GlobInfo->getTileWidth() * _GlobalInfo::NumColumns / 2
@@ -131,14 +136,16 @@ void GameplayScene::addTiles()
 	cocos2d::log("GameplayScene::addTiles:");
 	for (int row = 0; row < _GlobalInfo::NumRows; row++) {
 		for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
+
+            auto cell = CT::Cell(column, row);
             auto objCtrl = mLevel->getObjectController();
-			if (objCtrl->isEmptyTileAt(column, row)) {
+			if (objCtrl->isEmptyTileAt(cell)) {
 				continue;
 			}
-            auto tile = objCtrl->tileAt(column, row);
+            auto tile = objCtrl->tileAt(cell);
             auto tileSprite = SpritesFactory->createWithBaseObject(tile);
             tileSprite->setVisible(true);
-            tileSprite->setPosition(Helper::pointForColumnAndRow(column, row));
+            tileSprite->setPosition(Helper::pointForCell(cell));
             tileSprite->setOpacity(127);
             tile->setSpriteNode(tileSprite);
 			mTilesLayer->addChild(tileSprite);
@@ -148,12 +155,12 @@ void GameplayScene::addTiles()
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::addFieldObjectsAt(int column, int row)
+void GameplayScene::addFieldObjectsAt(CT::Cell& cell)
 //--------------------------------------------------------------------
 {
     // Create Field objects
     auto objCtrl = mLevel->getObjectController();
-    auto fieldObjects = objCtrl->fieldObjectsAt(column, row);
+    auto fieldObjects = objCtrl->fieldObjectsAt(cell);
     if (fieldObjects) {
         return;
     }
@@ -168,7 +175,7 @@ void GameplayScene::addFieldObjectsAt(int column, int row)
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::addSpritesForObjects(CommonTypes::Set* set)
+void GameplayScene::addSpritesForObjects(CT::Set* set)
 //--------------------------------------------------------------------
 {
     cocos2d::log("GameplayScene::addSpritesForObjects:");
@@ -176,7 +183,7 @@ void GameplayScene::addSpritesForObjects(CommonTypes::Set* set)
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::createChainPreviewSprites(CommonTypes::Set * set)
+void GameplayScene::createChainPreviewSprites(CT::Set * set)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->createChainPreviewSprites(set);
@@ -198,21 +205,21 @@ void GameplayScene::userInteractionDisabled()
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::setUpdateDirectionCallback(std::function<CommonTypes::Set*(BaseObj* obj, int direction)> func)
+void GameplayScene::setUpdateDirectionCallback(std::function<CT::Set*(BaseObj* obj, int direction)> func)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->setUpdateDirectionCallback(func);
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::setSwapCookieCallback(std::function<bool(int fromCol, int fromRow, int direction)> func)
+void GameplayScene::setSwapCookieCallback(std::function<bool(CT::Cell& fromCell, int direction)> func)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->setTrySwapCookieCallback(func);
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::setDudeActivationCallback(std::function<bool(int fromCol, int fromRow, int direction)> func)
+void GameplayScene::setDudeActivationCallback(std::function<bool(CT::Cell& fromCell, int direction)> func)
 //--------------------------------------------------------------------
 {
     mCookiesLayer->setCanActivateDudeCallback(func);
@@ -244,24 +251,30 @@ void GameplayScene::removeAllChainPreviewSprites()
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::createSpriteWithCookie(CookieObj * cookie, int column, int row)
+void GameplayScene::createSpriteWithCookie(CookieObj * cookie, CT::Cell& cell)
 //--------------------------------------------------------------------
 {
-    mCookiesLayer->createSpriteWithObj(cookie, column, row);
+    mCookiesLayer->createSpriteWithObj(cookie, cell);
 }
 
 //--------------------------------------------------------------------
-void GameplayScene::createSpriteWithDude(BaseObj * dudeObj)
+void GameplayScene::createSpriteWithObj(BaseObj* obj, CT::Cell& cell)
+{
+    mCookiesLayer->createSpriteWithObj(obj, cell);
+}
+
+//--------------------------------------------------------------------
+void GameplayScene::createSpriteForDude(BaseObj * dudeObj)
 //--------------------------------------------------------------------
 {
-    mCookiesLayer->createSpriteWithObj(dudeObj, dudeObj->getColumn(), dudeObj->getRow());
+    mCookiesLayer->createSpriteWithObj(dudeObj, dudeObj->getCell());
 }
 
 //--------------------------------------------------------------------
 void GameplayScene::createSpriteWithFieldObj(FieldObj * obj)
 //--------------------------------------------------------------------
 {
-    mCookiesLayer->createSpriteWithFieldObj(obj, obj->getColumn(), obj->getRow());
+    mCookiesLayer->createSpriteWithFieldObj(obj, obj->getCell());
 }
 
 //--------------------------------------------------------------------

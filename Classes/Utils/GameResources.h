@@ -16,7 +16,7 @@
 
 namespace GameResources {
 
-   static cocos2d::String s_backgroundImg = "Images/Background1@2x.png";
+   static cocos2d::String s_backgroundImg = "Images/bg_forest_1@2x.png";
 
    static cocos2d::String s_ButtonImg = "Images/Button@2x.png";
 
@@ -41,6 +41,11 @@ namespace GameResources {
        , "Sprites.atlas/MonsterOni@2x.png"
        , "Sprites.atlas/MonsterMBO@2x.png"
        , "Sprites.atlas/MonsterBlake@2x.png"
+   }; 
+   
+   static std::vector<cocos2d::String> s_enemySpriteNames{
+       "Sprites.atlas/EnemyWasabi@2x.png"
+       , "Sprites.atlas/EnemyWasabi@2x.png" 
    };
 
    static std::vector<cocos2d::String> s_cookieSpriteNames {
