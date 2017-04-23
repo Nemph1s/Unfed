@@ -382,7 +382,7 @@ void ViewController::animateHandleMatches(CT::Set* chains)
         AnimationsManager->animateFallingObjects(columns, addNewCookies);
     });
 
-    auto matchedObjects = mLevel->detectMatchingObjects(chains);
+    auto matchedObjects = mChainController->detectMatchingObjects(chains);
     if (matchedObjects->count() > 0) {
         mChainController->addMatchedOjbectsToChainSet(matchedObjects, chains);
     }
@@ -411,6 +411,7 @@ void ViewController::beginNextTurn()
 {
     cocos2d::log("ViewController::beginNextTurn");
 
+    stopHintTimer();
     GlobInfo->resetComboMultiplier();
 
     if (mEnemyController->isEnemiesTurn()) {
@@ -484,6 +485,8 @@ void ViewController::swapCallback(SwapObj * swap)
     });
 
     if (mSwapController->isPossibleSwap(swap)) {
+        stopHintTimer();
+
         mSwapController->performSwap(swap);
         AnimationsManager->animateSwap(swap, swapCallback);
         AudioManager->playSound(SoundType::SwapSound);

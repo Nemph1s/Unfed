@@ -156,35 +156,6 @@ bool LevelObj::useGravityOnObject(cocos2d::Array* colArr, cocos2d::Array* rowArr
 }
 
 //--------------------------------------------------------------------
-CT::Set* LevelObj::detectMatchingObjects(CT::Set* chains)
-//--------------------------------------------------------------------
-{
-    auto set = CT::Set::create();
-
-    for (int row = 0; row < _GlobalInfo::NumRows; row++) {
-        for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
-
-            auto cell = Cell(column, row);
-            auto fieldObj = mObjCtrl->fieldObjectAt(cell);
-            auto enemyObj = mObjCtrl->enemyAt(cell);
-            if (!fieldObj && !enemyObj) {
-                continue;
-            }
-            BaseObj* obj = fieldObj ? fieldObj : enemyObj;
-            if (obj->isRemovable()) {
-                if (mChainCtrl->checkMathingObjWithChain(chains, obj)) {
-                    if (mObjCtrl->matchObject(obj)) {
-                        set->addObject(obj);
-                        continue;
-                    }
-                }
-            }
-        }
-    }
-    return set;
-}
-
-//--------------------------------------------------------------------
 cocos2d::Array* LevelObj::useGravityToFillHoles()
 //--------------------------------------------------------------------
 {

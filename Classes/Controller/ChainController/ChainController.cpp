@@ -11,6 +11,7 @@
 #include "Controller/ChainController/ChainController.h"
 #include "Controller/ObjectController/ObjContainer.h"
 #include "Controller/ObjectController/ObjectController.h"
+#include "Controller/ObjectController/Enemy/EnemyObj.h"
 
 #include "GameObjects/TileObjects/CookieObj.h"
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
@@ -136,6 +137,36 @@ Set* ChainController::removeChainAt(ChainType& type, cocos2d::Vec2& pos)
 
             ScoreHelper::calculateScore(chainSet);
             matchChains(chainSet);
+        }
+    }
+    return set;
+}
+
+//--------------------------------------------------------------------
+CT::Set* ChainController::detectMatchingObjects(CT::Set* chains)
+//--------------------------------------------------------------------
+{
+    auto set = CT::Set::create();
+
+    for (int row = 0; row < _GlobalInfo::NumRows; row++) {
+        for (int column = 0; column < _GlobalInfo::NumColumns; column++) {
+
+            auto cell = Cell(column, row);
+            auto fieldObj = mObjCtrl->fieldObjectAt(cell);
+            auto enemyObj = mObjCtrl->enemyAt(cell);
+            if (!fieldObj && !enemyObj) {
+                continue;
+            }
+            BaseObj* obj = fieldObj ? fieldObj : enemyObj;
+            if (!obj->isRemovable()) {
+                continue;
+            }
+            if (!checkMathingObjWithChain(chains, obj)) {
+                continue;
+            }
+            if (mObjCtrl->matchObject(obj)) {
+                set->addObject(obj);
+            }
         }
     }
     return set;
@@ -618,7 +649,6 @@ bool ChainController::isNextTwoCookieSuitable(const ChainType& type, Cell& cell)
                 result = true;
             }
         }
-        
     }
     return result;
 }

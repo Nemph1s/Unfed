@@ -55,6 +55,7 @@ public:
     CT::Set* removeChainAt(CT::ChainType& type, cocos2d::Vec2& pos);
     void removeDudeMatches(CT::Set* set);
 
+    CT::Set* detectMatchingObjects(CT::Set* chains);
     CT::Set* detectHintChainAt(BaseObj* curObj, BaseObj* nextObj);
 
     bool getCellFromChainAndPrevSwapSet(Cell& cell, ChainObj* chain, CT::Set* prevSwapObjs);

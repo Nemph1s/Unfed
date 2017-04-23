@@ -258,6 +258,12 @@ void GameplayScene::createSpriteWithCookie(CookieObj * cookie, CT::Cell& cell)
 }
 
 //--------------------------------------------------------------------
+void GameplayScene::createSpriteWithObj(BaseObj* obj, CT::Cell& cell)
+{
+    mCookiesLayer->createSpriteWithObj(obj, cell);
+}
+
+//--------------------------------------------------------------------
 void GameplayScene::createSpriteForDude(BaseObj * dudeObj)
 //--------------------------------------------------------------------
 {
