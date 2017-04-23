@@ -411,6 +411,7 @@ void ViewController::beginNextTurn()
 {
     cocos2d::log("ViewController::beginNextTurn");
 
+    stopHintTimer();
     GlobInfo->resetComboMultiplier();
 
     if (mEnemyController->isEnemiesTurn()) {
@@ -484,6 +485,7 @@ void ViewController::swapCallback(SwapObj * swap)
     });
 
     if (mSwapController->isPossibleSwap(swap)) {
+        stopHintTimer();
         mSwapController->performSwap(swap);
         AnimationsManager->animateSwap(swap, swapCallback);
         AudioManager->playSound(SoundType::SwapSound);

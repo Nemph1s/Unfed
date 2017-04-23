@@ -33,7 +33,21 @@ public:
     static int random(int fromRange, int toRange);
     static CT::CookieType randomCookieType(int fromRange, int toRange);
 
+    /**
+    * Calculate duration from startRow to destinationRow
+    * Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
+    * You can tweak these numbers to change the feel of the animation.
+    * @param startRow The row from which object start fall down.
+    * @param destinationRow The destination row of the falling down object.
+    */
     static float getDurationToTile(int8_t startRow, int8_t destinationRow);
+    /**
+    * Calculate duration from startRow to destinationRow
+    * @param startCell The cell from which object start fall down.
+    * @param destinationCell The destination cell of the falling down object.
+    */
+    static float getDurationToTile(CT::Cell& startCell, CT::Cell& destinationCell);
+
     static int8_t getDistanceBetweenObjects(CT::Cell& cellPosA, CT::Cell& cellPosB);
 
     static cocos2d::String* getSpriteNameByFieldType(int fieldType);
@@ -45,6 +59,7 @@ public:
     static cocos2d::Vec2 pointForCellWithPriority(CT::Cell& cell, int priority);
     static cocos2d::Vec2 pointForTile(BaseObj* obj);
 
+    static CT::Cell cellFromPoint(const cocos2d::Vec2& point);
     static bool convertPointToTilePos(cocos2d::Vec2& point, CT::Cell& cell);
 
     static CT::Direction invertDirection(const CT::Direction& direction);

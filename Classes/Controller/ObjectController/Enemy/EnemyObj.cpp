@@ -14,14 +14,16 @@
 
 #include "Common/GlobalInfo/GlobalInfo.h"
 
+static const uint8_t defaultWaitTurnsBeforeAction = 1;
+
 //--------------------------------------------------------------------
 EnemyObj::EnemyObj()
     : BaseObj()
     , mEnemyType(CT::EnemyType::Unknown)
     , mDebugLabel(nullptr)
     , mHP(0)
-    , mWaitTurnsBeforeAction(1)
-    , mWaitedTurns(0)
+    , mWaitTurnsBeforeAction(defaultWaitTurnsBeforeAction)
+    , mWaitedTurns(defaultWaitTurnsBeforeAction)
 //--------------------------------------------------------------------
 {
 }
