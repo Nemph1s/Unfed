@@ -11,6 +11,7 @@
 #include "Managers/GuiManager.h"
 
 #include "Common/GlobalInfo/GlobalInfo.h"
+#include "Common/Factory/SpritesFactory.h"
 
 #include "Utils/Helpers/Helper.h"
 #include "Scenes/GameplayScene.h"
@@ -154,11 +155,12 @@ void _GuiManager::createLevelGoals()
 
     for (uint8_t i = 0; i < collectGoals.size(); i++) {
         auto goal = collectGoals.at(i);
-        auto goalSprite = createSprite(goal.baseObjectType, goal.objectType);
-        auto pos = getPosForGoalSprite(i, goalsCount, goalSprite->getContentSize());
+        auto goalSprite = SpritesFactory->createGoalSprite(goal.baseObjectType, goal.objectType);
+        auto pos = Helper::pointForGoalSprite(i, goalsCount, goalSprite->getContentSize());
         goalSprite->setPosition(pos);
         goalSprite->setAnchorPoint(Vec2(0.5f, 0.5f));
         widget->addChild(goalSprite, 5);
+        mGoalsSprites.push_back(goalSprite);
 
         auto tmpStr = cocos2d::String::createWithFormat("%d", goal.targetCount)->getCString();
         TextLabelInfo goalInfo = { tmpStr, fontSize + 4, 0, 0 };
@@ -219,74 +221,19 @@ void _GuiManager::updateLevelGoals(std::vector<CT::CollectGoalInfo>& levelGoals)
 {
     for (uint8_t i = 0; i < mGoalsLabels.size(); i++) {
         auto goalLabel = mGoalsLabels.at(i);
+        auto goalSprite = mGoalsSprites.at(i);
         auto goalInfo = levelGoals.at(i);
         auto targetObjLeft = goalInfo.targetCount - goalInfo.currentCount;
-        if (targetObjLeft < 0) targetObjLeft = 0;
 
-        auto tmpStr = cocos2d::String::createWithFormat("%d", targetObjLeft)->getCString();
-        goalLabel->setString(tmpStr);
-    }
-}
-
-//--------------------------------------------------------------------
-cocos2d::Sprite * _GuiManager::createSprite(int baseType, int objType)
-//--------------------------------------------------------------------
-{
-    cocos2d::Sprite* sprite = nullptr;
-    cocos2d::String* str = nullptr;
-    auto baseObjType = static_cast<GOT::BaseObjType>(baseType);
-    switch (baseObjType)
-    {
-    case GOT::BaseObjType::Cookie:
-        str = &GameResources::s_cookieSpriteNames.at(objType);
-        break;
-    case GOT::BaseObjType::Field:
-    case GOT::BaseObjType::Dude:
-        str = Helper::getSpriteNameByFieldType(objType);
-        break;
-    case GOT::BaseObjType::Enemy:
-        str = Helper::getSpriteNameByEnemyType(objType);
-        break;
-    case GOT::BaseObjType::Tile:
-    case GOT::BaseObjType::Unknown:
-        break;
-    default:
-        break;
-    }
-
-    if (str) {
-        sprite = cocos2d::Sprite::create(str->getCString());
-        sprite->setAnchorPoint(Vec2(0.0, 0.0));
-        sprite->setPosition(Vec2(0.0, 0.0));
-    }
-    return sprite;
-}
-
-//--------------------------------------------------------------------
-cocos2d::Vec2 _GuiManager::getPosForGoalSprite(int currGoal, int goalsCount, const cocos2d::Size& spriteSize)
-//--------------------------------------------------------------------
-{
-    cocos2d::Vec2 pos = cocos2d::Vec2::ZERO;
-    if (goalsCount == 1) {
-        pos = cocos2d::Vec2(-spriteSize.width * 0.25f, 0);
-    }
-    if (goalsCount == 2) {
-        if (currGoal == 0) {
-            pos = cocos2d::Vec2(-spriteSize.width * 0.75f, 0);
+        if (targetObjLeft == 0 && goalSprite->getOpacity() != 127) {
+            goalSprite->runAction(cocos2d::FadeTo::create(0.5f, 127));
+            goalLabel->runAction(cocos2d::FadeTo::create(0.5f, 127));
         }
-        else if (currGoal == 1) {
-            pos = cocos2d::Vec2(spriteSize.width * 0.75f, 0);
+        if (targetObjLeft >= 0) {
+            auto tmpStr = cocos2d::String::createWithFormat("%d", targetObjLeft)->getCString();
+            goalLabel->setString(tmpStr);
         }
     }
-    else if (goalsCount == 3) {
-        if (currGoal == 0) {
-            pos = cocos2d::Vec2(-spriteSize.width * 1.1f, 0);
-        }
-        else if (currGoal == 2) {
-            pos = cocos2d::Vec2(spriteSize.width * 1.1f, 0);
-        }
-    }
-    return pos;
 }
 
  //--------------------------------------------------------------------

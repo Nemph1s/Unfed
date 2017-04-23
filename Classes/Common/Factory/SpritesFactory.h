@@ -16,8 +16,6 @@
 #include <list>
 #include <map>
 
-using cocos2d::Sprite;
-
 class BaseObj;
 class LevelObj;
 
@@ -31,8 +29,9 @@ public:
     }
     static _SpritesFactory* getInstance();
 
-    Sprite* createWithBaseObject(BaseObj* obj);
-    Sprite* createHintSprite(const cocos2d::Color4B& color);
+    cocos2d::Sprite* createWithBaseObject(BaseObj* obj);
+    cocos2d::Sprite* createHintSprite(const cocos2d::Color4B& color);
+    cocos2d::Sprite* createGoalSprite(int baseType, int objType);
     
     bool initTilesPool(int poolSize);
     bool initCookiesPool(int poolSize);
@@ -42,8 +41,8 @@ public:
 
     bool initHintPool(int poolSize);
 
-    void recycleHintSprite(Sprite* spriteNode);
-    void recycle(Sprite* spriteNode, BaseObj* obj);
+    void recycleHintSprite(cocos2d::Sprite* spriteNode);
+    void recycle(cocos2d::Sprite* spriteNode, BaseObj* obj);
 
 protected:
     explicit _SpritesFactory() {};
@@ -54,17 +53,17 @@ protected:
     _SpritesFactory & operator=(_SpritesFactory &&) = delete;
 
 private:
-    typedef typename std::list<Sprite*> TSpriteList; 
-    typedef typename std::list<Sprite*>::iterator TSpriteListItr;
+    typedef typename std::list<cocos2d::Sprite*> TSpriteList;
+    typedef typename std::list<cocos2d::Sprite*>::iterator TSpriteListItr;
 
-    Sprite* createForTileObj(BaseObj* obj);
-    Sprite* createForCookieObj(BaseObj* obj);
-    Sprite* createForFieldObj(BaseObj* obj);
-    Sprite* createForDudeObj(BaseObj* obj);
-    Sprite* createForEnemyObj(BaseObj* obj);
+    cocos2d::Sprite* createForTileObj(BaseObj* obj);
+    cocos2d::Sprite* createForCookieObj(BaseObj* obj);
+    cocos2d::Sprite* createForFieldObj(BaseObj* obj);
+    cocos2d::Sprite* createForDudeObj(BaseObj* obj);
+    cocos2d::Sprite* createForEnemyObj(BaseObj* obj);
 
-    Sprite* createSpriteForObj(BaseObj* obj);
-    Sprite* createNewHintSprite(const cocos2d::Color4B& color, bool isVisible = false);
+    cocos2d::Sprite* createSpriteForObj(BaseObj* obj);
+    cocos2d::Sprite* createNewHintSprite(const cocos2d::Color4B& color, bool isVisible = false);
 
     
     void clearPool(TSpriteList* pool);

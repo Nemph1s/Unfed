@@ -186,6 +186,33 @@ cocos2d::Vec2 Helper::pointForTile(BaseObj * obj)
 }
 
 //--------------------------------------------------------------------
+cocos2d::Vec2 Helper::pointForGoalSprite(int currGoal, int goalsCount, const cocos2d::Size & spriteSize)
+//--------------------------------------------------------------------
+{
+    cocos2d::Vec2 pos = cocos2d::Vec2::ZERO;
+    if (goalsCount == 1) {
+        pos = cocos2d::Vec2(-spriteSize.width * 0.25f, 0);
+    }
+    if (goalsCount == 2) {
+        if (currGoal == 0) {
+            pos = cocos2d::Vec2(-spriteSize.width * 0.75f, 0);
+        }
+        else if (currGoal == 1) {
+            pos = cocos2d::Vec2(spriteSize.width * 0.75f, 0);
+        }
+    }
+    else if (goalsCount == 3) {
+        if (currGoal == 0) {
+            pos = cocos2d::Vec2(-spriteSize.width * 1.1f, 0);
+        }
+        else if (currGoal == 2) {
+            pos = cocos2d::Vec2(spriteSize.width * 1.1f, 0);
+        }
+    }
+    return pos;
+}
+
+//--------------------------------------------------------------------
 CT::Cell Helper::cellFromPoint(const cocos2d::Vec2 & point)
 //--------------------------------------------------------------------
 {
