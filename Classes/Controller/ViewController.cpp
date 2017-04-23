@@ -382,7 +382,7 @@ void ViewController::animateHandleMatches(CT::Set* chains)
         AnimationsManager->animateFallingObjects(columns, addNewCookies);
     });
 
-    auto matchedObjects = mLevel->detectMatchingObjects(chains);
+    auto matchedObjects = mChainController->detectMatchingObjects(chains);
     if (matchedObjects->count() > 0) {
         mChainController->addMatchedOjbectsToChainSet(matchedObjects, chains);
     }
