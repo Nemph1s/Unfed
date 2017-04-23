@@ -22,6 +22,7 @@
 
 using namespace GameResources;
 using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 float Helper::randomFloatBetween(float smallNumber, float bigNumber) 
@@ -330,7 +331,7 @@ cocos2d::Color4B Helper::getScoreColorByCookieType(int type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
-    auto cookieType = static_cast<CT::CookieType>(type);
+    auto cookieType = static_cast<CookieType>(type);
     switch (cookieType)
     {
     case CookieType::Croissant:
@@ -362,7 +363,7 @@ cocos2d::Color4B Helper::getScoreColorForFieldObj(int type)
 //--------------------------------------------------------------------
 {
     auto color = cocos2d::Color4B::WHITE;
-    auto fieldType = static_cast<CT::FieldType>(type);
+    auto fieldType = static_cast<FieldType>(type);
     switch (fieldType)
     {
     case FieldType::Dirt:
@@ -389,7 +390,7 @@ cocos2d::Color4B Helper::getScoreColorForDudeObj(int type)
 {
     // see hints on http://www.colorhexa.com/color-names
     auto color = cocos2d::Color4B(209, 159, 232, 255); //Bright ube 
-    auto dudeType = static_cast<CT::FieldType>(type);
+    auto dudeType = static_cast<FieldType>(type);
     switch (dudeType)
     {
     case FieldType::DudeFromAToB:
@@ -419,7 +420,7 @@ cocos2d::Color4B Helper::getScoreColorForEnemyObj(int type)
 {
     // see hints on http://www.colorhexa.com/color-names
     auto color = cocos2d::Color4B(0x0f, 0x0f, 0x0f, 255); //onyx
-    auto enemyType = static_cast<CT::EnemyType>(type);
+    auto enemyType = static_cast<EnemyType>(type);
     switch (type)
     {
     case EnemyType::Simple:

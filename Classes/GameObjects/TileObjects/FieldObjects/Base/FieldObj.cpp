@@ -13,10 +13,12 @@
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
+using GOT::FieldType;
+
 //--------------------------------------------------------------------
 FieldObj::FieldObj()
     : BaseObj()
-    , mFieldType(CT::FieldType::Unknown)
+    , mFieldType(FieldType::Unknown)
     , mDebugLabel(nullptr)
     , mHP(0)
     , mReadyToUpdatePriority(false)
@@ -31,7 +33,7 @@ FieldObj::~FieldObj()
 }
 
 //--------------------------------------------------------------------
-FieldObj * FieldObj::create(const CT::FieldInfo &info)
+FieldObj * FieldObj::create(const GOT::FieldInfo &info)
 //--------------------------------------------------------------------
 {
     FieldObj * ret = new (std::nothrow) FieldObj();
@@ -45,7 +47,7 @@ FieldObj * FieldObj::create(const CT::FieldInfo &info)
 }
 
 //--------------------------------------------------------------------
-bool FieldObj::init(const CT::FieldInfo &info)
+bool FieldObj::init(const GOT::FieldInfo &info)
 //--------------------------------------------------------------------
 {
     if (!BaseObj::init(info.baseInfo)) {
@@ -55,7 +57,7 @@ bool FieldObj::init(const CT::FieldInfo &info)
     mFieldType = info.fieldType;
     mPriority = info.priority;
 
-    if (!mDebugLabel && mType != CT::BaseObjType::Field) {
+    if (!mDebugLabel && mType != GOT::BaseObjType::Field) {
 #ifdef COCOS2D_DEBUG
         mDebugLabel = cocos2d::Label::create();
         mDebugLabel->setBMFontSize(16);
@@ -112,7 +114,7 @@ void FieldObj::match()
 {
     mHP--;
     if (mHP > 0) {
-        mFieldType = static_cast<CT::FieldType>(getTypeAsInt() - 1);
+        mFieldType = static_cast<FieldType>(getTypeAsInt() - 1);
     } else if (mHP == 0) {
         mPriority--;
     }
@@ -123,7 +125,7 @@ void FieldObj::clear()
 //--------------------------------------------------------------------
 {
     BaseObj::clear();
-    mFieldType = CT::FieldType::Unknown;
+    mFieldType = FieldType::Unknown;
     mHP = 0;
     mReadyToUpdatePriority = false;
     if (mDebugLabel) {

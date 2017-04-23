@@ -23,9 +23,9 @@ public:
     * Allocates and initializes a node.
     * @return A initialized node which is marked as "autorelease".
     */
-    static EnemyObj * create(const CT::EnemyInfo &info);
+    static EnemyObj * create(const GOT::EnemyInfo &info);
 
-    bool init(const CT::EnemyInfo &info);
+    bool init(const GOT::EnemyInfo &info);
 
     cocos2d::String& spriteName() const override;
 
@@ -49,7 +49,7 @@ protected:
     EnemyObj();
 
     //---Class Attributes-------------------------------------------------
-    CC_SYNTHESIZE_READONLY(CT::EnemyType, mEnemyType, EnemyType)
+    CC_SYNTHESIZE_READONLY(GOT::EnemyType, mEnemyType, EnemyType)
     
     CC_SYNTHESIZE(int, mHP, HP)
     CC_SYNTHESIZE(int, mWaitTurnsBeforeAction, WaitTurnsBeforeAction)

@@ -30,8 +30,8 @@
 #include "Controller/ObjectController/Dude/DudeController.h"
 #include "Controller/ChainController/ChainController.h"
 
-
 using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 LevelObj::LevelObj()

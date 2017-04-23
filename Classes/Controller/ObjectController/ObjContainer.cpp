@@ -20,6 +20,7 @@
 #include "Common/Factory/SpritesFactory.h"
 
 using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 ObjContainer::ObjContainer()
@@ -122,7 +123,7 @@ bool ObjContainer::addObject(BaseObj* obj)
 }
 
 //--------------------------------------------------------------------
-BaseObj * ObjContainer::getObject(const CT::BaseObjType& type) const
+BaseObj * ObjContainer::getObject(const GOT::BaseObjType& type) const
 //--------------------------------------------------------------------
 {
     BaseObj* obj = nullptr;
@@ -217,7 +218,7 @@ CT::Set* ObjContainer::getObjectsForChain()
 }
 
 //--------------------------------------------------------------------
-bool ObjContainer::removeObject(const CT::BaseObjType& type)
+bool ObjContainer::removeObject(const GOT::BaseObjType& type)
 //--------------------------------------------------------------------
 {
     bool result = false;

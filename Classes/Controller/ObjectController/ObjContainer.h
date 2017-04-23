@@ -11,7 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 #include "Utils/PlatformMacros.h"
 
 class BaseObj;
@@ -38,12 +38,12 @@ public:
     virtual bool init();
 
     bool addObject(BaseObj* obj);
-    bool removeObject(const CT::BaseObjType& type);
+    bool removeObject(const GOT::BaseObjType& type);
 
     void updateObjectWith(BaseObj* currObj, BaseObj* newObj);
     void synchronizeTilePos();
 
-    BaseObj* getObject(const CT::BaseObjType& type) const;
+    BaseObj* getObject(const GOT::BaseObjType& type) const;
     FieldObj* getFieldObject() const;
     std::list<FieldObj*>& getFieldObjects();
 

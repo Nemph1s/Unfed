@@ -11,7 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
  
 class BaseObj;
 class DudeObj;
@@ -58,7 +58,7 @@ protected:
 
     bool isEnoughCookiesForDude(int count, int neededCount);
 
-    CT::FieldType getDudeTypeByChain(ChainObj* chain);
+    GOT::FieldType getDudeTypeByChain(ChainObj* chain);
 
     //---Class Attributes-------------------------------------------------
     CC_SYNTHESIZE(std::function<void(DudeObj*, int direction)>, mActivateDudeCallback, ActivateDudeCallback);

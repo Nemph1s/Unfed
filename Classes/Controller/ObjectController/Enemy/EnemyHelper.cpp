@@ -17,6 +17,7 @@
 #include "Utils/Helpers/Helper.h"
 
 using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 EnemyHelper::EnemyHelper()

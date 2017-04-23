@@ -11,7 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
  
 #include <list>
 
@@ -23,15 +23,15 @@ public:
     static _SmartObjFactory& Instance();
     static _SmartObjFactory* getInstance();
 
-    BaseObj* create(const CT::BaseObjInfo &info);
+    BaseObj* create(const GOT::BaseObjInfo &info);
 
-    BaseObj* createBaseObj(const CT::BaseObjInfo &info);
-    BaseObj* createTileObj(const CT::TileInfo &info);
-    BaseObj* createCookieObj(const CT::CookieInfo &info);
-    BaseObj* createFieldObj(const CT::FieldInfo &info);
-    BaseObj* createDudeObj(const CT::FieldInfo &info);
+    BaseObj* createBaseObj(const GOT::BaseObjInfo &info);
+    BaseObj* createTileObj(const GOT::TileInfo &info);
+    BaseObj* createCookieObj(const GOT::CookieInfo &info);
+    BaseObj* createFieldObj(const GOT::FieldInfo &info);
+    BaseObj* createDudeObj(const GOT::FieldInfo &info);
 
-    BaseObj* createEnemyObj(const CT::EnemyInfo &info);
+    BaseObj* createEnemyObj(const GOT::EnemyInfo &info);
 
     bool init(int poolSize);
     bool initCookiesPool(int poolSize);

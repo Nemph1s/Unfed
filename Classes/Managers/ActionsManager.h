@@ -12,7 +12,7 @@
 
 #include "cocos2d.h"
 #include "Utils/PlatformMacros.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 
 class BaseObj;
 

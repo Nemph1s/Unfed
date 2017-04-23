@@ -27,6 +27,7 @@
 
 USING_NS_CC;
 using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 CookiesLayer::CookiesLayer()

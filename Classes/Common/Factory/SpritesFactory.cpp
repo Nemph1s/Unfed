@@ -21,6 +21,7 @@
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 using namespace CT;
+using namespace GOT;
 
 const int kSpriteTag = 3;
 const int kGlowingSpriteTag = 4;
@@ -424,7 +425,7 @@ Sprite * _SpritesFactory::createForEnemyObj(BaseObj * obj)
     if (!enemyObj) {
         return sprite;
     }
-    auto type = static_cast<CT::EnemyType>(enemyObj->getTypeAsInt());
+    auto type = static_cast<GOT::EnemyType>(enemyObj->getTypeAsInt());
     if (mEnemySpritesPool.size() > 0) {
         if (mEnemySpritesPool.at(type)->size() > 0) {
             sprite = mEnemySpritesPool.at(type)->front();

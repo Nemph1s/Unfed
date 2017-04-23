@@ -13,7 +13,7 @@
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
-using CT::FieldType;
+using GOT::FieldType;
 
 //--------------------------------------------------------------------
 RockObj::RockObj()
@@ -29,7 +29,7 @@ RockObj::~RockObj()
 }
 
 //--------------------------------------------------------------------
-RockObj* RockObj::create(const CT::FieldInfo & info)
+RockObj* RockObj::create(const GOT::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     RockObj* ret = new (std::nothrow) RockObj();
@@ -43,7 +43,7 @@ RockObj* RockObj::create(const CT::FieldInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool RockObj::init(const CT::FieldInfo & info)
+bool RockObj::init(const GOT::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     if (!FieldObj::init(info)) {

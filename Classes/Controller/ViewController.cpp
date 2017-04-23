@@ -35,6 +35,7 @@
 using cocos2d::Director;
 using cocos2d::CallFunc;
 using namespace CT;
+using namespace GOT;
 using namespace std::placeholders;
  
 #define COCOS2D_DEBUG 1

@@ -329,6 +329,9 @@
     <ClInclude Include="..\Classes\Controller\ObjectController\Enemy\EnemyHelper.h">
       <Filter>src\Controller\ObjectController\Enemy</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Common\GameObjTypes.h">
+      <Filter>src\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

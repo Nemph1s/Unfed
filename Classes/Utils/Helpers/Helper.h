@@ -11,7 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 #include "Utils/PlatformMacros.h"
 
 class CookieObj;
@@ -31,7 +31,7 @@ public:
     static float randomFloatBetween(float smallNumber, float bigNumber);
     static float rangeRandom(float min, float max);
     static int random(int fromRange, int toRange);
-    static CT::CookieType randomCookieType(int fromRange, int toRange);
+    static GOT::CookieType randomCookieType(int fromRange, int toRange);
 
     /**
     * Calculate duration from startRow to destinationRow

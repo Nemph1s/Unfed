@@ -21,12 +21,13 @@
 #include "Utils/Helpers/Helper.h"
 #include "Utils/Helpers/ScoreHelper.h"
 
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
 
 #include <map>
 
 using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 ChainController::ChainController()

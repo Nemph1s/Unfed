@@ -30,6 +30,7 @@
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 using namespace CT;
+using namespace GOT;
 using namespace std::placeholders;
 
 //--------------------------------------------------------------------
@@ -136,7 +137,7 @@ bool EnemyController::beginEnemiesTurn(bool updateDirections /* = true */)
 BaseObj * EnemyController::createEnemy(Cell& cell, int type, int priority)
 //--------------------------------------------------------------------
 {
-    BaseObjInfo baseInfo = { BaseObjType::Enemy, cell };
+    GOT::BaseObjInfo baseInfo = { BaseObjType::Enemy, cell };
     EnemyInfo info = { baseInfo, static_cast<EnemyType>(type) };
     auto obj = dynamic_cast<EnemyObj*>(SmartObjFactory->createEnemyObj(info));
     CC_ASSERT(obj);

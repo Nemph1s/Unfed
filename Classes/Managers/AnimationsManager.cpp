@@ -25,7 +25,7 @@
 
 #include "Utils/Helpers/Helper.h"
 #include "Utils/GameResources.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 #include "Common/Factory/SmartObjFactory.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
 
@@ -38,6 +38,7 @@
 
 USING_NS_CC;
 using namespace CT;
+using namespace GOT;
 using ui::Text;
 
 //--------------------------------------------------------------------

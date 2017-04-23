@@ -16,6 +16,7 @@
 #include "SimpleAudioEngine.h"  
 
 using namespace CT;
+using namespace GOT;
 
 const auto AudioEngine = CocosDenshion::SimpleAudioEngine::getInstance();
 

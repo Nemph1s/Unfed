@@ -13,7 +13,7 @@
 #include "Utils/GameResources.h"
 #include "Utils/Helpers/Helper.h"
 
-using CT::FieldType;
+using GOT::FieldType;
 
 //--------------------------------------------------------------------
 BushObj::BushObj()
@@ -29,7 +29,7 @@ BushObj::~BushObj()
 }
 
 //--------------------------------------------------------------------
-BushObj * BushObj::create(const CT::FieldInfo & info)
+BushObj * BushObj::create(const GOT::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     BushObj * ret = new (std::nothrow) BushObj();
@@ -43,7 +43,7 @@ BushObj * BushObj::create(const CT::FieldInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool BushObj::init(const CT::FieldInfo & info)
+bool BushObj::init(const GOT::FieldInfo & info)
 //--------------------------------------------------------------------
 {
     if (!FieldObj::init(info)) {

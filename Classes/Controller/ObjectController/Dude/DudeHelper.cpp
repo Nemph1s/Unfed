@@ -18,6 +18,7 @@
 #include "Utils/Helpers/Helper.h"
 
 using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 DudeHelper::DudeHelper()

@@ -25,6 +25,7 @@
 #include "GameObjects/TileObjects/FieldObjects/Base/FieldObj.h"
 
 using namespace CT;
+using namespace GOT;
 using namespace std::placeholders;
 
 //--------------------------------------------------------------------
@@ -183,8 +184,8 @@ void ObjectController::detectDirectionsForDudes()
 BaseObj * ObjectController::createTile(Cell& cell, int type)
 //--------------------------------------------------------------------
 {
-    BaseObjInfo baseInfo = { BaseObjType::Tile, cell };
-    TileInfo info = { baseInfo, static_cast<TileType>(type) };
+    GOT::BaseObjInfo baseInfo = { BaseObjType::Tile, cell };
+    GOT::TileInfo info = { baseInfo, static_cast<TileType>(type) };
     auto tile = SmartObjFactory->createTileObj(info);
     CC_ASSERT(tile);
     auto obj = getContainer(cell);
@@ -198,7 +199,7 @@ BaseObj * ObjectController::createTile(Cell& cell, int type)
 BaseObj * ObjectController::createCookie(Cell& cell, int type)
 //--------------------------------------------------------------------
 {
-    BaseObjInfo baseInfo = { BaseObjType::Cookie, cell };
+    GOT::BaseObjInfo baseInfo = { BaseObjType::Cookie, cell };
     CookieInfo info = { baseInfo, static_cast<CookieType>(type) };
     auto cookie = SmartObjFactory->createCookieObj(info);
     CC_ASSERT(cookie);
@@ -213,7 +214,7 @@ BaseObj * ObjectController::createCookie(Cell& cell, int type)
 BaseObj * ObjectController::createFieldObject(Cell& cell, int type, int priority)
 //--------------------------------------------------------------------
 {
-    BaseObjInfo baseInfo = { BaseObjType::Field, cell };
+    GOT::BaseObjInfo baseInfo = { BaseObjType::Field, cell };
     FieldInfo info = { baseInfo, static_cast<FieldType>(type), priority };
     auto fieldObj = SmartObjFactory->createFieldObj(info);
     CC_ASSERT(fieldObj);
@@ -501,7 +502,7 @@ void ObjectController::updateObjectAt(Cell& cell, BaseObj* baseObj)
 }
 
 //--------------------------------------------------------------------
-void ObjectController::removeObjectAt(Cell& cell, CT::BaseObjType type)
+void ObjectController::removeObjectAt(Cell& cell, GOT::BaseObjType type)
 //--------------------------------------------------------------------
 {
     auto obj = getContainer(cell);

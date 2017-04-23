@@ -11,7 +11,7 @@
 #pragma once
 
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 
 using CT::Cell;
 
@@ -52,7 +52,7 @@ public:
     bool checkMathingObjWithChain(CT::Set* chains, BaseObj* obj);
 
     CT::Set* removeMatches();
-    CT::Set* removeChainAt(CT::ChainType& type, cocos2d::Vec2& pos);
+    CT::Set* removeChainAt(GOT::ChainType& type, cocos2d::Vec2& pos);
     void removeDudeMatches(CT::Set* set);
 
     CT::Set* detectMatchingObjects(CT::Set* chains);
@@ -95,7 +95,7 @@ protected:
     ChainObj* detectTChainMatches(ChainObj* horzChain, ChainObj* vertChain);
     ChainObj* detectXChainMatches(ChainObj* horzChain, ChainObj* vertChain);
 
-    bool isNextTwoCookieSuitable(const CT::ChainType& type, Cell& cell);
+    bool isNextTwoCookieSuitable(const GOT::ChainType& type, Cell& cell);
 
     //---Create chain methods-------------------------------------------------
 

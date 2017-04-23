@@ -28,6 +28,7 @@
 
 USING_NS_CC;
 using namespace CT;
+using namespace GOT;
 using ui::Text;
 using ui::Layout;
 using ui::Button;
@@ -233,21 +234,21 @@ cocos2d::Sprite * _GuiManager::createSprite(int baseType, int objType)
 {
     cocos2d::Sprite* sprite = nullptr;
     cocos2d::String* str = nullptr;
-    auto baseObjType = static_cast<CT::BaseObjType>(baseType);
+    auto baseObjType = static_cast<GOT::BaseObjType>(baseType);
     switch (baseObjType)
     {
-    case CT::BaseObjType::Cookie:
+    case GOT::BaseObjType::Cookie:
         str = &GameResources::s_cookieSpriteNames.at(objType);
         break;
-    case CT::BaseObjType::Field:
-    case CT::BaseObjType::Dude:
+    case GOT::BaseObjType::Field:
+    case GOT::BaseObjType::Dude:
         str = Helper::getSpriteNameByFieldType(objType);
         break;
-    case CT::BaseObjType::Enemy:
+    case GOT::BaseObjType::Enemy:
         str = Helper::getSpriteNameByEnemyType(objType);
         break;
-    case CT::BaseObjType::Tile:
-    case CT::BaseObjType::Unknown:
+    case GOT::BaseObjType::Tile:
+    case GOT::BaseObjType::Unknown:
         break;
     default:
         break;

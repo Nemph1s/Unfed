@@ -11,7 +11,7 @@
 #pragma once
 
 #include "Utils/PlatformMacros.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 
 class _AudioManager
 {

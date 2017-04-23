@@ -32,6 +32,7 @@
 #define RequiredAmountForDudeSquareBomb 5
 
 using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 DudeController::DudeController()
@@ -99,7 +100,7 @@ Set* DudeController::createDudeObectsFromChains(Set* chains, Set* prevSwapContai
 BaseObj* DudeController::createDudeObjWithoutContainer(int type)
 //--------------------------------------------------------------------
 {
-    BaseObjInfo baseInfo = { BaseObjType::Dude };
+    GOT::BaseObjInfo baseInfo = { BaseObjType::Dude };
     FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
     auto obj = dynamic_cast<DudeObj*>(SmartObjFactory->createDudeObj(info));
     CC_ASSERT(obj);
@@ -116,7 +117,7 @@ BaseObj* DudeController::createDudeObjWithoutContainer(int type)
 BaseObj * DudeController::createDudeObject(CT::Cell& cell, int type)
 //--------------------------------------------------------------------
 {
-    BaseObjInfo baseInfo = { BaseObjType::Dude, cell };
+    GOT::BaseObjInfo baseInfo = { BaseObjType::Dude, cell };
     FieldInfo info = { baseInfo, static_cast<FieldType>(type) };
     auto obj = dynamic_cast<DudeObj*>(SmartObjFactory->createDudeObj(info));
     CC_ASSERT(obj);

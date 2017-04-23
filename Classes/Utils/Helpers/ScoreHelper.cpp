@@ -17,6 +17,7 @@
 #include "Controller/ObjectController/ObjContainer.h"
 
 using namespace CT;
+using namespace GOT;
 
 static uint16_t EmptyScoreValue = 0;
 

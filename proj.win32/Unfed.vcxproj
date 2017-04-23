@@ -188,6 +188,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\Common\CommonTypes.h" />
     <ClInclude Include="..\Classes\Common\Factory\SmartObjFactory.h" />
     <ClInclude Include="..\Classes\Common\Factory\SpritesFactory.h" />
+    <ClInclude Include="..\Classes\Common\GameObjTypes.h" />
     <ClInclude Include="..\Classes\Common\GlobalInfo\GlobalInfo.h" />
     <ClInclude Include="..\Classes\Common\GlobalInfo\GlobalInfoTypes.h" />
     <ClInclude Include="..\Classes\Common\Tags.h" />

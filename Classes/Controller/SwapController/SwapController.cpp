@@ -17,12 +17,13 @@
 #include "GameObjects/Level/LevelObj.h"
 #include "GameObjects/TileObjects/CookieObj.h"
 
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 #include "Utils/Helpers/Helper.h"
 
 #include "Layers/CookiesLayer.h"
 
 using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 SwapController::~SwapController()
@@ -249,7 +250,7 @@ bool SwapController::trySwapCookieTo(CT::Cell& fromCell, int direction)
         return false;
     }
 
-    auto cookieType = CT::BaseObjType::Cookie;
+    auto cookieType = GOT::BaseObjType::Cookie;
     if (fromCookie->getType() != cookieType && toCookie->getType() != cookieType) {
         cocos2d::log("GameplayScene::trySwapCookieTo: cant swap non cookies obj");
         return false;

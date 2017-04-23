@@ -17,7 +17,7 @@
 BaseObj::BaseObj()
     : mColumn(-1)
     , mRow(-1)
-    , mType(CT::BaseObjType::Unknown)
+    , mType(GOT::BaseObjType::Unknown)
     , mSpriteNode(nullptr)
     , mDummyString(nullptr)
     , mPriority(0)
@@ -48,7 +48,7 @@ BaseObj * BaseObj::create()
 }
 
 //--------------------------------------------------------------------
-BaseObj * BaseObj::create(const CT::BaseObjInfo & info)
+BaseObj * BaseObj::create(const GOT::BaseObjInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj * ret = new (std::nothrow) BaseObj();
@@ -74,7 +74,7 @@ bool BaseObj::init()
 }
 
 //--------------------------------------------------------------------
-bool BaseObj::init(const CT::BaseObjInfo & info)
+bool BaseObj::init(const GOT::BaseObjInfo & info)
 //--------------------------------------------------------------------
 {
     if (!Node::init()) {
@@ -137,7 +137,7 @@ void BaseObj::clear()
     mColumn = -1;
     mRow = -1;
     mPriority = 0;
-    mType = CT::BaseObjType::Unknown;
+    mType = GOT::BaseObjType::Unknown;
     mIsMovable = false;
     mIsSwappable = false;
     mIsRemovable = false;

@@ -49,7 +49,7 @@ ChainObj::~ChainObj()
 }
 
 //--------------------------------------------------------------------
-ChainObj * ChainObj::createWithType(const CT::ChainType &type)
+ChainObj * ChainObj::createWithType(const GOT::ChainType &type)
 //--------------------------------------------------------------------
 {
     ChainObj * ret = new (std::nothrow) ChainObj();
@@ -63,7 +63,7 @@ ChainObj * ChainObj::createWithType(const CT::ChainType &type)
 }
 
 //--------------------------------------------------------------------
-bool ChainObj::initWithType(const CT::ChainType &type)
+bool ChainObj::initWithType(const GOT::ChainType &type)
 //--------------------------------------------------------------------
 {
     if (!Node::init()) {
@@ -100,19 +100,19 @@ std::string ChainObj::typeAsString()
     std::string type;
     switch (mType)
     {
-    case CT::ChainType::ChainTypeHorizontal:
+    case GOT::ChainType::ChainTypeHorizontal:
         type = "Horizontal";
         break;
-    case CT::ChainType::ChainTypeVertical:
+    case GOT::ChainType::ChainTypeVertical:
         type = "Vertical";
         break;
-    case CT::ChainType::ChainTypeL:
+    case GOT::ChainType::ChainTypeL:
         type = "Type L";
         break;
-    case CT::ChainType::ChainTypeT:
+    case GOT::ChainType::ChainTypeT:
         type = "Type T";
         break;
-    case CT::ChainType::Unknown:
+    case GOT::ChainType::Unknown:
     default:
         type = "Unknown";
         break;
@@ -255,7 +255,7 @@ void ChainObj::removeDudeObjectsFromChain(bool skipFirst)
         }
         auto obj = dynamic_cast<ObjContainer*>(*it);
         if (obj) {
-            if (obj->getObjectForChain()->getType() == CT::BaseObjType::Dude) {
+            if (obj->getObjectForChain()->getType() == GOT::BaseObjType::Dude) {
                 if (!skipFirst && index != 0) { // skip first dude in chain
                     mScore = mScore - ScoreHelper::getScoreForContainer(obj);
                     itToRemove = *it;
@@ -313,7 +313,7 @@ int ChainObj::getCookiesCount()
     for (auto it = objs->begin(); it != objs->end(); it++) {
         auto obj = dynamic_cast<BaseObj*>(*it);
         CC_ASSERT(obj);
-        if (obj->getType() == CT::BaseObjType::Cookie) {
+        if (obj->getType() == GOT::BaseObjType::Cookie) {
             count++;
         }
     }

@@ -519,7 +519,7 @@ void _JsonParser::updateFieldObjects(CT::LevelInfo& levelInfo)
         const Json::Value& fieldObjectNode = subNode[i];
         CC_ASSERT(fieldObjectNode.isObject());
 
-        auto fieldInfo = CT::JsonFieldInfo();
+        auto fieldInfo = GOT::JsonFieldInfo();
         fieldInfo.baseInfo.column = getObjectColumn(fieldObjectNode);
         fieldInfo.baseInfo.row = getObjectRow(fieldObjectNode);
 
@@ -548,7 +548,7 @@ void _JsonParser::updateEnemyObjects(CT::LevelInfo & levelInfo)
         const Json::Value& enemyObjectNode = subNode[i];
         CC_ASSERT(enemyObjectNode.isObject());
 
-        auto enemyInfo = CT::JsonEnemyInfo();
+        auto enemyInfo = GOT::JsonEnemyInfo();
         enemyInfo.baseInfo.column = getObjectColumn(enemyObjectNode);
         enemyInfo.baseInfo.row = getObjectRow(enemyObjectNode);
         enemyInfo.enemyType = getEnemyObjectType(enemyObjectNode);

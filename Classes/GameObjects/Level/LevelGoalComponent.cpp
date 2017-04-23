@@ -17,6 +17,7 @@
 #include "Utils/Parser/JsonParser.h"
 
 using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 LevelGoalComponent::LevelGoalComponent()

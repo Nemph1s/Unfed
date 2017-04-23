@@ -12,7 +12,7 @@
 
 #include <queue>
 #include "cocos2d.h"
-#include "Common/CommonTypes.h"
+#include "Common/GameObjTypes.h"
 #include "Common/GlobalInfo/GlobalInfo.h"
 
 class DudeObj;
@@ -75,7 +75,7 @@ public:
 
     void updateCookieObjectAt(CT::Cell& cell, BaseObj* cookie);
     void updateObjectAt(CT::Cell& cell, BaseObj* obj);
-    void removeObjectAt(CT::Cell& cell, CT::BaseObjType type);
+    void removeObjectAt(CT::Cell& cell, GOT::BaseObjType type);
 
     void removeCookie(CT::Cell& cell);
     void removeAllCookies();

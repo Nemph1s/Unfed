@@ -21,6 +21,7 @@
 #include "Controller/ObjectController/Enemy/EnemyObj.h"
 
 using namespace CT;
+using namespace GOT;
 
 //--------------------------------------------------------------------
 _SmartObjFactory & _SmartObjFactory::Instance()
@@ -290,7 +291,7 @@ BaseObj * _SmartObjFactory::createDudeObj(const FieldInfo & info)
 }
 
 //--------------------------------------------------------------------
-BaseObj* _SmartObjFactory::createEnemyObj(const CT::EnemyInfo & info)
+BaseObj* _SmartObjFactory::createEnemyObj(const GOT::EnemyInfo & info)
 //--------------------------------------------------------------------
 {
     BaseObj* baseObject = EnemyObj::create(info);

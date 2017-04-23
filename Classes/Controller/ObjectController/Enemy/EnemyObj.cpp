@@ -19,7 +19,7 @@ static const uint8_t defaultWaitTurnsBeforeAction = 1;
 //--------------------------------------------------------------------
 EnemyObj::EnemyObj()
     : BaseObj()
-    , mEnemyType(CT::EnemyType::Unknown)
+    , mEnemyType(GOT::EnemyType::Unknown)
     , mDebugLabel(nullptr)
     , mHP(0)
     , mWaitTurnsBeforeAction(defaultWaitTurnsBeforeAction)
@@ -35,7 +35,7 @@ EnemyObj::~EnemyObj()
 }
 
 //--------------------------------------------------------------------
-EnemyObj * EnemyObj::create(const CT::EnemyInfo & info)
+EnemyObj * EnemyObj::create(const GOT::EnemyInfo & info)
 //--------------------------------------------------------------------
 {
     EnemyObj * ret = new (std::nothrow) EnemyObj();
@@ -49,7 +49,7 @@ EnemyObj * EnemyObj::create(const CT::EnemyInfo & info)
 }
 
 //--------------------------------------------------------------------
-bool EnemyObj::init(const CT::EnemyInfo & info)
+bool EnemyObj::init(const GOT::EnemyInfo & info)
 //--------------------------------------------------------------------
 {
     if (!BaseObj::init(info.baseInfo)) {
@@ -128,7 +128,7 @@ void EnemyObj::clear()
 //--------------------------------------------------------------------
 {
     BaseObj::clear();
-    mEnemyType = CT::EnemyType::Unknown;
+    mEnemyType = GOT::EnemyType::Unknown;
     mHP = 0;
     if (mDebugLabel) {
         if (mDebugLabel->getParent()) {
