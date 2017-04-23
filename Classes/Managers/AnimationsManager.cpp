@@ -172,47 +172,27 @@ void _AnimationsManager::animateFallingObjects(cocos2d::Array * colums, cocos2d:
         auto array = dynamic_cast<cocos2d::Array*>(*it);
         CC_ASSERT(array);
 
-        float colDelay = Helper::randomFloatBetween(0.06f, 0.07f);
         for (auto itArr = array->begin(); itArr != array->end(); itArr++) {
 
             auto obj = dynamic_cast<BaseObj*>(*itArr);
             CC_ASSERT(obj);
 
-            auto newPos = Helper::pointForTile(obj);
             // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
             // This calculation works because fillHoles guarantees that lower cookies are first in the array.
-
-            float delay = (0.05f + 0.15f * colDelay);
-
-            // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
-            // You can tweak these numbers to change the feel of the animation.
-            float timeToTile = (obj->getSpriteNode()->getPositionY() - newPos.y) / GlobInfo->getTileHeight();
-            float duration = (timeToTile * 0.1f) + colDelay * 1.5f;
+            auto sprite = obj->getSpriteNode();
+            auto startCell = Helper::cellFromPoint(sprite->getPosition());
+            float duration = Helper::getDurationToTile(startCell, obj->getCell());
 
             // Calculate which animation is the longest. This is the time the game has to wait before it may continue.
-            auto animateBouncingObjDelay = 0.25f;
-            longestDuration = MAX(longestDuration, duration + delay + animateBouncingObjDelay);
+            longestDuration = MAX(longestDuration, duration);
 
             // Perform the animation, which consists of a delay, a movement and a sound effect.
-            auto callback = CallFunc::create([=]() {
-
+            auto moveCallback = CallFunc::create([=]() {
                 obj->updateZOrder();
-
-                auto moveCallback = CallFunc::create([=]() {
-                    AnimationsManager->animateBouncingObj(obj);
-                    AudioManager->playSound(CT::SoundType::FallingCookieSound);
-                });
-                
-                auto sprite = obj->getSpriteNode();
-                auto delta = newPos - sprite->getPosition();
-
-                auto moveAction = MoveBy::create(duration, delta);
-                auto easeAction = EaseOut::create(moveAction, duration);
-
-                sprite->runAction(Sequence::create(easeAction, moveCallback, nullptr));
+                AnimationsManager->animateBouncingObj(obj);
+                AudioManager->playSound(CT::SoundType::FallingCookieSound);
             });
-
-            obj->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
+            sprite->runAction(ActionsManager->actionFallObject(obj, moveCallback, duration));
         }
     }
 
@@ -238,49 +218,37 @@ void _AnimationsManager::animateNewCookies(cocos2d::Array* colums, cocos2d::Call
         auto array = dynamic_cast<cocos2d::Array*>(*it);
         CC_ASSERT(array);
 
-        int startRow = -1;
+        int startRow = -5;
         int rowIdx = 0;
         for (auto itArr = array->begin(); itArr != array->end(); itArr++, rowIdx++) {
-            auto cookie = dynamic_cast<CookieObj*>(*itArr);
-            CC_ASSERT(cookie);
-            auto startCell = Cell(cookie->getCell(), startRow);
-            scene->createSpriteWithCookie(cookie, startCell);
-            cookie->getSpriteNode()->setOpacity(0);
+            auto row = array->count() - rowIdx - 1;
+            auto obj = dynamic_cast<BaseObj*>(*itArr);
+            CC_ASSERT(obj);
 
-            auto newPos = Helper::pointForTile(cookie);
+            auto startCell = Cell(obj->getCell(), startRow);
+            scene->createSpriteWithObj(obj, startCell);
+            auto sprite = obj->getSpriteNode();
 
             // The higher up the cookie is, the bigger the delay on the animation. That looks more dynamic than dropping all the cookies at the same time.
             // This calculation works because fillHoles guarantees that lower cookies are first in the array.
-            float delay = 0.1f + 0.175f * (array->count() - rowIdx - 1);
-
-            // Likewise, the duration of the animation is based on how far the cookie has to fall (0.1 seconds per tile). 
-            // You can tweak these numbers to change the feel of the animation.
-            float duration = Helper::getDurationToTile(startRow, cookie->getRow());
+            const float tileOffset = 0.09f;
+            float delay = tileOffset + 0.1f + (0.15f * row);
+            float duration = Helper::getDurationToTile(startCell, obj->getCell());
 
             // You calculate which animation is the longest. This is the time the game has to wait before it may continue.
             auto animateBouncingObjDelay = 0.25f;
             longestDuration = MAX(longestDuration, duration + delay + animateBouncingObjDelay);
 
-            // You perform the animation, which consists of a delay, a movement and a sound effect.
             auto callback = CallFunc::create([=]() {
-
-                cookie->updateZOrder();
-
                 auto moveCallback = CallFunc::create([=]() {
-                    AnimationsManager->animateBouncingObj(cookie);
+                    obj->updateZOrder();
+                    AnimationsManager->animateBouncingObj(obj);
                     AudioManager->playSound(CT::SoundType::AddCookieSound);
                 });
-
-                auto moveAction = MoveTo::create(duration, newPos);
-                auto easeAction = EaseOut::create(moveAction, duration);
-                auto fadeIn = FadeIn::create(0.0125f);
-                auto delayAction = DelayTime::create(0.15f);
-
-                cookie->getSpriteNode()->runAction(Sequence::create(delayAction, fadeIn, nullptr));
-                cookie->getSpriteNode()->runAction(Sequence::create(easeAction, moveCallback, nullptr));
+                sprite->runAction(ActionsManager->actionFallObject(obj, moveCallback, duration));
             });
 
-            cookie->getSpriteNode()->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
+            sprite->runAction(Sequence::create(DelayTime::create(delay), callback, nullptr));
         }
     }
 
@@ -365,7 +333,6 @@ void _AnimationsManager::animateScoreForChain(ChainObj * chain)
         });
         scoreLabel->runAction(easeOut);
         scoreLabel->runAction(Sequence::create(DelayTime::create(duration * 0.75f), fadeOut, callback, nullptr));
-        
     }
 }
 
@@ -419,7 +386,7 @@ void _AnimationsManager::animateThrowDownAnObj(BaseObj* obj, CT::Cell& destPos, 
 
     auto sprite = obj->getSpriteNode();
 
-    auto easeAction = ActionsManager->actionFallDown(obj, destPos);
+    auto easeAction = ActionsManager->actionThrowDownAnObj(obj, destPos);
 
     auto moveCallback = CallFunc::create([=]() {
 

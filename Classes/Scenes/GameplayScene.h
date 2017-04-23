@@ -37,6 +37,7 @@ public:
     void createChainPreviewSprites(CT::Set* set);
 
     void createSpriteWithCookie(CookieObj* cookie, CT::Cell& cell);
+    void createSpriteWithObj(BaseObj* obj, CT::Cell& cell);
     void createSpriteForDude(BaseObj* dudeObj);
     void createSpriteWithFieldObj(FieldObj* fieldObj);
 

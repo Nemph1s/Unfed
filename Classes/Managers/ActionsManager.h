@@ -29,8 +29,9 @@ public:
 
     cocos2d::ActionInstant* actionSwapObj(BaseObj* objA, BaseObj* objB, bool isFirstSwapObject = false);
 
-    cocos2d::ActionInterval* actionFallDown(BaseObj* obj, CT::Cell& desinationCell);
-    
+    cocos2d::ActionInterval* actionThrowDownAnObj(BaseObj* obj, CT::Cell& desinationCell);
+    cocos2d::ActionInterval* actionFallObject(BaseObj* obj, cocos2d::CallFunc* moveCallback, float duration = 0.2f);
+
 protected:
 
     cocos2d::ActionInstant* reverseScaleXCallback(BaseObj* obj, float duration);

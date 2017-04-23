@@ -9,6 +9,7 @@
 */
 
 #include "Managers/ActionsManager.h"
+#include "Managers/AudioManager.h"
 #include "Utils/Helpers/Helper.h"
 
 #include "GameObjects/TileObjects/Base/BaseObj.h"
@@ -139,7 +140,7 @@ cocos2d::ActionInstant* _ActionsManager::actionSwapObj(BaseObj* objA, BaseObj* o
 }
 
 //--------------------------------------------------------------------
-cocos2d::ActionInterval * _ActionsManager::actionFallDown(BaseObj* obj, CT::Cell& desinationCell)
+cocos2d::ActionInterval * _ActionsManager::actionThrowDownAnObj(BaseObj* obj, CT::Cell& desinationCell)
 //--------------------------------------------------------------------
 {
     CC_ASSERT(obj);
@@ -158,6 +159,19 @@ cocos2d::ActionInterval * _ActionsManager::actionFallDown(BaseObj* obj, CT::Cell
     auto moveAction = MoveTo::create(duration, newPos);
     auto easeAction = EaseOut::create(moveAction, duration);
     return easeAction;
+}
+
+//--------------------------------------------------------------------
+cocos2d::ActionInterval* _ActionsManager::actionFallObject(BaseObj* obj, cocos2d::CallFunc* moveCallback, float duration)
+//--------------------------------------------------------------------
+{
+    auto sprite = obj->getSpriteNode();
+    auto delta = Helper::pointForTile(obj) - sprite->getPosition();
+
+    auto moveAction = MoveBy::create(duration, delta);
+    auto easeAction = EaseOut::create(moveAction, duration);
+
+    return Sequence::create(easeAction, moveCallback, nullptr);
 }
 
 //--------------------------------------------------------------------

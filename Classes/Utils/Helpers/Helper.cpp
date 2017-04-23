@@ -61,8 +61,16 @@ CookieType Helper::randomCookieType(int fromRange, int toRange)
 float Helper::getDurationToTile(int8_t startRow, int8_t destinationRow)
 //--------------------------------------------------------------------
 {
+    const float tileOffset = 0.09f;
     float timeToTile = fabs(startRow - destinationRow);
-    return (timeToTile * 0.1f) + 0.125f;
+    return (timeToTile * 0.1f) + tileOffset;
+}
+
+//--------------------------------------------------------------------
+float Helper::getDurationToTile(CT::Cell& startCell, CT::Cell& destinationCell)
+//--------------------------------------------------------------------
+{
+    return getDurationToTile(startCell.row, destinationCell.row);
 }
 
 //--------------------------------------------------------------------
@@ -174,6 +182,20 @@ cocos2d::Vec2 Helper::pointForTile(BaseObj * obj)
         pos = pointForCell(obj->getCell());
     }
     return pos;
+}
+
+//--------------------------------------------------------------------
+CT::Cell Helper::cellFromPoint(const cocos2d::Vec2 & point)
+//--------------------------------------------------------------------
+{
+    auto cell = CT::Cell();
+    if (point.x >= 0 && point.x < _GlobalInfo::NumColumns * GlobInfo->getTileWidth() &&
+        point.y >= 0 && point.y < _GlobalInfo::NumRows * GlobInfo->getTileHeight()) {
+        cell.column = point.x / GlobInfo->getTileWidth();
+        cell.row = _GlobalInfo::NumColumns - (point.y / GlobInfo->getTileHeight());
+        return cell;
+    }
+    return cell;
 }
 
 //--------------------------------------------------------------------
