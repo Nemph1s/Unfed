@@ -513,6 +513,9 @@ void _JsonParser::updateFieldObjects(CT::LevelInfo& levelInfo)
     if (mLevelInfoRootNode[JsonNames::objectsArray].isNull()) {
         return;
     }
+    if (mLevelInfoRootNode[JsonNames::objectsArray][JsonNames::objectsArray_fieldObjs].isNull()) {
+        return;
+    }
     const Json::Value& subNode = getFieldObjects(mLevelInfoRootNode[JsonNames::objectsArray]);
 
     for (uint16_t i = 0; i < subNode.size(); ++i) {
@@ -540,6 +543,9 @@ void _JsonParser::updateEnemyObjects(CT::LevelInfo & levelInfo)
 //--------------------------------------------------------------------
 {
     if (mLevelInfoRootNode[JsonNames::objectsArray].isNull()) {
+        return;
+    }
+    if (mLevelInfoRootNode[JsonNames::objectsArray][JsonNames::objectsArray_enemyObjs].isNull()) {
         return;
     }
     const Json::Value& subNode = getEnemyObjects(mLevelInfoRootNode[JsonNames::objectsArray]);
