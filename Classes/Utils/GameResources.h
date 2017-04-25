@@ -16,7 +16,8 @@
 
 namespace GameResources {
 
-   static cocos2d::String s_backgroundImg = "Images/bg_forest_1@2x.png";
+   static cocos2d::String s_backgroundImg = "Images/bg_forest_0@2x.png";
+   //static cocos2d::String s_backgroundImg = "Images/bg_forest_1@2x.png";
 
    static cocos2d::String s_ButtonImg = "Images/Button@2x.png";
 
