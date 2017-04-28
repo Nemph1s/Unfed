@@ -29,6 +29,20 @@ public:
     void increaseComboMultiplier();
     void resetComboMultiplier();
 
+    /**
+    * This method returns tile width according to scale factor 
+    * @param row The row value which helps to define scale factor.
+    * @return double scaled tile width
+    */
+    double getScaledTileWidth(int row) const;
+
+    /**
+    * This method returns tile height according to scale factor
+    * @param row The row value which helps to define scale factor.
+    * @return double scaled tile width
+    */
+    double getScaledTileHeight(int row) const;
+
     const std::map<uint16_t, uint16_t>& getDudeScoreMap() const;
 
 protected:

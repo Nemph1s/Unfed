@@ -145,8 +145,9 @@ void GameplayScene::addTiles()
             auto tile = objCtrl->tileAt(cell);
             auto tileSprite = SpritesFactory->createWithBaseObject(tile);
             tileSprite->setVisible(true);
-            tileSprite->setPosition(Helper::pointForCell(cell));
+            tileSprite->setPosition(Helper::pointForCell(cell, true));
             tileSprite->setOpacity(127);
+            tileSprite->setScale(Helper::getScaleFactorByRow(cell.row));
             tile->setSpriteNode(tileSprite);
 			mTilesLayer->addChild(tileSprite);
 

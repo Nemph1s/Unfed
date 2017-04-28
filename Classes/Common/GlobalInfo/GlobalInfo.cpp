@@ -9,6 +9,7 @@
 */
 
 #include "Common/GlobalInfo/GlobalInfo.h"
+#include "Utils/Helpers/Helper.h"
 #include "Utils/Parser/JsonParser.h"
 
 using cocos2d::Size;
@@ -165,4 +166,18 @@ void _GlobalInfo::resetComboMultiplier()
 //--------------------------------------------------------------------
 {
     mComboMultiplier = 1;
+}
+
+//--------------------------------------------------------------------
+double _GlobalInfo::getScaledTileWidth(int row) const
+//--------------------------------------------------------------------
+{
+    return mTileWidth * Helper::getScaleFactorByRow(row);
+}
+
+//--------------------------------------------------------------------
+double _GlobalInfo::getScaledTileHeight(int row) const
+//--------------------------------------------------------------------
+{
+    return mTileHeight * Helper::getScaleFactorByRow(row);
 }

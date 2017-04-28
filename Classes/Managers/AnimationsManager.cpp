@@ -518,10 +518,9 @@ void _AnimationsManager::animateMatchObj(BaseObj* obj, cocos2d::CallFunc* comple
         return;
     }
     const float duration = 0.3f;
-    const float scaleFactor = 0.1f;
 
-    auto scaleAction = ScaleTo::create(duration, scaleFactor);
-    auto easeOut = EaseOut::create(scaleAction, duration);
+    auto fadeAction = FadeOut::create(duration);
+    auto easeOut = EaseOut::create(fadeAction, duration);
 
     auto baseObj = dynamic_cast<BaseObj*>(obj);
     auto callback = CallFunc::create([baseObj, obj]() {

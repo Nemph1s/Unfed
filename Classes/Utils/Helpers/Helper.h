@@ -55,8 +55,15 @@ public:
 
     static bool isValidCell(CT::Cell& cell);
 
-    static cocos2d::Vec2 pointForCell(CT::Cell& cell);
-    static cocos2d::Vec2 pointForCellWithPriority(CT::Cell& cell, int priority);
+    /**
+    * This method returns scale factor
+    * @param row The row value which helps to define scale factor.
+    * @return double scale factor
+    */
+    static double getScaleFactorByRow(int row);
+
+    static cocos2d::Vec2 pointForCell(CT::Cell& cell, bool testScaleFactor = false);
+    static cocos2d::Vec2 pointForCellWithPriority(CT::Cell& cell, int priority, bool testScaleFactor = false);
     static cocos2d::Vec2 pointForTile(BaseObj* obj);
 
     static cocos2d::Vec2 pointForGoalSprite(int currGoal, int goalsCount, const cocos2d::Size& spriteSize);

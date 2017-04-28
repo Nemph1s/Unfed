@@ -24,6 +24,11 @@ using namespace GameResources;
 using namespace CT;
 using namespace GOT;
 
+
+// TODO: move to config json
+static const double kScaleFactors[9] = { 0.8f, 0.85f, 0.9f, 0.95f, 1.0f, 1.05f, 1.1f, 1.15f, 1.2f };
+static const double kTileOffsets[9] = { 0.5f, 1.0f, 1.5f, 2.0f, 2.5f, 3.0f, 3.5f, 4.0f, 4.5f };
+
 //--------------------------------------------------------------------
 float Helper::randomFloatBetween(float smallNumber, float bigNumber) 
 //--------------------------------------------------------------------
@@ -146,22 +151,33 @@ bool Helper::isValidCell(CT::Cell& cell)
 }
 
 //--------------------------------------------------------------------
-cocos2d::Vec2 Helper::pointForCell(CT::Cell& cell)
+double Helper::getScaleFactorByRow(int row)
 //--------------------------------------------------------------------
 {
-    float offsetX = 2.5f * cell.column;
-    float offsetY = 2.5f * (_GlobalInfo::NumRows - cell.row - 1);
-    auto tileWidth = GlobInfo->getTileWidth();
-    auto tileHeight = GlobInfo->getTileHeight();
+    double result = 0.0f;
+    if (row >= 0 && row < _GlobalInfo::NumColumns) {
+        result = kScaleFactors[row];
+    }
+    return result;
+}
+
+//--------------------------------------------------------------------
+cocos2d::Vec2 Helper::pointForCell(CT::Cell& cell, bool testScaleFactor)
+//--------------------------------------------------------------------
+{
+    float offsetX = cell.column * kTileOffsets[cell.row];
+    float offsetY = (_GlobalInfo::NumRows - cell.row - 1) * kTileOffsets[cell.row];
+    auto tileWidth = testScaleFactor ? GlobInfo->getTileWidth() : GlobInfo->getScaledTileWidth(cell.row);
+    auto tileHeight = testScaleFactor ? GlobInfo->getTileHeight() : GlobInfo->getScaledTileHeight(cell.row);
     return cocos2d::Vec2(offsetX + cell.column * tileWidth + tileWidth / 2
         , offsetY + (_GlobalInfo::NumRows - cell.row - 1) * tileHeight + tileHeight / 2);
 }
 
 //--------------------------------------------------------------------
-cocos2d::Vec2 Helper::pointForCellWithPriority(CT::Cell& cell, int priority)
+cocos2d::Vec2 Helper::pointForCellWithPriority(CT::Cell& cell, int priority, bool testScaleFactor)
 //--------------------------------------------------------------------
 {
-    auto pos = pointForCell(cell);
+    auto pos = pointForCell(cell, testScaleFactor);
     if (priority > 0) {
         auto tileHeight = GlobInfo->getTileHeight();
         pos.y += (tileHeight / 4) * priority;
